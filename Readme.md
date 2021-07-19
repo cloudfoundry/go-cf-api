@@ -13,24 +13,7 @@ mage InstallDeps
 
 All compile time dependencies will be downloaded when compiling (If you use the mage commands)
 
-
-# TODO
-- ~~Validate Connection String~~
-- ~~Make Mysql Work~~
-- ~~DB Migration~~
-- Get Rid of Viper
-- Better SQL Logging
-- Store Memory instances in single Storage 
-- Own Metrics in Prometheus endpoint
-- Logging Redact Secrets (From SQL,Echo)
-- Implement Controller Pattern
-- Basic UI
-- Rate Limits
-- Tests
-- GoDocs
-
-
-# Features
+# Existing Features
 - Structured Logging
 - Prometheus Endpoint Metrics
 - Operations Console (REPL)
@@ -42,3 +25,23 @@ All compile time dependencies will be downloaded when compiling (If you use the 
 - Godocs Auto Gen
 - Assets in memory
 - Rate Limiting
+
+
+# Needed for POC Demonstration
+Local Dev Demo
+- Get Public Keys from UAA
+- Authentication (JWT)
+- Rollen
+- VCAP-REQUEST_ID middleware
+- Metric Middleware
+- Logging Redact Secrets (From SQL,Echo)
+- Tests
+- GoDocs
+- Swagger Docs
+
+For Deployment
+- Health Endpoint
+- Extra Bosh Release
+  - Gorouter Routing Adaptions
+  - CC Config
+  - Promscraper
