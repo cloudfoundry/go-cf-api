@@ -1,0 +1,12 @@
+output   = "internal/app/gopilot/sqlboiler/postgres"
+wipe     = true
+no-test  = false
+package  = "postgres"
+
+[psql]
+  dbname = "pilotdb"
+  host   = "localhost"
+  port   = 5432
+  user   = "postgres"
+  pass   = "admin"
+  sslmode = "disable"

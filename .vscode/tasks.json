@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Prepare Mage for Debug",
+        "type": "shell",
+        "command": "mage --keep && sed -i  's|^// *+build|///+build|g' magefile* mage_output_file.go",
+        "group": "none"
+      },
+      {
+        "label": "Revert Mage Preparations",
+        "type": "shell",
+        "command": "rm -f mage_output_file.go && sed -i 's|^///+build|//+build|g' magefile*",
+        "group": "none"
+      }
+    ]
+  }

@@ -1,0 +1,18 @@
+version: '3.6'
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - "5432:5432"
+  gopilot:
+    build: .
+    environment:
+      - CONFIG_FILE=123
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres

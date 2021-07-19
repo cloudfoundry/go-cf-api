@@ -1,0 +1,27 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd",
+            "args": ["${workspaceFolder}/config.yaml"]
+        },
+        {
+            "name": "Debug Mage",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "preLaunchTask": "Prepare Mage for Debug",
+            "postDebugTask": "Revert Mage Preparations",
+            "args": ["dbmigrate","config.yaml"],
+            "buildFlags": ""
+        }
+    ]
+}

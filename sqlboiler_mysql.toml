@@ -1,0 +1,12 @@
+output   = "internal/app/gopilot/sqlboiler/mysql"
+wipe     = true
+no-test  = false
+package  = "mysql"
+
+[mysql]
+  dbname = "pilotdb"
+  host   = "localhost"
+  port   = 3306
+  user   = "root"
+  pass   = "admin"
+  sslmode = "false"
