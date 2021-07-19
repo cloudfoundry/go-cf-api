@@ -28,3 +28,17 @@ All compile time dependencies will be downloaded when compiling (If you use the 
 - Rate Limits
 - Tests
 - GoDocs
+
+
+# Features
+- Structured Logging
+- Prometheus Endpoint Metrics
+- Operations Console (REPL)
+- DBs (Postgres, MySQL) Autogenerates Go Code
+- DB Migrations
+- Read Config
+- Webserver
+- Auto API Docs
+- Godocs Auto Gen
+- Assets in memory
+- Rate Limiting
