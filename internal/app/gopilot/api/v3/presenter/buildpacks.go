@@ -7,26 +7,26 @@ import (
 )
 
 type BuildpackResponse struct {
-	Guid       string
-	Created_at time.Time
-	Updated_at time.Time
-	Name       string
-	State      string
-	Filename   string
-	Stack      string
-	Position   int64
-	Enabled    bool
-	Locked     bool
-	Metadata   Metadata
+	Guid       string    `json:"guid"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
+	Name       string    `json:"name"`
+	State      string    `json:"state"`
+	Filename   string    `json:"filename"`
+	Stack      string    `json:"stack"`
+	Position   int       `json:"position"`
+	Enabled    bool      `json:"enabled"`
+	Locked     bool      `json:"locked"`
+	Metadata   Metadata  `json:"metadata"`
 	Links      struct {
 		Self struct {
-			Href string
-		}
+			Href string `json:"href"`
+		} `json:"self"`
 		Upload struct {
-			Href   string
-			Method string
-		}
-	}
+			Href   string `json:"href"`
+			Method string `json:"method"`
+		} `json:"upload"`
+	} `json:"links"`
 }
 
 func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*BuildpackResponse {
@@ -35,6 +35,8 @@ func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*Buildpack
 		buildpackresp := BuildpackResponse{
 			Guid:       buildpack.GUID,
 			Created_at: buildpack.CreatedAt,
+			Name:       buildpack.Name,
+			Position:   buildpack.Position,
 		}
 		out = append(out, &buildpackresp)
 	}

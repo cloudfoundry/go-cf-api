@@ -1,6 +1,6 @@
 package presenter
 
 type Metadata struct {
-	Labels      interface{}
-	Annotations interface{}
+	Labels      interface{} `json:"labels"`
+	Annotations interface{} `json:"annotations"`
 }
