@@ -11,7 +11,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
 )
 
 //#######################//

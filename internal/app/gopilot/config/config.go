@@ -7,14 +7,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/helpers"
-	log "github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/logging/enums"
 	"github.com/caarlos0/env/v6"
 	"github.com/creasty/defaults"
 	"github.com/go-playground/validator"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	"github.com/spf13/viper"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
+	log "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging/enums"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )

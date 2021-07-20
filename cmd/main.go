@@ -1,30 +1,25 @@
 package main
 
 import (
-	"embed"
 	"fmt"
-	"io/fs"
-	"net/http"
 	"time"
 
-	_ "github.com/FloThinksPi/golang-vuejs-bootstrap/docs/swagger"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/api"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/config"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/logging"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/metrics"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/storage/db"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
+	_ "github.tools.sap/cloudfoundry/cloudgontroller/docs/swagger"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/api"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/metrics"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/storage/db"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/time/rate"
 )
 
 var (
-	//go:embed frontend
-	embededFrontendFiles embed.FS
 
 	// Cobra Flags
 	cfgFile string
@@ -73,14 +68,6 @@ func RootFunc(cmd *cobra.Command, args []string) {
 		db.Migrate(db.GetConnection())
 	}
 
-	// Register Frontend Handler
-	frontendFS, err := fs.Sub(embededFrontendFiles, "frontend")
-	if err != nil {
-		panic(err)
-	}
-	frontendHandler := http.FileServer(http.FS(frontendFS))
-	e.GET("/*", echo.WrapHandler(http.StripPrefix("/", frontendHandler)))
-
 	// Register API Handlers
 	api.RegisterHandlers(e)
 
@@ -91,7 +78,7 @@ func RootFunc(cmd *cobra.Command, args []string) {
 	time.Sleep(1 * time.Millisecond)
 	zap.L().Warn("application started without ssl/tls enabled")
 
-	err = <-lock
+	err := <-lock
 	if err != nil {
 		zap.L().Panic("failed to start application")
 	}

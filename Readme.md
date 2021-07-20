@@ -1,8 +1,6 @@
 # Gopilot Webserver
 ## Prerequisits
-- Go 1.16 minimum: https://golang.org/dl/
-- NodeJS 14.17.0 minimum: https://nodejs.org/en/download/
-- Yarn (Any version should do):  https://classic.yarnpkg.com/en/docs/install
+- Go 1.16 minimum: https://golang.org/dl/ (Install with GVM)
 - Mage (Makefile alternative in go): https://github.com/magefile/mage
 
 

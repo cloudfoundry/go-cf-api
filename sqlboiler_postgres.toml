@@ -4,9 +4,14 @@ no-test  = false
 package  = "postgres"
 
 [psql]
-  dbname = "pilotdb"
+  dbname = "ccdb"
   host   = "localhost"
   port   = 5432
   user   = "postgres"
   pass   = "admin"
   sslmode = "disable"
+
+
+[[aliases.tables.organizations]]
+name  = "default_isolation_segment_guid"
+alias = "isolation_segment_guid"

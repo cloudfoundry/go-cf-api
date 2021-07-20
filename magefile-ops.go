@@ -10,12 +10,12 @@ import (
 	"fmt"
 	"runtime/debug"
 
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/config"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/helpers"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/logging"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/storage/db"
 	"github.com/creasty/defaults"
 	"github.com/golobby/repl/interpreter"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/storage/db"
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"
@@ -66,10 +66,10 @@ func Console() error {
 	_, err = currentInterpreter.Eval(":e 1")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/helpers\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers\"")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/logging\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging\"")
 	helpers.CheckErrFatal(err)
 
 	p := prompt.New(handler, completer, prompt.OptionPrefix("console> "))

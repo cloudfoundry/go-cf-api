@@ -5,9 +5,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/logging"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 )

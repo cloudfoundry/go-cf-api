@@ -5,9 +5,9 @@ import (
 	"embed"
 	"fmt"
 
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/config"
-	"github.com/FloThinksPi/golang-vuejs-bootstrap/internal/app/gopilot/helpers"
 	migrate "github.com/rubenv/sql-migrate"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
 	"go.uber.org/zap"
 )
 

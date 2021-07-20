@@ -3,8 +3,6 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"time"
 
 	"github.com/magefile/mage/sh"
@@ -35,7 +33,7 @@ func InstallDeps() error {
 	if err := sh.Run("go", "get", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@latest"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", " github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest"); err != nil {
+	if err := sh.Run("go", "get", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest"); err != nil {
 		return err
 	}
 	return nil
@@ -62,18 +60,6 @@ func GenerateSQLBoiler() error {
 	return nil
 }
 
-// Run a development web server for the frontend, that updates automatically on code changes
-func FrontendDevServer() error {
-	os.Chdir("web")
-	defer os.Chdir("..")
-	fmt.Println("Please connect to http://localhost:8080")
-	fmt.Println("Abort with CTRL-C")
-	if err := sh.RunV("yarn", "serve"); err != nil {
-		return err
-	}
-	return nil
-}
-
 ///////////////////////
 // Software Building //
 ///////////////////////
@@ -81,9 +67,6 @@ func FrontendDevServer() error {
 // Runs go mod download and then installs the binary.
 func Build() error {
 	if err := sh.Rm("./build/gopilot"); err != nil {
-		return err
-	}
-	if err := BuildFrontend(); err != nil {
 		return err
 	}
 	if err := CreateAPIDocs(); err != nil {
@@ -96,19 +79,6 @@ func Build() error {
 		return err
 	}
 	return sh.RunV("go", "build", "-o", "build/gopilot", "cmd/main.go")
-}
-
-// Build the VueJS Frontend so it can be integrated into the go binary
-func BuildFrontend() error {
-	if err := sh.Rm("./cmd/frontend"); err != nil {
-		return err
-	}
-	os.Chdir("web")
-	defer os.Chdir("..")
-	if err := sh.RunV("yarn", "install"); err != nil {
-		return err
-	}
-	return sh.RunV("yarn", "build", "--dest", "../cmd/frontend")
 }
 
 ///////////////////////////
@@ -147,13 +117,7 @@ func Clean() error {
 	if err := sh.Rm("./build"); err != nil {
 		return err
 	}
-	if err := sh.Rm("./cmd/frontend"); err != nil {
-		return err
-	}
 	if err := sh.Rm("./vendor"); err != nil {
-		return err
-	}
-	if err := sh.Rm("./web/node_modules"); err != nil {
 		return err
 	}
 	if err := sh.Rm("./repl"); err != nil {

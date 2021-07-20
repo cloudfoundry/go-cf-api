@@ -4,7 +4,7 @@ no-test  = false
 package  = "mysql"
 
 [mysql]
-  dbname = "pilotdb"
+  dbname = "ccdb"
   host   = "localhost"
   port   = 3306
   user   = "root"
