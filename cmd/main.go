@@ -22,7 +22,6 @@ import (
 var (
 
 	// Cobra Flags
-	cfgFile string
 	rootCmd = &cobra.Command{
 		Use:   "gopilot",
 		Short: "A example webserver that can be used as a bootstrap project",
@@ -140,7 +139,4 @@ func init() {
 	config.Level.SetLevel(zapcore.InfoLevel)
 	logger, _ := config.Build()
 	zap.ReplaceGlobals(logger)
-
-	// Init Cobra and Viper
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file")
 }

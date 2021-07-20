@@ -33,8 +33,8 @@ type DBConfig struct {
 	// For connection string documentation see
 	// Postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
 	// Mysql: https://github.com/go-sql-driver/mysql#dsn-data-source-name
-	ConnectionString string `env:"GOPILOT_DB_CONNECTIONSTRING" validate:"required" default:"host=localhost port=5432 user=postgres dbname=pilotdb password=admin sslmode=disable"`
-	Type             string `env:"GOPILOT_DB_TYPE" validate:"required,oneof=postgres mysql" default:"postgres"`
+	ConnectionString string `env:"GOPILOT_DB_CONNECTIONSTRING" validate:"required"`
+	Type             string `env:"GOPILOT_DB_TYPE" validate:"required,oneof=postgres mysql"`
 	Create           bool   `env:"GOPILOT_DB_CREATE" default:"true"`
 	Migrate          bool   `env:"GOPILOT_DB_MIGRATE" default:"true"`
 	Log              ZapConfig
