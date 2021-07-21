@@ -11,7 +11,7 @@
     "paths": {
         "/buildpacks": {
             "get": {
-                "description": "path params",
+                "description": "Retrieve all buildpacks the user has access to.",
                 "consumes": [
                     "application/json"
                 ],
@@ -19,50 +19,169 @@
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "Buildpacks"
                 ],
-                "summary": "path params example",
+                "summary": "Buildpacks List buildpacks",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/presenter.BuildpackResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/buildpacks/{guid}": {
+            "get": {
+                "description": "Retrieve all buildpacks the user has access to.",
+                "tags": [
+                    "Buildpacks"
+                ],
+                "summary": "Show a buildpack",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "group_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "account_id",
+                        "type": "string",
+                        "description": "Buildpack GUID",
+                        "name": "guid",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "answer",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/presenter.BuildpackResponse"
                         }
                     },
                     "400": {
-                        "description": "ok",
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controllers.HTTPError"
                         }
                     },
                     "404": {
-                        "description": "ok",
+                        "description": "Not Found",
                         "schema": {
-                            "type": "string"
+                            "type": "object"
                         }
                     },
                     "500": {
-                        "description": "ok",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controllers.HTTPError"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controllers.HTTPError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
+                }
+            }
+        },
+        "presenter.BuildpackResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "enabled": {
+                    "type": "boolean"
+                },
+                "filename": {
+                    "type": "string"
+                },
+                "guid": {
+                    "type": "string"
+                },
+                "links": {
+                    "type": "object",
+                    "properties": {
+                        "self": {
+                            "type": "object",
+                            "properties": {
+                                "href": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "upload": {
+                            "type": "object",
+                            "properties": {
+                                "href": {
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "locked": {
+                    "type": "boolean"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/presenter.Metadata"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "position": {
+                    "type": "integer"
+                },
+                "stack": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.Metadata": {
+            "type": "object",
+            "properties": {
+                "annotations": {
+                    "type": "object"
+                },
+                "labels": {
+                    "type": "object"
                 }
             }
         }

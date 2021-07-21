@@ -14,18 +14,16 @@ import (
 	"go.uber.org/zap"
 )
 
-// PathParamsExample godoc
-// @Summary path params example
-// @Description path params
-// @Tags example
+// GetBuildpacks godoc
+// @Summary Buildpacks List buildpacks
+// @Description Retrieve all buildpacks the user has access to.
+// @Tags Buildpacks
 // @Accept json
 // @Produce json
-// @Param group_id path int true "Group ID"
-// @Param account_id path int true "Account ID"
-// @Success 200 {string} string "answer"
-// @Failure 400 {string} string "ok"
-// @Failure 404 {string} string "ok"
-// @Failure 500 {string} string "ok"
+// @Success 200 {object} presenter.BuildpackResponse
+// @Success 404 {object} interface{}
+// @Failure 400 {object} []interface{}
+// @Failure 500 {object} HTTPError
 // @Router /buildpacks [get]
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
@@ -35,11 +33,23 @@ func GetBuildpacks(c echo.Context) error {
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
+	if buildpacks == nil {
+		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
+	}
+
 	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks))
 }
 
 // GetBuildpack godoc
 // @Summary Show a buildpack
+// @Description Retrieve all buildpacks the user has access to.
+// @Tags Buildpacks
+// @Param guid path string true "Buildpack GUID"
+// @Success 200 {object} presenter.BuildpackResponse
+// @Success 404 {object} interface{}
+// @Failure 400 {object} HTTPError
+// @Failure 500 {object} HTTPError
+// @Router /buildpacks/{guid} [get]
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 	db := db.GetConnection()
@@ -49,5 +59,9 @@ func GetBuildpack(c echo.Context) error {
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
+	if buildpack == nil {
+		return c.JSON(http.StatusNotFound, HTTPError{Code:http.StatusNotFound,Message: "Buildpack not Found"})
+	}
+
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack))
 }

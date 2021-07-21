@@ -1,4 +1,61 @@
 basePath: /api/v3
+definitions:
+  controllers.HTTPError:
+    properties:
+      code:
+        example: 400
+        type: integer
+      message:
+        example: status bad request
+        type: string
+    type: object
+  presenter.BuildpackResponse:
+    properties:
+      created_at:
+        type: string
+      enabled:
+        type: boolean
+      filename:
+        type: string
+      guid:
+        type: string
+      links:
+        properties:
+          self:
+            properties:
+              href:
+                type: string
+            type: object
+          upload:
+            properties:
+              href:
+                type: string
+              method:
+                type: string
+            type: object
+        type: object
+      locked:
+        type: boolean
+      metadata:
+        $ref: '#/definitions/presenter.Metadata'
+      name:
+        type: string
+      position:
+        type: integer
+      stack:
+        type: string
+      state:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  presenter.Metadata:
+    properties:
+      annotations:
+        type: object
+      labels:
+        type: object
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -10,40 +67,60 @@ paths:
     get:
       consumes:
       - application/json
-      description: path params
-      parameters:
-      - description: Group ID
-        in: path
-        name: group_id
-        required: true
-        type: integer
-      - description: Account ID
-        in: path
-        name: account_id
-        required: true
-        type: integer
+      description: Retrieve all buildpacks the user has access to.
       produces:
       - application/json
       responses:
         "200":
-          description: answer
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/presenter.BuildpackResponse'
         "400":
-          description: ok
+          description: Bad Request
           schema:
-            type: string
+            items:
+              type: object
+            type: array
         "404":
-          description: ok
+          description: Not Found
           schema:
-            type: string
+            type: object
         "500":
-          description: ok
+          description: Internal Server Error
           schema:
-            type: string
-      summary: path params example
+            $ref: '#/definitions/controllers.HTTPError'
+      summary: Buildpacks List buildpacks
       tags:
-      - example
+      - Buildpacks
+  /buildpacks/{guid}:
+    get:
+      description: Retrieve all buildpacks the user has access to.
+      parameters:
+      - description: Buildpack GUID
+        in: path
+        name: guid
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/presenter.BuildpackResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controllers.HTTPError'
+        "404":
+          description: Not Found
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.HTTPError'
+      summary: Show a buildpack
+      tags:
+      - Buildpacks
 securityDefinitions:
   ApiKeyAuth:
     in: header

@@ -97,15 +97,20 @@ func CreateAPIDocs() error {
 	if err != nil {
 		return fmt.Errorf("failed to create symlink: %+v", err)
 	}
+	// Delete it after everything finished
+	defer delSymLink(symlinkPath)
 
 	// Generate Doc
 	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
 		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
 	}
-	if err :=  sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal"); err != nil {
+	if err :=  sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
 		return fmt.Errorf("failed to run swagger generation: %+v", err)
 	}
+	return nil
+}
 
+func delSymLink(symlinkPath string) error {
 	// Remove Symlink after generation
 	if _, err := os.Lstat(symlinkPath); err == nil {
 		if err := os.Remove(symlinkPath); err != nil {
@@ -114,7 +119,6 @@ func CreateAPIDocs() error {
 	} else if os.IsNotExist(err) {
 		return fmt.Errorf("failed to check symlink: %+v", err)
 	}
-
 	return nil
 }
 
