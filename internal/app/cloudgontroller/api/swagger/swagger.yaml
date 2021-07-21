@@ -1,0 +1,18 @@
+basePath: /api/v3
+host: localhost:8080
+info:
+  contact: {}
+  description: CAPI V3 Compatible API with blazing fast backend.
+  title: CloudGontroller API
+  version: 3.0.0
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+swagger: "2.0"
+x-extension-openapi:
+  example: value on a json format

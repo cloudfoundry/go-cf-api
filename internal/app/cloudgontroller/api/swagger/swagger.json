@@ -1,0 +1,25 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "CAPI V3 Compatible API with blazing fast backend.",
+        "title": "CloudGontroller API",
+        "contact": {},
+        "version": "3.0.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v3",
+    "paths": {},
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        },
+        "BasicAuth": {
+            "type": "basic"
+        }
+    },
+    "x-extension-openapi": {
+        "example": "value on a json format"
+    }
+}

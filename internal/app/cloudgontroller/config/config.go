@@ -13,8 +13,8 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	"github.com/spf13/viper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
-	log "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging/enums"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
+	log "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/enums"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )

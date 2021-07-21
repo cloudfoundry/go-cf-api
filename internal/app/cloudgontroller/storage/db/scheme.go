@@ -5,8 +5,8 @@ import (
 	"embed"
 	"fmt"
 	migrate "github.com/rubenv/sql-migrate"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
 	"io/ioutil"
 )

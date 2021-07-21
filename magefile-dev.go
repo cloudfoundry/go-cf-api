@@ -87,10 +87,10 @@ func Build() error {
 
 // Generates the swagger apidoc spec that later is included into the go binary and served on a productive system.
 func CreateAPIDocs() error {
-	if err := sh.Rm("./swagger"); err != nil {
+	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
 		return err
 	}
-	return sh.Run("swag", "init", "-o", "./swagger", "--parseInternal", "--dir", "./cmd")
+	return sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--dir", "./cmd")
 }
 
 // Generates Godocs one can then set as a github page so devs can look at godocs in github
@@ -102,7 +102,7 @@ func CreateGoDocs() error {
 	if err := sh.Run("mkdir", "-p", "./docs"); err != nil {
 		return err
 	}
-	if err := sh.Run("godoc-static", "-site-name='Rocket Nine Labs Documentation'", "-site-description-file=./Readme.md", "-destination=./docs", "."); err != nil {
+	if err := sh.Run("godoc-static", "-site-name='CloudGontroller'", "-site-description-file=./Readme.md", "-destination=./docs", "."); err != nil {
 		return err
 	}
 	return sh.Rm("./docs/docs.zip")

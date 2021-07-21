@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 )

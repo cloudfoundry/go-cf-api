@@ -6,11 +6,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/api/v3/controllers"
+	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 )
 
 func RegisterV3Handlers(prefix string, e *echo.Echo) {
-	// Pilots
+	// Buildpacks
 	e.GET(fmt.Sprintf("%s/buildpacks", prefix), controllers.GetBuildpacks)
 }
 

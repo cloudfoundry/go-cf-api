@@ -8,12 +8,11 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
-	_ "github.tools.sap/cloudfoundry/cloudgontroller/swagger"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/api"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/metrics"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/storage/db"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/time/rate"
@@ -83,20 +82,12 @@ func RootFunc(cmd *cobra.Command, args []string) {
 	}
 }
 
-// @title Swagger Example API
-// @version 1.0
-// @description This is a sample server celler server.
-// @termsOfService http://swagger.io/terms/
-
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
-
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @title CloudGontroller API
+// @version 3.0.0
+// @description CAPI V3 Compatible API with blazing fast backend.
 
 // @host localhost:8080
-// @BasePath /api/v1
+// @BasePath /api/v3
 // @query.collection.format multi
 
 // @securityDefinitions.basic BasicAuth
@@ -104,27 +95,6 @@ func RootFunc(cmd *cobra.Command, args []string) {
 // @securityDefinitions.apikey ApiKeyAuth
 // @in header
 // @name Authorization
-
-// @securitydefinitions.oauth2.application OAuth2Application
-// @tokenUrl https://example.com/oauth/token
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.implicit OAuth2Implicit
-// @authorizationurl https://example.com/oauth/authorize
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.password OAuth2Password
-// @tokenUrl https://example.com/oauth/token
-// @scope.read Grants read access
-// @scope.write Grants write access
-// @scope.admin Grants read and write access to administrative information
-
-// @securitydefinitions.oauth2.accessCode OAuth2AccessCode
-// @tokenUrl https://example.com/oauth/token
-// @authorizationurl https://example.com/oauth/authorize
-// @scope.admin Grants read and write access to administrative information
 
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {

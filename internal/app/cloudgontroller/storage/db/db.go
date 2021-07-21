@@ -11,8 +11,8 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
 )
 

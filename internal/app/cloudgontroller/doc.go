@@ -16,7 +16,7 @@
 //     - application/json
 //
 // swagger:meta
-package cfapi
+package cloudgontroller
 
 // APIVersion shows this API's current version
 var APIVersion string

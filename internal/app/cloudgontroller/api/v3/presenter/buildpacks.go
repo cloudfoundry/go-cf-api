@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	psqlModels "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/sqlboiler/postgres"
+	psqlModels "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/postgres"
 )
 
 type BuildpackResponse struct {

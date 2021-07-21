@@ -12,10 +12,10 @@ import (
 
 	"github.com/creasty/defaults"
 	"github.com/golobby/repl/interpreter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/storage/db"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"

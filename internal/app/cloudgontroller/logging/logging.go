@@ -1,9 +1,9 @@
 package logging
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging/enums"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/enums"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
