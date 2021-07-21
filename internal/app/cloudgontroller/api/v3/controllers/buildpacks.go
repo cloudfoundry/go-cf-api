@@ -14,19 +14,19 @@ import (
 	"go.uber.org/zap"
 )
 
-// GetBuildpacks godoc
-// @Summary Show a account
-// @Description get string by ID
-// @ID get-string-by-int
-// @Accept  json
-// @Produce  json
-// @Param id path int true "Account ID"
-// @Success 200 {object} model.Account
-// @Header 200 {string} Token "qwerty"
-// @Failure 400,404 {object} httputil.HTTPError
-// @Failure 500 {object} httputil.HTTPError
-// @Failure default {object} httputil.DefaultError
-// @Router /accounts/{id} [get]
+// PathParamsExample godoc
+// @Summary path params example
+// @Description path params
+// @Tags example
+// @Accept json
+// @Produce json
+// @Param group_id path int true "Group ID"
+// @Param account_id path int true "Account ID"
+// @Success 200 {string} string "answer"
+// @Failure 400 {string} string "ok"
+// @Failure 404 {string} string "ok"
+// @Failure 500 {string} string "ok"
+// @Router /buildpacks [get]
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
 

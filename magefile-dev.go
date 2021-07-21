@@ -3,6 +3,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/magefile/mage/sh"
@@ -87,10 +89,33 @@ func Build() error {
 
 // Generates the swagger apidoc spec that later is included into the go binary and served on a productive system.
 func CreateAPIDocs() error {
-	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
-		return err
+	symlinkPath := "./main.go"
+	filePath := "./cmd/main.go"
+
+	// Create symlink main.go in root
+	err := os.Symlink(filePath, symlinkPath)
+	if err != nil {
+		return fmt.Errorf("failed to create symlink: %+v", err)
 	}
-	return sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--dir", "./cmd")
+
+	// Generate Doc
+	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
+		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
+	}
+	if err :=  sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal"); err != nil {
+		return fmt.Errorf("failed to run swagger generation: %+v", err)
+	}
+
+	// Remove Symlink after generation
+	if _, err := os.Lstat(symlinkPath); err == nil {
+		if err := os.Remove(symlinkPath); err != nil {
+			return fmt.Errorf("failed to unlink: %+v", err)
+		}
+	} else if os.IsNotExist(err) {
+		return fmt.Errorf("failed to check symlink: %+v", err)
+	}
+
+	return nil
 }
 
 // Generates Godocs one can then set as a github page so devs can look at godocs in github

@@ -5,7 +5,45 @@ info:
   description: CAPI V3 Compatible API with blazing fast backend.
   title: CloudGontroller API
   version: 3.0.0
-paths: {}
+paths:
+  /buildpacks:
+    get:
+      consumes:
+      - application/json
+      description: path params
+      parameters:
+      - description: Group ID
+        in: path
+        name: group_id
+        required: true
+        type: integer
+      - description: Account ID
+        in: path
+        name: account_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: answer
+          schema:
+            type: string
+        "400":
+          description: ok
+          schema:
+            type: string
+        "404":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: ok
+          schema:
+            type: string
+      summary: path params example
+      tags:
+      - example
 securityDefinitions:
   ApiKeyAuth:
     in: header
