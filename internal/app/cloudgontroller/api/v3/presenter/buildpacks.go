@@ -29,21 +29,6 @@ type BuildpackResponse struct {
 	} `json:"links"`
 }
 
-func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*BuildpackResponse {
-	out := []*BuildpackResponse{}
-	for _, buildpack := range buildpacks {
-		buildpackresp := BuildpackResponse{
-			Guid:       buildpack.GUID,
-			Created_at: buildpack.CreatedAt,
-			Name:       buildpack.Name,
-			Position:   buildpack.Position,
-		}
-		out = append(out, &buildpackresp)
-	}
-
-	return out
-}
-
 func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse {
 	return &BuildpackResponse{
 		Guid:       buildpack.GUID,
@@ -51,4 +36,13 @@ func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse
 		Name:       buildpack.Name,
 		Position:   buildpack.Position,
 	}
+}
+
+func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*BuildpackResponse {
+	out := []*BuildpackResponse{}
+	for _, buildpack := range buildpacks {
+		buildpackresp := BuildpackResponseObject(buildpack)
+		out = append(out, buildpackresp)
+	}
+	return out
 }

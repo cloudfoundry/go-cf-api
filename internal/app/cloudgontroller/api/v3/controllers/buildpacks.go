@@ -42,6 +42,7 @@ func GetBuildpacks(c echo.Context) error {
 // @Summary Show a buildpack
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
+
 	db := db.GetConnection()
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
