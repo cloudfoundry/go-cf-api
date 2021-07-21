@@ -103,6 +103,9 @@
 			
 			
 				
+				<dd><a href="#GetBuildpack">func GetBuildpack(c echo.Context) error</a></dd>
+			
+				
 				<dd><a href="#GetBuildpacks">func GetBuildpacks(c echo.Context) error</a></dd>
 			
 			
@@ -132,7 +135,28 @@
 		
 			
 			
-			<h2 id="GetBuildpacks">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=1017:1057#L20">GetBuildpacks</a>
+			<h2 id="GetBuildpack">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=1340:1379#L30">GetBuildpack</a>
+				<a class="permalink" href="#GetBuildpack">¶</a>
+				
+				
+			</h2>
+			<pre>func GetBuildpack(c echo.<a href="#Context">Context</a>) <a href="../../../../../../../../../builtin/#error">error</a></pre>
+			<p>
+GetBuildpack godoc
+@Summary Get a buildpack
+@Param guid path string true &#34;Unique identifier for the buildpack&#34;
+@Produce json
+@Success 200
+@Router /buildpacks/{guid} [get]
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetBuildpacks">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=758:798#L13">GetBuildpacks</a>
 				<a class="permalink" href="#GetBuildpacks">¶</a>
 				
 				
@@ -140,18 +164,11 @@
 			<pre>func GetBuildpacks(c echo.<a href="#Context">Context</a>) <a href="../../../../../../../../../builtin/#error">error</a></pre>
 			<p>
 GetBuildpacks godoc
-@Summary Show a account
-@Description get string by ID
-@ID get-string-by-int
-@Accept  json
-@Produce  json
-@Param id path int true &#34;Account ID&#34;
-@Success 200 {object} model.Account
-@Header 200 {string} Token &#34;qwerty&#34;
-@Failure 400,404 {object} httputil.HTTPError
-@Failure 500 {object} httputil.HTTPError
-@Failure default {object} httputil.DefaultError
-@Router /accounts/{id} [get]
+@Summary List buildpacks
+@Description Retrieve all buildpacks the user has access to.
+@Produce json
+@Success 200
+@Router /buildpacks [get]
 </p>
 
 			

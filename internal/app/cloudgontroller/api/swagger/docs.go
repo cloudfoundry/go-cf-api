@@ -26,57 +26,36 @@ var doc = `{
     "paths": {
         "/buildpacks": {
             "get": {
-                "description": "path params",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Retrieve all buildpacks the user has access to.",
                 "produces": [
                     "application/json"
                 ],
-                "tags": [
-                    "example"
+                "summary": "List buildpacks",
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/buildpacks/{guid}": {
+            "get": {
+                "produces": [
+                    "application/json"
                 ],
-                "summary": "path params example",
+                "summary": "Get a buildpack",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "Group ID",
-                        "name": "group_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Account ID",
-                        "name": "account_id",
+                        "type": "string",
+                        "description": "Unique identifier for the buildpack",
+                        "name": "guid",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "answer",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": ""
                     }
                 }
             }

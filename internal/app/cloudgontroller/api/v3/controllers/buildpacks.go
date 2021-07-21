@@ -14,18 +14,11 @@ import (
 	"go.uber.org/zap"
 )
 
-// PathParamsExample godoc
-// @Summary path params example
-// @Description path params
-// @Tags example
-// @Accept json
+// GetBuildpacks godoc
+// @Summary List buildpacks
+// @Description Retrieve all buildpacks the user has access to.
 // @Produce json
-// @Param group_id path int true "Group ID"
-// @Param account_id path int true "Account ID"
-// @Success 200 {string} string "answer"
-// @Failure 400 {string} string "ok"
-// @Failure 404 {string} string "ok"
-// @Failure 500 {string} string "ok"
+// @Success 200
 // @Router /buildpacks [get]
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
@@ -39,7 +32,11 @@ func GetBuildpacks(c echo.Context) error {
 }
 
 // GetBuildpack godoc
-// @Summary Show a buildpack
+// @Summary Get a buildpack
+// @Param guid path string true "Unique identifier for the buildpack"
+// @Produce json
+// @Success 200
+// @Router /buildpacks/{guid} [get]
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 
