@@ -13,6 +13,7 @@ import (
 func RegisterV3Handlers(prefix string, e *echo.Echo) {
 	// Buildpacks
 	e.GET(fmt.Sprintf("%s/buildpacks", prefix), controllers.GetBuildpacks)
+	e.GET(fmt.Sprintf("%s/buildpacks/:guid", prefix), controllers.GetBuildpack)
 }
 
 func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {

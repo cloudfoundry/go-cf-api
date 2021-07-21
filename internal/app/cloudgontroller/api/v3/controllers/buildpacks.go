@@ -37,3 +37,17 @@ func GetBuildpacks(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks))
 }
+
+// GetBuildpack godoc
+// @Summary Show a buildpack
+func GetBuildpack(c echo.Context) error {
+	guid := c.Param("guid")
+	db := db.GetConnection()
+
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
+	buildpack, err := psqlModels.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
+	if err != nil {
+		zap.L().Error("Couldn't select", zap.Error(err))
+	}
+	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack))
+}
