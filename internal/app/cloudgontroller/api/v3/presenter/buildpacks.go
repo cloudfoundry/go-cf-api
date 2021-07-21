@@ -43,3 +43,12 @@ func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*Buildpack
 
 	return out
 }
+
+func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse {
+	return &BuildpackResponse{
+		Guid:       buildpack.GUID,
+		Created_at: buildpack.CreatedAt,
+		Name:       buildpack.Name,
+		Position:   buildpack.Position,
+	}
+}

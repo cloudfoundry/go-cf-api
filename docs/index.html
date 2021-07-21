@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#375EAB">
-<title>'Rocket Nine Labs Documentation'</title>
+<title>'CloudGontroller'</title>
 <link type="text/css" rel="stylesheet" href="lib/style.css">
 </head>
 <body>
@@ -14,8 +14,8 @@
 </div><!-- #lowframe -->
 
 <div id="topbar" class="wide"><div class="container">
-<div class="top-heading" id="heading-wide"><a href="">'Rocket Nine Labs Documentation'</a></div>
-<div class="top-heading" id="heading-narrow"><a href="">'Rocket Nine Labs Documentation'</a></div>
+<div class="top-heading" id="heading-wide"><a href="">'CloudGontroller'</a></div>
+<div class="top-heading" id="heading-narrow"><a href="">'CloudGontroller'</a></div>
 <!--<a href="#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>-->
 <div id="menu">
 <a href="" style="margin-right: 10px;">Package Index</a>
@@ -71,6 +71,30 @@
 </ul>
 </li>
 </ul>
+<h1>MVP</h1>
+<ul>
+<li>
+<p>Cloud Gontroller</p>
+<ul>
+<li>Implement two simple GET endpoints (accessible for all roles): GET /v3/buildpacks/:guid + GET /v3/buildpacks (incl. query parameters, e.g. page, per_page)</li>
+<li>Handle authentication (no roles)</li>
+<li>Add VCAP-Request-ID header</li>
+<li>Adhere to rate limits (authenticated + unauthenticated)</li>
+<li>Write logs (should show up in Kibana)</li>
+<li>Emit metrics (should show up in Grafana)</li>
+<li>100% test coverage, well-formatted code, no (severe) linting issues</li>
+</ul>
+</li>
+<li>
+<p>Product integration</p>
+<ul>
+<li>Create a BOSH release (Cloud Gontroller as submodule, incl. route-registrar)</li>
+<li>Add release to cf component</li>
+<li>Enable deployment via config option (+ scaling options)</li>
+<li>Routing done by Gorouter (list of supported endpoints as config option)</li>
+</ul>
+</li>
+</ul>
 
 <h1>
 	Packages
@@ -105,13 +129,6 @@
 
 		<tr>
 			<td class="pkg-name" style="padding-left: 60px;"><a href="github.tools.sap/cloudfoundry/cloudgontroller/cmd">cmd</a></td>
-			<td class="pkg-synopsis">
-				
-			</td>
-		</tr>
-
-		<tr>
-			<td class="pkg-name" style="padding-left: 60px;"><a href="github.tools.sap/cloudfoundry/cloudgontroller/swagger">swagger</a></td>
 			<td class="pkg-synopsis">
 				
 			</td>
