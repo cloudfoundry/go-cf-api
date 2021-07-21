@@ -19,6 +19,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"
+	"github.com/magefile/mage/sh"
 )
 
 //###################################//
@@ -115,6 +116,16 @@ func DBMigrate(configPath string) error {
 	logging.Setup(config)
 	db.NewConnection(config.DB, true)
 	db.Migrate(db.GetConnection())
+	return nil
+}
+
+// Load SQL file into the Database
+func DBLoad(configPath string, sqlFilePath string) error {
+	config := config.Get(configPath)
+	logging.Setup(config)
+	if err := sh.Run("psql", config.DB.ConnectionString, "-f", sqlFilePath); err != nil {
+		return err
+	}
 	return nil
 }
 

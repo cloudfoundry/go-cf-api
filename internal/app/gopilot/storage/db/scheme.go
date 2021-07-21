@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-
 	migrate "github.com/rubenv/sql-migrate"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers"
 	"go.uber.org/zap"
+	"io/ioutil"
 )
 
 //go:embed migrations
@@ -54,4 +54,14 @@ func Drop(db *sql.DB, info DBInfo) {
 	_, err := database.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
 	helpers.CheckErrFatal(err)
 	zap.L().Info(fmt.Sprintf("Sucessfully droped database %v", info.DatabaseName))
+}
+
+func Load(db *sql.DB, info DBInfo, sqlFilePath string) {
+	bytes, ioErr := ioutil.ReadFile(sqlFilePath)
+	if ioErr != nil {
+		zap.L().Error(fmt.Sprintf("Loading SQL file %s failed", sqlFilePath))
+	}
+	_, err := database.Exec(string(bytes))
+	helpers.CheckErrFatal(err)
+	zap.L().Info(fmt.Sprintf("Sucessfully loaded SQL file into database %v", info.DatabaseName))
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
-	_ "github.tools.sap/cloudfoundry/cloudgontroller/docs/swagger"
+	_ "github.tools.sap/cloudfoundry/cloudgontroller/swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/api"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging"
