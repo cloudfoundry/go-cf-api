@@ -66,7 +66,7 @@ func GenerateSQLBoiler() error {
 
 // Runs go mod download and then installs the binary.
 func Build() error {
-	if err := sh.Rm("./build/gopilot"); err != nil {
+	if err := sh.Rm("./build/cloudgontroller"); err != nil {
 		return err
 	}
 	if err := CreateAPIDocs(); err != nil {
@@ -78,7 +78,7 @@ func Build() error {
 	if err := sh.RunV("go", "install", "./..."); err != nil {
 		return err
 	}
-	return sh.RunV("go", "build", "-o", "build/gopilot", "cmd/main.go")
+	return sh.RunV("go", "build", "-o", "build/cloudgontroller", "cmd/main.go")
 }
 
 ///////////////////////////
@@ -87,25 +87,25 @@ func Build() error {
 
 // Generates the swagger apidoc spec that later is included into the go binary and served on a productive system.
 func CreateAPIDocs() error {
-	if err := sh.Rm("./docs/swagger"); err != nil {
+	if err := sh.Rm("./swagger"); err != nil {
 		return err
 	}
-	return sh.Run("swag", "init", "-o", "./docs/swagger", "--parseInternal", "--dir", "./cmd")
+	return sh.Run("swag", "init", "-o", "./swagger", "--parseInternal", "--dir", "./cmd")
 }
 
 // Generates Godocs one can then set as a github page so devs can look at godocs in github
 func CreateGoDocs() error {
-	if err := sh.Rm("./docs/godocs"); err != nil {
+	if err := sh.Rm("./docs"); err != nil {
 		return err
 	}
 	time.Sleep(2 * time.Second)
-	if err := sh.Run("mkdir", "-p", "./docs/godocs"); err != nil {
+	if err := sh.Run("mkdir", "-p", "./docs"); err != nil {
 		return err
 	}
-	if err := sh.Run("godoc-static", "-site-name='Rocket Nine Labs Documentation'", "-site-description-file=./docs/description.md", "-destination=./docs/godocs", "."); err != nil {
+	if err := sh.Run("godoc-static", "-site-name='Rocket Nine Labs Documentation'", "-site-description-file=./Readme.md", "-destination=./docs", "."); err != nil {
 		return err
 	}
-	return sh.Rm("./docs/godocs/docs.zip")
+	return sh.Rm("./docs/docs.zip")
 }
 
 //////////

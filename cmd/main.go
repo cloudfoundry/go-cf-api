@@ -23,14 +23,14 @@ var (
 
 	// Cobra Flags
 	rootCmd = &cobra.Command{
-		Use:   "gopilot",
-		Short: "A example webserver that can be used as a bootstrap project",
+		Use:   "cloudgontroller",
+		Short: "POC implemetation of a CAPI V3 compatible golang webserver",
 		// Long: `GoPilot is a example webserver that can be useds as a bootstrap project.
 		// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,
 		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
 		// 		sqlboiler generated models from db structure, db schema creation and migration,
 		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
-		Example: "gopilot config.yaml",
+		Example: "cloudgontroller config.yaml",
 		Args:    cobra.MaximumNArgs(1),
 		Run:     RootFunc,
 	}
