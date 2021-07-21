@@ -43,3 +43,21 @@ For Deployment
   - Gorouter Routing Adaptions
   - CC Config
   - Promscraper
+
+
+# MVP
+
+- Cloud Gontroller
+  - Implement two simple GET endpoints (accessible for all roles): GET /v3/buildpacks/:guid + GET /v3/buildpacks (incl. query parameters, e.g. page, per_page)
+  - Handle authentication (no roles)
+  - Add VCAP-Request-ID header
+  - Adhere to rate limits (authenticated + unauthenticated)
+  - Write logs (should show up in Kibana)
+  - Emit metrics (should show up in Grafana)
+  - 100% test coverage, well-formatted code, no (severe) linting issues
+
+- Product integration
+  - Create a BOSH release (Cloud Gontroller as submodule, incl. route-registrar)
+  - Add release to cf component
+  - Enable deployment via config option (+ scaling options)
+  - Routing done by Gorouter (list of supported endpoints as config option)
