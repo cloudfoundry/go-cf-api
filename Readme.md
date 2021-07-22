@@ -3,13 +3,38 @@
 - Go 1.16 minimum: https://golang.org/dl/ (Install with GVM)
 - Mage (Makefile alternative in go): https://github.com/magefile/mage
 
-
 Install the rest of the used CLI Dependencies in this project
-```
+```bash
 mage InstallDeps
 ```
-
 All compile time dependencies will be downloaded when compiling (If you use the mage commands)
+
+## Preparing Dev Database
+
+To run cloudgontroller we need a propper ccdb.
+To do this we have a docker-compose file to create the DBs and sql dumps from a ccdb that one can execute to create a ccdb.
+
+```bash
+// Start Databases (Mariadb + Postgres)
+docker-compose -f docker-compose-dev.yaml up -d 
+// Create Database (Just implemented for Postgres Currently)
+mage DBLoad config.yaml database_dumps/3.102.0_postgres_ccdb.sql
+mage DBLoad config.yaml database_dumps/buildpacks_table_pgdump_aws_staging.sql
+```
+
+## Starting It
+Simly
+```bash
+go run cmd/main.go config.yaml
+```
+is sufficient
+
+There is also a mage command which outputs a binary file. 
+It will also run every code/doc/apidoc generator we have beforehand and then use
+go build to produce a binary in the `build` folder.
+```bash
+mage build
+```
 
 # Existing Features
 - Structured Logging

@@ -30,9 +30,28 @@
 <li>Mage (Makefile alternative in go): <a href="https://github.com/magefile/mage">https://github.com/magefile/mage</a></li>
 </ul>
 <p>Install the rest of the used CLI Dependencies in this project</p>
-<pre><code>mage InstallDeps
+<pre><code class="language-bash">mage InstallDeps
 </code></pre>
 <p>All compile time dependencies will be downloaded when compiling (If you use the mage commands)</p>
+<h2>Preparing Dev Database</h2>
+<p>To run cloudgontroller we need a propper ccdb.
+To do this we have a docker-compose file to create the DBs and sql dumps from a ccdb that one can execute to create a ccdb.</p>
+<pre><code class="language-bash">// Start Databases (Mariadb + Postgres)
+docker-compose -f docker-compose-dev.yaml up -d 
+// Create Database (Just implemented for Postgres Currently)
+mage DBLoad config.yaml database_dumps/3.102.0_postgres_ccdb.sql
+mage DBLoad config.yaml database_dumps/buildpacks_table_pgdump_aws_staging.sql
+</code></pre>
+<h2>Starting It</h2>
+<p>Simly</p>
+<pre><code class="language-bash">go run cmd/main.go config.yaml
+</code></pre>
+<p>is sufficient</p>
+<p>There is also a mage command which outputs a binary file.
+It will also run every code/doc/apidoc generator we have beforehand and then use
+go build to produce a binary in the <code>build</code> folder.</p>
+<pre><code class="language-bash">mage build
+</code></pre>
 <h1>Existing Features</h1>
 <ul>
 <li>Structured Logging</li>

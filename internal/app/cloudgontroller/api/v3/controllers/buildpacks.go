@@ -20,7 +20,7 @@ import (
 // @Tags Buildpacks
 // @Accept json
 // @Produce json
-// @Success 200 {object} presenter.BuildpackResponse
+// @Success 200 {object} []presenter.BuildpackResponse
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} HTTPError

@@ -66,12 +66,12 @@ func GenerateSQLBoiler() error {
 // Software Building //
 ///////////////////////
 
-// Runs go mod download and then installs the binary.
+// Runs all generators we have and builds a binary.
 func Build() error {
 	if err := sh.Rm("./build/cloudgontroller"); err != nil {
 		return err
 	}
-	if err := CreateAPIDocs(); err != nil {
+	if err := Generate(); err != nil {
 		return err
 	}
 	if err := sh.RunV("go", "mod", "download"); err != nil {
@@ -83,12 +83,31 @@ func Build() error {
 	return sh.RunV("go", "build", "-o", "build/cloudgontroller", "cmd/main.go")
 }
 
+// Runs generators whose result is included in cloudgontroller and runs cloudgontroller.
+func Run() error {
+	if err := createAPIDocs(); err != nil {
+		return err
+	}
+	return sh.RunV("go", "run", "cmd/main.go", "config.yaml")
+}
+
 ///////////////////////////
 // DOCUMENTATION HELPERS //
 ///////////////////////////
 
+// Runs all the generators we have that produce code/docs etc.
+func Generate() error {
+	if err := createAPIDocs(); err != nil {
+		return err
+	}
+	if err := createGoDocs(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // Generates the swagger apidoc spec that later is included into the go binary and served on a productive system.
-func CreateAPIDocs() error {
+func createAPIDocs() error {
 	symlinkPath := "./main.go"
 	filePath := "./cmd/main.go"
 
@@ -123,7 +142,7 @@ func delSymLink(symlinkPath string) error {
 }
 
 // Generates Godocs one can then set as a github page so devs can look at godocs in github
-func CreateGoDocs() error {
+func createGoDocs() error {
 	if err := sh.Rm("./docs"); err != nil {
 		return err
 	}

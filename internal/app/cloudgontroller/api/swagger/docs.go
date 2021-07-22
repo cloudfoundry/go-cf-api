@@ -41,7 +41,10 @@ var doc = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/presenter.BuildpackResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/presenter.BuildpackResponse"
+                            }
                         }
                     },
                     "400": {
