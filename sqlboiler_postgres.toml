@@ -1,4 +1,4 @@
-output   = "internal/app/gopilot/sqlboiler/postgres"
+output   = "internal/app/cloudgontroller/sqlboiler/postgres"
 wipe     = true
 no-test  = false
 package  = "postgres"

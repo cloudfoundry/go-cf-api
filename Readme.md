@@ -1,4 +1,4 @@
-# Gopilot Webserver
+# cloudgontroller Webserver
 ## Prerequisits
 - Go 1.16 minimum: https://golang.org/dl/ (Install with GVM)
 - Mage (Makefile alternative in go): https://github.com/magefile/mage
@@ -35,6 +35,13 @@ go build to produce a binary in the `build` folder.
 ```bash
 mage build
 ```
+
+Once Running Access it e.g. with:
+
+http://localhost:8080/api/v3/buildpacks
+
+http://localhost:8080/docs/v3
+
 
 # Existing Features
 - Structured Logging

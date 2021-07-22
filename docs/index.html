@@ -23,7 +23,7 @@
 </div></div>
 <div id="page" class="wide">
 <div class="container">
-<h1>Gopilot Webserver</h1>
+<h1>cloudgontroller Webserver</h1>
 <h2>Prerequisits</h2>
 <ul>
 <li>Go 1.16 minimum: <a href="https://golang.org/dl/">https://golang.org/dl/</a> (Install with GVM)</li>
@@ -52,6 +52,9 @@ It will also run every code/doc/apidoc generator we have beforehand and then use
 go build to produce a binary in the <code>build</code> folder.</p>
 <pre><code class="language-bash">mage build
 </code></pre>
+<p>Once Running Access it e.g. with:</p>
+<p>http://localhost:8080/api/v3/buildpacks</p>
+<p>http://localhost:8080/docs/v3</p>
 <h1>Existing Features</h1>
 <ul>
 <li>Structured Logging</li>

@@ -104,22 +104,22 @@
 			
 			
 				
-				<dd><a href="#DBConfig">type DBConfig</a></dd>
+				<dd><a href="#CloudgontrollerConfig">type CloudgontrollerConfig</a></dd>
 				
+					
+					<dd>    <a href="#Get">func Get(params ...string) *CloudgontrollerConfig</a></dd>
+				
+				
+					
+					<dd>    <a href="#CloudgontrollerConfig.SetDefaults">func (s *CloudgontrollerConfig) SetDefaults()</a></dd>
+				
+					
+					<dd>    <a href="#CloudgontrollerConfig.Validate">func (s *CloudgontrollerConfig) Validate() error</a></dd>
 				
 			
 				
-				<dd><a href="#GopilotConfig">type GopilotConfig</a></dd>
+				<dd><a href="#DBConfig">type DBConfig</a></dd>
 				
-					
-					<dd>    <a href="#Get">func Get(params ...string) *GopilotConfig</a></dd>
-				
-				
-					
-					<dd>    <a href="#GopilotConfig.SetDefaults">func (s *GopilotConfig) SetDefaults()</a></dd>
-				
-					
-					<dd>    <a href="#GopilotConfig.Validate">func (s *GopilotConfig) Validate() error</a></dd>
 				
 			
 				
@@ -159,7 +159,83 @@
 		
 			
 			
-			<h2 id="DBConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=692:1256#L22">DBConfig</a>
+			<h2 id="CloudgontrollerConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=535:714#L15">CloudgontrollerConfig</a>
+				<a class="permalink" href="#CloudgontrollerConfig">¶</a>
+				
+				
+			</h2>
+			
+			<pre>type CloudgontrollerConfig struct {
+<span id="CloudgontrollerConfig.Listen"></span>    Listen    <a href="../../../../../../../builtin/#string">string</a> `env:&#34;cloudgontroller_LISTEN&#34; default:&#34;localhost:8080&#34;`
+<span id="CloudgontrollerConfig.DB"></span>    DB        <a href="#DBConfig">DBConfig</a>
+<span id="CloudgontrollerConfig.Log"></span>    Log       <a href="#ZapConfig">ZapConfig</a>
+<span id="CloudgontrollerConfig.RateLimit"></span>    RateLimit <a href="#RateLimitConf">RateLimitConf</a>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="Get">func <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=2279:2328#L49">Get</a>
+					<a class="permalink" href="#Get">¶</a>
+					
+					
+				</h3>
+				<pre>func Get(params ...<a href="../../../../../../../builtin/#string">string</a>) *<a href="#CloudgontrollerConfig">CloudgontrollerConfig</a></pre>
+				<p>
+Parses the config once, otherwise just returns it
+Priority from lowest to highest: Default Values, Config File, Environment Variables
+After setting the Config in this order it is validated according to struct tags
+If validation is not succefull we have a invalid config and thus throw a FATAL
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="CloudgontrollerConfig.SetDefaults">func (*CloudgontrollerConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3308:3353#L81">SetDefaults</a>
+					<a class="permalink" href="#CloudgontrollerConfig.SetDefaults">¶</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="#CloudgontrollerConfig">CloudgontrollerConfig</a>) SetDefaults()</pre>
+				<p>
+SetDefaults implements defaults.Setter interface
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="CloudgontrollerConfig.Validate">func (*CloudgontrollerConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3632:3680#L87">Validate</a>
+					<a class="permalink" href="#CloudgontrollerConfig.Validate">¶</a>
+					
+					
+				</h3>
+				<pre>func (s *<a href="#CloudgontrollerConfig">CloudgontrollerConfig</a>) Validate() <a href="../../../../../../../builtin/#error">error</a></pre>
+				<p>
+We need to extend the validation function because of <a href="https://github.com/go-playground/validator/issues/782">https://github.com/go-playground/validator/issues/782</a>
+Otherwise users would not get a clue why their config did not validate (meaningless error message)
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="DBConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=716:1312#L22">DBConfig</a>
 				<a class="permalink" href="#DBConfig">¶</a>
 				
 				
@@ -169,10 +245,10 @@
     <span class="comment">// For connection string documentation see</span>
     <span class="comment">// Postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS</span>
     <span class="comment">// Mysql: https://github.com/go-sql-driver/mysql#dsn-data-source-name</span>
-<span id="DBConfig.ConnectionString"></span>    ConnectionString <a href="../../../../../../../builtin/#string">string</a> `env:&#34;GOPILOT_DB_CONNECTIONSTRING&#34; validate:&#34;required&#34;`
-<span id="DBConfig.Type"></span>    Type             <a href="../../../../../../../builtin/#string">string</a> `env:&#34;GOPILOT_DB_TYPE&#34; validate:&#34;required,oneof=postgres mysql&#34;`
-<span id="DBConfig.Create"></span>    Create           <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;GOPILOT_DB_CREATE&#34; default:&#34;true&#34;`
-<span id="DBConfig.Migrate"></span>    Migrate          <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;GOPILOT_DB_MIGRATE&#34; default:&#34;true&#34;`
+<span id="DBConfig.ConnectionString"></span>    ConnectionString <a href="../../../../../../../builtin/#string">string</a> `env:&#34;cloudgontroller_DB_CONNECTIONSTRING&#34; validate:&#34;required&#34;`
+<span id="DBConfig.Type"></span>    Type             <a href="../../../../../../../builtin/#string">string</a> `env:&#34;cloudgontroller_DB_TYPE&#34; validate:&#34;required,oneof=postgres mysql&#34;`
+<span id="DBConfig.Create"></span>    Create           <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;cloudgontroller_DB_CREATE&#34; default:&#34;true&#34;`
+<span id="DBConfig.Migrate"></span>    Migrate          <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;cloudgontroller_DB_MIGRATE&#34; default:&#34;true&#34;`
 <span id="DBConfig.Log"></span>    Log              <a href="#ZapConfig">ZapConfig</a>
 }
 </pre>
@@ -191,93 +267,17 @@
 		
 			
 			
-			<h2 id="GopilotConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=527:690#L15">GopilotConfig</a>
-				<a class="permalink" href="#GopilotConfig">¶</a>
-				
-				
-			</h2>
-			
-			<pre>type GopilotConfig struct {
-<span id="GopilotConfig.Listen"></span>    Listen    <a href="../../../../../../../builtin/#string">string</a> `env:&#34;GOPILOT_LISTEN&#34; default:&#34;localhost:8080&#34;`
-<span id="GopilotConfig.DB"></span>    DB        <a href="#DBConfig">DBConfig</a>
-<span id="GopilotConfig.Log"></span>    Log       <a href="#ZapConfig">ZapConfig</a>
-<span id="GopilotConfig.RateLimit"></span>    RateLimit <a href="#RateLimitConf">RateLimitConf</a>
-}
-</pre>
-
-			
-
-			
-
-			
-			
-			
-
-			
-				
-				<h3 id="Get">func <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=2175:2216#L49">Get</a>
-					<a class="permalink" href="#Get">¶</a>
-					
-					
-				</h3>
-				<pre>func Get(params ...<a href="../../../../../../../builtin/#string">string</a>) *<a href="#GopilotConfig">GopilotConfig</a></pre>
-				<p>
-Parses the config once, otherwise just returns it
-Priority from lowest to highest: Default Values, Config File, Environment Variables
-After setting the Config in this order it is validated according to struct tags
-If validation is not succefull we have a invalid config and thus throw a FATAL
-</p>
-
-				
-				
-			
-
-			
-				
-				<h3 id="GopilotConfig.SetDefaults">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3188:3225#L81">SetDefaults</a>
-					<a class="permalink" href="#GopilotConfig.SetDefaults">¶</a>
-					
-					
-				</h3>
-				<pre>func (s *<a href="#GopilotConfig">GopilotConfig</a>) SetDefaults()</pre>
-				<p>
-SetDefaults implements defaults.Setter interface
-</p>
-
-				
-				
-				
-			
-				
-				<h3 id="GopilotConfig.Validate">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3504:3544#L87">Validate</a>
-					<a class="permalink" href="#GopilotConfig.Validate">¶</a>
-					
-					
-				</h3>
-				<pre>func (s *<a href="#GopilotConfig">GopilotConfig</a>) Validate() <a href="../../../../../../../builtin/#error">error</a></pre>
-				<p>
-We need to extend the validation function because of <a href="https://github.com/go-playground/validator/issues/782">https://github.com/go-playground/validator/issues/782</a>
-Otherwise users would not get a clue why their config did not validate (meaningless error message)
-</p>
-
-				
-				
-				
-			
-		
-			
-			
-			<h2 id="RateLimitConf">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1477:1868#L38">RateLimitConf</a>
+			<h2 id="RateLimitConf">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1549:1972#L38">RateLimitConf</a>
 				<a class="permalink" href="#RateLimitConf">¶</a>
 				
 				
 			</h2>
 			
 			<pre>type RateLimitConf struct {
-<span id="RateLimitConf.Enabled"></span>    Enabled   <a href="../../../../../../../builtin/#bool">bool</a>          `env:&#34;GOPILOT_RATELIMIT_ENABLED&#34; default:&#34;true&#34;`
-<span id="RateLimitConf.Rate"></span>    Rate      <a href="../../../../../../../builtin/#int">int</a>           `env:&#34;GOPILOT_RATELIMIT_RATE&#34; validate:&#34;gte=0,lte=1000&#34; default:&#34;10&#34;`
-<span id="RateLimitConf.Burst"></span>    Burst     <a href="../../../../../../../builtin/#int">int</a>           `env:&#34;GOPILOT_RATELIMIT_BURST&#34; validate:&#34;gte=0,lte=1000&#34; default:&#34;20&#34;`
-<span id="RateLimitConf.ExpiresIn"></span>    ExpiresIn <a href="../../../../../../../time/">time</a>.<a href="../../../../../../../time/#Duration">Duration</a> `env:&#34;GOPILOT_RATELIMIT_EXPIRESIN&#34; default:&#34;180&#34;` <span class="comment">// Default in Seconds</span>
+<span id="RateLimitConf.Enabled"></span>    Enabled   <a href="../../../../../../../builtin/#bool">bool</a>          `env:&#34;cloudgontroller_RATELIMIT_ENABLED&#34; default:&#34;true&#34;`
+<span id="RateLimitConf.Rate"></span>    Rate      <a href="../../../../../../../builtin/#int">int</a>           `env:&#34;cloudgontroller_RATELIMIT_RATE&#34; validate:&#34;gte=0,lte=1000&#34; default:&#34;10&#34;`
+<span id="RateLimitConf.Burst"></span>    Burst     <a href="../../../../../../../builtin/#int">int</a>           `env:&#34;cloudgontroller_RATELIMIT_BURST&#34; validate:&#34;gte=0,lte=1000&#34; default:&#34;20&#34;`
+<span id="RateLimitConf.ExpiresIn"></span>    ExpiresIn <a href="../../../../../../../time/">time</a>.<a href="../../../../../../../time/#Duration">Duration</a> `env:&#34;cloudgontroller_RATELIMIT_EXPIRESIN&#34; default:&#34;180&#34;` <span class="comment">// Default in Seconds</span>
 }
 </pre>
 
@@ -295,15 +295,15 @@ Otherwise users would not get a clue why their config did not validate (meaningl
 		
 			
 			
-			<h2 id="ZapConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1258:1475#L33">ZapConfig</a>
+			<h2 id="ZapConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1314:1547#L33">ZapConfig</a>
 				<a class="permalink" href="#ZapConfig">¶</a>
 				
 				
 			</h2>
 			
 			<pre>type ZapConfig struct {
-<span id="ZapConfig.Level"></span>    Level      <a href="../../../../../../../builtin/#string">string</a> `env:&#34;GOPILOT_LOG_LEVEL&#34; validate:&#34;required,oneof=debug info warn error dpanic panic fatal&#34; default:&#34;info&#34;`
-<span id="ZapConfig.Production"></span>    Production <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;GOPILOT_LOG_PRODUCTION&#34; default:&#34;true&#34;`
+<span id="ZapConfig.Level"></span>    Level      <a href="../../../../../../../builtin/#string">string</a> `env:&#34;cloudgontroller_LOG_LEVEL&#34; validate:&#34;required,oneof=debug info warn error dpanic panic fatal&#34; default:&#34;info&#34;`
+<span id="ZapConfig.Production"></span>    Production <a href="../../../../../../../builtin/#bool">bool</a>   `env:&#34;cloudgontroller_LOG_PRODUCTION&#34; default:&#34;true&#34;`
 }
 </pre>
 

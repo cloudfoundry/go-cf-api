@@ -20,10 +20,10 @@ import (
 )
 
 var once sync.Once
-var config *GopilotConfig
+var config *CloudgontrollerConfig
 
-type GopilotConfig struct {
-	Listen      string `env:"GOPILOT_LISTEN" default:"localhost:8080"`
+type CloudgontrollerConfig struct {
+	Listen      string `env:"cloudgontroller_LISTEN" default:"localhost:8080"`
 	DB        DBConfig
 	Log       ZapConfig
 	RateLimit RateLimitConf
@@ -33,32 +33,32 @@ type DBConfig struct {
 	// For connection string documentation see
 	// Postgres: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
 	// Mysql: https://github.com/go-sql-driver/mysql#dsn-data-source-name
-	ConnectionString string `env:"GOPILOT_DB_CONNECTIONSTRING" validate:"required"`
-	Type             string `env:"GOPILOT_DB_TYPE" validate:"required,oneof=postgres mysql"`
-	Create           bool   `env:"GOPILOT_DB_CREATE" default:"true"`
-	Migrate          bool   `env:"GOPILOT_DB_MIGRATE" default:"true"`
+	ConnectionString string `env:"cloudgontroller_DB_CONNECTIONSTRING" validate:"required"`
+	Type             string `env:"cloudgontroller_DB_TYPE" validate:"required,oneof=postgres mysql"`
+	Create           bool   `env:"cloudgontroller_DB_CREATE" default:"true"`
+	Migrate          bool   `env:"cloudgontroller_DB_MIGRATE" default:"true"`
 	Log              ZapConfig
 }
 
 type ZapConfig struct {
-	Level      string `env:"GOPILOT_LOG_LEVEL" validate:"required,oneof=debug info warn error dpanic panic fatal" default:"info"`
-	Production bool   `env:"GOPILOT_LOG_PRODUCTION" default:"true"`
+	Level      string `env:"cloudgontroller_LOG_LEVEL" validate:"required,oneof=debug info warn error dpanic panic fatal" default:"info"`
+	Production bool   `env:"cloudgontroller_LOG_PRODUCTION" default:"true"`
 }
 
 type RateLimitConf struct {
-	Enabled   bool          `env:"GOPILOT_RATELIMIT_ENABLED" default:"true"`
-	Rate      int           `env:"GOPILOT_RATELIMIT_RATE" validate:"gte=0,lte=1000" default:"10"`
-	Burst     int           `env:"GOPILOT_RATELIMIT_BURST" validate:"gte=0,lte=1000" default:"20"`
-	ExpiresIn time.Duration `env:"GOPILOT_RATELIMIT_EXPIRESIN" default:"180"` // Default in Seconds
+	Enabled   bool          `env:"cloudgontroller_RATELIMIT_ENABLED" default:"true"`
+	Rate      int           `env:"cloudgontroller_RATELIMIT_RATE" validate:"gte=0,lte=1000" default:"10"`
+	Burst     int           `env:"cloudgontroller_RATELIMIT_BURST" validate:"gte=0,lte=1000" default:"20"`
+	ExpiresIn time.Duration `env:"cloudgontroller_RATELIMIT_EXPIRESIN" default:"180"` // Default in Seconds
 }
 
 // Parses the config once, otherwise just returns it
 // Priority from lowest to highest: Default Values, Config File, Environment Variables
 // After setting the Config in this order it is validated according to struct tags
 // If validation is not succefull we have a invalid config and thus throw a FATAL
-func Get(params ...string) *GopilotConfig {
+func Get(params ...string) *CloudgontrollerConfig {
 	once.Do(func() {
-		tmp := &GopilotConfig{}
+		tmp := &CloudgontrollerConfig{}
 		// Default Values
 		helpers.CheckErrFatal(defaults.Set(tmp))
 		// If Config File is present, Parse it into a struct
@@ -88,13 +88,13 @@ func Get(params ...string) *GopilotConfig {
 }
 
 // SetDefaults implements defaults.Setter interface
-func (s *GopilotConfig) SetDefaults() {
+func (s *CloudgontrollerConfig) SetDefaults() {
 	s.RateLimit.ExpiresIn = s.RateLimit.ExpiresIn * time.Second
 }
 
 // We need to extend the validation function because of https://github.com/go-playground/validator/issues/782
 // Otherwise users would not get a clue why their config did not validate (meaningless error message)
-func (s *GopilotConfig) Validate() error {
+func (s *CloudgontrollerConfig) Validate() error {
 	// Check config with validator tags
 	if err := validator.New().Struct(s); err != nil {
 		fields := strings.Split(strings.Split(err.Error(), "'")[1], ".")

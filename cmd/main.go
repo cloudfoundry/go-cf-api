@@ -25,7 +25,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "cloudgontroller",
 		Short: "POC implemetation of a CAPI V3 compatible golang webserver",
-		// Long: `GoPilot is a example webserver that can be useds as a bootstrap project.
+		// Long: `cloudgontroller is a example webserver that can be useds as a bootstrap project.
 		// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,
 		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
 		// 		sqlboiler generated models from db structure, db schema creation and migration,
@@ -38,7 +38,7 @@ var (
 
 func RootFunc(cmd *cobra.Command, args []string) {
 	// Parse Config
-	var conf *config.GopilotConfig
+	var conf *config.CloudgontrollerConfig
 	if len(args) == 1 {
 		// Parse File and Env
 		conf = config.Get(args[0])

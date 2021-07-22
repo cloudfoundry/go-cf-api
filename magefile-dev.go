@@ -47,10 +47,10 @@ func InstallDeps() error {
 
 // Generates sql builerplate code from the specified Database in the config and places it in internal
 func GenerateSQLBoiler() error {
-	if err := sh.Rm("./internal/app/gopilot/sqlboiler/mysql"); err != nil {
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
 		return err
 	}
-	if err := sh.Rm("./internal/app/gopilot/sqlboiler/postgres"); err != nil {
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/postgres"); err != nil {
 		return err
 	}
 	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_postgres.toml"); err != nil {

@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func Setup(config *config.GopilotConfig) error {
+func Setup(config *config.CloudgontrollerConfig) error {
 	// Logging
 	var zapconf zap.Config
 	if config.Log.Production {

@@ -82,7 +82,7 @@
 <span id="L25" class="ln">    25  </span>	rootCmd = &amp;cobra.Command{
 <span id="L26" class="ln">    26  </span>		Use:   &#34;cloudgontroller&#34;,
 <span id="L27" class="ln">    27  </span>		Short: &#34;POC implemetation of a CAPI V3 compatible golang webserver&#34;,
-<span id="L28" class="ln">    28  </span>		<span class="comment">// Long: `GoPilot is a example webserver that can be useds as a bootstrap project.</span>
+<span id="L28" class="ln">    28  </span>		<span class="comment">// Long: `cloudgontroller is a example webserver that can be useds as a bootstrap project.</span>
 <span id="L29" class="ln">    29  </span>		<span class="comment">// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,</span>
 <span id="L30" class="ln">    30  </span>		<span class="comment">// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,</span>
 <span id="L31" class="ln">    31  </span>		<span class="comment">// 		sqlboiler generated models from db structure, db schema creation and migration,</span>
@@ -95,7 +95,7 @@
 <span id="L38" class="ln">    38  </span>
 <span id="L39" class="ln">    39  </span>func RootFunc(cmd *cobra.Command, args []string) {
 <span id="L40" class="ln">    40  </span>	<span class="comment">// Parse Config</span>
-<span id="L41" class="ln">    41  </span>	var conf *config.GopilotConfig
+<span id="L41" class="ln">    41  </span>	var conf *config.CloudgontrollerConfig
 <span id="L42" class="ln">    42  </span>	if len(args) == 1 {
 <span id="L43" class="ln">    43  </span>		<span class="comment">// Parse File and Env</span>
 <span id="L44" class="ln">    44  </span>		conf = config.Get(args[0])

@@ -67,10 +67,10 @@ func Console() error {
 	_, err = currentInterpreter.Eval(":e 1")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/helpers\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers\"")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/gopilot/logging\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging\"")
 	helpers.CheckErrFatal(err)
 
 	p := prompt.New(handler, completer, prompt.OptionPrefix("console> "))
@@ -137,7 +137,7 @@ func DBPerfSeed() error {
 
 // Generate a config file with default values
 func GenerateDefaultConfig(configPath string) error {
-	tmp := &config.GopilotConfig{}
+	tmp := &config.CloudgontrollerConfig{}
 	err := defaults.Set(tmp)
 	helpers.CheckErrFatal(err)
 	data, err := yaml.Marshal(tmp)

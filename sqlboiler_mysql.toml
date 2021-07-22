@@ -1,4 +1,4 @@
-output   = "internal/app/gopilot/sqlboiler/mysql"
+output   = "internal/app/cloudgontroller/sqlboiler/mysql"
 wipe     = true
 no-test  = false
 package  = "mysql"
