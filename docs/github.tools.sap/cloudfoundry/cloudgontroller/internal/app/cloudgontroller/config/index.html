@@ -159,7 +159,7 @@
 		
 			
 			
-			<h2 id="DBConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=711:1275#L22">DBConfig</a>
+			<h2 id="DBConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=692:1256#L22">DBConfig</a>
 				<a class="permalink" href="#DBConfig">¶</a>
 				
 				
@@ -191,14 +191,14 @@
 		
 			
 			
-			<h2 id="GopilotConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=527:709#L15">GopilotConfig</a>
+			<h2 id="GopilotConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=527:690#L15">GopilotConfig</a>
 				<a class="permalink" href="#GopilotConfig">¶</a>
 				
 				
 			</h2>
 			
 			<pre>type GopilotConfig struct {
-<span id="GopilotConfig.Port"></span>    Port      <a href="../../../../../../../builtin/#int">int</a> `env:&#34;GOPILOT_PORT&#34; validate:&#34;required,gte=0,lte=65535&#34; default:&#34;8080&#34;`
+<span id="GopilotConfig.Listen"></span>    Listen    <a href="../../../../../../../builtin/#string">string</a> `env:&#34;GOPILOT_LISTEN&#34; default:&#34;localhost:8080&#34;`
 <span id="GopilotConfig.DB"></span>    DB        <a href="#DBConfig">DBConfig</a>
 <span id="GopilotConfig.Log"></span>    Log       <a href="#ZapConfig">ZapConfig</a>
 <span id="GopilotConfig.RateLimit"></span>    RateLimit <a href="#RateLimitConf">RateLimitConf</a>
@@ -215,7 +215,7 @@
 
 			
 				
-				<h3 id="Get">func <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=2194:2235#L49">Get</a>
+				<h3 id="Get">func <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=2175:2216#L49">Get</a>
 					<a class="permalink" href="#Get">¶</a>
 					
 					
@@ -234,7 +234,7 @@ If validation is not succefull we have a invalid config and thus throw a FATAL
 
 			
 				
-				<h3 id="GopilotConfig.SetDefaults">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3207:3244#L81">SetDefaults</a>
+				<h3 id="GopilotConfig.SetDefaults">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3188:3225#L81">SetDefaults</a>
 					<a class="permalink" href="#GopilotConfig.SetDefaults">¶</a>
 					
 					
@@ -249,7 +249,7 @@ SetDefaults implements defaults.Setter interface
 				
 			
 				
-				<h3 id="GopilotConfig.Validate">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3523:3563#L87">Validate</a>
+				<h3 id="GopilotConfig.Validate">func (*GopilotConfig) <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=3504:3544#L87">Validate</a>
 					<a class="permalink" href="#GopilotConfig.Validate">¶</a>
 					
 					
@@ -267,7 +267,7 @@ Otherwise users would not get a clue why their config did not validate (meaningl
 		
 			
 			
-			<h2 id="RateLimitConf">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1496:1887#L38">RateLimitConf</a>
+			<h2 id="RateLimitConf">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1477:1868#L38">RateLimitConf</a>
 				<a class="permalink" href="#RateLimitConf">¶</a>
 				
 				
@@ -295,7 +295,7 @@ Otherwise users would not get a clue why their config did not validate (meaningl
 		
 			
 			
-			<h2 id="ZapConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1277:1494#L33">ZapConfig</a>
+			<h2 id="ZapConfig">type <a href="../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/config.go.html?s=1258:1475#L33">ZapConfig</a>
 				<a class="permalink" href="#ZapConfig">¶</a>
 				
 				

@@ -129,14 +129,14 @@
 <span id="L72" class="ln">    72  </span>
 <span id="L73" class="ln">    73  </span>	<span class="comment">// Start to Serve</span>
 <span id="L74" class="ln">    74  </span>	lock := make(chan error)
-<span id="L75" class="ln">    75  </span>	go func(lock chan error) { lock &lt;- e.Start(fmt.Sprintf(&#34;:%v&#34;, conf.Port)) }(lock)
+<span id="L75" class="ln">    75  </span>	go func(lock chan error) { lock &lt;- e.Start(fmt.Sprintf(&#34;%v&#34;, conf.Listen)) }(lock)
 <span id="L76" class="ln">    76  </span>
 <span id="L77" class="ln">    77  </span>	time.Sleep(1 * time.Millisecond)
-<span id="L78" class="ln">    78  </span>	zap.L().Warn(&#34;application started without ssl/tls enabled&#34;)
+<span id="L78" class="ln">    78  </span>	zap.L().Warn(&#34;Application started without ssl/tls enabled&#34;)
 <span id="L79" class="ln">    79  </span>
 <span id="L80" class="ln">    80  </span>	err := &lt;-lock
 <span id="L81" class="ln">    81  </span>	if err != nil {
-<span id="L82" class="ln">    82  </span>		zap.L().Panic(&#34;failed to start application&#34;)
+<span id="L82" class="ln">    82  </span>		zap.L().Panic(&#34;failed to start application&#34;,zap.Error(err))
 <span id="L83" class="ln">    83  </span>	}
 <span id="L84" class="ln">    84  </span>}
 <span id="L85" class="ln">    85  </span>

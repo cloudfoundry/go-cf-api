@@ -108,6 +108,14 @@
 				
 				<dd><a href="#GetBuildpacks">func GetBuildpacks(c echo.Context) error</a></dd>
 			
+				
+				<dd><a href="#NewError">func NewError(c echo.Context, status int, err error)</a></dd>
+			
+			
+				
+				<dd><a href="#HTTPError">type HTTPError</a></dd>
+				
+				
 			
 			
 			</dl>
@@ -122,6 +130,8 @@
 			
 				<a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html">buildpacks.go</a>
 			
+				<a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/error.go.html">error.go</a>
+			
 			</span>
 			</p>
 		
@@ -135,7 +145,7 @@
 		
 			
 			
-			<h2 id="GetBuildpack">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=1340:1379#L30">GetBuildpack</a>
+			<h2 id="GetBuildpack">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=1824:1863#L43">GetBuildpack</a>
 				<a class="permalink" href="#GetBuildpack">¶</a>
 				
 				
@@ -143,10 +153,14 @@
 			<pre>func GetBuildpack(c echo.<a href="#Context">Context</a>) <a href="../../../../../../../../../builtin/#error">error</a></pre>
 			<p>
 GetBuildpack godoc
-@Summary Get a buildpack
-@Param guid path string true &#34;Unique identifier for the buildpack&#34;
-@Produce json
-@Success 200
+@Summary Show a buildpack
+@Description Retrieve all buildpacks the user has access to.
+@Tags Buildpacks
+@Param guid path string true &#34;Buildpack GUID&#34;
+@Success 200 {object} presenter.BuildpackResponse
+@Success 404 {object} interface{}
+@Failure 400 {object} HTTPError
+@Failure 500 {object} HTTPError
 @Router /buildpacks/{guid} [get]
 </p>
 
@@ -156,7 +170,7 @@ GetBuildpack godoc
 		
 			
 			
-			<h2 id="GetBuildpacks">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=758:798#L13">GetBuildpacks</a>
+			<h2 id="GetBuildpacks">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html?s=953:993#L18">GetBuildpacks</a>
 				<a class="permalink" href="#GetBuildpacks">¶</a>
 				
 				
@@ -164,10 +178,15 @@ GetBuildpack godoc
 			<pre>func GetBuildpacks(c echo.<a href="#Context">Context</a>) <a href="../../../../../../../../../builtin/#error">error</a></pre>
 			<p>
 GetBuildpacks godoc
-@Summary List buildpacks
+@Summary Buildpacks List buildpacks
 @Description Retrieve all buildpacks the user has access to.
+@Tags Buildpacks
+@Accept json
 @Produce json
-@Success 200
+@Success 200 {object} presenter.BuildpackResponse
+@Success 404 {object} interface{}
+@Failure 400 {object} []interface{}
+@Failure 500 {object} HTTPError
 @Router /buildpacks [get]
 </p>
 
@@ -175,6 +194,51 @@ GetBuildpacks godoc
 			
 
 		
+			
+			
+			<h2 id="NewError">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/error.go.html?s=106:158#L1">NewError</a>
+				<a class="permalink" href="#NewError">¶</a>
+				
+				
+			</h2>
+			<pre>func NewError(c echo.<a href="#Context">Context</a>, status <a href="../../../../../../../../../builtin/#int">int</a>, err <a href="../../../../../../../../../builtin/#error">error</a>)</pre>
+			<p>
+NewError Function to create an error object
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="HTTPError">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/error.go.html?s=300:431#L5">HTTPError</a>
+				<a class="permalink" href="#HTTPError">¶</a>
+				
+				
+			</h2>
+			<p>
+HTTPError Error Object Returned as json on error
+</p>
+
+			<pre>type HTTPError struct {
+<span id="HTTPError.Code"></span>    Code    <a href="../../../../../../../../../builtin/#int">int</a>    `json:&#34;code&#34; example:&#34;400&#34;`
+<span id="HTTPError.Message"></span>    Message <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;message&#34; example:&#34;status bad request&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
 		
 	
 
