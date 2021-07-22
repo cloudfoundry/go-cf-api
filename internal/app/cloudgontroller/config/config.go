@@ -23,7 +23,7 @@ var once sync.Once
 var config *GopilotConfig
 
 type GopilotConfig struct {
-	Port      int `env:"GOPILOT_PORT" validate:"required,gte=0,lte=65535" default:"8080"`
+	Listen      string `env:"GOPILOT_LISTEN" default:"localhost:8080"`
 	DB        DBConfig
 	Log       ZapConfig
 	RateLimit RateLimitConf

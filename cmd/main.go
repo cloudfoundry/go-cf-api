@@ -72,14 +72,14 @@ func RootFunc(cmd *cobra.Command, args []string) {
 
 	// Start to Serve
 	lock := make(chan error)
-	go func(lock chan error) { lock <- e.Start(fmt.Sprintf(":%v", conf.Port)) }(lock)
+	go func(lock chan error) { lock <- e.Start(fmt.Sprintf("%v", conf.Listen)) }(lock)
 
 	time.Sleep(1 * time.Millisecond)
-	zap.L().Warn("application started without ssl/tls enabled")
+	zap.L().Warn("Application started without ssl/tls enabled")
 
 	err := <-lock
 	if err != nil {
-		zap.L().Panic("failed to start application")
+		zap.L().Panic("failed to start application",zap.Error(err))
 	}
 }
 
