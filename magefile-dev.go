@@ -1,10 +1,13 @@
-//+build mage
+// +build mage
 
 package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/magefile/mage/sh"
@@ -57,6 +60,41 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml"); err != nil {
+		return err
+	}
+	// Append build tag "integration" to every generated file so we can use "go test -tag integration" to switch between unit and integration tests
+	r, _ := regexp.Compile(".*_test.go$")
+	err := filepath.Walk("./internal/app/cloudgontroller/sqlboiler",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			// Only Edit _test.go files
+			fi, err := os.Stat(path)
+			if err != nil {
+				return err
+			}
+			if fi.Mode().IsRegular() && r.MatchString(path) {
+				// Add build tag
+				var data []byte
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				data = append(data, []byte("// +build integration\n")...)
+				data = append(data, content...)
+				err = os.Remove(path)
+				if err != nil {
+					return err
+				}
+				err = ioutil.WriteFile(path, data,0644)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	if err != nil {
 		return err
 	}
 	return nil

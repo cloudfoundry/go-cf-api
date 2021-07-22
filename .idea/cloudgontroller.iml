@@ -2,7 +2,14 @@
 <module type="JAVA_MODULE" version="4">
   <component name="Go" enabled="true">
     <buildTags>
-      <option name="compiler" value="gccgo" />
+      <option name="compiler" value="gc" />
+      <option name="customFlags">
+        <array>
+          <option value="mage" />
+          <option value="unit" />
+          <option value="integration" />
+        </array>
+      </option>
     </buildTags>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">

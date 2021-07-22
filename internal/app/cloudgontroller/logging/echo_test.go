@@ -1,3 +1,5 @@
+// +build unit
+
 package logging_test
 
 import (
@@ -29,15 +31,23 @@ func TestZapLogger(t *testing.T) {
 	err := logging.NewEchoZapLogger(logger)(h)(c)
 
 	assert.Nil(t, err)
+	assert.Equal(t, 2, logs.Len())
 
-	logFields := logs.AllUntimed()[0].ContextMap()
+	logFieldsStart := logs.AllUntimed()[0].ContextMap()
+	assert.Equal(t, "example.com", logFieldsStart["host"])
+	assert.NotNil(t, logFieldsStart["time"])
+	assert.Equal(t, "GET /something", logFieldsStart["request"])
+	assert.NotNil(t, logFieldsStart["user_agent"])
 
-	assert.Equal(t, 1, logs.Len())
-	assert.Equal(t, int64(200), logFields["status"])
-	assert.NotNil(t, logFields["time"])
-	assert.Equal(t, "GET /something", logFields["request"])
-	assert.NotNil(t, logFields["host"])
-	assert.NotNil(t, logFields["size"])
+	logFieldsEnd := logs.AllUntimed()[1].ContextMap()
+	assert.Equal(t, "192.0.2.1", logFieldsEnd["remote_ip"])
+	assert.Equal(t, "example.com", logFieldsEnd["host"])
+	assert.NotNil(t, logFieldsEnd["time"])
+	assert.Equal(t, "GET /something", logFieldsEnd["request"])
+	assert.Equal(t, int64(200), logFieldsEnd["status"])
+	assert.Equal(t, int64(0), logFieldsEnd["size"])
+	assert.NotNil(t, logFieldsEnd["user_agent"])
+	assert.NotNil(t, logFieldsEnd["request_id"])
 }
 
 /*
