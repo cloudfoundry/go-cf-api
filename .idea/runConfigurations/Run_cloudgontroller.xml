@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run cloudgontroller" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="cloudgontroller" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="config.yaml" />
+    <kind value="FILE" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="./cmd/main.go" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run mage" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="cloudgontroller" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="help" />
+    <kind value="FILE" />
+    <package value="github.tools.sap/cloudfoundry/cloudgontroller" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/mage_output_file.go|$PROJECT_DIR$/magefile.go|$PROJECT_DIR$/magefile-dev.go|$PROJECT_DIR$/magefile-ops.go" />
+    <method v="2">
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Generate Mage go code" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="unit tests" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="cloudgontroller" />
+    <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-tags=unit" />
+    <envs>
+      <env name="PSQL_SSLMODE" value="disable" />
+      <env name="PSQL_USER" value="postgres" />
+      <env name="PSQL_HOST" value="localhost" />
+      <env name="PSQL_DBNAME" value="ccdb" />
+      <env name="PSQL_PASS" value="admin" />
+    </envs>
+    <kind value="DIRECTORY" />
+    <package value="github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/internal/" />
+    <framework value="gotest" />
+    <method v="2" />
+  </configuration>
+</component>
