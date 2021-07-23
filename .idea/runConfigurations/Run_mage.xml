@@ -2,6 +2,7 @@
   <configuration default="false" name="Run mage" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
+    <go_parameters value="-tags='mage'" />
     <parameters value="help" />
     <kind value="FILE" />
     <package value="github.tools.sap/cloudfoundry/cloudgontroller" />

@@ -2,13 +2,13 @@
 <module type="JAVA_MODULE" version="4">
   <component name="Go" enabled="true">
     <buildTags>
+      <option name="cgo" value="NO" />
       <option name="compiler" value="gc" />
       <option name="customFlags">
         <array>
           <option value="mage" />
           <option value="unit" />
           <option value="integration" />
-          <option value="ignore" />
         </array>
       </option>
     </buildTags>
