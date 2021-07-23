@@ -8,6 +8,7 @@
           <option value="mage" />
           <option value="unit" />
           <option value="integration" />
+          <option value="ignore" />
         </array>
       </option>
     </buildTags>

@@ -148,3 +148,5 @@ cmd/frontend/
 web/node_modules
 # Exclude REPL Console temp data
 .repl
+# Exclude Mage Generated File when debugging
+mage_output_file.go
