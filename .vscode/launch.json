@@ -1,0 +1,41 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run Cloud Controller",
+			"type": "go",
+			"request": "launch",
+			"mode": "debug",
+			"program": "${workspaceFolder}/cmd/main.go",
+			"args": [
+				"${workspaceFolder}/config.yaml"
+			]
+		},
+		{
+			"name": "Run Mage command",
+			"type": "go",
+			"request": "launch",
+			"mode": "debug",
+			"preLaunchTask": "run mage -keep",
+			"program": "${workspaceFolder}/mage_output_file.go",
+			"dlvFlags": [
+				"${workspaceFolder}/magefile.go",
+				"${workspaceFolder}/magefile-ops.go",
+				"${workspaceFolder}/magefile-dev.go"
+			],
+			"args": [
+				// e.g. "dbCreate"
+				"help"
+			],
+		},
+		{
+			"name": "Run integration tests in current file",
+			"type": "go",
+			"request": "launch",
+			"mode": "test",
+			"buildFlags": "-tags=integration",
+			"program": "${file}",
+			"envFile": "${workspaceFolder}/.vscode/integration-tests.env",
+		}
+	]
+}

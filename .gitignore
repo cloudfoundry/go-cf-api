@@ -124,6 +124,7 @@ fabric.properties
 
 ### vscode ###
 .vscode/*
+!.vscode/integration-tests.env
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
