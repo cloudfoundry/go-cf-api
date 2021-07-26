@@ -3,6 +3,8 @@
 package main
 
 import (
+	"github.com/magefile/mage/sh"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -19,7 +21,6 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"
-	"github.com/magefile/mage/sh"
 )
 
 //###################################//
@@ -123,15 +124,21 @@ func DBMigrate(configPath string) error {
 func DBLoad(configPath string, sqlFilePath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	if err := sh.Run("psql", config.DB.ConnectionString, "-f", sqlFilePath); err != nil {
-		return err
+	db.NewConnection(config.DB,false)
+	if db.GetConnectionInfo().Type == "postgres" {
+		if err := sh.RunV("psql", config.DB.ConnectionString, "-f", sqlFilePath); err != nil {
+			return err
+		}
+	} else if db.GetConnectionInfo().Type == "mysql" {
+		zap.L().Warn("Loading Mysql Dumps not yet implemented")
 	}
+
 	return nil
 }
 
 // Seeds the Database that is specified in the config file with a large number of entries for performance tests
 func DBPerfSeed() error {
-	fmt.Println("Not Yet Implemented")
+	zap.L().Warn("Not Yet Implemented")
 	return nil
 }
 

@@ -44,24 +44,33 @@ func Migrate(db *sql.DB) {
 	helpers.CheckErrFatal(err)
 }
 
-func Create(db *sql.DB, info DBInfo) {
+func Create(db *sql.DB, info DBInfo) error {
 	_, err := database.Exec(fmt.Sprintf("CREATE DATABASE %v", info.DatabaseName))
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return err
+	}
 	zap.L().Info(fmt.Sprintf("Sucessfully created database %v", info.DatabaseName))
+	return nil
 }
 
-func Drop(db *sql.DB, info DBInfo) {
+func Drop(db *sql.DB, info DBInfo) error {
 	_, err := database.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return err
+	}
 	zap.L().Info(fmt.Sprintf("Sucessfully droped database %v", info.DatabaseName))
+	return nil
 }
 
-func Load(db *sql.DB, info DBInfo, sqlFilePath string) {
+func Load(db *sql.DB, info DBInfo, sqlFilePath string) error {
 	bytes, ioErr := ioutil.ReadFile(sqlFilePath)
 	if ioErr != nil {
 		zap.L().Error(fmt.Sprintf("Loading SQL file %s failed", sqlFilePath))
 	}
 	_, err := database.Exec(string(bytes))
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return err
+	}
 	zap.L().Info(fmt.Sprintf("Sucessfully loaded SQL file into database %v", info.DatabaseName))
+	return nil
 }

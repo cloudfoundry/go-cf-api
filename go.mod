@@ -42,6 +42,7 @@ require (
 	github.com/volatiletech/sqlboiler/v4 v4.6.0
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/ziutek/mymysql v1.5.4 // indirect
+	gitlab.com/tslocum/godoc-static v0.1.8 // indirect
 	go.uber.org/zap v1.17.0
 	golang.org/x/crypto v0.0.0-20210616213533-5ff15b29337e // indirect
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect

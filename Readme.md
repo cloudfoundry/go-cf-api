@@ -16,10 +16,18 @@ To do this we have a docker-compose file to create the DBs and sql dumps from a 
 
 ```bash
 // Start Databases (Mariadb + Postgres)
-docker-compose -f docker-compose-dev.yaml up -d 
+docker compose -f docker-compose-dev.yaml up -d 
 // Create Database (Just implemented for Postgres Currently)
+// It is ok if psql cli reports insert errors (table already exists)
+mage DBCreate config.yaml
 mage DBLoad config.yaml database_dumps/3.102.0_postgres_ccdb.sql
 mage DBLoad config.yaml database_dumps/buildpacks_table_pgdump_aws_staging.sql
+```
+
+Other noteable operations on the db are
+```bash
+// Drop and Recreate DB
+mage DBRecreate
 ```
 
 ## Starting It

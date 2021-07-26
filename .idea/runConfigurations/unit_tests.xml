@@ -2,7 +2,6 @@
   <configuration default="false" name="unit tests" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags=unit" />
     <envs>
       <env name="PSQL_SSLMODE" value="disable" />
       <env name="PSQL_USER" value="postgres" />
