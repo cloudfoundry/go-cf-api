@@ -1,3 +1,4 @@
+![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/actions/workflows/unit-test.yml/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/actions/workflows/build-binaries.yml/badge.svg)
 # cloudgontroller Webserver
 ## Prerequisits
 - Go 1.16 minimum: https://golang.org/dl/ (Install with GVM)
@@ -16,7 +17,7 @@ To do this we have a docker-compose file to create the DBs and sql dumps from a 
 
 ```bash
 // Start Databases (Mariadb + Postgres)
-docker compose -f docker-compose-dev.yaml up -d 
+docker compose -f docker-compose-dev.yaml up -d
 // Create Database (Just implemented for Postgres Currently)
 // It is ok if psql cli reports insert errors (table already exists)
 mage DBCreate config_postgres.yaml
@@ -36,7 +37,7 @@ go run cmd/main.go config_postgres.yaml
 ```
 is sufficient
 
-There is also a mage command which outputs a binary file. 
+There is also a mage command which outputs a binary file.
 It will also run every code/doc/apidoc generator we have beforehand and then use
 go build to produce a binary in the `build` folder.
 ```bash
