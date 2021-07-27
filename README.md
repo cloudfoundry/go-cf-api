@@ -1,4 +1,4 @@
-![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/actions/workflows/unit-test.yml/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/actions/workflows/build-binaries.yml/badge.svg)
+![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 # cloudgontroller Webserver
 ## Prerequisits
 - Go 1.16 minimum: https://golang.org/dl/ (Install with GVM)
