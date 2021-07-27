@@ -9,14 +9,18 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-test:
+  build-binary:
     runs-on: [self-hosted, linux]
     strategy:
       matrix:
         db: [ 'postgres', 'mysql' ]
         os: [ 'linux', 'darwin' ]
         arch: [ 'amd64', '386' ]
-    name: Run unit tests for ${{ matrix.db }} target
+        exclude:
+        # exclude 386 on macOS
+        - os: darwin
+          arch: 386
+    name: Build binary for ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.db }} target
     steps:
       - uses: actions/checkout@v2
       - name: Setup go
