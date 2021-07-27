@@ -22,24 +22,24 @@ var (
 	_ = queries.Equal
 )
 
-func testFeatureFlags(t *testing.T) {
+func testGorpMigrations(t *testing.T) {
 	t.Parallel()
 
-	query := FeatureFlags()
+	query := GorpMigrations()
 
 	if query.Query == nil {
 		t.Error("expected a query, got nothing")
 	}
 }
 
-func testFeatureFlagsDelete(t *testing.T) {
+func testGorpMigrationsDelete(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -55,7 +55,7 @@ func testFeatureFlagsDelete(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -65,14 +65,14 @@ func testFeatureFlagsDelete(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsQueryDeleteAll(t *testing.T) {
+func testGorpMigrationsQueryDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -82,13 +82,13 @@ func testFeatureFlagsQueryDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	if rowsAff, err := FeatureFlags().DeleteAll(ctx, tx); err != nil {
+	if rowsAff, err := GorpMigrations().DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -98,14 +98,14 @@ func testFeatureFlagsQueryDeleteAll(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsSliceDeleteAll(t *testing.T) {
+func testGorpMigrationsSliceDeleteAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -115,7 +115,7 @@ func testFeatureFlagsSliceDeleteAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := FeatureFlagSlice{o}
+	slice := GorpMigrationSlice{o}
 
 	if rowsAff, err := slice.DeleteAll(ctx, tx); err != nil {
 		t.Error(err)
@@ -123,7 +123,7 @@ func testFeatureFlagsSliceDeleteAll(t *testing.T) {
 		t.Error("should only have deleted one row, but affected:", rowsAff)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -133,14 +133,14 @@ func testFeatureFlagsSliceDeleteAll(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsExists(t *testing.T) {
+func testGorpMigrationsExists(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -150,23 +150,23 @@ func testFeatureFlagsExists(t *testing.T) {
 		t.Error(err)
 	}
 
-	e, err := FeatureFlagExists(ctx, tx, o.ID)
+	e, err := GorpMigrationExists(ctx, tx, o.ID)
 	if err != nil {
-		t.Errorf("Unable to check if FeatureFlag exists: %s", err)
+		t.Errorf("Unable to check if GorpMigration exists: %s", err)
 	}
 	if !e {
-		t.Errorf("Expected FeatureFlagExists to return true, but got false.")
+		t.Errorf("Expected GorpMigrationExists to return true, but got false.")
 	}
 }
 
-func testFeatureFlagsFind(t *testing.T) {
+func testGorpMigrationsFind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -176,24 +176,24 @@ func testFeatureFlagsFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	featureFlagFound, err := FindFeatureFlag(ctx, tx, o.ID)
+	gorpMigrationFound, err := FindGorpMigration(ctx, tx, o.ID)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if featureFlagFound == nil {
+	if gorpMigrationFound == nil {
 		t.Error("want a record, got nil")
 	}
 }
 
-func testFeatureFlagsBind(t *testing.T) {
+func testGorpMigrationsBind(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -203,19 +203,19 @@ func testFeatureFlagsBind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = FeatureFlags().Bind(ctx, tx, o); err != nil {
+	if err = GorpMigrations().Bind(ctx, tx, o); err != nil {
 		t.Error(err)
 	}
 }
 
-func testFeatureFlagsOne(t *testing.T) {
+func testGorpMigrationsOne(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -225,38 +225,38 @@ func testFeatureFlagsOne(t *testing.T) {
 		t.Error(err)
 	}
 
-	if x, err := FeatureFlags().One(ctx, tx); err != nil {
+	if x, err := GorpMigrations().One(ctx, tx); err != nil {
 		t.Error(err)
 	} else if x == nil {
 		t.Error("expected to get a non nil record")
 	}
 }
 
-func testFeatureFlagsAll(t *testing.T) {
+func testGorpMigrationsAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	featureFlagOne := &FeatureFlag{}
-	featureFlagTwo := &FeatureFlag{}
-	if err = randomize.Struct(seed, featureFlagOne, featureFlagDBTypes, false, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	gorpMigrationOne := &GorpMigration{}
+	gorpMigrationTwo := &GorpMigration{}
+	if err = randomize.Struct(seed, gorpMigrationOne, gorpMigrationDBTypes, false, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
-	if err = randomize.Struct(seed, featureFlagTwo, featureFlagDBTypes, false, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	if err = randomize.Struct(seed, gorpMigrationTwo, gorpMigrationDBTypes, false, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = featureFlagOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = gorpMigrationOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = featureFlagTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = gorpMigrationTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	slice, err := FeatureFlags().All(ctx, tx)
+	slice, err := GorpMigrations().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -266,31 +266,31 @@ func testFeatureFlagsAll(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsCount(t *testing.T) {
+func testGorpMigrationsCount(t *testing.T) {
 	t.Parallel()
 
 	var err error
 	seed := randomize.NewSeed()
-	featureFlagOne := &FeatureFlag{}
-	featureFlagTwo := &FeatureFlag{}
-	if err = randomize.Struct(seed, featureFlagOne, featureFlagDBTypes, false, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	gorpMigrationOne := &GorpMigration{}
+	gorpMigrationTwo := &GorpMigration{}
+	if err = randomize.Struct(seed, gorpMigrationOne, gorpMigrationDBTypes, false, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
-	if err = randomize.Struct(seed, featureFlagTwo, featureFlagDBTypes, false, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	if err = randomize.Struct(seed, gorpMigrationTwo, gorpMigrationDBTypes, false, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = featureFlagOne.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = gorpMigrationOne.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
-	if err = featureFlagTwo.Insert(ctx, tx, boil.Infer()); err != nil {
+	if err = gorpMigrationTwo.Insert(ctx, tx, boil.Infer()); err != nil {
 		t.Error(err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -300,155 +300,155 @@ func testFeatureFlagsCount(t *testing.T) {
 	}
 }
 
-func featureFlagBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationBeforeInsertHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationAfterInsertHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationAfterSelectHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationBeforeUpdateHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationAfterUpdateHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationBeforeDeleteHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationAfterDeleteHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationBeforeUpsertHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func featureFlagAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *FeatureFlag) error {
-	*o = FeatureFlag{}
+func gorpMigrationAfterUpsertHook(ctx context.Context, e boil.ContextExecutor, o *GorpMigration) error {
+	*o = GorpMigration{}
 	return nil
 }
 
-func testFeatureFlagsHooks(t *testing.T) {
+func testGorpMigrationsHooks(t *testing.T) {
 	t.Parallel()
 
 	var err error
 
 	ctx := context.Background()
-	empty := &FeatureFlag{}
-	o := &FeatureFlag{}
+	empty := &GorpMigration{}
+	o := &GorpMigration{}
 
 	seed := randomize.NewSeed()
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag object: %s", err)
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize GorpMigration object: %s", err)
 	}
 
-	AddFeatureFlagHook(boil.BeforeInsertHook, featureFlagBeforeInsertHook)
+	AddGorpMigrationHook(boil.BeforeInsertHook, gorpMigrationBeforeInsertHook)
 	if err = o.doBeforeInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeInsertHook function to empty object, but got: %#v", o)
 	}
-	featureFlagBeforeInsertHooks = []FeatureFlagHook{}
+	gorpMigrationBeforeInsertHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.AfterInsertHook, featureFlagAfterInsertHook)
+	AddGorpMigrationHook(boil.AfterInsertHook, gorpMigrationAfterInsertHook)
 	if err = o.doAfterInsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterInsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterInsertHook function to empty object, but got: %#v", o)
 	}
-	featureFlagAfterInsertHooks = []FeatureFlagHook{}
+	gorpMigrationAfterInsertHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.AfterSelectHook, featureFlagAfterSelectHook)
+	AddGorpMigrationHook(boil.AfterSelectHook, gorpMigrationAfterSelectHook)
 	if err = o.doAfterSelectHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterSelectHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterSelectHook function to empty object, but got: %#v", o)
 	}
-	featureFlagAfterSelectHooks = []FeatureFlagHook{}
+	gorpMigrationAfterSelectHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.BeforeUpdateHook, featureFlagBeforeUpdateHook)
+	AddGorpMigrationHook(boil.BeforeUpdateHook, gorpMigrationBeforeUpdateHook)
 	if err = o.doBeforeUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpdateHook function to empty object, but got: %#v", o)
 	}
-	featureFlagBeforeUpdateHooks = []FeatureFlagHook{}
+	gorpMigrationBeforeUpdateHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.AfterUpdateHook, featureFlagAfterUpdateHook)
+	AddGorpMigrationHook(boil.AfterUpdateHook, gorpMigrationAfterUpdateHook)
 	if err = o.doAfterUpdateHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpdateHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpdateHook function to empty object, but got: %#v", o)
 	}
-	featureFlagAfterUpdateHooks = []FeatureFlagHook{}
+	gorpMigrationAfterUpdateHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.BeforeDeleteHook, featureFlagBeforeDeleteHook)
+	AddGorpMigrationHook(boil.BeforeDeleteHook, gorpMigrationBeforeDeleteHook)
 	if err = o.doBeforeDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeDeleteHook function to empty object, but got: %#v", o)
 	}
-	featureFlagBeforeDeleteHooks = []FeatureFlagHook{}
+	gorpMigrationBeforeDeleteHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.AfterDeleteHook, featureFlagAfterDeleteHook)
+	AddGorpMigrationHook(boil.AfterDeleteHook, gorpMigrationAfterDeleteHook)
 	if err = o.doAfterDeleteHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterDeleteHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterDeleteHook function to empty object, but got: %#v", o)
 	}
-	featureFlagAfterDeleteHooks = []FeatureFlagHook{}
+	gorpMigrationAfterDeleteHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.BeforeUpsertHook, featureFlagBeforeUpsertHook)
+	AddGorpMigrationHook(boil.BeforeUpsertHook, gorpMigrationBeforeUpsertHook)
 	if err = o.doBeforeUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doBeforeUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected BeforeUpsertHook function to empty object, but got: %#v", o)
 	}
-	featureFlagBeforeUpsertHooks = []FeatureFlagHook{}
+	gorpMigrationBeforeUpsertHooks = []GorpMigrationHook{}
 
-	AddFeatureFlagHook(boil.AfterUpsertHook, featureFlagAfterUpsertHook)
+	AddGorpMigrationHook(boil.AfterUpsertHook, gorpMigrationAfterUpsertHook)
 	if err = o.doAfterUpsertHooks(ctx, nil); err != nil {
 		t.Errorf("Unable to execute doAfterUpsertHooks: %s", err)
 	}
 	if !reflect.DeepEqual(o, empty) {
 		t.Errorf("Expected AfterUpsertHook function to empty object, but got: %#v", o)
 	}
-	featureFlagAfterUpsertHooks = []FeatureFlagHook{}
+	gorpMigrationAfterUpsertHooks = []GorpMigrationHook{}
 }
 
-func testFeatureFlagsInsert(t *testing.T) {
+func testGorpMigrationsInsert(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -458,7 +458,7 @@ func testFeatureFlagsInsert(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -468,24 +468,24 @@ func testFeatureFlagsInsert(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsInsertWhitelist(t *testing.T) {
+func testGorpMigrationsInsertWhitelist(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
-	if err = o.Insert(ctx, tx, boil.Whitelist(featureFlagColumnsWithoutDefault...)); err != nil {
+	if err = o.Insert(ctx, tx, boil.Whitelist(gorpMigrationColumnsWithoutDefault...)); err != nil {
 		t.Error(err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -495,14 +495,14 @@ func testFeatureFlagsInsertWhitelist(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsReload(t *testing.T) {
+func testGorpMigrationsReload(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -517,14 +517,14 @@ func testFeatureFlagsReload(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsReloadAll(t *testing.T) {
+func testGorpMigrationsReloadAll(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -534,21 +534,21 @@ func testFeatureFlagsReloadAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice := FeatureFlagSlice{o}
+	slice := GorpMigrationSlice{o}
 
 	if err = slice.ReloadAll(ctx, tx); err != nil {
 		t.Error(err)
 	}
 }
 
-func testFeatureFlagsSelect(t *testing.T) {
+func testGorpMigrationsSelect(t *testing.T) {
 	t.Parallel()
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -558,7 +558,7 @@ func testFeatureFlagsSelect(t *testing.T) {
 		t.Error(err)
 	}
 
-	slice, err := FeatureFlags().All(ctx, tx)
+	slice, err := GorpMigrations().All(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -569,25 +569,25 @@ func testFeatureFlagsSelect(t *testing.T) {
 }
 
 var (
-	featureFlagDBTypes = map[string]string{`ID`: `int`, `GUID`: `varchar`, `CreatedAt`: `timestamp`, `UpdatedAt`: `timestamp`, `Name`: `varchar`, `Enabled`: `tinyint`, `ErrorMessage`: `text`}
-	_                  = bytes.MinRead
+	gorpMigrationDBTypes = map[string]string{`ID`: `varchar`, `AppliedAt`: `datetime`}
+	_                    = bytes.MinRead
 )
 
-func testFeatureFlagsUpdate(t *testing.T) {
+func testGorpMigrationsUpdate(t *testing.T) {
 	t.Parallel()
 
-	if 0 == len(featureFlagPrimaryKeyColumns) {
+	if 0 == len(gorpMigrationPrimaryKeyColumns) {
 		t.Skip("Skipping table with no primary key columns")
 	}
-	if len(featureFlagAllColumns) == len(featureFlagPrimaryKeyColumns) {
+	if len(gorpMigrationAllColumns) == len(gorpMigrationPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -597,7 +597,7 @@ func testFeatureFlagsUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -606,8 +606,8 @@ func testFeatureFlagsUpdate(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	if rowsAff, err := o.Update(ctx, tx, boil.Infer()); err != nil {
@@ -617,18 +617,18 @@ func testFeatureFlagsUpdate(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsSliceUpdateAll(t *testing.T) {
+func testGorpMigrationsSliceUpdateAll(t *testing.T) {
 	t.Parallel()
 
-	if len(featureFlagAllColumns) == len(featureFlagPrimaryKeyColumns) {
+	if len(gorpMigrationAllColumns) == len(gorpMigrationPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
-	o := &FeatureFlag{}
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagColumnsWithDefault...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := &GorpMigration{}
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationColumnsWithDefault...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
@@ -638,7 +638,7 @@ func testFeatureFlagsSliceUpdateAll(t *testing.T) {
 		t.Error(err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -647,18 +647,18 @@ func testFeatureFlagsSliceUpdateAll(t *testing.T) {
 		t.Error("want one record, got:", count)
 	}
 
-	if err = randomize.Struct(seed, o, featureFlagDBTypes, true, featureFlagPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	if err = randomize.Struct(seed, o, gorpMigrationDBTypes, true, gorpMigrationPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	// Remove Primary keys and unique columns from what we plan to update
 	var fields []string
-	if strmangle.StringSliceMatch(featureFlagAllColumns, featureFlagPrimaryKeyColumns) {
-		fields = featureFlagAllColumns
+	if strmangle.StringSliceMatch(gorpMigrationAllColumns, gorpMigrationPrimaryKeyColumns) {
+		fields = gorpMigrationAllColumns
 	} else {
 		fields = strmangle.SetComplement(
-			featureFlagAllColumns,
-			featureFlagPrimaryKeyColumns,
+			gorpMigrationAllColumns,
+			gorpMigrationPrimaryKeyColumns,
 		)
 	}
 
@@ -676,7 +676,7 @@ func testFeatureFlagsSliceUpdateAll(t *testing.T) {
 		}
 	}
 
-	slice := FeatureFlagSlice{o}
+	slice := GorpMigrationSlice{o}
 	if rowsAff, err := slice.UpdateAll(ctx, tx, updateMap); err != nil {
 		t.Error(err)
 	} else if rowsAff != 1 {
@@ -684,32 +684,32 @@ func testFeatureFlagsSliceUpdateAll(t *testing.T) {
 	}
 }
 
-func testFeatureFlagsUpsert(t *testing.T) {
+func testGorpMigrationsUpsert(t *testing.T) {
 	t.Parallel()
 
-	if len(featureFlagAllColumns) == len(featureFlagPrimaryKeyColumns) {
+	if len(gorpMigrationAllColumns) == len(gorpMigrationPrimaryKeyColumns) {
 		t.Skip("Skipping table with only primary key columns")
 	}
-	if len(mySQLFeatureFlagUniqueColumns) == 0 {
+	if len(mySQLGorpMigrationUniqueColumns) == 0 {
 		t.Skip("Skipping table with no unique columns to conflict on")
 	}
 
 	seed := randomize.NewSeed()
 	var err error
 	// Attempt the INSERT side of an UPSERT
-	o := FeatureFlag{}
-	if err = randomize.Struct(seed, &o, featureFlagDBTypes, false); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	o := GorpMigration{}
+	if err = randomize.Struct(seed, &o, gorpMigrationDBTypes, false); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	ctx := context.Background()
 	tx := MustTx(boil.BeginTx(ctx, nil))
 	defer func() { _ = tx.Rollback() }()
 	if err = o.Upsert(ctx, tx, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert FeatureFlag: %s", err)
+		t.Errorf("Unable to upsert GorpMigration: %s", err)
 	}
 
-	count, err := FeatureFlags().Count(ctx, tx)
+	count, err := GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}
@@ -718,15 +718,15 @@ func testFeatureFlagsUpsert(t *testing.T) {
 	}
 
 	// Attempt the UPDATE side of an UPSERT
-	if err = randomize.Struct(seed, &o, featureFlagDBTypes, false, featureFlagPrimaryKeyColumns...); err != nil {
-		t.Errorf("Unable to randomize FeatureFlag struct: %s", err)
+	if err = randomize.Struct(seed, &o, gorpMigrationDBTypes, false, gorpMigrationPrimaryKeyColumns...); err != nil {
+		t.Errorf("Unable to randomize GorpMigration struct: %s", err)
 	}
 
 	if err = o.Upsert(ctx, tx, boil.Infer(), boil.Infer()); err != nil {
-		t.Errorf("Unable to upsert FeatureFlag: %s", err)
+		t.Errorf("Unable to upsert GorpMigration: %s", err)
 	}
 
-	count, err = FeatureFlags().Count(ctx, tx)
+	count, err = GorpMigrations().Count(ctx, tx)
 	if err != nil {
 		t.Error(err)
 	}

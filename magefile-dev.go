@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/magefile/mage/sh"
@@ -66,42 +67,16 @@ func GenerateSQLBoiler() error {
 			if err != nil {
 				return err
 			}
-			// Only Edit _test.go files
-			fi, err := os.Stat(path)
-			if err != nil {
-				return err
+			if info.IsDir() {
+				return nil
 			}
-			if fi.Mode().IsRegular() && r.MatchString(path) {
-				// Add build tag
-				var data []byte
-				content, err := ioutil.ReadFile(path)
+			if info.Mode().IsRegular() && r.MatchString(path) {
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"integration", "mysql"})
 				if err != nil {
 					return err
 				}
-				data = append(data, []byte("// +build integration mysql\n")...)
-				data = append(data, content...)
-				err = os.Remove(path)
-				if err != nil {
-					return err
-				}
-				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/mysql_%v",filepath.Base(path)), data,0644)
-				if err != nil {
-					return err
-				}
-			} else if fi.Mode().IsRegular() && !r.MatchString(path) {
-				// Add build tag
-				var data []byte
-				content, err := ioutil.ReadFile(path)
-				if err != nil {
-					return err
-				}
-				data = append(data, []byte("// +build mysql\n")...)
-				data = append(data, content...)
-				err = os.Remove(path)
-				if err != nil {
-					return err
-				}
-				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/mysql_%v",filepath.Base(path)), data,0644)
+			} else if info.Mode().IsRegular() && !r.MatchString(path) {
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql"})
 				if err != nil {
 					return err
 				}
@@ -116,42 +91,16 @@ func GenerateSQLBoiler() error {
 			if err != nil {
 				return err
 			}
-			// Only Edit _test.go files
-			fi, err := os.Stat(path)
-			if err != nil {
-				return err
+			if info.IsDir() {
+				return nil
 			}
-			if fi.Mode().IsRegular() && r.MatchString(path) {
-				// Add build tag
-				var data []byte
-				content, err := ioutil.ReadFile(path)
+			if info.Mode().IsRegular() && r.MatchString(path) {
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/postgres_", []string{"integration", "postgres"})
 				if err != nil {
 					return err
 				}
-				data = append(data, []byte("// +build integration postgres\n")...)
-				data = append(data, content...)
-				err = os.Remove(path)
-				if err != nil {
-					return err
-				}
-				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/postgres_%v",filepath.Base(path)), data,0644)
-				if err != nil {
-					return err
-				}
-			} else if fi.Mode().IsRegular() && !r.MatchString(path) {
-				// Add build tag
-				var data []byte
-				content, err := ioutil.ReadFile(path)
-				if err != nil {
-					return err
-				}
-				data = append(data, []byte("// +build postgres\n")...)
-				data = append(data, content...)
-				err = os.Remove(path)
-				if err != nil {
-					return err
-				}
-				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/postgres_%v",filepath.Base(path)), data,0644)
+			} else if info.Mode().IsRegular() && !r.MatchString(path) {
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/postgres_", []string{"postgres"})
 				if err != nil {
 					return err
 				}
@@ -165,6 +114,26 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func addBuildTags(path string, outputPrefix string, tags []string) error {
+	// Add build tag
+	var data []byte
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	data = append(data, []byte(fmt.Sprintf("// +build %s\n", strings.Join(tags, ",")))...)
+	data = append(data, content...)
+	err = os.Remove(path)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(fmt.Sprintf("%s%s", outputPrefix, filepath.Base(path)), data, 0644)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -231,7 +200,7 @@ func createAPIDocs() error {
 	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
 		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
 	}
-	if err :=  sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
+	if err := sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
 		return fmt.Errorf("failed to run swagger generation: %+v", err)
 	}
 	return nil
