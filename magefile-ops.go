@@ -5,7 +5,6 @@ package main
 import (
 	"github.com/magefile/mage/sh"
 	"go.uber.org/zap"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -149,7 +148,7 @@ func GenerateDefaultConfig(configPath string) error {
 	helpers.CheckErrFatal(err)
 	data, err := yaml.Marshal(tmp)
 	helpers.CheckErrFatal(err)
-	err = ioutil.WriteFile(configPath, data, 0611)
+	err = os.WriteFile(configPath, data, 0611)
 	helpers.CheckErrFatal(err)
 	return nil
 }

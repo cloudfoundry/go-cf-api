@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -77,7 +76,7 @@ func GenerateSQLBoiler() error {
 			if fi.Mode().IsRegular() && r.MatchString(path) {
 				// Add build tag
 				var data []byte
-				content, err := ioutil.ReadFile(path)
+				content, err := os.ReadFile(path)
 				if err != nil {
 					return err
 				}
@@ -87,7 +86,7 @@ func GenerateSQLBoiler() error {
 				if err != nil {
 					return err
 				}
-				err = ioutil.WriteFile(path, data,0644)
+				err = os.WriteFile(path, data,0644)
 				if err != nil {
 					return err
 				}
