@@ -9,6 +9,7 @@
           <option value="mage" />
           <option value="unit" />
           <option value="integration" />
+          <option value="postgres" />
         </array>
       </option>
     </buildTags>

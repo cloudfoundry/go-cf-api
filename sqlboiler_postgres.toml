@@ -11,7 +11,6 @@ package  = "postgres"
   pass   = "admin"
   sslmode = "disable"
 
-
-[[aliases.tables.organizations]]
-name  = "default_isolation_segment_guid"
-alias = "isolation_segment_guid"
+[aliases.tables.service_instance_shares.relationships.fk_target_space_guid]
+local   = "SharedServiceInstances"
+foreign = "Spaces"

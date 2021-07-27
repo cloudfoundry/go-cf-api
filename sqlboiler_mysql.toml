@@ -10,3 +10,7 @@ package  = "mysql"
   user   = "root"
   pass   = "admin"
   sslmode = "false"
+
+[aliases.tables.service_instance_shares.relationships.fk_target_space_guid]
+local   = "SharedServiceInstances"
+foreign = "Spaces"

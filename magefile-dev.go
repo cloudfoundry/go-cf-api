@@ -50,10 +50,7 @@ func InstallDeps() error {
 
 // Generates sql builerplate code from the specified Database in the config and places it in internal
 func GenerateSQLBoiler() error {
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
-		return err
-	}
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/postgres"); err != nil {
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler"); err != nil {
 		return err
 	}
 	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_postgres.toml"); err != nil {
@@ -64,7 +61,7 @@ func GenerateSQLBoiler() error {
 	}
 	// Append build tag "integration" to every generated file so we can use "go test -tag integration" to switch between unit and integration tests
 	r, _ := regexp.Compile(".*_test.go$")
-	err := filepath.Walk("./internal/app/cloudgontroller/sqlboiler",
+	err := filepath.Walk("./internal/app/cloudgontroller/sqlboiler/mysql",
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -81,13 +78,30 @@ func GenerateSQLBoiler() error {
 				if err != nil {
 					return err
 				}
-				data = append(data, []byte("// +build integration\n")...)
+				data = append(data, []byte("// +build integration mysql\n")...)
 				data = append(data, content...)
 				err = os.Remove(path)
 				if err != nil {
 					return err
 				}
-				err = ioutil.WriteFile(path, data,0644)
+				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/mysql_%v",filepath.Base(path)), data,0644)
+				if err != nil {
+					return err
+				}
+			} else if fi.Mode().IsRegular() && !r.MatchString(path) {
+				// Add build tag
+				var data []byte
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				data = append(data, []byte("// +build mysql\n")...)
+				data = append(data, content...)
+				err = os.Remove(path)
+				if err != nil {
+					return err
+				}
+				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/mysql_%v",filepath.Base(path)), data,0644)
 				if err != nil {
 					return err
 				}
@@ -95,6 +109,62 @@ func GenerateSQLBoiler() error {
 			return nil
 		})
 	if err != nil {
+		return err
+	}
+	err = filepath.Walk("./internal/app/cloudgontroller/sqlboiler/postgres",
+		func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			// Only Edit _test.go files
+			fi, err := os.Stat(path)
+			if err != nil {
+				return err
+			}
+			if fi.Mode().IsRegular() && r.MatchString(path) {
+				// Add build tag
+				var data []byte
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				data = append(data, []byte("// +build integration postgres\n")...)
+				data = append(data, content...)
+				err = os.Remove(path)
+				if err != nil {
+					return err
+				}
+				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/postgres_%v",filepath.Base(path)), data,0644)
+				if err != nil {
+					return err
+				}
+			} else if fi.Mode().IsRegular() && !r.MatchString(path) {
+				// Add build tag
+				var data []byte
+				content, err := ioutil.ReadFile(path)
+				if err != nil {
+					return err
+				}
+				data = append(data, []byte("// +build postgres\n")...)
+				data = append(data, content...)
+				err = os.Remove(path)
+				if err != nil {
+					return err
+				}
+				err = ioutil.WriteFile(fmt.Sprintf("./internal/app/cloudgontroller/sqlboiler/postgres_%v",filepath.Base(path)), data,0644)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+	if err != nil {
+		return err
+	}
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/postgres"); err != nil {
+		return err
+	}
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
 		return err
 	}
 	return nil
@@ -126,7 +196,7 @@ func Run() error {
 	if err := createAPIDocs(); err != nil {
 		return err
 	}
-	return sh.RunV("go", "run", "cmd/main.go", "config.yaml")
+	return sh.RunV("go", "run", "cmd/main.go", "config_postgres.yaml")
 }
 
 ///////////////////////////

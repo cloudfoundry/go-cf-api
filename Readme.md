@@ -19,9 +19,8 @@ To do this we have a docker-compose file to create the DBs and sql dumps from a 
 docker compose -f docker-compose-dev.yaml up -d 
 // Create Database (Just implemented for Postgres Currently)
 // It is ok if psql cli reports insert errors (table already exists)
-mage DBCreate config.yaml
-mage DBLoad config.yaml database_dumps/3.102.0_postgres_ccdb.sql
-mage DBLoad config.yaml database_dumps/buildpacks_table_pgdump_aws_staging.sql
+mage DBCreate config_postgres.yaml
+mage DBLoad config_postgres.yaml database_dumps/3.102.0_postgres_ccdb.sql
 ```
 
 Other noteable operations on the db are
@@ -33,7 +32,7 @@ mage DBRecreate
 ## Starting It
 Simly
 ```bash
-go run cmd/main.go config.yaml
+go run cmd/main.go config_postgres.yaml
 ```
 is sufficient
 

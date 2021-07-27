@@ -3,7 +3,7 @@
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-tags='mage'" />
-    <parameters value="dbload config.yaml database_dumps/3.102.0_postgres_ccdb.sql" />
+    <parameters value="generatesqlboiler" />
     <kind value="FILE" />
     <package value="github.tools.sap/cloudfoundry/cloudgontroller" />
     <directory value="$PROJECT_DIR$" />

@@ -30,7 +30,7 @@ var (
 		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
 		// 		sqlboiler generated models from db structure, db schema creation and migration,
 		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
-		Example: "cloudgontroller config.yaml",
+		Example: "cloudgontroller config_postgres.yaml",
 		Args:    cobra.MaximumNArgs(1),
 		Run:     RootFunc,
 	}
