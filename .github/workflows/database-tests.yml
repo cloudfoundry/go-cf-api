@@ -26,7 +26,10 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.16.6
-      - run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install docker-compose -y
+      - name: Start Databases
+        run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
       - run: go test --tags="mysql_integration mysql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
   integration-test:
     runs-on: [self-hosted, linux]
@@ -37,5 +40,8 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.16.6
-      - run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install docker-compose -y
+      - name: Start Databases
+        run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
       - run: go test --tags="psql_integration psql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml
