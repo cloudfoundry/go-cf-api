@@ -1,0 +1,39 @@
+name: Run database tests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - internal/app/cloudgontroller/sqlboiler/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - internal/app/cloudgontroller/sqlboiler/**
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    runs-on: [self-hosted, linux]
+    strategy:
+      matrix:
+        db: [ 'psql', 'mysql' ]
+    name: Run ${{ matrix.db }} db tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.6
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install docker-compose -y
+      - name: Start Databases
+        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose -f docker-compose-dev.yaml up -d
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - run: go test --tags="${{ matrix.db }},db" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_${{ matrix.os }}.toml

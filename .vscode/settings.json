@@ -5,4 +5,5 @@
 	"go.testTags": "unit,integration",
 	"go.testEnvFile": "${workspaceFolder}/.vscode/integration-tests.env",
 	"go.formatTool": "gofmt",
+	"go.buildTags": "postgres",
 }

@@ -3,13 +3,13 @@ package controllers
 import (
 	"context"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
+	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
-	psqlModels "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/postgres"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"go.uber.org/zap"
 )
@@ -29,7 +29,7 @@ func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
-	buildpacks, err := psqlModels.Buildpacks(qm.Limit(50)).All(ctx, db)
+	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db)
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
@@ -55,7 +55,7 @@ func GetBuildpack(c echo.Context) error {
 	db := db.GetConnection()
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
-	buildpack, err := psqlModels.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
+	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}

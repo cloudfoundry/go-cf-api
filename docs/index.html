@@ -26,8 +26,9 @@
 <h1>cloudgontroller Webserver</h1>
 <h2>Prerequisits</h2>
 <ul>
-<li>Go 1.16 minimum: <a href="https://golang.org/dl/">https://golang.org/dl/</a> (Install with GVM)</li>
-<li>Mage (Makefile alternative in go): <a href="https://github.com/magefile/mage">https://github.com/magefile/mage</a></li>
+<li>Go 1.16 minimum: <a href="https://golang.org/dl/,">https://golang.org/dl/,</a> can either be installed with GVM(Go version Manager) or via <code>brew install go</code></li>
+<li>Mage (Makefile alternative in go): <a href="https://github.com/magefile/mage,">https://github.com/magefile/mage,</a> can be installed with <code>brew install mage</code></li>
+<li>Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc..), can be installed with <code>brew install mysql postgres</code></li>
 </ul>
 <p>Install the rest of the used CLI Dependencies in this project</p>
 <pre><code class="language-bash">mage InstallDeps
@@ -37,17 +38,34 @@
 <p>To run cloudgontroller we need a propper ccdb.
 To do this we have a docker-compose file to create the DBs and sql dumps from a ccdb that one can execute to create a ccdb.</p>
 <pre><code class="language-bash">// Start Databases (Mariadb + Postgres)
-docker-compose -f docker-compose-dev.yaml up -d 
+docker compose -f docker-compose-dev.yaml up -d
 // Create Database (Just implemented for Postgres Currently)
-mage DBLoad config.yaml database_dumps/3.102.0_postgres_ccdb.sql
-mage DBLoad config.yaml database_dumps/buildpacks_table_pgdump_aws_staging.sql
+// It is ok if psql cli reports insert errors (table already exists)
+mage DBCreate config_psql.yaml
+mage DBLoad config_psql.yaml database_dumps/3.102.0_psql_ccdb.sql
+// For Mariadb use this
+mage DBCreate config_mysql.yaml
+mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
+</code></pre>
+<p>Other noteable operations on the db are</p>
+<pre><code class="language-bash">// Drop DB
+mage DBDelete config_mysql.yaml
+// Drop and Recreate DB (will be empty)
+mage DBRecreate config_mysql.yaml
 </code></pre>
 <h2>Starting It</h2>
-<p>Simly</p>
-<pre><code class="language-bash">go run cmd/main.go config.yaml
+<p>Simply</p>
+<pre><code class="language-bash">// Make a binary to use against a mysql instance
+go run --tags=psql cmd/main.go config_psql.yaml
+// Make a binary to use against a postgres instance
+go run --tags=mysql cmd/main.go config_psql.yaml
 </code></pre>
-<p>is sufficient</p>
-<p>There is also a mage command which outputs a binary file.
+<p>The values out of the <code>config_*.yml</code> files as well as <code>sqlboiler_*.toml</code> match the credentials in <code>docker-compose-dev.yaml</code>.
+So as long as you use that docker compose file all credentials match and you dont need to mess around with the configs.</p>
+<p>The method how we use sqlboiler for both technology stacks(psql and mysql) leads us to a problem which generated model to use.
+We solved this by including build flags to include certain code on build time e.g. include psql code and exclude mysql code.
+This will then produce two binaries, one for each db. Running on a psql config with a mysql binarie will result in a startup error.</p>
+<p>There is also a mage command which outputs both binary files.
 It will also run every code/doc/apidoc generator we have beforehand and then use
 go build to produce a binary in the <code>build</code> folder.</p>
 <pre><code class="language-bash">mage build
@@ -55,6 +73,17 @@ go build to produce a binary in the <code>build</code> folder.</p>
 <p>Once Running Access it e.g. with:</p>
 <p>http://localhost:8080/api/v3/buildpacks</p>
 <p>http://localhost:8080/docs/v3</p>
+<h1>Running Tests</h1>
+<p>Simply</p>
+<pre><code class="language-bash">// Run all unittests
+go test --tags=&quot;psql&quot; ./...
+// Run all integration tests (But not DB tests)
+go test --tags=&quot;integration psql&quot; ./...
+// Run Integration Tests for Postgres
+go test --tags=&quot;mysql_integration mysql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
+// Run Integration Tests for Postgres
+go test --tags=&quot;psql_integration psql&quot; ./internal/app/cloudgontroller/sqlboilero -test.config $PWD/sqlboiler_psql.toml
+</code></pre>
 <h1>Existing Features</h1>
 <ul>
 <li>Structured Logging</li>

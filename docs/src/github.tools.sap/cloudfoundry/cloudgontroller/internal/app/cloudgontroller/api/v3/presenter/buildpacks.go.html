@@ -60,7 +60,7 @@
 <span id="L3" class="ln">     3  </span>import (
 <span id="L4" class="ln">     4  </span>	&#34;time&#34;
 <span id="L5" class="ln">     5  </span>
-<span id="L6" class="ln">     6  </span>	psqlModels &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/postgres&#34;
+<span id="L6" class="ln">     6  </span>	models &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler&#34;
 <span id="L7" class="ln">     7  </span>)
 <span id="L8" class="ln">     8  </span>
 <span id="L9" class="ln">     9  </span>type BuildpackResponse struct {
@@ -86,7 +86,7 @@
 <span id="L29" class="ln">    29  </span>	} `json:&#34;links&#34;`
 <span id="L30" class="ln">    30  </span>}
 <span id="L31" class="ln">    31  </span>
-<span id="L32" class="ln">    32  </span>func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse {
+<span id="L32" class="ln">    32  </span>func BuildpackResponseObject(buildpack *models.Buildpack) *BuildpackResponse {
 <span id="L33" class="ln">    33  </span>	return &amp;BuildpackResponse{
 <span id="L34" class="ln">    34  </span>		Guid:       buildpack.GUID,
 <span id="L35" class="ln">    35  </span>		Created_at: buildpack.CreatedAt,
@@ -95,7 +95,7 @@
 <span id="L38" class="ln">    38  </span>	}
 <span id="L39" class="ln">    39  </span>}
 <span id="L40" class="ln">    40  </span>
-<span id="L41" class="ln">    41  </span>func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*BuildpackResponse {
+<span id="L41" class="ln">    41  </span>func BuildpacksResponseObject(buildpacks models.BuildpackSlice) []*BuildpackResponse {
 <span id="L42" class="ln">    42  </span>	out := []*BuildpackResponse{}
 <span id="L43" class="ln">    43  </span>	for _, buildpack := range buildpacks {
 <span id="L44" class="ln">    44  </span>		buildpackresp := BuildpackResponseObject(buildpack)

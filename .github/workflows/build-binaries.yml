@@ -1,0 +1,37 @@
+name: Build binaries
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-binary:
+    runs-on: [self-hosted, linux]
+    strategy:
+      matrix:
+        db: [ 'psql', 'mysql' ]
+        os: [ 'linux', 'darwin' ]
+        arch: [ 'amd64', '386' ]
+        exclude:
+        # exclude 386 on macOS
+        - os: darwin
+          arch: 386
+    name: Build binary for ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.db }} target
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.6
+      - run: go build -tags=${{ matrix.db }} cmd/main.go
+        env:
+          GOOS: ${{ matrix.os }}
+          GOARCH: ${{ matrix.arch }}

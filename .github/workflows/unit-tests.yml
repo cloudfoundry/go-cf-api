@@ -1,0 +1,26 @@
+name: Run unit tests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  unit-test:
+    runs-on: [self-hosted, linux]
+    name: Run unit tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.6
+      # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
+      - run: go test -tags="unit,psql" ./...

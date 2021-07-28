@@ -8,7 +8,8 @@
         <array>
           <option value="mage" />
           <option value="unit" />
-          <option value="integration" />
+          <option value="mysql_integration" />
+          <option value="mysql" />
         </array>
       </option>
     </buildTags>

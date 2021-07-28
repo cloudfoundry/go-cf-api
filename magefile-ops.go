@@ -130,6 +130,9 @@ func DBLoad(configPath string, sqlFilePath string) error {
 		}
 	} else if db.GetConnectionInfo().Type == "mysql" {
 		zap.L().Warn("Loading Mysql Dumps not yet implemented")
+		if err := sh.RunV("mysql", "-h", db.GetConnectionInfo().Host, "-P", db.GetConnectionInfo().Port, "-u", db.GetConnectionInfo().User, fmt.Sprintf("--password=%s",db.GetConnectionInfo().Password),"--protocol=tcp","-e", fmt.Sprintf("source %s",sqlFilePath)); err != nil {
+			return err
+		}
 	}
 
 	return nil

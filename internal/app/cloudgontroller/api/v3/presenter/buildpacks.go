@@ -3,7 +3,7 @@ package presenter
 import (
 	"time"
 
-	psqlModels "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/postgres"
+	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
 type BuildpackResponse struct {
@@ -29,7 +29,7 @@ type BuildpackResponse struct {
 	} `json:"links"`
 }
 
-func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse {
+func BuildpackResponseObject(buildpack *models.Buildpack) *BuildpackResponse {
 	return &BuildpackResponse{
 		Guid:       buildpack.GUID,
 		Created_at: buildpack.CreatedAt,
@@ -38,7 +38,7 @@ func BuildpackResponseObject(buildpack *psqlModels.Buildpack) *BuildpackResponse
 	}
 }
 
-func BuildpacksResponseObject(buildpacks psqlModels.BuildpackSlice) []*BuildpackResponse {
+func BuildpacksResponseObject(buildpacks models.BuildpackSlice) []*BuildpackResponse {
 	out := []*BuildpackResponse{}
 	for _, buildpack := range buildpacks {
 		buildpackresp := BuildpackResponseObject(buildpack)

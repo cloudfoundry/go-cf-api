@@ -103,22 +103,28 @@
 			
 			
 				
-				<dd><a href="#Create">func Create(db *sql.DB, info DBInfo)</a></dd>
+				<dd><a href="#Create">func Create(db *sql.DB, info DBInfo) error</a></dd>
 			
 				
-				<dd><a href="#Drop">func Drop(db *sql.DB, info DBInfo)</a></dd>
+				<dd><a href="#Drop">func Drop(db *sql.DB, info DBInfo) error</a></dd>
 			
 				
 				<dd><a href="#GetConnection">func GetConnection() *sql.DB</a></dd>
 			
 				
-				<dd><a href="#Load">func Load(db *sql.DB, info DBInfo, sqlFilePath string)</a></dd>
+				<dd><a href="#Load">func Load(db *sql.DB, info DBInfo, sqlFilePath string) error</a></dd>
 			
 				
 				<dd><a href="#Migrate">func Migrate(db *sql.DB)</a></dd>
 			
 				
 				<dd><a href="#NewConnection">func NewConnection(dbConfig config.DBConfig, connectDB bool)</a></dd>
+			
+				
+				<dd><a href="#NewMySQLConnection">func NewMySQLConnection(dbConfig config.DBConfig, connectDB bool)</a></dd>
+			
+				
+				<dd><a href="#NewPostgresConnection">func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool)</a></dd>
 			
 			
 				
@@ -142,6 +148,10 @@
 			
 				<a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html">db.go</a>
 			
+				<a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/mysql.go.html">mysql.go</a>
+			
+				<a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/postgres.go.html">postgres.go</a>
+			
 				<a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html">scheme.go</a>
 			
 				<a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/seed.go.html">seed.go</a>
@@ -159,12 +169,12 @@
 		
 			
 			
-			<h2 id="Create">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1183:1219#L37">Create</a>
+			<h2 id="Create">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1183:1225#L37">Create</a>
 				<a class="permalink" href="#Create">¶</a>
 				
 				
 			</h2>
-			<pre>func Create(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>)</pre>
+			<pre>func Create(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>) <a href="../../../../../../../../builtin/#error">error</a></pre>
 			
 			
 			
@@ -172,12 +182,12 @@
 		
 			
 			
-			<h2 id="Drop">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1413:1447#L43">Drop</a>
+			<h2 id="Drop">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1436:1476#L46">Drop</a>
 				<a class="permalink" href="#Drop">¶</a>
 				
 				
 			</h2>
-			<pre>func Drop(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>)</pre>
+			<pre>func Drop(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>) <a href="../../../../../../../../builtin/#error">error</a></pre>
 			
 			
 			
@@ -185,7 +195,7 @@
 		
 			
 			
-			<h2 id="GetConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=3986:4014#L111">GetConnection</a>
+			<h2 id="GetConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=749:777#L26">GetConnection</a>
 				<a class="permalink" href="#GetConnection">¶</a>
 				
 				
@@ -198,12 +208,12 @@
 		
 			
 			
-			<h2 id="Load">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1638:1692#L49">Load</a>
+			<h2 id="Load">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/scheme.go.html?s=1684:1744#L55">Load</a>
 				<a class="permalink" href="#Load">¶</a>
 				
 				
 			</h2>
-			<pre>func Load(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>, sqlFilePath <a href="../../../../../../../../builtin/#string">string</a>)</pre>
+			<pre>func Load(db *<a href="../../../../../../../../database/sql/">sql</a>.<a href="../../../../../../../../database/sql/#DB">DB</a>, info <a href="#DBInfo">DBInfo</a>, sqlFilePath <a href="../../../../../../../../builtin/#string">string</a>) <a href="../../../../../../../../builtin/#error">error</a></pre>
 			
 			
 			
@@ -224,7 +234,7 @@
 		
 			
 			
-			<h2 id="NewConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=584:644#L22">NewConnection</a>
+			<h2 id="NewConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=442:502#L15">NewConnection</a>
 				<a class="permalink" href="#NewConnection">¶</a>
 				
 				
@@ -235,10 +245,36 @@
 			
 
 		
+			
+			
+			<h2 id="NewMySQLConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/mysql.go.html?s=298:363#L6">NewMySQLConnection</a>
+				<a class="permalink" href="#NewMySQLConnection">¶</a>
+				
+				
+			</h2>
+			<pre>func NewMySQLConnection(dbConfig <a href="../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/">config</a>.<a href="../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/#DBConfig">DBConfig</a>, connectDB <a href="../../../../../../../../builtin/#bool">bool</a>)</pre>
+			
+			
+			
+
 		
 			
 			
-			<h2 id="DBInfo">type <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=434:582#L13">DBInfo</a>
+			<h2 id="NewPostgresConnection">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/postgres.go.html?s=320:388#L6">NewPostgresConnection</a>
+				<a class="permalink" href="#NewPostgresConnection">¶</a>
+				
+				
+			</h2>
+			<pre>func NewPostgresConnection(dbConfig <a href="../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/">config</a>.<a href="../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config/#DBConfig">DBConfig</a>, connectDB <a href="../../../../../../../../builtin/#bool">bool</a>)</pre>
+			
+			
+			
+
+		
+		
+			
+			
+			<h2 id="DBInfo">type <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=292:440#L6">DBInfo</a>
 				<a class="permalink" href="#DBInfo">¶</a>
 				
 				
@@ -264,7 +300,7 @@
 
 			
 				
-				<h3 id="GetConnectionInfo">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=4037:4068#L115">GetConnectionInfo</a>
+				<h3 id="GetConnectionInfo">func <a href="../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db/db.go.html?s=800:831#L30">GetConnectionInfo</a>
 					<a class="permalink" href="#GetConnectionInfo">¶</a>
 					
 					
