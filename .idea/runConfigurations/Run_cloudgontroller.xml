@@ -2,7 +2,7 @@
   <configuration default="false" name="Run cloudgontroller" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags='postgres'" />
+    <go_parameters value="-tags='psql'" />
     <parameters value="config_postgres.yaml" />
     <kind value="FILE" />
     <directory value="$PROJECT_DIR$" />

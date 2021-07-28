@@ -2,7 +2,7 @@
   <configuration default="false" name="integration tests postgres model" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags='psql'" />
+    <go_parameters value="-tags='psql_integration psql'" />
     <parameters value="-test.config &quot;$PROJECT_DIR$/sqlboiler_psql.toml&quot;" />
     <kind value="PACKAGE" />
     <package value="github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler" />

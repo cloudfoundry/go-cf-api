@@ -27,7 +27,7 @@ jobs:
         with:
           go-version: 1.16.6
       - run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
-      - run: go test --tags=mysql $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
+      - run: go test --tags="mysql_integration mysql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
   integration-test:
     runs-on: [self-hosted, linux]
     name: Run integration tests
@@ -38,4 +38,4 @@ jobs:
         with:
           go-version: 1.16.6
       - run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
-      - run: go test --tags=psql $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml
+      - run: go test --tags="psql_integration psql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml

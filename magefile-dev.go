@@ -71,7 +71,7 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql_integration"})
 				if err != nil {
 					return err
 				}
@@ -95,7 +95,7 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql_integration"})
 				if err != nil {
 					return err
 				}
@@ -151,13 +151,10 @@ func Build() error {
 	if err := Generate(); err != nil {
 		return err
 	}
-	if err := sh.RunV("go", "mod", "download"); err != nil {
+	if err := sh.RunV("go","build", "--tags=mysql", "-o", "build/cloudgontroller_mqsql", "cmd/main.go"); err != nil {
 		return err
 	}
-	if err := sh.RunV("go", "install", "./..."); err != nil {
-		return err
-	}
-	return sh.RunV("go", "build", "-o", "build/cloudgontroller", "cmd/main.go")
+	return sh.RunV("go","build", "--tags=psql", "-o", "build/cloudgontroller_psql", "cmd/main.go")
 }
 
 // Runs generators whose result is included in cloudgontroller and runs cloudgontroller.

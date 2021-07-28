@@ -60,13 +60,13 @@
 <span id="L3" class="ln">     3  </span>import (
 <span id="L4" class="ln">     4  </span>	&#34;context&#34;
 <span id="L5" class="ln">     5  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter&#34;
-<span id="L6" class="ln">     6  </span>	&#34;net/http&#34;
-<span id="L7" class="ln">     7  </span>
-<span id="L8" class="ln">     8  </span>	&#34;github.com/labstack/echo/v4&#34;
-<span id="L9" class="ln">     9  </span>	&#34;github.com/volatiletech/sqlboiler/v4/boil&#34;
-<span id="L10" class="ln">    10  </span>	&#34;github.com/volatiletech/sqlboiler/v4/queries/qm&#34;
-<span id="L11" class="ln">    11  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging&#34;
-<span id="L12" class="ln">    12  </span>	psqlModels &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/postgres&#34;
+<span id="L6" class="ln">     6  </span>	models &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler&#34;
+<span id="L7" class="ln">     7  </span>	&#34;net/http&#34;
+<span id="L8" class="ln">     8  </span>
+<span id="L9" class="ln">     9  </span>	&#34;github.com/labstack/echo/v4&#34;
+<span id="L10" class="ln">    10  </span>	&#34;github.com/volatiletech/sqlboiler/v4/boil&#34;
+<span id="L11" class="ln">    11  </span>	&#34;github.com/volatiletech/sqlboiler/v4/queries/qm&#34;
+<span id="L12" class="ln">    12  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging&#34;
 <span id="L13" class="ln">    13  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db&#34;
 <span id="L14" class="ln">    14  </span>	&#34;go.uber.org/zap&#34;
 <span id="L15" class="ln">    15  </span>)
@@ -86,7 +86,7 @@
 <span id="L29" class="ln">    29  </span>	db := db.GetConnection()
 <span id="L30" class="ln">    30  </span>
 <span id="L31" class="ln">    31  </span>	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
-<span id="L32" class="ln">    32  </span>	buildpacks, err := psqlModels.Buildpacks(qm.Limit(50)).All(ctx, db)
+<span id="L32" class="ln">    32  </span>	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db)
 <span id="L33" class="ln">    33  </span>	if err != nil {
 <span id="L34" class="ln">    34  </span>		zap.L().Error(&#34;Couldn&#39;t select&#34;, zap.Error(err))
 <span id="L35" class="ln">    35  </span>	}
@@ -112,7 +112,7 @@
 <span id="L55" class="ln">    55  </span>	db := db.GetConnection()
 <span id="L56" class="ln">    56  </span>
 <span id="L57" class="ln">    57  </span>	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
-<span id="L58" class="ln">    58  </span>	buildpack, err := psqlModels.Buildpacks(qm.Where(&#34;guid=?&#34;, guid)).One(ctx, db)
+<span id="L58" class="ln">    58  </span>	buildpack, err := models.Buildpacks(qm.Where(&#34;guid=?&#34;, guid)).One(ctx, db)
 <span id="L59" class="ln">    59  </span>	if err != nil {
 <span id="L60" class="ln">    60  </span>		zap.L().Error(&#34;Couldn&#39;t select&#34;, zap.Error(err))
 <span id="L61" class="ln">    61  </span>	}

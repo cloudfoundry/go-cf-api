@@ -69,13 +69,13 @@ http://localhost:8080/docs/v3
 Simply
 ```bash
 // Run all unittests
-go test ./...
+go test --tags="psql" ./...
 // Run all integration tests (But not DB tests)
-go test --tags=integration ./...
+go test --tags="integration psql" ./...
 // Run Integration Tests for Postgres
-go test --tags=mysql ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
+go test --tags="mysql_integration mysql" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
 // Run Integration Tests for Postgres
-go test --tags=psql ./internal/app/cloudgontroller/sqlboilero -test.config $PWD/sqlboiler_psql.toml
+go test --tags="psql_integration psql" ./internal/app/cloudgontroller/sqlboilero -test.config $PWD/sqlboiler_psql.toml
 ```
 
 # Existing Features

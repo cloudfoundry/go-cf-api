@@ -8,7 +8,7 @@
         <array>
           <option value="mage" />
           <option value="unit" />
-          <option value="integrationmysql" />
+          <option value="mysql_integration" />
           <option value="mysql" />
         </array>
       </option>

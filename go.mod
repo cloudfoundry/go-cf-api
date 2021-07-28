@@ -17,6 +17,7 @@ require (
 	github.com/gofrs/uuid v4.0.0+incompatible // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golobby/repl v0.0.0-20191019193237-da6c0b527cea
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
@@ -27,6 +28,7 @@ require (
 	github.com/magefile/mage v1.11.0
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
+	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
@@ -37,15 +39,13 @@ require (
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/swaggo/swag v1.7.0
-	github.com/vburenin/ifacemaker v1.1.0 // indirect
 	github.com/volatiletech/null/v8 v8.1.2
 	github.com/volatiletech/randomize v0.0.1
 	github.com/volatiletech/sqlboiler/v4 v4.6.0
 	github.com/volatiletech/strmangle v0.0.1
-	github.com/xo/xo v0.0.0-20210727061744-f2728a483ce8 // indirect
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	gitlab.com/tslocum/godoc-static v0.1.8 // indirect
 	go.uber.org/zap v1.17.0
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210716203947-853a461950ff // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
