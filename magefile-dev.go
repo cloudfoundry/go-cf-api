@@ -54,7 +54,7 @@ func GenerateSQLBoiler() error {
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler"); err != nil {
 		return err
 	}
-	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_postgres.toml"); err != nil {
+	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml"); err != nil {
 		return err
 	}
 	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml"); err != nil {
@@ -71,7 +71,7 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"integration", "mysql"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql"})
 				if err != nil {
 					return err
 				}
@@ -86,7 +86,7 @@ func GenerateSQLBoiler() error {
 	if err != nil {
 		return err
 	}
-	err = filepath.Walk("./internal/app/cloudgontroller/sqlboiler/postgres",
+	err = filepath.Walk("./internal/app/cloudgontroller/sqlboiler/psql",
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -95,12 +95,12 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/postgres_", []string{"integration", "postgres"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql"})
 				if err != nil {
 					return err
 				}
 			} else if info.Mode().IsRegular() && !r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/postgres_", []string{"postgres"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql"})
 				if err != nil {
 					return err
 				}
@@ -110,7 +110,7 @@ func GenerateSQLBoiler() error {
 	if err != nil {
 		return err
 	}
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/postgres"); err != nil {
+	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/psql"); err != nil {
 		return err
 	}
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
@@ -165,7 +165,7 @@ func Run() error {
 	if err := createAPIDocs(); err != nil {
 		return err
 	}
-	return sh.RunV("go", "run", "cmd/main.go", "config_postgres.yaml")
+	return sh.RunV("go", "run", "cmd/main.go", "config_psql.yaml")
 }
 
 ///////////////////////////

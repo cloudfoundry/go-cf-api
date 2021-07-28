@@ -1,7 +1,7 @@
 output   = "internal/app/cloudgontroller/sqlboiler/mysql"
 wipe     = true
 no-test  = false
-package  = "mysql"
+package  = "models"
 
 [mysql]
   dbname = "ccdb"
