@@ -109,9 +109,9 @@ var SpaceWhere = struct {
 
 // SpaceRels is where relationship names are stored.
 var SpaceRels = struct {
+	SpaceQuotaDefinition                    string
 	IsolationSegment                        string
 	Organization                            string
-	SpaceQuotaDefinition                    string
 	Apps                                    string
 	Routes                                  string
 	SecurityGroupsSpaces                    string
@@ -127,9 +127,9 @@ var SpaceRels = struct {
 	StagingSpaceStagingSecurityGroupsSpaces string
 	DefaultSpaceUsers                       string
 }{
+	SpaceQuotaDefinition:                    "SpaceQuotaDefinition",
 	IsolationSegment:                        "IsolationSegment",
 	Organization:                            "Organization",
-	SpaceQuotaDefinition:                    "SpaceQuotaDefinition",
 	Apps:                                    "Apps",
 	Routes:                                  "Routes",
 	SecurityGroupsSpaces:                    "SecurityGroupsSpaces",
@@ -148,9 +148,9 @@ var SpaceRels = struct {
 
 // spaceR is where relationships are stored.
 type spaceR struct {
+	SpaceQuotaDefinition                    *SpaceQuotaDefinition           `boil:"SpaceQuotaDefinition" json:"SpaceQuotaDefinition" toml:"SpaceQuotaDefinition" yaml:"SpaceQuotaDefinition"`
 	IsolationSegment                        *IsolationSegment               `boil:"IsolationSegment" json:"IsolationSegment" toml:"IsolationSegment" yaml:"IsolationSegment"`
 	Organization                            *Organization                   `boil:"Organization" json:"Organization" toml:"Organization" yaml:"Organization"`
-	SpaceQuotaDefinition                    *SpaceQuotaDefinition           `boil:"SpaceQuotaDefinition" json:"SpaceQuotaDefinition" toml:"SpaceQuotaDefinition" yaml:"SpaceQuotaDefinition"`
 	Apps                                    AppSlice                        `boil:"Apps" json:"Apps" toml:"Apps" yaml:"Apps"`
 	Routes                                  RouteSlice                      `boil:"Routes" json:"Routes" toml:"Routes" yaml:"Routes"`
 	SecurityGroupsSpaces                    SecurityGroupsSpaceSlice        `boil:"SecurityGroupsSpaces" json:"SecurityGroupsSpaces" toml:"SecurityGroupsSpaces" yaml:"SecurityGroupsSpaces"`
@@ -457,6 +457,20 @@ func (q spaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 	return count > 0, nil
 }
 
+// SpaceQuotaDefinition pointed to by the foreign key.
+func (o *Space) SpaceQuotaDefinition(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
+	queryMods := []qm.QueryMod{
+		qm.Where("`id` = ?", o.SpaceQuotaDefinitionID),
+	}
+
+	queryMods = append(queryMods, mods...)
+
+	query := SpaceQuotaDefinitions(queryMods...)
+	queries.SetFrom(query.Query, "`space_quota_definitions`")
+
+	return query
+}
+
 // IsolationSegment pointed to by the foreign key.
 func (o *Space) IsolationSegment(mods ...qm.QueryMod) isolationSegmentQuery {
 	queryMods := []qm.QueryMod{
@@ -481,20 +495,6 @@ func (o *Space) Organization(mods ...qm.QueryMod) organizationQuery {
 
 	query := Organizations(queryMods...)
 	queries.SetFrom(query.Query, "`organizations`")
-
-	return query
-}
-
-// SpaceQuotaDefinition pointed to by the foreign key.
-func (o *Space) SpaceQuotaDefinition(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
-	queryMods := []qm.QueryMod{
-		qm.Where("`id` = ?", o.SpaceQuotaDefinitionID),
-	}
-
-	queryMods = append(queryMods, mods...)
-
-	query := SpaceQuotaDefinitions(queryMods...)
-	queries.SetFrom(query.Query, "`space_quota_definitions`")
 
 	return query
 }
@@ -794,6 +794,114 @@ func (o *Space) DefaultSpaceUsers(mods ...qm.QueryMod) userQuery {
 	return query
 }
 
+// LoadSpaceQuotaDefinition allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for an N-1 relationship.
+func (spaceL) LoadSpaceQuotaDefinition(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSpace interface{}, mods queries.Applicator) error {
+	var slice []*Space
+	var object *Space
+
+	if singular {
+		object = maybeSpace.(*Space)
+	} else {
+		slice = *maybeSpace.(*[]*Space)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &spaceR{}
+		}
+		if !queries.IsNil(object.SpaceQuotaDefinitionID) {
+			args = append(args, object.SpaceQuotaDefinitionID)
+		}
+
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &spaceR{}
+			}
+
+			for _, a := range args {
+				if queries.Equal(a, obj.SpaceQuotaDefinitionID) {
+					continue Outer
+				}
+			}
+
+			if !queries.IsNil(obj.SpaceQuotaDefinitionID) {
+				args = append(args, obj.SpaceQuotaDefinitionID)
+			}
+
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`space_quota_definitions`),
+		qm.WhereIn(`space_quota_definitions.id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load SpaceQuotaDefinition")
+	}
+
+	var resultSlice []*SpaceQuotaDefinition
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice SpaceQuotaDefinition")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results of eager load for space_quota_definitions")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_quota_definitions")
+	}
+
+	if len(spaceAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+
+	if len(resultSlice) == 0 {
+		return nil
+	}
+
+	if singular {
+		foreign := resultSlice[0]
+		object.R.SpaceQuotaDefinition = foreign
+		if foreign.R == nil {
+			foreign.R = &spaceQuotaDefinitionR{}
+		}
+		foreign.R.Spaces = append(foreign.R.Spaces, object)
+		return nil
+	}
+
+	for _, local := range slice {
+		for _, foreign := range resultSlice {
+			if queries.Equal(local.SpaceQuotaDefinitionID, foreign.ID) {
+				local.R.SpaceQuotaDefinition = foreign
+				if foreign.R == nil {
+					foreign.R = &spaceQuotaDefinitionR{}
+				}
+				foreign.R.Spaces = append(foreign.R.Spaces, local)
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // LoadIsolationSegment allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
 func (spaceL) LoadIsolationSegment(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSpace interface{}, mods queries.Applicator) error {
@@ -996,114 +1104,6 @@ func (spaceL) LoadOrganization(ctx context.Context, e boil.ContextExecutor, sing
 				local.R.Organization = foreign
 				if foreign.R == nil {
 					foreign.R = &organizationR{}
-				}
-				foreign.R.Spaces = append(foreign.R.Spaces, local)
-				break
-			}
-		}
-	}
-
-	return nil
-}
-
-// LoadSpaceQuotaDefinition allows an eager lookup of values, cached into the
-// loaded structs of the objects. This is for an N-1 relationship.
-func (spaceL) LoadSpaceQuotaDefinition(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSpace interface{}, mods queries.Applicator) error {
-	var slice []*Space
-	var object *Space
-
-	if singular {
-		object = maybeSpace.(*Space)
-	} else {
-		slice = *maybeSpace.(*[]*Space)
-	}
-
-	args := make([]interface{}, 0, 1)
-	if singular {
-		if object.R == nil {
-			object.R = &spaceR{}
-		}
-		if !queries.IsNil(object.SpaceQuotaDefinitionID) {
-			args = append(args, object.SpaceQuotaDefinitionID)
-		}
-
-	} else {
-	Outer:
-		for _, obj := range slice {
-			if obj.R == nil {
-				obj.R = &spaceR{}
-			}
-
-			for _, a := range args {
-				if queries.Equal(a, obj.SpaceQuotaDefinitionID) {
-					continue Outer
-				}
-			}
-
-			if !queries.IsNil(obj.SpaceQuotaDefinitionID) {
-				args = append(args, obj.SpaceQuotaDefinitionID)
-			}
-
-		}
-	}
-
-	if len(args) == 0 {
-		return nil
-	}
-
-	query := NewQuery(
-		qm.From(`space_quota_definitions`),
-		qm.WhereIn(`space_quota_definitions.id in ?`, args...),
-	)
-	if mods != nil {
-		mods.Apply(query)
-	}
-
-	results, err := query.QueryContext(ctx, e)
-	if err != nil {
-		return errors.Wrap(err, "failed to eager load SpaceQuotaDefinition")
-	}
-
-	var resultSlice []*SpaceQuotaDefinition
-	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice SpaceQuotaDefinition")
-	}
-
-	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for space_quota_definitions")
-	}
-	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_quota_definitions")
-	}
-
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(resultSlice) == 0 {
-		return nil
-	}
-
-	if singular {
-		foreign := resultSlice[0]
-		object.R.SpaceQuotaDefinition = foreign
-		if foreign.R == nil {
-			foreign.R = &spaceQuotaDefinitionR{}
-		}
-		foreign.R.Spaces = append(foreign.R.Spaces, object)
-		return nil
-	}
-
-	for _, local := range slice {
-		for _, foreign := range resultSlice {
-			if queries.Equal(local.SpaceQuotaDefinitionID, foreign.ID) {
-				local.R.SpaceQuotaDefinition = foreign
-				if foreign.R == nil {
-					foreign.R = &spaceQuotaDefinitionR{}
 				}
 				foreign.R.Spaces = append(foreign.R.Spaces, local)
 				break
@@ -2503,6 +2503,86 @@ func (spaceL) LoadDefaultSpaceUsers(ctx context.Context, e boil.ContextExecutor,
 	return nil
 }
 
+// SetSpaceQuotaDefinition of the space to the related item.
+// Sets o.R.SpaceQuotaDefinition to related.
+// Adds o to related.R.Spaces.
+func (o *Space) SetSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, insert bool, related *SpaceQuotaDefinition) error {
+	var err error
+	if insert {
+		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+			return errors.Wrap(err, "failed to insert into foreign table")
+		}
+	}
+
+	updateQuery := fmt.Sprintf(
+		"UPDATE `spaces` SET %s WHERE %s",
+		strmangle.SetParamNames("`", "`", 0, []string{"space_quota_definition_id"}),
+		strmangle.WhereClause("`", "`", 0, spacePrimaryKeyColumns),
+	)
+	values := []interface{}{related.ID, o.ID}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, updateQuery)
+		fmt.Fprintln(writer, values)
+	}
+	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	queries.Assign(&o.SpaceQuotaDefinitionID, related.ID)
+	if o.R == nil {
+		o.R = &spaceR{
+			SpaceQuotaDefinition: related,
+		}
+	} else {
+		o.R.SpaceQuotaDefinition = related
+	}
+
+	if related.R == nil {
+		related.R = &spaceQuotaDefinitionR{
+			Spaces: SpaceSlice{o},
+		}
+	} else {
+		related.R.Spaces = append(related.R.Spaces, o)
+	}
+
+	return nil
+}
+
+// RemoveSpaceQuotaDefinition relationship.
+// Sets o.R.SpaceQuotaDefinition to nil.
+// Removes o from all passed in related items' relationships struct (Optional).
+func (o *Space) RemoveSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, related *SpaceQuotaDefinition) error {
+	var err error
+
+	queries.SetScanner(&o.SpaceQuotaDefinitionID, nil)
+	if _, err = o.Update(ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
+		return errors.Wrap(err, "failed to update local table")
+	}
+
+	if o.R != nil {
+		o.R.SpaceQuotaDefinition = nil
+	}
+	if related == nil || related.R == nil {
+		return nil
+	}
+
+	for i, ri := range related.R.Spaces {
+		if queries.Equal(o.SpaceQuotaDefinitionID, ri.SpaceQuotaDefinitionID) {
+			continue
+		}
+
+		ln := len(related.R.Spaces)
+		if ln > 1 && i < ln-1 {
+			related.R.Spaces[i] = related.R.Spaces[ln-1]
+		}
+		related.R.Spaces = related.R.Spaces[:ln-1]
+		break
+	}
+	return nil
+}
+
 // SetIsolationSegment of the space to the related item.
 // Sets o.R.IsolationSegment to related.
 // Adds o to related.R.Spaces.
@@ -2627,86 +2707,6 @@ func (o *Space) SetOrganization(ctx context.Context, exec boil.ContextExecutor, 
 		related.R.Spaces = append(related.R.Spaces, o)
 	}
 
-	return nil
-}
-
-// SetSpaceQuotaDefinition of the space to the related item.
-// Sets o.R.SpaceQuotaDefinition to related.
-// Adds o to related.R.Spaces.
-func (o *Space) SetSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, insert bool, related *SpaceQuotaDefinition) error {
-	var err error
-	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "failed to insert into foreign table")
-		}
-	}
-
-	updateQuery := fmt.Sprintf(
-		"UPDATE `spaces` SET %s WHERE %s",
-		strmangle.SetParamNames("`", "`", 0, []string{"space_quota_definition_id"}),
-		strmangle.WhereClause("`", "`", 0, spacePrimaryKeyColumns),
-	)
-	values := []interface{}{related.ID, o.ID}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, updateQuery)
-		fmt.Fprintln(writer, values)
-	}
-	if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	queries.Assign(&o.SpaceQuotaDefinitionID, related.ID)
-	if o.R == nil {
-		o.R = &spaceR{
-			SpaceQuotaDefinition: related,
-		}
-	} else {
-		o.R.SpaceQuotaDefinition = related
-	}
-
-	if related.R == nil {
-		related.R = &spaceQuotaDefinitionR{
-			Spaces: SpaceSlice{o},
-		}
-	} else {
-		related.R.Spaces = append(related.R.Spaces, o)
-	}
-
-	return nil
-}
-
-// RemoveSpaceQuotaDefinition relationship.
-// Sets o.R.SpaceQuotaDefinition to nil.
-// Removes o from all passed in related items' relationships struct (Optional).
-func (o *Space) RemoveSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, related *SpaceQuotaDefinition) error {
-	var err error
-
-	queries.SetScanner(&o.SpaceQuotaDefinitionID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
-		return errors.Wrap(err, "failed to update local table")
-	}
-
-	if o.R != nil {
-		o.R.SpaceQuotaDefinition = nil
-	}
-	if related == nil || related.R == nil {
-		return nil
-	}
-
-	for i, ri := range related.R.Spaces {
-		if queries.Equal(o.SpaceQuotaDefinitionID, ri.SpaceQuotaDefinitionID) {
-			continue
-		}
-
-		ln := len(related.R.Spaces)
-		if ln > 1 && i < ln-1 {
-			related.R.Spaces[i] = related.R.Spaces[ln-1]
-		}
-		related.R.Spaces = related.R.Spaces[:ln-1]
-		break
-	}
 	return nil
 }
 

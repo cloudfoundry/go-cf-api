@@ -22,4 +22,5 @@ jobs:
         uses: actions/setup-go@v1
         with:
           go-version: 1.16.6
-      - run: go test -tags="psql" ./...
+      # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
+      - run: go test -tags="unit,psql" ./...

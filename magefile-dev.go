@@ -60,7 +60,7 @@ func GenerateSQLBoiler() error {
 	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml"); err != nil {
 		return err
 	}
-	// Append build tag "integration" to every generated file so we can use "go test -tag integration" to switch between unit and integration tests
+	// Append build tags to every generated file so we can use e.g. "go test -tags=db,psql" to switch between unit and db tests
 	r, _ := regexp.Compile(".*_test.go$")
 	err := filepath.Walk("./internal/app/cloudgontroller/sqlboiler/mysql",
 		func(path string, info os.FileInfo, err error) error {
@@ -71,7 +71,7 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql_integration"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql,db"})
 				if err != nil {
 					return err
 				}
@@ -95,7 +95,7 @@ func GenerateSQLBoiler() error {
 				return nil
 			}
 			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql_integration"})
+				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql,db"})
 				if err != nil {
 					return err
 				}
@@ -151,10 +151,10 @@ func Build() error {
 	if err := Generate(); err != nil {
 		return err
 	}
-	if err := sh.RunV("go","build", "--tags=mysql", "-o", "build/cloudgontroller_mqsql", "cmd/main.go"); err != nil {
+	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cloudgontroller_mqsql", "cmd/main.go"); err != nil {
 		return err
 	}
-	return sh.RunV("go","build", "--tags=psql", "-o", "build/cloudgontroller_psql", "cmd/main.go")
+	return sh.RunV("go", "build", "--tags=psql", "-o", "build/cloudgontroller_psql", "cmd/main.go")
 }
 
 // Runs generators whose result is included in cloudgontroller and runs cloudgontroller.

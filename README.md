@@ -1,3 +1,4 @@
+![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 # cloudgontroller Webserver
 ## Prerequisits
 - Go 1.16 minimum: https://golang.org/dl/, can either be installed with GVM(Go version Manager) or via `brew install go`
@@ -69,13 +70,11 @@ http://localhost:8080/docs/v3
 Simply
 ```bash
 // Run all unittests
-go test --tags="psql" ./...
-// Run all integration tests (But not DB tests)
-go test --tags="integration psql" ./...
-// Run Integration Tests for Postgres
-go test --tags="mysql_integration mysql" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
-// Run Integration Tests for Postgres
-go test --tags="psql_integration psql" ./internal/app/cloudgontroller/sqlboilero -test.config $PWD/sqlboiler_psql.toml
+go test -tags="unit,psql" ./...
+// Run db tests for postgres
+go test --tags="db,psql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
+// Run db tests for mysql
+go test --tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
 ```
 
 # Existing Features

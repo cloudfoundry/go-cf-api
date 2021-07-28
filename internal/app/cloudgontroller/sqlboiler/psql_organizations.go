@@ -25,79 +25,86 @@ import (
 
 // Organization is an object representing the database table.
 type Organization struct {
-	ID                int         `boil:"id" json:"id" toml:"id" yaml:"id"`
-	GUID              string      `boil:"guid" json:"guid" toml:"guid" yaml:"guid"`
-	CreatedAt         time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt         null.Time   `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
-	Name              string      `boil:"name" json:"name" toml:"name" yaml:"name"`
-	BillingEnabled    bool        `boil:"billing_enabled" json:"billing_enabled" toml:"billing_enabled" yaml:"billing_enabled"`
-	QuotaDefinitionID int         `boil:"quota_definition_id" json:"quota_definition_id" toml:"quota_definition_id" yaml:"quota_definition_id"`
-	Status            null.String `boil:"status" json:"status,omitempty" toml:"status" yaml:"status,omitempty"`
+	ID                          int         `boil:"id" json:"id" toml:"id" yaml:"id"`
+	GUID                        string      `boil:"guid" json:"guid" toml:"guid" yaml:"guid"`
+	CreatedAt                   time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt                   null.Time   `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
+	Name                        string      `boil:"name" json:"name" toml:"name" yaml:"name"`
+	BillingEnabled              bool        `boil:"billing_enabled" json:"billing_enabled" toml:"billing_enabled" yaml:"billing_enabled"`
+	QuotaDefinitionID           int         `boil:"quota_definition_id" json:"quota_definition_id" toml:"quota_definition_id" yaml:"quota_definition_id"`
+	Status                      null.String `boil:"status" json:"status,omitempty" toml:"status" yaml:"status,omitempty"`
+	DefaultIsolationSegmentGUID null.String `boil:"default_isolation_segment_guid" json:"default_isolation_segment_guid,omitempty" toml:"default_isolation_segment_guid" yaml:"default_isolation_segment_guid,omitempty"`
 
 	R *organizationR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L organizationL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var OrganizationColumns = struct {
-	ID                string
-	GUID              string
-	CreatedAt         string
-	UpdatedAt         string
-	Name              string
-	BillingEnabled    string
-	QuotaDefinitionID string
-	Status            string
+	ID                          string
+	GUID                        string
+	CreatedAt                   string
+	UpdatedAt                   string
+	Name                        string
+	BillingEnabled              string
+	QuotaDefinitionID           string
+	Status                      string
+	DefaultIsolationSegmentGUID string
 }{
-	ID:                "id",
-	GUID:              "guid",
-	CreatedAt:         "created_at",
-	UpdatedAt:         "updated_at",
-	Name:              "name",
-	BillingEnabled:    "billing_enabled",
-	QuotaDefinitionID: "quota_definition_id",
-	Status:            "status",
+	ID:                          "id",
+	GUID:                        "guid",
+	CreatedAt:                   "created_at",
+	UpdatedAt:                   "updated_at",
+	Name:                        "name",
+	BillingEnabled:              "billing_enabled",
+	QuotaDefinitionID:           "quota_definition_id",
+	Status:                      "status",
+	DefaultIsolationSegmentGUID: "default_isolation_segment_guid",
 }
 
 var OrganizationTableColumns = struct {
-	ID                string
-	GUID              string
-	CreatedAt         string
-	UpdatedAt         string
-	Name              string
-	BillingEnabled    string
-	QuotaDefinitionID string
-	Status            string
+	ID                          string
+	GUID                        string
+	CreatedAt                   string
+	UpdatedAt                   string
+	Name                        string
+	BillingEnabled              string
+	QuotaDefinitionID           string
+	Status                      string
+	DefaultIsolationSegmentGUID string
 }{
-	ID:                "organizations.id",
-	GUID:              "organizations.guid",
-	CreatedAt:         "organizations.created_at",
-	UpdatedAt:         "organizations.updated_at",
-	Name:              "organizations.name",
-	BillingEnabled:    "organizations.billing_enabled",
-	QuotaDefinitionID: "organizations.quota_definition_id",
-	Status:            "organizations.status",
+	ID:                          "organizations.id",
+	GUID:                        "organizations.guid",
+	CreatedAt:                   "organizations.created_at",
+	UpdatedAt:                   "organizations.updated_at",
+	Name:                        "organizations.name",
+	BillingEnabled:              "organizations.billing_enabled",
+	QuotaDefinitionID:           "organizations.quota_definition_id",
+	Status:                      "organizations.status",
+	DefaultIsolationSegmentGUID: "organizations.default_isolation_segment_guid",
 }
 
 // Generated where
 
 var OrganizationWhere = struct {
-	ID                whereHelperint
-	GUID              whereHelperstring
-	CreatedAt         whereHelpertime_Time
-	UpdatedAt         whereHelpernull_Time
-	Name              whereHelperstring
-	BillingEnabled    whereHelperbool
-	QuotaDefinitionID whereHelperint
-	Status            whereHelpernull_String
+	ID                          whereHelperint
+	GUID                        whereHelperstring
+	CreatedAt                   whereHelpertime_Time
+	UpdatedAt                   whereHelpernull_Time
+	Name                        whereHelperstring
+	BillingEnabled              whereHelperbool
+	QuotaDefinitionID           whereHelperint
+	Status                      whereHelpernull_String
+	DefaultIsolationSegmentGUID whereHelpernull_String
 }{
-	ID:                whereHelperint{field: "\"organizations\".\"id\""},
-	GUID:              whereHelperstring{field: "\"organizations\".\"guid\""},
-	CreatedAt:         whereHelpertime_Time{field: "\"organizations\".\"created_at\""},
-	UpdatedAt:         whereHelpernull_Time{field: "\"organizations\".\"updated_at\""},
-	Name:              whereHelperstring{field: "\"organizations\".\"name\""},
-	BillingEnabled:    whereHelperbool{field: "\"organizations\".\"billing_enabled\""},
-	QuotaDefinitionID: whereHelperint{field: "\"organizations\".\"quota_definition_id\""},
-	Status:            whereHelpernull_String{field: "\"organizations\".\"status\""},
+	ID:                          whereHelperint{field: "\"organizations\".\"id\""},
+	GUID:                        whereHelperstring{field: "\"organizations\".\"guid\""},
+	CreatedAt:                   whereHelpertime_Time{field: "\"organizations\".\"created_at\""},
+	UpdatedAt:                   whereHelpernull_Time{field: "\"organizations\".\"updated_at\""},
+	Name:                        whereHelperstring{field: "\"organizations\".\"name\""},
+	BillingEnabled:              whereHelperbool{field: "\"organizations\".\"billing_enabled\""},
+	QuotaDefinitionID:           whereHelperint{field: "\"organizations\".\"quota_definition_id\""},
+	Status:                      whereHelpernull_String{field: "\"organizations\".\"status\""},
+	DefaultIsolationSegmentGUID: whereHelpernull_String{field: "\"organizations\".\"default_isolation_segment_guid\""},
 }
 
 // OrganizationRels is where relationship names are stored.
@@ -157,8 +164,8 @@ func (*organizationR) NewStruct() *organizationR {
 type organizationL struct{}
 
 var (
-	organizationAllColumns            = []string{"id", "guid", "created_at", "updated_at", "name", "billing_enabled", "quota_definition_id", "status"}
-	organizationColumnsWithoutDefault = []string{"guid", "updated_at", "name", "quota_definition_id"}
+	organizationAllColumns            = []string{"id", "guid", "created_at", "updated_at", "name", "billing_enabled", "quota_definition_id", "status", "default_isolation_segment_guid"}
+	organizationColumnsWithoutDefault = []string{"guid", "updated_at", "name", "quota_definition_id", "default_isolation_segment_guid"}
 	organizationColumnsWithDefault    = []string{"id", "created_at", "billing_enabled", "status"}
 	organizationPrimaryKeyColumns     = []string{"id"}
 )

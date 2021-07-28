@@ -711,7 +711,7 @@ func (isolationSegmentL) LoadOrganizations(ctx context.Context, e boil.ContextEx
 	}
 
 	query := NewQuery(
-		qm.Select("\"organizations\".id, \"organizations\".guid, \"organizations\".created_at, \"organizations\".updated_at, \"organizations\".name, \"organizations\".billing_enabled, \"organizations\".quota_definition_id, \"organizations\".status, \"a\".\"isolation_segment_guid\""),
+		qm.Select("\"organizations\".id, \"organizations\".guid, \"organizations\".created_at, \"organizations\".updated_at, \"organizations\".name, \"organizations\".billing_enabled, \"organizations\".quota_definition_id, \"organizations\".status, \"organizations\".default_isolation_segment_guid, \"a\".\"isolation_segment_guid\""),
 		qm.From("\"organizations\""),
 		qm.InnerJoin("\"organizations_isolation_segments\" as \"a\" on \"organizations\".\"guid\" = \"a\".\"organization_guid\""),
 		qm.WhereIn("\"a\".\"isolation_segment_guid\" in ?", args...),
@@ -732,7 +732,7 @@ func (isolationSegmentL) LoadOrganizations(ctx context.Context, e boil.ContextEx
 		one := new(Organization)
 		var localJoinCol string
 
-		err = results.Scan(&one.ID, &one.GUID, &one.CreatedAt, &one.UpdatedAt, &one.Name, &one.BillingEnabled, &one.QuotaDefinitionID, &one.Status, &localJoinCol)
+		err = results.Scan(&one.ID, &one.GUID, &one.CreatedAt, &one.UpdatedAt, &one.Name, &one.BillingEnabled, &one.QuotaDefinitionID, &one.Status, &one.DefaultIsolationSegmentGUID, &localJoinCol)
 		if err != nil {
 			return errors.Wrap(err, "failed to scan eager loaded results for organizations")
 		}
