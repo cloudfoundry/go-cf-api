@@ -91,7 +91,7 @@ go test --tags="db,psql" ./internal/app/cloudgontroller/sqlboiler -test.config s
 go test --tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
 ```
 
-# Existing Features
+# Current Feature List
 - Structured Logging
 - Prometheus Endpoint Metrics
 - Operations Console (REPL)
@@ -105,39 +105,7 @@ go test --tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config 
 - Rate Limiting
 
 
-# Needed for POC Demonstration
-Local Dev Demo
-- Get Public Keys from UAA
-- Authentication (JWT)
-- Rollen
-- VCAP-REQUEST_ID middleware
-- Metric Middleware
-- Logging Redact Secrets (From SQL,Echo)
-- Tests
-- GoDocs
-- Swagger Docs
-
-For Deployment
-- Health Endpoint
-- Extra Bosh Release
-  - Gorouter Routing Adaptions
-  - CC Config
-  - Promscraper
-
-
-# MVP
-
-- Cloud Gontroller
-  - Implement two simple GET endpoints (accessible for all roles): GET /v3/buildpacks/:guid + GET /v3/buildpacks (incl. query parameters, e.g. page, per_page)
-  - Handle authentication (no roles)
-  - Add VCAP-Request-ID header
-  - Adhere to rate limits (authenticated + unauthenticated)
-  - Write logs (should show up in Kibana)
-  - Emit metrics (should show up in Grafana)
-  - 100% test coverage, well-formatted code, no (severe) linting issues
-
-- Product integration
-  - Create a BOSH release (Cloud Gontroller as submodule, incl. route-registrar)
-  - Add release to cf component
-  - Enable deployment via config option (+ scaling options)
-  - Routing done by Gorouter (list of supported endpoints as config option)
+# PoC ToDos
+https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC
+# MVP ToDos
+https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP
