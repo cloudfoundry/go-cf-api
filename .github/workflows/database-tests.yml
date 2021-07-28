@@ -19,7 +19,7 @@ on:
 jobs:
   unit-test:
     runs-on: [self-hosted, linux]
-    name: Run unit tests
+    name: Run mysql tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup go
@@ -29,11 +29,14 @@ jobs:
       - name: Install Dependencies
         run: sudo apt update && sudo apt install docker-compose -y
       - name: Start Databases
-        run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
+        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose -f $PWD/docker-compose-dev.yaml up -d
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       - run: go test --tags="mysql_integration mysql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
   integration-test:
     runs-on: [self-hosted, linux]
-    name: Run integration tests
+    name: Run psql tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup go
@@ -43,5 +46,8 @@ jobs:
       - name: Install Dependencies
         run: sudo apt update && sudo apt install docker-compose -y
       - name: Start Databases
-        run: docker-compose -f $PWD/docker-compose-dev.yaml up -d
+        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose -f $PWD/docker-compose-dev.yaml up -d
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       - run: go test --tags="psql_integration psql" $PWD/internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml
