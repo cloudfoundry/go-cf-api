@@ -22,22 +22,30 @@ docker compose -f docker-compose-dev.yaml up -d
 // It is ok if psql cli reports insert errors (table already exists)
 mage DBCreate config_postgres.yaml
 mage DBLoad config_postgres.yaml database_dumps/3.102.0_postgres_ccdb.sql
+// For Mariadb use this
+mage DBCreate config_mysql.yaml
+mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
 ```
 
 Other noteable operations on the db are
 ```bash
-// Drop and Recreate DB
-mage DBRecreate
+// Drop DB
+mage DBDelete config_mysql.yaml
+// Drop and Recreate DB (will be empty)
+mage DBRecreate config_mysql.yaml
 ```
 
 ## Starting It
 Simly
 ```bash
-go run cmd/main.go config_postgres.yaml
+go run --tags=postgres cmd/main.go config_postgres.yaml
+go run --tags=mysql cmd/main.go config_mysql.yaml
 ```
-is sufficient
+is sufficient. The method how we use sqlboiler for both technology stacks(psql and mysql) leads us to a problem which generated model to use.
+We solved this by including build flags to include certain code on build time e.g. include psql code and exclude mysql code.
+This will then produce two binaries, one for each db. Running on a psql config with a mysql binarie will result in a startup error.
 
-There is also a mage command which outputs a binary file.
+There is also a mage command which outputs both binary files.
 It will also run every code/doc/apidoc generator we have beforehand and then use
 go build to produce a binary in the `build` folder.
 ```bash
