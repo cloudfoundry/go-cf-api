@@ -36,6 +36,20 @@ mage DBDelete config_mysql.yaml
 mage DBRecreate config_mysql.yaml
 ```
 
+## Running commands
+Different database code and types of test are conditionally compiled and run based on [Go build tags](https://pkg.go.dev/cmd/go#hdr-Build_constraints).
+To target a specific database and/or test set, use:
+```
+go -tags=psql,unit <go command>
+```
+
+To avoid having to type out tags every time, you can instead:
+```
+export GOFLAGS="-tags=psql,unit"
+```
+
+This will make `go test ./...` just run the unit tests and also allow you to just run `go run cmd/main.go config_psql.yaml`
+
 ## Starting It
 Simply
 ```bash
