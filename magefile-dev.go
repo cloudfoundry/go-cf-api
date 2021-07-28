@@ -4,7 +4,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -122,7 +121,7 @@ func GenerateSQLBoiler() error {
 func addBuildTags(path string, outputPrefix string, tags []string) error {
 	// Add build tag
 	var data []byte
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -132,7 +131,7 @@ func addBuildTags(path string, outputPrefix string, tags []string) error {
 	if err != nil {
 		return err
 	}
-	err = ioutil.WriteFile(fmt.Sprintf("%s%s", outputPrefix, filepath.Base(path)), data, 0644)
+	err = os.WriteFile(fmt.Sprintf("%s%s", outputPrefix, filepath.Base(path)), data, 0644)
 	if err != nil {
 		return err
 	}

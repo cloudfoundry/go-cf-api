@@ -8,7 +8,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
-	"io/ioutil"
+	"os"
 )
 
 //go:embed migrations
@@ -63,7 +63,7 @@ func Drop(db *sql.DB, info DBInfo) error {
 }
 
 func Load(db *sql.DB, info DBInfo, sqlFilePath string) error {
-	bytes, ioErr := ioutil.ReadFile(sqlFilePath)
+	bytes, ioErr := os.ReadFile(sqlFilePath)
 	if ioErr != nil {
 		zap.L().Error(fmt.Sprintf("Loading SQL file %s failed", sqlFilePath))
 	}
