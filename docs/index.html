@@ -23,49 +23,99 @@
 </div></div>
 <div id="page" class="wide">
 <div class="container">
-<h1>cloudgontroller Webserver</h1>
-<h2>Prerequisits</h2>
+<p><img src="https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg" alt="unit tests"> <img src="https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg" alt="db tests"> <img src="https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg" alt="build"></p>
+<h1>cloudgontroller</h1>
+<p>A replacement for <a href="https://github.com/cloudfoundry/cloud_controller_ng">cloud_controller_ng</a>, written in Go</p>
+<h2>Prerequisites</h2>
 <ul>
-<li>Go 1.16 minimum: <a href="https://golang.org/dl/,">https://golang.org/dl/,</a> can either be installed with GVM(Go version Manager) or via <code>brew install go</code></li>
-<li>Mage (Makefile alternative in go): <a href="https://github.com/magefile/mage,">https://github.com/magefile/mage,</a> can be installed with <code>brew install mage</code></li>
-<li>Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc..), can be installed with <code>brew install mysql postgres</code></li>
-</ul>
-<p>Install the rest of the used CLI Dependencies in this project</p>
-<pre><code class="language-bash">mage InstallDeps
+<li><a href="https://golang.org/dl">Go</a> version 1.16
+<pre><code class="language-bash">// Use Go version manager (GVM) or
+brew install go@1.16
 </code></pre>
-<p>All compile time dependencies will be downloaded when compiling (If you use the mage commands)</p>
-<h2>Preparing Dev Database</h2>
-<p>To run cloudgontroller we need a propper ccdb.
-To do this we have a docker-compose file to create the DBs and sql dumps from a ccdb that one can execute to create a ccdb.</p>
-<pre><code class="language-bash">// Start Databases (Mariadb + Postgres)
-docker compose -f docker-compose-dev.yaml up -d
-// Create Database (Just implemented for Postgres Currently)
-// It is ok if psql cli reports insert errors (table already exists)
+<pre><code></code></pre>
+</li>
+<li>Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc.)
+<pre><code class="language-bash">brew install mysql postgres
+</code></pre>
+<pre><code></code></pre>
+</li>
+<li><a href="https://github.com/magefile/mage">Mage</a> (Makefile alternative in go)
+<pre><code class="language-bash">go install github.com/magefile/mage
+</code></pre>
+<pre><code></code></pre>
+</li>
+<li>Other command line tools:
+<pre><code class="language-bash">mage install
+</code></pre>
+<pre><code>
+</code></pre>
+</li>
+</ul>
+<h2>Prepare dev database</h2>
+<p>To run cloudgontroller we need a proper Cloud Controller database.
+To do this we have a docker-compose file to create the DBs and SQL dumps from an existing Cloud Controller that can be used to build an DB for testing.
+There are <code>mage</code> commands for most database operations.</p>
+<p>Run <code>mage -l</code> to see the full list of available commands.</p>
+<h3>Postgres</h3>
+<pre><code class="language-bash">mage DBStart config_psql.yaml
 mage DBCreate config_psql.yaml
 mage DBLoad config_psql.yaml database_dumps/3.102.0_psql_ccdb.sql
-// For Mariadb use this
+</code></pre>
+<h3>MySQL/MariaDB</h3>
+<pre><code class="language-bash">mage DBStart config_mysql.yaml
 mage DBCreate config_mysql.yaml
 mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
 </code></pre>
-<p>Other noteable operations on the db are</p>
-<pre><code class="language-bash">// Drop DB
-mage DBDelete config_mysql.yaml
-// Drop and Recreate DB (will be empty)
-mage DBRecreate config_mysql.yaml
+<h3>Misc database operations</h3>
+<ul>
+<li>Drop database
+<pre><code class="language-bash">mage DBDelete config_psql.yaml
 </code></pre>
-<h2>Starting It</h2>
-<p>Simply</p>
-<pre><code class="language-bash">// Make a binary to use against a mysql instance
-go run --tags=psql cmd/main.go config_psql.yaml
-// Make a binary to use against a postgres instance
-go run --tags=mysql cmd/main.go config_psql.yaml
+<pre><code></code></pre>
+</li>
+<li>Drop and recreate (empty) database
+<pre><code class="language-bash">mage DBRecreate config_psql.yaml
 </code></pre>
-<p>The values out of the <code>config_*.yml</code> files as well as <code>sqlboiler_*.toml</code> match the credentials in <code>docker-compose-dev.yaml</code>.
-So as long as you use that docker compose file all credentials match and you dont need to mess around with the configs.</p>
-<p>The method how we use sqlboiler for both technology stacks(psql and mysql) leads us to a problem which generated model to use.
-We solved this by including build flags to include certain code on build time e.g. include psql code and exclude mysql code.
-This will then produce two binaries, one for each db. Running on a psql config with a mysql binarie will result in a startup error.</p>
-<p>There is also a mage command which outputs both binary files.
+<pre><code>
+
+</code></pre>
+</li>
+</ul>
+<h2>Running commands</h2>
+<p>Different database code and types of test are conditionally compiled and run based on <a href="https://pkg.go.dev/cmd/go#hdr-Build_constraints">Go build tags</a>.
+To target a specific database and/or test set, use:</p>
+<pre><code>go -tags=psql,unit &lt;go command&gt;
+</code></pre>
+<p>To avoid having to type out tags every time, you can instead:</p>
+<pre><code>export GOFLAGS=&quot;-tags=psql,unit&quot;
+</code></pre>
+<p>This will make <code>go test ./...</code> just run the unit tests and also allow you to just run <code>go run cmd/main.go config_psql.yaml</code></p>
+<h2>Starting the Cloud Controller</h2>
+<ul>
+<li>Postgres
+<pre><code class="language-bash">go run --tags=psql cmd/main.go config_psql.yaml
+</code></pre>
+<pre><code></code></pre>
+</li>
+<li>MySQL/MariaDB
+<pre><code class="language-bash">go run --tags=mysql cmd/main.go config_mysql.yaml
+</code></pre>
+<pre><code>
+</code></pre>
+</li>
+</ul>
+<p>The default values in the <code>config_{db}.yml</code> and <code>sqlboiler_{db}.toml</code> files should match the credentials for each database in <code>docker-compose-dev.yaml</code>.</p>
+<h2>SQL Boiler</h2>
+<p>To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with <code>sqlboiler</code>. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the <code>mysql</code> binary on a Postgres database will result in a startup error.</p>
+<p>To facilitate the generating, combining and build tagging of the <code>sqlboiler</code> models, there is a mage task to automate it:</p>
+<pre><code class="language-bash">mage GenerateSQLBoiler
+</code></pre>
+<p>The two binaries can then be compiled for your current OS/architecture with:</p>
+<pre><code class="language-bash">mage build
+</code></pre>
+<p>The binaries can be compiled for other architectures by exporting the <code>GOOS</code> and <code>GOARCH</code> environment variables.</p>
+<h2>Documentation</h2>
+<p>Documentation is auto generated using <code>godoc</code> and <code>godoc-static</code> and served via GitHub pages. The <code>mage build</code> command will also compile a binary to run the documentation server locally.
 It will also run every code/doc/apidoc generator we have beforehand and then use
 go build to produce a binary in the <code>build</code> folder.</p>
 <pre><code class="language-bash">mage build
@@ -73,18 +123,16 @@ go build to produce a binary in the <code>build</code> folder.</p>
 <p>Once Running Access it e.g. with:</p>
 <p>http://localhost:8080/api/v3/buildpacks</p>
 <p>http://localhost:8080/docs/v3</p>
-<h1>Running Tests</h1>
+<h2>Running Tests</h2>
 <p>Simply</p>
 <pre><code class="language-bash">// Run all unittests
-go test --tags=&quot;psql&quot; ./...
-// Run all integration tests (But not DB tests)
-go test --tags=&quot;integration psql&quot; ./...
-// Run Integration Tests for Postgres
-go test --tags=&quot;mysql_integration mysql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
-// Run Integration Tests for Postgres
-go test --tags=&quot;psql_integration psql&quot; ./internal/app/cloudgontroller/sqlboilero -test.config $PWD/sqlboiler_psql.toml
+go test -tags=&quot;unit,psql&quot; ./...
+// Run db tests for postgres
+go test --tags=&quot;db,psql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
+// Run db tests for mysql
+go test --tags=&quot;db,mysql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
 </code></pre>
-<h1>Existing Features</h1>
+<h1>Current Feature List</h1>
 <ul>
 <li>Structured Logging</li>
 <li>Prometheus Endpoint Metrics</li>
@@ -98,54 +146,10 @@ go test --tags=&quot;psql_integration psql&quot; ./internal/app/cloudgontroller/
 <li>Assets in memory</li>
 <li>Rate Limiting</li>
 </ul>
-<h1>Needed for POC Demonstration</h1>
-<p>Local Dev Demo</p>
-<ul>
-<li>Get Public Keys from UAA</li>
-<li>Authentication (JWT)</li>
-<li>Rollen</li>
-<li>VCAP-REQUEST_ID middleware</li>
-<li>Metric Middleware</li>
-<li>Logging Redact Secrets (From SQL,Echo)</li>
-<li>Tests</li>
-<li>GoDocs</li>
-<li>Swagger Docs</li>
-</ul>
-<p>For Deployment</p>
-<ul>
-<li>Health Endpoint</li>
-<li>Extra Bosh Release
-<ul>
-<li>Gorouter Routing Adaptions</li>
-<li>CC Config</li>
-<li>Promscraper</li>
-</ul>
-</li>
-</ul>
-<h1>MVP</h1>
-<ul>
-<li>
-<p>Cloud Gontroller</p>
-<ul>
-<li>Implement two simple GET endpoints (accessible for all roles): GET /v3/buildpacks/:guid + GET /v3/buildpacks (incl. query parameters, e.g. page, per_page)</li>
-<li>Handle authentication (no roles)</li>
-<li>Add VCAP-Request-ID header</li>
-<li>Adhere to rate limits (authenticated + unauthenticated)</li>
-<li>Write logs (should show up in Kibana)</li>
-<li>Emit metrics (should show up in Grafana)</li>
-<li>100% test coverage, well-formatted code, no (severe) linting issues</li>
-</ul>
-</li>
-<li>
-<p>Product integration</p>
-<ul>
-<li>Create a BOSH release (Cloud Gontroller as submodule, incl. route-registrar)</li>
-<li>Add release to cf component</li>
-<li>Enable deployment via config option (+ scaling options)</li>
-<li>Routing done by Gorouter (list of supported endpoints as config option)</li>
-</ul>
-</li>
-</ul>
+<h1>PoC ToDos</h1>
+<p><a href="https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC">https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC</a></p>
+<h1>MVP ToDos</h1>
+<p><a href="https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP">https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP</a></p>
 
 <h1>
 	Packages

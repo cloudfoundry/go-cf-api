@@ -65,7 +65,7 @@
 <span id="L8" class="ln">     8  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config&#34;
 <span id="L9" class="ln">     9  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers&#34;
 <span id="L10" class="ln">    10  </span>	&#34;go.uber.org/zap&#34;
-<span id="L11" class="ln">    11  </span>	&#34;io/ioutil&#34;
+<span id="L11" class="ln">    11  </span>	&#34;os&#34;
 <span id="L12" class="ln">    12  </span>)
 <span id="L13" class="ln">    13  </span>
 <span id="L14" class="ln">    14  </span><span class="comment">//go:embed migrations</span>
@@ -120,7 +120,7 @@
 <span id="L63" class="ln">    63  </span>}
 <span id="L64" class="ln">    64  </span>
 <span id="L65" class="ln">    65  </span>func Load(db *sql.DB, info DBInfo, sqlFilePath string) error {
-<span id="L66" class="ln">    66  </span>	bytes, ioErr := ioutil.ReadFile(sqlFilePath)
+<span id="L66" class="ln">    66  </span>	bytes, ioErr := os.ReadFile(sqlFilePath)
 <span id="L67" class="ln">    67  </span>	if ioErr != nil {
 <span id="L68" class="ln">    68  </span>		zap.L().Error(fmt.Sprintf(&#34;Loading SQL file %s failed&#34;, sqlFilePath))
 <span id="L69" class="ln">    69  </span>	}
