@@ -78,6 +78,22 @@ func Console() error {
 	return nil
 }
 
+// Starts a docker container running the database specified in the config file
+func DBStart(configPath string) error {
+	config := config.Get(configPath)
+	var container string
+	switch config.DB.Type {
+	case "postgres":
+		container = "postgres"
+	case "mysql":
+		container = "mariadb"
+	default:
+		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
+	}
+	err := sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container)
+	return err
+}
+
 // Creates the Database that is specified in the config file
 func DBCreate(configPath string) error {
 	config := config.Get(configPath)
@@ -123,14 +139,14 @@ func DBMigrate(configPath string) error {
 func DBLoad(configPath string, sqlFilePath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db.NewConnection(config.DB,false)
+	db.NewConnection(config.DB, false)
 	if db.GetConnectionInfo().Type == "postgres" {
 		if err := sh.RunV("psql", config.DB.ConnectionString, "-f", sqlFilePath); err != nil {
 			return err
 		}
 	} else if db.GetConnectionInfo().Type == "mysql" {
 		zap.L().Warn("Loading Mysql Dumps not yet implemented")
-		if err := sh.RunV("mysql", "-h", db.GetConnectionInfo().Host, "-P", db.GetConnectionInfo().Port, "-u", db.GetConnectionInfo().User, fmt.Sprintf("--password=%s",db.GetConnectionInfo().Password),"--protocol=tcp","-e", fmt.Sprintf("source %s",sqlFilePath)); err != nil {
+		if err := sh.RunV("mysql", "-h", db.GetConnectionInfo().Host, "-P", db.GetConnectionInfo().Port, "-u", db.GetConnectionInfo().User, fmt.Sprintf("--password=%s", db.GetConnectionInfo().Password), "--protocol=tcp", "-e", fmt.Sprintf("source %s", sqlFilePath)); err != nil {
 			return err
 		}
 	}

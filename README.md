@@ -1,40 +1,57 @@
 ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
-# cloudgontroller Webserver
-## Prerequisits
-- Go 1.16 minimum: https://golang.org/dl/, can either be installed with GVM(Go version Manager) or via `brew install go`
-- Mage (Makefile alternative in go): https://github.com/magefile/mage, can be installed with `brew install mage`
-- Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc..), can be installed with `brew install mysql postgres`
+# cloudgontroller
+A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
+## Prerequisites
+- [Go](https://golang.org/dl) version 1.16
+	```bash
+	// Use Go version manager (GVM) or
+	brew install go@1.16
+	```
+- Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc.)
+	```bash
+	brew install mysql postgres
+	```
+- [Mage](https://github.com/magefile/mage) (Makefile alternative in go)
+	```bash
+	go install github.com/magefile/mage
+	```
+- Other command line tools:
+	```bash
+	mage install
+	```
 
-Install the rest of the used CLI Dependencies in this project
+## Prepare dev database
+
+To run cloudgontroller we need a proper Cloud Controller database.
+To do this we have a docker-compose file to create the DBs and SQL dumps from an existing Cloud Controller that can be used to build an DB for testing.
+There are `mage` commands for most database operations.
+
+Run `mage -l` to see the full list of available commands.
+
+### Postgres
 ```bash
-mage InstallDeps
-```
-All compile time dependencies will be downloaded when compiling (If you use the mage commands)
-
-## Preparing Dev Database
-
-To run cloudgontroller we need a propper ccdb.
-To do this we have a docker-compose file to create the DBs and sql dumps from a ccdb that one can execute to create a ccdb.
-
-```bash
-// Start Databases (Mariadb + Postgres)
-docker compose -f docker-compose-dev.yaml up -d
-// Create Database (Just implemented for Postgres Currently)
-// It is ok if psql cli reports insert errors (table already exists)
+mage DBStart config_psql.yaml
 mage DBCreate config_psql.yaml
 mage DBLoad config_psql.yaml database_dumps/3.102.0_psql_ccdb.sql
-// For Mariadb use this
+```
+
+### MySQL/MariaDB
+```bash
+mage DBStart config_mysql.yaml
 mage DBCreate config_mysql.yaml
 mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
 ```
 
-Other noteable operations on the db are
-```bash
-// Drop DB
-mage DBDelete config_mysql.yaml
-// Drop and Recreate DB (will be empty)
-mage DBRecreate config_mysql.yaml
-```
+### Misc database operations
+* Drop database
+	```bash
+	mage DBDelete config_psql.yaml
+	```
+* Drop and recreate (empty) database
+	```bash
+	mage DBRecreate config_psql.yaml
+	```
+
 
 ## Running commands
 Different database code and types of test are conditionally compiled and run based on [Go build tags](https://pkg.go.dev/cmd/go#hdr-Build_constraints).
@@ -50,46 +67,60 @@ export GOFLAGS="-tags=psql,unit"
 
 This will make `go test ./...` just run the unit tests and also allow you to just run `go run cmd/main.go config_psql.yaml`
 
-## Starting It
-Simply
-```bash
-// Make a binary to use against a mysql instance
-go run --tags=psql cmd/main.go config_psql.yaml
-// Make a binary to use against a postgres instance
-go run --tags=mysql cmd/main.go config_psql.yaml
+## Starting the Cloud Controller
+* Postgres
+	```bash
+	go run --tags=psql cmd/main.go config_psql.yaml
+	```
+* MySQL/MariaDB
+	```bash
+	go run --tags=mysql cmd/main.go config_mysql.yaml
+	```
+
+The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files should match the credentials for each database in `docker-compose-dev.yaml`.
+
+The API should be accessible at e.g.
+```
+http://localhost:8080/api/v3/buildpacks
 ```
 
-The values out of the `config_*.yml` files as well as `sqlboiler_*.toml` match the credentials in `docker-compose-dev.yaml`.
-So as long as you use that docker compose file all credentials match and you dont need to mess around with the configs.
+## SQL Boiler
+To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with `sqlboiler`. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the `mysql` binary on a Postgres database will result in a startup error.
 
-The method how we use sqlboiler for both technology stacks(psql and mysql) leads us to a problem which generated model to use.
-We solved this by including build flags to include certain code on build time e.g. include psql code and exclude mysql code.
-This will then produce two binaries, one for each db. Running on a psql config with a mysql binarie will result in a startup error.
+To facilitate the generating, combining and build tagging of the `sqlboiler` models, there is a mage task to automate it:
+```bash
+mage GenerateSQLBoiler
+```
 
-There is also a mage command which outputs both binary files.
-It will also run every code/doc/apidoc generator we have beforehand and then use
-go build to produce a binary in the `build` folder.
+The two binaries can then be compiled for your current OS/architecture with:
 ```bash
 mage build
 ```
 
-Once Running Access it e.g. with:
-
-http://localhost:8080/api/v3/buildpacks
-
-http://localhost:8080/docs/v3
+The binaries can be compiled for other architectures by exporting the `GOOS` and `GOARCH` environment variables.
 
 
-# Running Tests
-Simply
-```bash
-// Run all unittests
-go test -tags="unit,psql" ./...
-// Run db tests for postgres
-go test --tags="db,psql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
-// Run db tests for mysql
-go test --tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
+## Documentation
+Documentation is auto generated using `godoc` and `godoc-static` and served via GitHub pages. The binaries compiled by the `mage build` command will also serve the documentation at:
 ```
+http://localhost:8080/docs/v3
+```
+
+
+## Running tests
+Different tags are used to control which tests are run:
+* Unit tests
+	```bash
+	go test -tags="unit,psql" ./...
+	```
+* DB tests (Postgres) - require running database
+	```bash
+	go test -tags="db,psql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
+	```
+* DB tests (MySQL/MariaDB) - require running database
+	```bash
+	go test -tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
+	```
 
 # Current Feature List
 - Structured Logging

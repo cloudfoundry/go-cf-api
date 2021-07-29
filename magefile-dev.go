@@ -22,7 +22,7 @@ import (
 //////////////////
 
 // Installs used CLI Tools in this project other than nodejs,yarn and go itself. Is a requirement for many mage commands to run.
-func InstallDeps() error {
+func Install() error {
 	if err := sh.Run("go", "install", "github.com/swaggo/swag/cmd/swag"); err != nil {
 		return err
 	}
@@ -150,7 +150,7 @@ func Build() error {
 	if err := Generate(); err != nil {
 		return err
 	}
-	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cloudgontroller_mqsql", "cmd/main.go"); err != nil {
+	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cloudgontroller_mysql", "cmd/main.go"); err != nil {
 		return err
 	}
 	return sh.RunV("go", "build", "--tags=psql", "-o", "build/cloudgontroller_psql", "cmd/main.go")
@@ -223,7 +223,7 @@ func createGoDocs() error {
 	if err := sh.Run("mkdir", "-p", "./docs"); err != nil {
 		return err
 	}
-	if err := sh.Run("godoc-static", "-site-name='CloudGontroller'", "-site-description-file=./Readme.md", "-destination=./docs", "."); err != nil {
+	if err := sh.Run("godoc-static", "-site-name='CloudGontroller'", "-site-description-file=./README.md", "-destination=./docs", "."); err != nil {
 		return err
 	}
 	return sh.Rm("./docs/docs.zip")
