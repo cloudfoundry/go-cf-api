@@ -23,22 +23,22 @@ import (
 
 // Installs used CLI Tools in this project other than nodejs,yarn and go itself. Is a requirement for many mage commands to run.
 func InstallDeps() error {
-	if err := sh.Run("go", "get", "github.com/swaggo/swag/cmd/swag"); err != nil {
+	if err := sh.Run("go", "install", "github.com/swaggo/swag/cmd/swag"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", "golang.org/x/tools/cmd/godoc"); err != nil {
+	if err := sh.Run("go", "install", "golang.org/x/tools/cmd/godoc"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", "gitlab.com/tslocum/godoc-static"); err != nil {
+	if err := sh.Run("go", "install", "gitlab.com/tslocum/godoc-static"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", "github.com/volatiletech/sqlboiler/v4@latest"); err != nil {
+	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql@latest"); err != nil {
+	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "get", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest"); err != nil {
+	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql"); err != nil {
 		return err
 	}
 	return nil
