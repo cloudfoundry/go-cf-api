@@ -15,3 +15,15 @@ services:
       - MYSQL_ROOT_PASSWORD=admin
     ports:
       - "3306:3306"
+  uaa:
+    image: cloudfoundry/uaa
+    restart: always
+    volumes:
+      - type: bind
+        source: ./uaa.yml
+        target: /uaa.yml
+    environment:
+      - CLOUDFOUNDRY_CONFIG_PATH=
+      - spring_profiles=default,hsqldb
+    ports:
+      - "8090:8080"
