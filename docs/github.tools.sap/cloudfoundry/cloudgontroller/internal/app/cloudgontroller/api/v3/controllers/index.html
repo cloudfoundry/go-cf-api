@@ -109,6 +109,9 @@
 				<dd><a href="#GetBuildpacks">func GetBuildpacks(c echo.Context) error</a></dd>
 			
 				
+				<dd><a href="#GetHealth">func GetHealth(c echo.Context) error</a></dd>
+			
+				
 				<dd><a href="#NewError">func NewError(c echo.Context, status int, err error)</a></dd>
 			
 			
@@ -131,6 +134,8 @@
 				<a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/buildpacks.go.html">buildpacks.go</a>
 			
 				<a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/error.go.html">error.go</a>
+			
+				<a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/health.go.html">health.go</a>
 			
 			</span>
 			</p>
@@ -188,6 +193,32 @@ GetBuildpacks godoc
 @Failure 400 {object} []interface{}
 @Failure 500 {object} HTTPError
 @Router /buildpacks [get]
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetHealth">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/health.go.html?s=405:441#L9">GetHealth</a>
+				<a class="permalink" href="#GetHealth">¶</a>
+				
+				
+			</h2>
+			<pre>func GetHealth(c echo.<a href="#Context">Context</a>) <a href="../../../../../../../../../builtin/#error">error</a></pre>
+			<p>
+GetHealth godoc
+@Summary Health get health
+@Description Health endpoint to check platform availability
+@Tags Health
+@Accept json
+@Produce json
+@Success 200 {object} interface{}
+@Failure 404 {object} HTTPError
+@Failure 400 {object} HTTPError
+@Failure 500 {object} HTTPError
+@Router /healthz [get]
 </p>
 
 			

@@ -8,4 +8,5 @@ import (
 func RegisterHandlers(e *echo.Echo) {
 	v3.RegisterV3Handlers("api/v3", e)
 	v3.RegisterV3DocumentationHandlers("docs/v3", e)
+	v3.RegisterHealthHandler("api", e)
 }

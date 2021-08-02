@@ -171,158 +171,199 @@
 <span id="L114" class="ln">   114  </span>                    }
 <span id="L115" class="ln">   115  </span>                }
 <span id="L116" class="ln">   116  </span>            }
-<span id="L117" class="ln">   117  </span>        }
-<span id="L118" class="ln">   118  </span>    },
-<span id="L119" class="ln">   119  </span>    &#34;definitions&#34;: {
-<span id="L120" class="ln">   120  </span>        &#34;controllers.HTTPError&#34;: {
-<span id="L121" class="ln">   121  </span>            &#34;type&#34;: &#34;object&#34;,
-<span id="L122" class="ln">   122  </span>            &#34;properties&#34;: {
-<span id="L123" class="ln">   123  </span>                &#34;code&#34;: {
-<span id="L124" class="ln">   124  </span>                    &#34;type&#34;: &#34;integer&#34;,
-<span id="L125" class="ln">   125  </span>                    &#34;example&#34;: 400
-<span id="L126" class="ln">   126  </span>                },
-<span id="L127" class="ln">   127  </span>                &#34;message&#34;: {
-<span id="L128" class="ln">   128  </span>                    &#34;type&#34;: &#34;string&#34;,
-<span id="L129" class="ln">   129  </span>                    &#34;example&#34;: &#34;status bad request&#34;
-<span id="L130" class="ln">   130  </span>                }
-<span id="L131" class="ln">   131  </span>            }
-<span id="L132" class="ln">   132  </span>        },
-<span id="L133" class="ln">   133  </span>        &#34;presenter.BuildpackResponse&#34;: {
-<span id="L134" class="ln">   134  </span>            &#34;type&#34;: &#34;object&#34;,
-<span id="L135" class="ln">   135  </span>            &#34;properties&#34;: {
-<span id="L136" class="ln">   136  </span>                &#34;created_at&#34;: {
-<span id="L137" class="ln">   137  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L138" class="ln">   138  </span>                },
-<span id="L139" class="ln">   139  </span>                &#34;enabled&#34;: {
-<span id="L140" class="ln">   140  </span>                    &#34;type&#34;: &#34;boolean&#34;
-<span id="L141" class="ln">   141  </span>                },
-<span id="L142" class="ln">   142  </span>                &#34;filename&#34;: {
-<span id="L143" class="ln">   143  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L144" class="ln">   144  </span>                },
-<span id="L145" class="ln">   145  </span>                &#34;guid&#34;: {
-<span id="L146" class="ln">   146  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L147" class="ln">   147  </span>                },
-<span id="L148" class="ln">   148  </span>                &#34;links&#34;: {
-<span id="L149" class="ln">   149  </span>                    &#34;type&#34;: &#34;object&#34;,
-<span id="L150" class="ln">   150  </span>                    &#34;properties&#34;: {
-<span id="L151" class="ln">   151  </span>                        &#34;self&#34;: {
-<span id="L152" class="ln">   152  </span>                            &#34;type&#34;: &#34;object&#34;,
-<span id="L153" class="ln">   153  </span>                            &#34;properties&#34;: {
-<span id="L154" class="ln">   154  </span>                                &#34;href&#34;: {
-<span id="L155" class="ln">   155  </span>                                    &#34;type&#34;: &#34;string&#34;
-<span id="L156" class="ln">   156  </span>                                }
-<span id="L157" class="ln">   157  </span>                            }
-<span id="L158" class="ln">   158  </span>                        },
-<span id="L159" class="ln">   159  </span>                        &#34;upload&#34;: {
-<span id="L160" class="ln">   160  </span>                            &#34;type&#34;: &#34;object&#34;,
-<span id="L161" class="ln">   161  </span>                            &#34;properties&#34;: {
-<span id="L162" class="ln">   162  </span>                                &#34;href&#34;: {
-<span id="L163" class="ln">   163  </span>                                    &#34;type&#34;: &#34;string&#34;
-<span id="L164" class="ln">   164  </span>                                },
-<span id="L165" class="ln">   165  </span>                                &#34;method&#34;: {
-<span id="L166" class="ln">   166  </span>                                    &#34;type&#34;: &#34;string&#34;
-<span id="L167" class="ln">   167  </span>                                }
-<span id="L168" class="ln">   168  </span>                            }
-<span id="L169" class="ln">   169  </span>                        }
-<span id="L170" class="ln">   170  </span>                    }
-<span id="L171" class="ln">   171  </span>                },
-<span id="L172" class="ln">   172  </span>                &#34;locked&#34;: {
-<span id="L173" class="ln">   173  </span>                    &#34;type&#34;: &#34;boolean&#34;
-<span id="L174" class="ln">   174  </span>                },
-<span id="L175" class="ln">   175  </span>                &#34;metadata&#34;: {
-<span id="L176" class="ln">   176  </span>                    &#34;$ref&#34;: &#34;#/definitions/presenter.Metadata&#34;
-<span id="L177" class="ln">   177  </span>                },
-<span id="L178" class="ln">   178  </span>                &#34;name&#34;: {
-<span id="L179" class="ln">   179  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L180" class="ln">   180  </span>                },
-<span id="L181" class="ln">   181  </span>                &#34;position&#34;: {
-<span id="L182" class="ln">   182  </span>                    &#34;type&#34;: &#34;integer&#34;
-<span id="L183" class="ln">   183  </span>                },
-<span id="L184" class="ln">   184  </span>                &#34;stack&#34;: {
-<span id="L185" class="ln">   185  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L186" class="ln">   186  </span>                },
-<span id="L187" class="ln">   187  </span>                &#34;state&#34;: {
-<span id="L188" class="ln">   188  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L189" class="ln">   189  </span>                },
-<span id="L190" class="ln">   190  </span>                &#34;updated_at&#34;: {
-<span id="L191" class="ln">   191  </span>                    &#34;type&#34;: &#34;string&#34;
-<span id="L192" class="ln">   192  </span>                }
-<span id="L193" class="ln">   193  </span>            }
-<span id="L194" class="ln">   194  </span>        },
-<span id="L195" class="ln">   195  </span>        &#34;presenter.Metadata&#34;: {
-<span id="L196" class="ln">   196  </span>            &#34;type&#34;: &#34;object&#34;,
-<span id="L197" class="ln">   197  </span>            &#34;properties&#34;: {
-<span id="L198" class="ln">   198  </span>                &#34;annotations&#34;: {
-<span id="L199" class="ln">   199  </span>                    &#34;type&#34;: &#34;object&#34;
-<span id="L200" class="ln">   200  </span>                },
-<span id="L201" class="ln">   201  </span>                &#34;labels&#34;: {
-<span id="L202" class="ln">   202  </span>                    &#34;type&#34;: &#34;object&#34;
-<span id="L203" class="ln">   203  </span>                }
-<span id="L204" class="ln">   204  </span>            }
-<span id="L205" class="ln">   205  </span>        }
-<span id="L206" class="ln">   206  </span>    },
-<span id="L207" class="ln">   207  </span>    &#34;securityDefinitions&#34;: {
-<span id="L208" class="ln">   208  </span>        &#34;ApiKeyAuth&#34;: {
-<span id="L209" class="ln">   209  </span>            &#34;type&#34;: &#34;apiKey&#34;,
-<span id="L210" class="ln">   210  </span>            &#34;name&#34;: &#34;Authorization&#34;,
-<span id="L211" class="ln">   211  </span>            &#34;in&#34;: &#34;header&#34;
-<span id="L212" class="ln">   212  </span>        },
-<span id="L213" class="ln">   213  </span>        &#34;BasicAuth&#34;: {
-<span id="L214" class="ln">   214  </span>            &#34;type&#34;: &#34;basic&#34;
-<span id="L215" class="ln">   215  </span>        }
-<span id="L216" class="ln">   216  </span>    },
-<span id="L217" class="ln">   217  </span>    &#34;x-extension-openapi&#34;: {
-<span id="L218" class="ln">   218  </span>        &#34;example&#34;: &#34;value on a json format&#34;
-<span id="L219" class="ln">   219  </span>    }
-<span id="L220" class="ln">   220  </span>}`
-<span id="L221" class="ln">   221  </span>
-<span id="L222" class="ln">   222  </span>type swaggerInfo struct {
-<span id="L223" class="ln">   223  </span>	Version     string
-<span id="L224" class="ln">   224  </span>	Host        string
-<span id="L225" class="ln">   225  </span>	BasePath    string
-<span id="L226" class="ln">   226  </span>	Schemes     []string
-<span id="L227" class="ln">   227  </span>	Title       string
-<span id="L228" class="ln">   228  </span>	Description string
-<span id="L229" class="ln">   229  </span>}
-<span id="L230" class="ln">   230  </span>
-<span id="L231" class="ln">   231  </span><span class="comment">// SwaggerInfo holds exported Swagger Info so clients can modify it</span>
-<span id="L232" class="ln">   232  </span>var SwaggerInfo = swaggerInfo{
-<span id="L233" class="ln">   233  </span>	Version:     &#34;3.0.0&#34;,
-<span id="L234" class="ln">   234  </span>	Host:        &#34;localhost:8080&#34;,
-<span id="L235" class="ln">   235  </span>	BasePath:    &#34;/api/v3&#34;,
-<span id="L236" class="ln">   236  </span>	Schemes:     []string{},
-<span id="L237" class="ln">   237  </span>	Title:       &#34;CloudGontroller API&#34;,
-<span id="L238" class="ln">   238  </span>	Description: &#34;CAPI V3 Compatible API with blazing fast backend.&#34;,
-<span id="L239" class="ln">   239  </span>}
-<span id="L240" class="ln">   240  </span>
-<span id="L241" class="ln">   241  </span>type s struct{}
-<span id="L242" class="ln">   242  </span>
-<span id="L243" class="ln">   243  </span>func (s *s) ReadDoc() string {
-<span id="L244" class="ln">   244  </span>	sInfo := SwaggerInfo
-<span id="L245" class="ln">   245  </span>	sInfo.Description = strings.Replace(sInfo.Description, &#34;\n&#34;, &#34;\\n&#34;, -1)
-<span id="L246" class="ln">   246  </span>
-<span id="L247" class="ln">   247  </span>	t, err := template.New(&#34;swagger_info&#34;).Funcs(template.FuncMap{
-<span id="L248" class="ln">   248  </span>		&#34;marshal&#34;: func(v interface{}) string {
-<span id="L249" class="ln">   249  </span>			a, _ := json.Marshal(v)
-<span id="L250" class="ln">   250  </span>			return string(a)
-<span id="L251" class="ln">   251  </span>		},
-<span id="L252" class="ln">   252  </span>	}).Parse(doc)
-<span id="L253" class="ln">   253  </span>	if err != nil {
-<span id="L254" class="ln">   254  </span>		return doc
-<span id="L255" class="ln">   255  </span>	}
-<span id="L256" class="ln">   256  </span>
-<span id="L257" class="ln">   257  </span>	var tpl bytes.Buffer
-<span id="L258" class="ln">   258  </span>	if err := t.Execute(&amp;tpl, sInfo); err != nil {
-<span id="L259" class="ln">   259  </span>		return doc
-<span id="L260" class="ln">   260  </span>	}
-<span id="L261" class="ln">   261  </span>
-<span id="L262" class="ln">   262  </span>	return tpl.String()
-<span id="L263" class="ln">   263  </span>}
-<span id="L264" class="ln">   264  </span>
-<span id="L265" class="ln">   265  </span>func init() {
-<span id="L266" class="ln">   266  </span>	swag.Register(swag.Name, &amp;s{})
-<span id="L267" class="ln">   267  </span>}
-<span id="L268" class="ln">   268  </span>
+<span id="L117" class="ln">   117  </span>        },
+<span id="L118" class="ln">   118  </span>        &#34;/healthz&#34;: {
+<span id="L119" class="ln">   119  </span>            &#34;get&#34;: {
+<span id="L120" class="ln">   120  </span>                &#34;description&#34;: &#34;Health endpoint to check platform availability&#34;,
+<span id="L121" class="ln">   121  </span>                &#34;consumes&#34;: [
+<span id="L122" class="ln">   122  </span>                    &#34;application/json&#34;
+<span id="L123" class="ln">   123  </span>                ],
+<span id="L124" class="ln">   124  </span>                &#34;produces&#34;: [
+<span id="L125" class="ln">   125  </span>                    &#34;application/json&#34;
+<span id="L126" class="ln">   126  </span>                ],
+<span id="L127" class="ln">   127  </span>                &#34;tags&#34;: [
+<span id="L128" class="ln">   128  </span>                    &#34;Health&#34;
+<span id="L129" class="ln">   129  </span>                ],
+<span id="L130" class="ln">   130  </span>                &#34;summary&#34;: &#34;Health get health&#34;,
+<span id="L131" class="ln">   131  </span>                &#34;responses&#34;: {
+<span id="L132" class="ln">   132  </span>                    &#34;200&#34;: {
+<span id="L133" class="ln">   133  </span>                        &#34;description&#34;: &#34;OK&#34;,
+<span id="L134" class="ln">   134  </span>                        &#34;schema&#34;: {
+<span id="L135" class="ln">   135  </span>                            &#34;type&#34;: &#34;object&#34;
+<span id="L136" class="ln">   136  </span>                        }
+<span id="L137" class="ln">   137  </span>                    },
+<span id="L138" class="ln">   138  </span>                    &#34;400&#34;: {
+<span id="L139" class="ln">   139  </span>                        &#34;description&#34;: &#34;Bad Request&#34;,
+<span id="L140" class="ln">   140  </span>                        &#34;schema&#34;: {
+<span id="L141" class="ln">   141  </span>                            &#34;$ref&#34;: &#34;#/definitions/controllers.HTTPError&#34;
+<span id="L142" class="ln">   142  </span>                        }
+<span id="L143" class="ln">   143  </span>                    },
+<span id="L144" class="ln">   144  </span>                    &#34;404&#34;: {
+<span id="L145" class="ln">   145  </span>                        &#34;description&#34;: &#34;Not Found&#34;,
+<span id="L146" class="ln">   146  </span>                        &#34;schema&#34;: {
+<span id="L147" class="ln">   147  </span>                            &#34;$ref&#34;: &#34;#/definitions/controllers.HTTPError&#34;
+<span id="L148" class="ln">   148  </span>                        }
+<span id="L149" class="ln">   149  </span>                    },
+<span id="L150" class="ln">   150  </span>                    &#34;500&#34;: {
+<span id="L151" class="ln">   151  </span>                        &#34;description&#34;: &#34;Internal Server Error&#34;,
+<span id="L152" class="ln">   152  </span>                        &#34;schema&#34;: {
+<span id="L153" class="ln">   153  </span>                            &#34;$ref&#34;: &#34;#/definitions/controllers.HTTPError&#34;
+<span id="L154" class="ln">   154  </span>                        }
+<span id="L155" class="ln">   155  </span>                    }
+<span id="L156" class="ln">   156  </span>                }
+<span id="L157" class="ln">   157  </span>            }
+<span id="L158" class="ln">   158  </span>        }
+<span id="L159" class="ln">   159  </span>    },
+<span id="L160" class="ln">   160  </span>    &#34;definitions&#34;: {
+<span id="L161" class="ln">   161  </span>        &#34;controllers.HTTPError&#34;: {
+<span id="L162" class="ln">   162  </span>            &#34;type&#34;: &#34;object&#34;,
+<span id="L163" class="ln">   163  </span>            &#34;properties&#34;: {
+<span id="L164" class="ln">   164  </span>                &#34;code&#34;: {
+<span id="L165" class="ln">   165  </span>                    &#34;type&#34;: &#34;integer&#34;,
+<span id="L166" class="ln">   166  </span>                    &#34;example&#34;: 400
+<span id="L167" class="ln">   167  </span>                },
+<span id="L168" class="ln">   168  </span>                &#34;message&#34;: {
+<span id="L169" class="ln">   169  </span>                    &#34;type&#34;: &#34;string&#34;,
+<span id="L170" class="ln">   170  </span>                    &#34;example&#34;: &#34;status bad request&#34;
+<span id="L171" class="ln">   171  </span>                }
+<span id="L172" class="ln">   172  </span>            }
+<span id="L173" class="ln">   173  </span>        },
+<span id="L174" class="ln">   174  </span>        &#34;presenter.BuildpackResponse&#34;: {
+<span id="L175" class="ln">   175  </span>            &#34;type&#34;: &#34;object&#34;,
+<span id="L176" class="ln">   176  </span>            &#34;properties&#34;: {
+<span id="L177" class="ln">   177  </span>                &#34;created_at&#34;: {
+<span id="L178" class="ln">   178  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L179" class="ln">   179  </span>                },
+<span id="L180" class="ln">   180  </span>                &#34;enabled&#34;: {
+<span id="L181" class="ln">   181  </span>                    &#34;type&#34;: &#34;boolean&#34;
+<span id="L182" class="ln">   182  </span>                },
+<span id="L183" class="ln">   183  </span>                &#34;filename&#34;: {
+<span id="L184" class="ln">   184  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L185" class="ln">   185  </span>                },
+<span id="L186" class="ln">   186  </span>                &#34;guid&#34;: {
+<span id="L187" class="ln">   187  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L188" class="ln">   188  </span>                },
+<span id="L189" class="ln">   189  </span>                &#34;links&#34;: {
+<span id="L190" class="ln">   190  </span>                    &#34;type&#34;: &#34;object&#34;,
+<span id="L191" class="ln">   191  </span>                    &#34;properties&#34;: {
+<span id="L192" class="ln">   192  </span>                        &#34;self&#34;: {
+<span id="L193" class="ln">   193  </span>                            &#34;type&#34;: &#34;object&#34;,
+<span id="L194" class="ln">   194  </span>                            &#34;properties&#34;: {
+<span id="L195" class="ln">   195  </span>                                &#34;href&#34;: {
+<span id="L196" class="ln">   196  </span>                                    &#34;type&#34;: &#34;string&#34;
+<span id="L197" class="ln">   197  </span>                                }
+<span id="L198" class="ln">   198  </span>                            }
+<span id="L199" class="ln">   199  </span>                        },
+<span id="L200" class="ln">   200  </span>                        &#34;upload&#34;: {
+<span id="L201" class="ln">   201  </span>                            &#34;type&#34;: &#34;object&#34;,
+<span id="L202" class="ln">   202  </span>                            &#34;properties&#34;: {
+<span id="L203" class="ln">   203  </span>                                &#34;href&#34;: {
+<span id="L204" class="ln">   204  </span>                                    &#34;type&#34;: &#34;string&#34;
+<span id="L205" class="ln">   205  </span>                                },
+<span id="L206" class="ln">   206  </span>                                &#34;method&#34;: {
+<span id="L207" class="ln">   207  </span>                                    &#34;type&#34;: &#34;string&#34;
+<span id="L208" class="ln">   208  </span>                                }
+<span id="L209" class="ln">   209  </span>                            }
+<span id="L210" class="ln">   210  </span>                        }
+<span id="L211" class="ln">   211  </span>                    }
+<span id="L212" class="ln">   212  </span>                },
+<span id="L213" class="ln">   213  </span>                &#34;locked&#34;: {
+<span id="L214" class="ln">   214  </span>                    &#34;type&#34;: &#34;boolean&#34;
+<span id="L215" class="ln">   215  </span>                },
+<span id="L216" class="ln">   216  </span>                &#34;metadata&#34;: {
+<span id="L217" class="ln">   217  </span>                    &#34;$ref&#34;: &#34;#/definitions/presenter.Metadata&#34;
+<span id="L218" class="ln">   218  </span>                },
+<span id="L219" class="ln">   219  </span>                &#34;name&#34;: {
+<span id="L220" class="ln">   220  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L221" class="ln">   221  </span>                },
+<span id="L222" class="ln">   222  </span>                &#34;position&#34;: {
+<span id="L223" class="ln">   223  </span>                    &#34;type&#34;: &#34;integer&#34;
+<span id="L224" class="ln">   224  </span>                },
+<span id="L225" class="ln">   225  </span>                &#34;stack&#34;: {
+<span id="L226" class="ln">   226  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L227" class="ln">   227  </span>                },
+<span id="L228" class="ln">   228  </span>                &#34;state&#34;: {
+<span id="L229" class="ln">   229  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L230" class="ln">   230  </span>                },
+<span id="L231" class="ln">   231  </span>                &#34;updated_at&#34;: {
+<span id="L232" class="ln">   232  </span>                    &#34;type&#34;: &#34;string&#34;
+<span id="L233" class="ln">   233  </span>                }
+<span id="L234" class="ln">   234  </span>            }
+<span id="L235" class="ln">   235  </span>        },
+<span id="L236" class="ln">   236  </span>        &#34;presenter.Metadata&#34;: {
+<span id="L237" class="ln">   237  </span>            &#34;type&#34;: &#34;object&#34;,
+<span id="L238" class="ln">   238  </span>            &#34;properties&#34;: {
+<span id="L239" class="ln">   239  </span>                &#34;annotations&#34;: {
+<span id="L240" class="ln">   240  </span>                    &#34;type&#34;: &#34;object&#34;
+<span id="L241" class="ln">   241  </span>                },
+<span id="L242" class="ln">   242  </span>                &#34;labels&#34;: {
+<span id="L243" class="ln">   243  </span>                    &#34;type&#34;: &#34;object&#34;
+<span id="L244" class="ln">   244  </span>                }
+<span id="L245" class="ln">   245  </span>            }
+<span id="L246" class="ln">   246  </span>        }
+<span id="L247" class="ln">   247  </span>    },
+<span id="L248" class="ln">   248  </span>    &#34;securityDefinitions&#34;: {
+<span id="L249" class="ln">   249  </span>        &#34;ApiKeyAuth&#34;: {
+<span id="L250" class="ln">   250  </span>            &#34;type&#34;: &#34;apiKey&#34;,
+<span id="L251" class="ln">   251  </span>            &#34;name&#34;: &#34;Authorization&#34;,
+<span id="L252" class="ln">   252  </span>            &#34;in&#34;: &#34;header&#34;
+<span id="L253" class="ln">   253  </span>        },
+<span id="L254" class="ln">   254  </span>        &#34;BasicAuth&#34;: {
+<span id="L255" class="ln">   255  </span>            &#34;type&#34;: &#34;basic&#34;
+<span id="L256" class="ln">   256  </span>        }
+<span id="L257" class="ln">   257  </span>    },
+<span id="L258" class="ln">   258  </span>    &#34;x-extension-openapi&#34;: {
+<span id="L259" class="ln">   259  </span>        &#34;example&#34;: &#34;value on a json format&#34;
+<span id="L260" class="ln">   260  </span>    }
+<span id="L261" class="ln">   261  </span>}`
+<span id="L262" class="ln">   262  </span>
+<span id="L263" class="ln">   263  </span>type swaggerInfo struct {
+<span id="L264" class="ln">   264  </span>	Version     string
+<span id="L265" class="ln">   265  </span>	Host        string
+<span id="L266" class="ln">   266  </span>	BasePath    string
+<span id="L267" class="ln">   267  </span>	Schemes     []string
+<span id="L268" class="ln">   268  </span>	Title       string
+<span id="L269" class="ln">   269  </span>	Description string
+<span id="L270" class="ln">   270  </span>}
+<span id="L271" class="ln">   271  </span>
+<span id="L272" class="ln">   272  </span><span class="comment">// SwaggerInfo holds exported Swagger Info so clients can modify it</span>
+<span id="L273" class="ln">   273  </span>var SwaggerInfo = swaggerInfo{
+<span id="L274" class="ln">   274  </span>	Version:     &#34;3.0.0&#34;,
+<span id="L275" class="ln">   275  </span>	Host:        &#34;localhost:8080&#34;,
+<span id="L276" class="ln">   276  </span>	BasePath:    &#34;/api/v3&#34;,
+<span id="L277" class="ln">   277  </span>	Schemes:     []string{},
+<span id="L278" class="ln">   278  </span>	Title:       &#34;CloudGontroller API&#34;,
+<span id="L279" class="ln">   279  </span>	Description: &#34;CAPI V3 Compatible API with blazing fast backend.&#34;,
+<span id="L280" class="ln">   280  </span>}
+<span id="L281" class="ln">   281  </span>
+<span id="L282" class="ln">   282  </span>type s struct{}
+<span id="L283" class="ln">   283  </span>
+<span id="L284" class="ln">   284  </span>func (s *s) ReadDoc() string {
+<span id="L285" class="ln">   285  </span>	sInfo := SwaggerInfo
+<span id="L286" class="ln">   286  </span>	sInfo.Description = strings.Replace(sInfo.Description, &#34;\n&#34;, &#34;\\n&#34;, -1)
+<span id="L287" class="ln">   287  </span>
+<span id="L288" class="ln">   288  </span>	t, err := template.New(&#34;swagger_info&#34;).Funcs(template.FuncMap{
+<span id="L289" class="ln">   289  </span>		&#34;marshal&#34;: func(v interface{}) string {
+<span id="L290" class="ln">   290  </span>			a, _ := json.Marshal(v)
+<span id="L291" class="ln">   291  </span>			return string(a)
+<span id="L292" class="ln">   292  </span>		},
+<span id="L293" class="ln">   293  </span>	}).Parse(doc)
+<span id="L294" class="ln">   294  </span>	if err != nil {
+<span id="L295" class="ln">   295  </span>		return doc
+<span id="L296" class="ln">   296  </span>	}
+<span id="L297" class="ln">   297  </span>
+<span id="L298" class="ln">   298  </span>	var tpl bytes.Buffer
+<span id="L299" class="ln">   299  </span>	if err := t.Execute(&amp;tpl, sInfo); err != nil {
+<span id="L300" class="ln">   300  </span>		return doc
+<span id="L301" class="ln">   301  </span>	}
+<span id="L302" class="ln">   302  </span>
+<span id="L303" class="ln">   303  </span>	return tpl.String()
+<span id="L304" class="ln">   304  </span>}
+<span id="L305" class="ln">   305  </span>
+<span id="L306" class="ln">   306  </span>func init() {
+<span id="L307" class="ln">   307  </span>	swag.Register(swag.Name, &amp;s{})
+<span id="L308" class="ln">   308  </span>}
+<span id="L309" class="ln">   309  </span>
 </pre><p><a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger/docs.go.html?m=text">View as plain text</a></p>
 
 <div id="footer"><a href="../../../../../../../../../docs.zip">Download docs.zip</a> to browse offline - Generated by <a href="https://godoc.org/golang.org/x/tools/godoc" target="_blank">godoc</a> + <a href="https://gitlab.com/tslocum/godoc-static" target="_blank">godoc-static</a></div>
