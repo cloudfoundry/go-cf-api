@@ -26,4 +26,4 @@ services:
       - CLOUDFOUNDRY_CONFIG_PATH=
       - spring_profiles=default,hsqldb
     ports:
-      - "8090:8080"
+      - "8095:8080"
