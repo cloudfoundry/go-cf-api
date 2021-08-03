@@ -15,5 +15,5 @@ import (
 // @Failure 500 {object} HTTPError
 // @Router /healthz [get]
 func GetHealth(c echo.Context) error {
-	return c.JSONBlob(http.StatusOK, []byte("OK"))
+	return c.JSON(http.StatusOK, "OK")
 }
