@@ -105,6 +105,9 @@ To target a specific database and/or test set, use:</p>
 </li>
 </ul>
 <p>The default values in the <code>config_{db}.yml</code> and <code>sqlboiler_{db}.toml</code> files should match the credentials for each database in <code>docker-compose-dev.yaml</code>.</p>
+<p>The API should be accessible at e.g.</p>
+<pre><code>http://localhost:8080/api/v3/buildpacks
+</code></pre>
 <h2>SQL Boiler</h2>
 <p>To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with <code>sqlboiler</code>. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the <code>mysql</code> binary on a Postgres database will result in a startup error.</p>
 <p>To facilitate the generating, combining and build tagging of the <code>sqlboiler</code> models, there is a mage task to automate it:</p>
@@ -115,23 +118,29 @@ To target a specific database and/or test set, use:</p>
 </code></pre>
 <p>The binaries can be compiled for other architectures by exporting the <code>GOOS</code> and <code>GOARCH</code> environment variables.</p>
 <h2>Documentation</h2>
-<p>Documentation is auto generated using <code>godoc</code> and <code>godoc-static</code> and served via GitHub pages. The <code>mage build</code> command will also compile a binary to run the documentation server locally.
-It will also run every code/doc/apidoc generator we have beforehand and then use
-go build to produce a binary in the <code>build</code> folder.</p>
-<pre><code class="language-bash">mage build
+<p>Documentation is auto generated using <code>godoc</code> and <code>godoc-static</code> and served via GitHub pages. The binaries compiled by the <code>mage build</code> command will also serve the documentation at:</p>
+<pre><code>http://localhost:8080/docs/v3
 </code></pre>
-<p>Once Running Access it e.g. with:</p>
-<p>http://localhost:8080/api/v3/buildpacks</p>
-<p>http://localhost:8080/docs/v3</p>
-<h2>Running Tests</h2>
-<p>Simply</p>
-<pre><code class="language-bash">// Run all unittests
-go test -tags=&quot;unit,psql&quot; ./...
-// Run db tests for postgres
-go test --tags=&quot;db,psql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
-// Run db tests for mysql
-go test --tags=&quot;db,mysql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
+<h2>Running tests</h2>
+<p>Different tags are used to control which tests are run:</p>
+<ul>
+<li>Unit tests
+<pre><code class="language-bash">go test -tags=&quot;unit,psql&quot; ./...
 </code></pre>
+<pre><code></code></pre>
+</li>
+<li>DB tests (Postgres) - require running database
+<pre><code class="language-bash">go test -tags=&quot;db,psql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
+</code></pre>
+<pre><code></code></pre>
+</li>
+<li>DB tests (MySQL/MariaDB) - require running database
+<pre><code class="language-bash">go test -tags=&quot;db,mysql&quot; ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
+</code></pre>
+<pre><code>
+</code></pre>
+</li>
+</ul>
 <h1>Current Feature List</h1>
 <ul>
 <li>Structured Logging</li>

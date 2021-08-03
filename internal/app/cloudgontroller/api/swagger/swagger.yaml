@@ -123,6 +123,25 @@ paths:
       summary: Show a buildpack
       tags:
       - Buildpacks
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: Health endpoint to check platform availability
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controllers.HTTPError'
+      summary: Health get health
+      tags:
+      - Health
 securityDefinitions:
   ApiKeyAuth:
     in: header
