@@ -10,6 +10,11 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 )
 
+func RegisterHealthHandler(prefix string, e *echo.Echo){
+	// Health
+	e.GET(fmt.Sprintf("%s/healthz", prefix), controllers.GetHealth)
+}
+
 func RegisterV3Handlers(prefix string, e *echo.Echo) {
 	// Buildpacks
 	e.GET(fmt.Sprintf("%s/buildpacks", prefix), controllers.GetBuildpacks)
