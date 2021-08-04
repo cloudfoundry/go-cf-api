@@ -106,7 +106,7 @@ To target a specific database and/or test set, use:</p>
 </ul>
 <p>The default values in the <code>config_{db}.yml</code> and <code>sqlboiler_{db}.toml</code> files should match the credentials for each database in <code>docker-compose-dev.yaml</code>.</p>
 <p>The API should be accessible at e.g.</p>
-<pre><code>http://localhost:8080/api/v3/buildpacks
+<pre><code>http://localhost:8080/v3/buildpacks
 </code></pre>
 <h2>SQL Boiler</h2>
 <p>To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with <code>sqlboiler</code>. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the <code>mysql</code> binary on a Postgres database will result in a startup error.</p>

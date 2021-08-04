@@ -100,22 +100,48 @@
 			<div id="manual-nav">
 			<dl>
 			
+				<dd><a href="#pkg-constants">Constants</a></dd>
 			
+			
+			
+				
+				<dd><a href="#GetBuildpackState">func GetBuildpackState(buildpack *models.Buildpack) string</a></dd>
 			
 			
 				
 				<dd><a href="#BuildpackResponse">type BuildpackResponse</a></dd>
 				
 					
-					<dd>    <a href="#BuildpackResponseObject">func BuildpackResponseObject(buildpack *models.Buildpack) *BuildpackResponse</a></dd>
+					<dd>    <a href="#BuildpackResponseObject">func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse</a></dd>
+				
+				
+			
+				
+				<dd><a href="#BuildpacksResponse">type BuildpacksResponse</a></dd>
 				
 					
-					<dd>    <a href="#BuildpacksResponseObject">func BuildpacksResponseObject(buildpacks models.BuildpackSlice) []*BuildpackResponse</a></dd>
+					<dd>    <a href="#BuildpacksResponseObject">func BuildpacksResponseObject(buildpacks models.BuildpackSlice, resourcePath string) *BuildpacksResponse</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Link">type Link</a></dd>
+				
+					
+					<dd>    <a href="#GetResourcePathLink">func GetResourcePathLink(resourcePath string) Link</a></dd>
+				
+					
+					<dd>    <a href="#GetResourcePathLinkWithMethod">func GetResourcePathLinkWithMethod(resourcePath string, method string) Link</a></dd>
 				
 				
 			
 				
 				<dd><a href="#Metadata">type Metadata</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Pagination">type Pagination</a></dd>
 				
 				
 			
@@ -143,12 +169,34 @@
 		
 
 		
+			<h2 id="pkg-constants">Constants</h2>
+			
+				
+				<pre>const <span id="STATE_AWAITING_UPLOAD">STATE_AWAITING_UPLOAD</span> = &#34;AWAITING_UPLOAD&#34;</pre>
+			
+				
+				<pre>const <span id="STATE_READY">STATE_READY</span> = &#34;READY&#34;</pre>
+			
 		
 		
 		
 			
 			
-			<h2 id="BuildpackResponse">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=135:799#L1">BuildpackResponse</a>
+			<h2 id="GetBuildpackState">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=2532:2590#L76">GetBuildpackState</a>
+				<a class="permalink" href="#GetBuildpackState">¶</a>
+				
+				
+			</h2>
+			<pre>func GetBuildpackState(buildpack *<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/">models</a>.<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/#Buildpack">Buildpack</a>) <a href="../../../../../../../../../builtin/#string">string</a></pre>
+			
+			
+			
+
+		
+		
+			
+			
+			<h2 id="BuildpackResponse">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=254:813#L4">BuildpackResponse</a>
 				<a class="permalink" href="#BuildpackResponse">¶</a>
 				
 				
@@ -167,13 +215,8 @@
 <span id="BuildpackResponse.Locked"></span>    Locked     <a href="../../../../../../../../../builtin/#bool">bool</a>      `json:&#34;locked&#34;`
 <span id="BuildpackResponse.Metadata"></span>    Metadata   <a href="#Metadata">Metadata</a>  `json:&#34;metadata&#34;`
 <span id="BuildpackResponse.Links"></span>    Links      struct {
-        Self struct {
-            Href <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;href&#34;`
-        } `json:&#34;self&#34;`
-        Upload struct {
-            Href   <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;href&#34;`
-            Method <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;method&#34;`
-        } `json:&#34;upload&#34;`
+        Self   <a href="#Link">Link</a> `json:&#34;self&#34;`
+        Upload <a href="#Link">Link</a> `json:&#34;upload&#34;`
     } `json:&#34;links&#34;`
 }
 </pre>
@@ -188,23 +231,97 @@
 
 			
 				
-				<h3 id="BuildpackResponseObject">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=801:877#L22">BuildpackResponseObject</a>
+				<h3 id="BuildpackResponseObject">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=956:1053#L27">BuildpackResponseObject</a>
 					<a class="permalink" href="#BuildpackResponseObject">¶</a>
 					
 					
 				</h3>
-				<pre>func BuildpackResponseObject(buildpack *<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/">models</a>.<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/#Buildpack">Buildpack</a>) *<a href="#BuildpackResponse">BuildpackResponse</a></pre>
+				<pre>func BuildpackResponseObject(buildpack *<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/">models</a>.<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/#Buildpack">Buildpack</a>, resourcePath <a href="../../../../../../../../../builtin/#string">string</a>) *<a href="#BuildpackResponse">BuildpackResponse</a></pre>
+				
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="BuildpacksResponse">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=815:954#L22">BuildpacksResponse</a>
+				<a class="permalink" href="#BuildpacksResponse">¶</a>
+				
+				
+			</h2>
+			
+			<pre>type BuildpacksResponse struct {
+<span id="BuildpacksResponse.Pagination"></span>    Pagination *<a href="#Pagination">Pagination</a>          `json:&#34;pagination&#34;`
+<span id="BuildpacksResponse.Resources"></span>    Resources  []*<a href="#BuildpackResponse">BuildpackResponse</a> `json:&#34;resources&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="BuildpacksResponseObject">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=1616:1720#L45">BuildpacksResponseObject</a>
+					<a class="permalink" href="#BuildpacksResponseObject">¶</a>
+					
+					
+				</h3>
+				<pre>func BuildpacksResponseObject(buildpacks <a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/">models</a>.<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/#BuildpackSlice">BuildpackSlice</a>, resourcePath <a href="../../../../../../../../../builtin/#string">string</a>) *<a href="#BuildpacksResponse">BuildpacksResponse</a></pre>
+				
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="Link">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/common.go.html?s=379:469#L7">Link</a>
+				<a class="permalink" href="#Link">¶</a>
+				
+				
+			</h2>
+			
+			<pre>type Link struct {
+<span id="Link.Href"></span>    Href   <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;href&#34;`
+<span id="Link.Method"></span>    Method <a href="../../../../../../../../../builtin/#string">string</a> `json:&#34;method,omitempty&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="GetResourcePathLink">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=2278:2328#L64">GetResourcePathLink</a>
+					<a class="permalink" href="#GetResourcePathLink">¶</a>
+					
+					
+				</h3>
+				<pre>func GetResourcePathLink(resourcePath <a href="../../../../../../../../../builtin/#string">string</a>) <a href="#Link">Link</a></pre>
 				
 				
 				
 			
 				
-				<h3 id="BuildpacksResponseObject">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=1043:1127#L31">BuildpacksResponseObject</a>
-					<a class="permalink" href="#BuildpacksResponseObject">¶</a>
+				<h3 id="GetResourcePathLinkWithMethod">func <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?s=2373:2448#L70">GetResourcePathLinkWithMethod</a>
+					<a class="permalink" href="#GetResourcePathLinkWithMethod">¶</a>
 					
 					
 				</h3>
-				<pre>func BuildpacksResponseObject(buildpacks <a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/">models</a>.<a href="../../../../../../../../../github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/#BuildpackSlice">BuildpackSlice</a>) []*<a href="#BuildpackResponse">BuildpackResponse</a></pre>
+				<pre>func GetResourcePathLinkWithMethod(resourcePath <a href="../../../../../../../../../builtin/#string">string</a>, method <a href="../../../../../../../../../builtin/#string">string</a>) <a href="#Link">Link</a></pre>
 				
 				
 				
@@ -223,6 +340,36 @@
 			<pre>type Metadata struct {
 <span id="Metadata.Labels"></span>    Labels      interface{} `json:&#34;labels&#34;`
 <span id="Metadata.Annotations"></span>    Annotations interface{} `json:&#34;annotations&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Pagination">type <a href="../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/common.go.html?s=132:377#L1">Pagination</a>
+				<a class="permalink" href="#Pagination">¶</a>
+				
+				
+			</h2>
+			
+			<pre>type Pagination struct {
+<span id="Pagination.TotalResults"></span>    TotalResults <a href="../../../../../../../../../builtin/#int">int</a>  `json:&#34;total_results&#34;`
+<span id="Pagination.TotalPages"></span>    TotalPages   <a href="../../../../../../../../../builtin/#int">int</a>  `json:&#34;total_pages&#34;`
+<span id="Pagination.First"></span>    First        <a href="#Link">Link</a> `json:&#34;first&#34;`
+<span id="Pagination.Last"></span>    Last         <a href="#Link">Link</a> `json:&#34;last&#34;`
+<span id="Pagination.Next"></span>    Next         <a href="#Link">Link</a> `json:&#34;next&#34;`
+<span id="Pagination.Previous"></span>    Previous     <a href="#Link">Link</a> `json:&#34;previous&#34;`
 }
 </pre>
 

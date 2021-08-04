@@ -81,7 +81,7 @@ The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files shou
 
 The API should be accessible at e.g.
 ```
-http://localhost:8080/api/v3/buildpacks
+http://localhost:8080/v3/buildpacks
 ```
 
 ## SQL Boiler

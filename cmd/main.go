@@ -88,7 +88,7 @@ func RootFunc(cmd *cobra.Command, args []string) {
 // @description CAPI V3 Compatible API with blazing fast backend.
 
 // @host localhost:8080
-// @BasePath /api/v3
+// @BasePath /v3
 // @query.collection.format multi
 
 // @securityDefinitions.basic BasicAuth

@@ -178,23 +178,10 @@ var doc = `{
                     "type": "object",
                     "properties": {
                         "self": {
-                            "type": "object",
-                            "properties": {
-                                "href": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/presenter.Link"
                         },
                         "upload": {
-                            "type": "object",
-                            "properties": {
-                                "href": {
-                                    "type": "string"
-                                },
-                                "method": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/presenter.Link"
                         }
                     }
                 },
@@ -217,6 +204,17 @@ var doc = `{
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.Link": {
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "method": {
                     "type": "string"
                 }
             }
@@ -261,7 +259,7 @@ type swaggerInfo struct {
 var SwaggerInfo = swaggerInfo{
 	Version:     "3.0.0",
 	Host:        "localhost:8080",
-	BasePath:    "/api/v3",
+	BasePath:    "/v3",
 	Schemes:     []string{},
 	Title:       "CloudGontroller API",
 	Description: "CAPI V3 Compatible API with blazing fast backend.",

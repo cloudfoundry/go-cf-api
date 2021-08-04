@@ -1,4 +1,4 @@
-basePath: /api/v3
+basePath: /v3
 definitions:
   controllers.HTTPError:
     properties:
@@ -22,17 +22,9 @@ definitions:
       links:
         properties:
           self:
-            properties:
-              href:
-                type: string
-            type: object
+            $ref: '#/definitions/presenter.Link'
           upload:
-            properties:
-              href:
-                type: string
-              method:
-                type: string
-            type: object
+            $ref: '#/definitions/presenter.Link'
         type: object
       locked:
         type: boolean
@@ -47,6 +39,13 @@ definitions:
       state:
         type: string
       updated_at:
+        type: string
+    type: object
+  presenter.Link:
+    properties:
+      href:
+        type: string
+      method:
         type: string
     type: object
   presenter.Metadata:

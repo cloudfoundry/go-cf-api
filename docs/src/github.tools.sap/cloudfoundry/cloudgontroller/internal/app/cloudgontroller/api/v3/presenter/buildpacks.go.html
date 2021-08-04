@@ -58,52 +58,95 @@
 <pre><span id="L1" class="ln">     1  </span>package presenter
 <span id="L2" class="ln">     2  </span>
 <span id="L3" class="ln">     3  </span>import (
-<span id="L4" class="ln">     4  </span>	&#34;time&#34;
-<span id="L5" class="ln">     5  </span>
-<span id="L6" class="ln">     6  </span>	models &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler&#34;
-<span id="L7" class="ln">     7  </span>)
-<span id="L8" class="ln">     8  </span>
-<span id="L9" class="ln">     9  </span>type BuildpackResponse struct {
-<span id="L10" class="ln">    10  </span>	Guid       string    `json:&#34;guid&#34;`
-<span id="L11" class="ln">    11  </span>	Created_at time.Time `json:&#34;created_at&#34;`
-<span id="L12" class="ln">    12  </span>	Updated_at time.Time `json:&#34;updated_at&#34;`
-<span id="L13" class="ln">    13  </span>	Name       string    `json:&#34;name&#34;`
-<span id="L14" class="ln">    14  </span>	State      string    `json:&#34;state&#34;`
-<span id="L15" class="ln">    15  </span>	Filename   string    `json:&#34;filename&#34;`
-<span id="L16" class="ln">    16  </span>	Stack      string    `json:&#34;stack&#34;`
-<span id="L17" class="ln">    17  </span>	Position   int       `json:&#34;position&#34;`
-<span id="L18" class="ln">    18  </span>	Enabled    bool      `json:&#34;enabled&#34;`
-<span id="L19" class="ln">    19  </span>	Locked     bool      `json:&#34;locked&#34;`
-<span id="L20" class="ln">    20  </span>	Metadata   Metadata  `json:&#34;metadata&#34;`
-<span id="L21" class="ln">    21  </span>	Links      struct {
-<span id="L22" class="ln">    22  </span>		Self struct {
-<span id="L23" class="ln">    23  </span>			Href string `json:&#34;href&#34;`
-<span id="L24" class="ln">    24  </span>		} `json:&#34;self&#34;`
-<span id="L25" class="ln">    25  </span>		Upload struct {
-<span id="L26" class="ln">    26  </span>			Href   string `json:&#34;href&#34;`
-<span id="L27" class="ln">    27  </span>			Method string `json:&#34;method&#34;`
-<span id="L28" class="ln">    28  </span>		} `json:&#34;upload&#34;`
+<span id="L4" class="ln">     4  </span>	&#34;fmt&#34;
+<span id="L5" class="ln">     5  </span>	&#34;github.com/volatiletech/null/v8&#34;
+<span id="L6" class="ln">     6  </span>	&#34;time&#34;
+<span id="L7" class="ln">     7  </span>
+<span id="L8" class="ln">     8  </span>	models &#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler&#34;
+<span id="L9" class="ln">     9  </span>)
+<span id="L10" class="ln">    10  </span>
+<span id="L11" class="ln">    11  </span>const STATE_AWAITING_UPLOAD = &#34;AWAITING_UPLOAD&#34;
+<span id="L12" class="ln">    12  </span>const STATE_READY = &#34;READY&#34;
+<span id="L13" class="ln">    13  </span>
+<span id="L14" class="ln">    14  </span>type BuildpackResponse struct {
+<span id="L15" class="ln">    15  </span>	Guid       string      `json:&#34;guid&#34;`
+<span id="L16" class="ln">    16  </span>	Created_at time.Time   `json:&#34;created_at&#34;`
+<span id="L17" class="ln">    17  </span>	Updated_at time.Time   `json:&#34;updated_at&#34;`
+<span id="L18" class="ln">    18  </span>	Name       string      `json:&#34;name&#34;`
+<span id="L19" class="ln">    19  </span>	State      string      `json:&#34;state&#34;`
+<span id="L20" class="ln">    20  </span>	Filename   string `json:&#34;filename&#34;`
+<span id="L21" class="ln">    21  </span>	Stack      string `json:&#34;stack&#34;`
+<span id="L22" class="ln">    22  </span>	Position   int         `json:&#34;position&#34;`
+<span id="L23" class="ln">    23  </span>	Enabled    bool   `json:&#34;enabled&#34;`
+<span id="L24" class="ln">    24  </span>	Locked     bool   `json:&#34;locked&#34;`
+<span id="L25" class="ln">    25  </span>	Metadata   Metadata    `json:&#34;metadata&#34;`
+<span id="L26" class="ln">    26  </span>	Links      struct {
+<span id="L27" class="ln">    27  </span>		Self   Link `json:&#34;self&#34;`
+<span id="L28" class="ln">    28  </span>		Upload Link `json:&#34;upload&#34;`
 <span id="L29" class="ln">    29  </span>	} `json:&#34;links&#34;`
 <span id="L30" class="ln">    30  </span>}
 <span id="L31" class="ln">    31  </span>
-<span id="L32" class="ln">    32  </span>func BuildpackResponseObject(buildpack *models.Buildpack) *BuildpackResponse {
-<span id="L33" class="ln">    33  </span>	return &amp;BuildpackResponse{
-<span id="L34" class="ln">    34  </span>		Guid:       buildpack.GUID,
-<span id="L35" class="ln">    35  </span>		Created_at: buildpack.CreatedAt,
-<span id="L36" class="ln">    36  </span>		Name:       buildpack.Name,
-<span id="L37" class="ln">    37  </span>		Position:   buildpack.Position,
-<span id="L38" class="ln">    38  </span>	}
-<span id="L39" class="ln">    39  </span>}
-<span id="L40" class="ln">    40  </span>
-<span id="L41" class="ln">    41  </span>func BuildpacksResponseObject(buildpacks models.BuildpackSlice) []*BuildpackResponse {
-<span id="L42" class="ln">    42  </span>	out := []*BuildpackResponse{}
-<span id="L43" class="ln">    43  </span>	for _, buildpack := range buildpacks {
-<span id="L44" class="ln">    44  </span>		buildpackresp := BuildpackResponseObject(buildpack)
-<span id="L45" class="ln">    45  </span>		out = append(out, buildpackresp)
-<span id="L46" class="ln">    46  </span>	}
-<span id="L47" class="ln">    47  </span>	return out
-<span id="L48" class="ln">    48  </span>}
-<span id="L49" class="ln">    49  </span>
+<span id="L32" class="ln">    32  </span>type BuildpacksResponse struct {
+<span id="L33" class="ln">    33  </span>	Pagination *Pagination          `json:&#34;pagination&#34;`
+<span id="L34" class="ln">    34  </span>	Resources  []*BuildpackResponse `json:&#34;resources&#34;`
+<span id="L35" class="ln">    35  </span>}
+<span id="L36" class="ln">    36  </span>
+<span id="L37" class="ln">    37  </span>func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse {
+<span id="L38" class="ln">    38  </span>	response := &amp;BuildpackResponse{
+<span id="L39" class="ln">    39  </span>		Guid:       buildpack.GUID,
+<span id="L40" class="ln">    40  </span>		Created_at: buildpack.CreatedAt,
+<span id="L41" class="ln">    41  </span>		Updated_at: buildpack.UpdatedAt,
+<span id="L42" class="ln">    42  </span>		Name:       buildpack.Name,
+<span id="L43" class="ln">    43  </span>		State:      GetBuildpackState(buildpack),
+<span id="L44" class="ln">    44  </span>		Filename:   buildpack.Filename,
+<span id="L45" class="ln">    45  </span>		Stack:      buildpack.Stack,
+<span id="L46" class="ln">    46  </span>		Position:   buildpack.Position,
+<span id="L47" class="ln">    47  </span>		Enabled:    buildpack.Enabled,
+<span id="L48" class="ln">    48  </span>		Locked:     buildpack.Locked,
+<span id="L49" class="ln">    49  </span>	}
+<span id="L50" class="ln">    50  </span>	response.Links.Self = GetResourcePathLink(resourcePath)
+<span id="L51" class="ln">    51  </span>	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf(&#34;%s/%s&#34;, resourcePath, &#34;upload&#34;), &#34;POST&#34;)
+<span id="L52" class="ln">    52  </span>	return response
+<span id="L53" class="ln">    53  </span>}
+<span id="L54" class="ln">    54  </span>
+<span id="L55" class="ln">    55  </span>func BuildpacksResponseObject(buildpacks models.BuildpackSlice, resourcePath string) *BuildpacksResponse {
+<span id="L56" class="ln">    56  </span>	out := []*BuildpackResponse{}
+<span id="L57" class="ln">    57  </span>	for _, buildpack := range buildpacks {
+<span id="L58" class="ln">    58  </span>		buildpackresp := BuildpackResponseObject(buildpack, fmt.Sprintf(&#34;%s/%s&#34;, resourcePath, buildpack.GUID))
+<span id="L59" class="ln">    59  </span>		out = append(out, buildpackresp)
+<span id="L60" class="ln">    60  </span>	}
+<span id="L61" class="ln">    61  </span>	return &amp;BuildpacksResponse{
+<span id="L62" class="ln">    62  </span>		Pagination: &amp;Pagination{
+<span id="L63" class="ln">    63  </span>			TotalResults: len(out),
+<span id="L64" class="ln">    64  </span>			TotalPages:   1,
+<span id="L65" class="ln">    65  </span>			First:        GetResourcePathLink(resourcePath),
+<span id="L66" class="ln">    66  </span>			Last:         GetResourcePathLink(resourcePath),
+<span id="L67" class="ln">    67  </span>			Next:         GetResourcePathLink(resourcePath),
+<span id="L68" class="ln">    68  </span>			Previous:     GetResourcePathLink(resourcePath),
+<span id="L69" class="ln">    69  </span>		},
+<span id="L70" class="ln">    70  </span>		Resources: out,
+<span id="L71" class="ln">    71  </span>	}
+<span id="L72" class="ln">    72  </span>}
+<span id="L73" class="ln">    73  </span>
+<span id="L74" class="ln">    74  </span>func GetResourcePathLink(resourcePath string) Link {
+<span id="L75" class="ln">    75  </span>	return Link{
+<span id="L76" class="ln">    76  </span>		Href: resourcePath,
+<span id="L77" class="ln">    77  </span>	}
+<span id="L78" class="ln">    78  </span>}
+<span id="L79" class="ln">    79  </span>
+<span id="L80" class="ln">    80  </span>func GetResourcePathLinkWithMethod(resourcePath string, method string) Link {
+<span id="L81" class="ln">    81  </span>	link := GetResourcePathLink(resourcePath)
+<span id="L82" class="ln">    82  </span>	link.Method = method
+<span id="L83" class="ln">    83  </span>	return link
+<span id="L84" class="ln">    84  </span>}
+<span id="L85" class="ln">    85  </span>
+<span id="L86" class="ln">    86  </span>func GetBuildpackState(buildpack *models.Buildpack) string {
+<span id="L87" class="ln">    87  </span>	if buildpack.Filename.IsZero() {
+<span id="L88" class="ln">    88  </span>		return STATE_AWAITING_UPLOAD
+<span id="L89" class="ln">    89  </span>	}
+<span id="L90" class="ln">    90  </span>	return STATE_READY
+<span id="L91" class="ln">    91  </span>}
+<span id="L92" class="ln">    92  </span>
 </pre><p><a href="../../../../../../../../../../src/github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/buildpacks.go.html?m=text">View as plain text</a></p>
 
 <div id="footer"><a href="../../../../../../../../../../docs.zip">Download docs.zip</a> to browse offline - Generated by <a href="https://godoc.org/golang.org/x/tools/godoc" target="_blank">godoc</a> + <a href="https://gitlab.com/tslocum/godoc-static" target="_blank">godoc-static</a></div>

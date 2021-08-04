@@ -67,9 +67,9 @@
 <span id="L10" class="ln">    10  </span>	&#34;github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers&#34;
 <span id="L11" class="ln">    11  </span>)
 <span id="L12" class="ln">    12  </span>
-<span id="L13" class="ln">    13  </span>func RegisterHealthHandler(prefix string, e *echo.Echo){
+<span id="L13" class="ln">    13  </span>func RegisterHealthHandler(e *echo.Echo) {
 <span id="L14" class="ln">    14  </span>	<span class="comment">// Health</span>
-<span id="L15" class="ln">    15  </span>	e.GET(fmt.Sprintf(&#34;%s/healthz&#34;, prefix), controllers.GetHealth)
+<span id="L15" class="ln">    15  </span>	e.GET(&#34;healthz&#34;, controllers.GetHealth)
 <span id="L16" class="ln">    16  </span>}
 <span id="L17" class="ln">    17  </span>
 <span id="L18" class="ln">    18  </span>func RegisterV3Handlers(prefix string, e *echo.Echo) {

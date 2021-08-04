@@ -7,7 +7,7 @@
         "version": "3.0.0"
     },
     "host": "localhost:8080",
-    "basePath": "/api/v3",
+    "basePath": "/v3",
     "paths": {
         "/buildpacks": {
             "get": {
@@ -163,23 +163,10 @@
                     "type": "object",
                     "properties": {
                         "self": {
-                            "type": "object",
-                            "properties": {
-                                "href": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/presenter.Link"
                         },
                         "upload": {
-                            "type": "object",
-                            "properties": {
-                                "href": {
-                                    "type": "string"
-                                },
-                                "method": {
-                                    "type": "string"
-                                }
-                            }
+                            "$ref": "#/definitions/presenter.Link"
                         }
                     }
                 },
@@ -202,6 +189,17 @@
                     "type": "string"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "presenter.Link": {
+            "type": "object",
+            "properties": {
+                "href": {
+                    "type": "string"
+                },
+                "method": {
                     "type": "string"
                 }
             }
