@@ -64,8 +64,6 @@ func BuildpacksResponseObject(buildpacks models.BuildpackSlice, resourcePath str
 			TotalPages:   1,
 			First:        GetResourcePathLink(resourcePath),
 			Last:         GetResourcePathLink(resourcePath),
-			Next:         GetResourcePathLink(resourcePath),
-			Previous:     GetResourcePathLink(resourcePath),
 		},
 		Resources: out,
 	}
