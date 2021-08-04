@@ -23,7 +23,7 @@ var once sync.Once
 var config *CloudgontrollerConfig
 
 type CloudgontrollerConfig struct {
-	Listen      string `env:"cloudgontroller_LISTEN" default:"localhost:8080"`
+	Listen    string `env:"cloudgontroller_LISTEN" default:"localhost:8080"`
 	DB        DBConfig
 	Log       ZapConfig
 	RateLimit RateLimitConf

@@ -37,7 +37,7 @@ func GetBuildpacks(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
 	}
 
-	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks))
+	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, GetResourcePath(c)))
 }
 
 // GetBuildpack godoc
@@ -60,8 +60,8 @@ func GetBuildpack(c echo.Context) error {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
 	if buildpack == nil {
-		return c.JSON(http.StatusNotFound, HTTPError{Code:http.StatusNotFound,Message: "Buildpack not Found"})
+		return c.JSON(http.StatusNotFound, HTTPError{Code: http.StatusNotFound, Message: "Buildpack not Found"})
 	}
 
-	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack))
+	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
 }

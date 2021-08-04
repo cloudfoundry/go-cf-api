@@ -79,7 +79,7 @@ func RootFunc(cmd *cobra.Command, args []string) {
 
 	err := <-lock
 	if err != nil {
-		zap.L().Panic("failed to start application",zap.Error(err))
+		zap.L().Panic("failed to start application", zap.Error(err))
 	}
 }
 
