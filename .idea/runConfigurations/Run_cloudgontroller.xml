@@ -3,7 +3,7 @@
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
     <go_parameters value="-tags='psql'" />
-    <parameters value="config_postgres.yaml" />
+    <parameters value="config_psql.yaml" />
     <kind value="FILE" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="./cmd/main.go" />
