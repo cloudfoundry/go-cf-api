@@ -44,15 +44,15 @@ jwt:
       2ck7W712RoqhhtzV826VNqoN8KHndwrCynyyOIOZj5r0UFJJK2E=
       -----END RSA PRIVATE KEY-----
     verification-key: |
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtDbj14vkov7AFq6fVEJN
-+1qqwfgGDIj7k3sohtwbWvTHQA3kWXb6ffUyVtUrYWk5LcQLT2v4fEzNInCif082
-yGwKdtTRG8kXDEyXT1CyydK+LznneH+AOxno3I8QKxm3Vhl1pcV0ZR9p928FdsHn
-wFDy2hnPFLmEnKn5HEU+zzE39NgO/h8ZJvcA2sO+PgtJd8YY2gXWiHzzrbCH9+Kd
-rJprXeFqA8WIRWvBYckzXZFQtwqk9blX0CndgNGog7dwDmoLYdHa6e5p5tSuqhAp
-QRonhJgGhX1Kj94TB+msTsucDExLPZMTx/OKNVyTFwsOmTrQPl0Fb1pXMf5S0d7E
-tQIDAQAB
------END PUBLIC KEY-----
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtDbj14vkov7AFq6fVEJN
+      +1qqwfgGDIj7k3sohtwbWvTHQA3kWXb6ffUyVtUrYWk5LcQLT2v4fEzNInCif082
+      yGwKdtTRG8kXDEyXT1CyydK+LznneH+AOxno3I8QKxm3Vhl1pcV0ZR9p928FdsHn
+      wFDy2hnPFLmEnKn5HEU+zzE39NgO/h8ZJvcA2sO+PgtJd8YY2gXWiHzzrbCH9+Kd
+      rJprXeFqA8WIRWvBYckzXZFQtwqk9blX0CndgNGog7dwDmoLYdHa6e5p5tSuqhAp
+      QRonhJgGhX1Kj94TB+msTsucDExLPZMTx/OKNVyTFwsOmTrQPl0Fb1pXMf5S0d7E
+      tQIDAQAB
+      -----END PUBLIC KEY-----
 
 login:
   serviceProviderKey: |
