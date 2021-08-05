@@ -140,3 +140,56 @@ Different tags are used to control which tests are run:
 https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC
 # MVP ToDos
 https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP
+
+# Contributing
+## Jwt authentication
+Uaa container gets started automatically with docker-compose up. When uaa container is up you can use uaac to get a valid jwt token which is signed with the uaa private key, written down in the uaa.yml
+
+```
+uaac target http://localhost:8095
+uaac token client get admin -s adminsecret
+uaac contexts
+```
+To access restricted endpoint, a curl would look like:
+```
+curl -i http://localhost:8080/api/v3/buildpacks -H "Authorization: Bearer [Add token from uaac context here]"
+```
+
+This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated: 
+Example from v3/handlers.go
+```
+func RegisterV3Handlers(prefix string, e *echo.Echo) {
+	var uaakey = `-----BEGIN PUBLIC KEY-----
+	...
+-----END PUBLIC KEY-----
+`
+    var publicKey, _ = jwt.ParseRSAPublicKeyFromPEM([]byte(uaakey))
+    // Restricted group
+    r := e.Group(prefix)
+    {
+	config := middleware.JWTConfig{
+		SigningKey: publicKey,
+		SigningMethod: "RS256",
+	}
+	r.Use(middleware.JWTWithConfig(config))
+
+	// Buildpacks
+	r.GET(fmt.Sprintf("/buildpacks"), controllers.GetBuildpacks)
+	r.GET(fmt.Sprintf("/buildpacks/:guid"), controllers.GetBuildpack)
+    }
+}
+```
+
+
+Accessing the userdata from the context during a request:
+```
+func GetBuildpacks(c echo.Context) error {
+    var user = c.Get("user").(*jwt.Token)
+    claims := user.Claims.(jwt.MapClaims)
+    name := claims["client_id"].(string)
+
+    fmt.Println(user) //contains the token itself
+    fmt.Println(name) //contains the username read from the client_id claim (can be anything from the jwt token middle part)
+```
+
+
