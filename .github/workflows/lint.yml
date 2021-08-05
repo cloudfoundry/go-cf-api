@@ -1,0 +1,23 @@
+name: Lint
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  golangci:
+    runs-on: [self-hosted, linux]
+    strategy:
+      matrix:
+        db: [ 'psql', 'mysql' ]
+    name: Run linter for ${{ matrix.db }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          version: latest
+          args: --build-flags=${{ matrix.db }},unit

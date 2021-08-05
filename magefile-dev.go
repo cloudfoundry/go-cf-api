@@ -23,6 +23,9 @@ import (
 
 // Installs used CLI Tools in this project other than nodejs,yarn and go itself. Is a requirement for many mage commands to run.
 func Install() error {
+	if err := sh.Run("go", "install", "github.com/golangci/golangci-lint/cmd/golangci-lint"); err != nil {
+		return err
+	}
 	if err := sh.Run("go", "install", "github.com/swaggo/swag/cmd/swag"); err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
+![lint](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 # cloudgontroller
 A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
 ## Prerequisites
@@ -107,6 +107,15 @@ http://localhost:8080/docs/v3
 ```
 
 
+## Running linter
+This project uses [golangci-lint](https://golangci-lint.run/) to ensure code is formatted correctly and return values are checked etc.
+To run the linter, run:
+```
+golangci-lint run --build-tags psql,unit
+```
+
+There is a GitHub Action that runs the linter on every push. No code should be pushed until it passes the linter.
+
 ## Running tests
 Different tags are used to control which tests are run:
 * Unit tests
@@ -155,7 +164,7 @@ To access restricted endpoint, a curl would look like:
 curl -i http://localhost:8080/api/v3/buildpacks -H "Authorization: Bearer [Add token from uaac context here]"
 ```
 
-This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated: 
+This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated:
 Example from v3/handlers.go
 ```
 func RegisterV3Handlers(prefix string, e *echo.Echo) {
