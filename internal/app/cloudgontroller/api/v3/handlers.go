@@ -24,12 +24,10 @@ func RegisterV3Handlers(prefix string, e *echo.Echo) {
 func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {
 	// Serve Swagger-UI API Docs
 	e.GET(prefix, func(c echo.Context) error {
-		c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", prefix))
-		return nil
+		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", prefix))
 	})
 	e.GET(fmt.Sprintf("%s/", prefix), func(c echo.Context) error {
-		c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", prefix))
-		return nil
+		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", prefix))
 	})
 	e.GET(fmt.Sprintf("%s/*", prefix), echoSwagger.WrapHandler)
 }

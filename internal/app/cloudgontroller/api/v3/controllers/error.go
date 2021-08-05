@@ -3,12 +3,12 @@ package controllers
 import "github.com/labstack/echo/v4"
 
 // NewError Function to create an error object
-func NewError(c echo.Context, status int, err error) {
+func NewError(c echo.Context, status int, err error) error {
 	er := HTTPError{
 		Code:    status,
 		Message: err.Error(),
 	}
-	c.JSON(status, er)
+	return c.JSON(status, er)
 }
 
 // HTTPError Error Object Returned as json on error

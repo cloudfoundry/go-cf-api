@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -32,11 +33,11 @@ var (
 		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
 		Example: "cloudgontroller config_psql.yaml",
 		Args:    cobra.MaximumNArgs(1),
-		Run:     RootFunc,
+		RunE:    RootFunc,
 	}
 )
 
-func RootFunc(cmd *cobra.Command, args []string) {
+func RootFunc(cmd *cobra.Command, args []string) error {
 	// Parse Config
 	var conf *config.CloudgontrollerConfig
 	if len(args) == 1 {
@@ -47,7 +48,9 @@ func RootFunc(cmd *cobra.Command, args []string) {
 		conf = config.Get()
 	}
 	// Initialize Logger
-	logging.Setup(conf)
+	if err := logging.Setup(conf); err != nil {
+		return err
+	}
 
 	// Initialize Echo Framework
 	e := echo.New()
@@ -81,6 +84,7 @@ func RootFunc(cmd *cobra.Command, args []string) {
 	if err != nil {
 		zap.L().Panic("failed to start application", zap.Error(err))
 	}
+	return nil
 }
 
 // @title CloudGontroller API
@@ -99,7 +103,10 @@ func RootFunc(cmd *cobra.Command, args []string) {
 
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "error running command: %v\n", err)
+		os.Exit(1)
+	}
 }
 
 func init() {
