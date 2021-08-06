@@ -1,9 +1,12 @@
 package v3
 
 import (
+	"context"
+	"errors"
 	"fmt"
-	"github.com/golang-jwt/jwt"
+	jwtv3 "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/lestrrat-go/jwx/jwk"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -18,29 +21,18 @@ func RegisterHealthHandler(e *echo.Echo) {
 }
 
 func RegisterV3Handlers(prefix string, e *echo.Echo) {
-	var uaakey = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtDbj14vkov7AFq6fVEJN
-+1qqwfgGDIj7k3sohtwbWvTHQA3kWXb6ffUyVtUrYWk5LcQLT2v4fEzNInCif082
-yGwKdtTRG8kXDEyXT1CyydK+LznneH+AOxno3I8QKxm3Vhl1pcV0ZR9p928FdsHn
-wFDy2hnPFLmEnKn5HEU+zzE39NgO/h8ZJvcA2sO+PgtJd8YY2gXWiHzzrbCH9+Kd
-rJprXeFqA8WIRWvBYckzXZFQtwqk9blX0CndgNGog7dwDmoLYdHa6e5p5tSuqhAp
-QRonhJgGhX1Kj94TB+msTsucDExLPZMTx/OKNVyTFwsOmTrQPl0Fb1pXMf5S0d7E
-tQIDAQAB
------END PUBLIC KEY-----
-`
-	var publicKey, _ = jwt.ParseRSAPublicKeyFromPEM([]byte(uaakey))
 	// Restricted group
-	r := e.Group(prefix)
+	restrictedGroup := e.Group(prefix)
 	{
 		config := middleware.JWTConfig{
-			SigningKey: publicKey,
 			SigningMethod: "RS256",
+			KeyFunc: getUaaKey,
 		}
-		r.Use(middleware.JWTWithConfig(config))
+		restrictedGroup.Use(middleware.JWTWithConfig(config))
 
 		// Buildpacks
-		r.GET(fmt.Sprintf("/buildpacks"), controllers.GetBuildpacks)
-		r.GET(fmt.Sprintf("/buildpacks/:guid"), controllers.GetBuildpack)
+		restrictedGroup.GET("/buildpacks", controllers.GetBuildpacks)
+		restrictedGroup.GET("/buildpacks/:guid", controllers.GetBuildpack)
 	}
 }
 
@@ -53,4 +45,24 @@ func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {
 		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", prefix))
 	})
 	e.GET(fmt.Sprintf("%s/*", prefix), echoSwagger.WrapHandler)
+}
+
+func getUaaKey(token *jwtv3.Token) (interface{}, error) {
+	keySet, err := jwk.Fetch(context.Background(), "http://localhost:8095/token_keys")
+	if err != nil {
+		return nil, err
+	}
+	keyID, ok := token.Header["kid"].(string)
+	if !ok {
+		return nil, errors.New("expecting JWT header to have a key ID in the kid field")
+	}
+	key, found := keySet.LookupKeyID(keyID)
+	if !found {
+		return nil, fmt.Errorf("unable to find key %q", keyID)
+	}
+	var pubkey interface{}
+	if err := key.Raw(&pubkey); err != nil {
+		return nil, fmt.Errorf("Unable to get the public key. Error: %s", err.Error())
+	}
+	return pubkey, nil
 }
