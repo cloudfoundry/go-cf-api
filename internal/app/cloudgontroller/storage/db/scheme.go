@@ -41,7 +41,7 @@ func Migrate(db *sql.DB) {
 	}
 
 	// Execute the UP Migration
-	n, err := migrate.Exec(db, config.Get().DB.Type, migrations, migrate.Up)
+	n, err := migrate.Exec(db, config.Get("").DB.Type, migrations, migrate.Up)
 	zap.L().Info(fmt.Sprintf("Applied %v DB Migration Steps", n))
 	helpers.CheckErrFatal(err)
 }

@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/c-bata/go-prompt v0.2.6
-	github.com/caarlos0/env/v6 v6.6.2
 	github.com/creasty/defaults v1.5.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/errors v0.9.2
