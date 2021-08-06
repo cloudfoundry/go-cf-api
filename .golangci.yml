@@ -1,0 +1,38 @@
+run:
+  timeout: 5m
+
+linters:
+  build-tags:
+  - unit
+  - psql
+  enable-all: true
+  disable:
+  # Aggressive whitespace linters
+  - nlreturn
+  - wsl
+  # Until we decide how to handle errors
+  - wrapcheck
+  - errorlint
+  - goerr113
+  # Too opinionated
+  - exhaustivestruct
+  # Messes with swagger documentation
+  - godot
+  # Deprecated linters
+  - interfacer
+  - scopelint
+  - maligned
+  - golint
+
+linters-settings:
+  lll:
+    line-length: 160
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+        yaml: snake
+
+issues:
+  fix: true
+

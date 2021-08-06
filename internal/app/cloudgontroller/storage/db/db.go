@@ -9,11 +9,14 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 )
 
-var once sync.Once
-var database *sql.DB
-var databaseInfo DBInfo
+// nolint:gochecknoglobals
+var (
+	once         sync.Once
+	database     *sql.DB
+	databaseInfo Info
+)
 
-type DBInfo struct {
+type Info struct {
 	Host         string
 	Port         string
 	DatabaseName string
@@ -37,6 +40,6 @@ func GetConnection() *sql.DB {
 	return database
 }
 
-func GetConnectionInfo() DBInfo {
+func GetConnectionInfo() Info {
 	return databaseInfo
 }

@@ -24,7 +24,7 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				zap.String("user_agent", req.UserAgent()),
 			}
 
-			log.Debug("Request recieved", fields...)
+			log.Debug("Request received", fields...)
 
 			err := next(c)
 			if err != nil {
@@ -52,11 +52,11 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 
 			n := res.Status
 			switch {
-			case n >= 500:
+			case n >= 500: //nolint:gomnd // HTTP error code ranges are well understood
 				log.Error("Server error", fields...)
-			case n >= 400:
+			case n >= 400: //nolint:gomnd // HTTP error code ranges are well understood
 				log.Warn("Client error", fields...)
-			case n >= 300:
+			case n >= 300: //nolint:gomnd // HTTP error code ranges are well understood
 				log.Info("Redirection", fields...)
 			default:
 				log.Info("Success", fields...)

@@ -2,14 +2,14 @@ package controllers
 
 import (
 	"context"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
-	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
+	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"go.uber.org/zap"
 )
@@ -24,12 +24,12 @@ import (
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} HTTPError
-// @Router /buildpacks [get]
+// @Router /buildpacks [get].
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
-	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db)
+	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
@@ -49,7 +49,7 @@ func GetBuildpacks(c echo.Context) error {
 // @Success 404 {object} interface{}
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
-// @Router /buildpacks/{guid} [get]
+// @Router /buildpacks/{guid} [get].
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 	db := db.GetConnection()

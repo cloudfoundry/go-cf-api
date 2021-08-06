@@ -15,6 +15,7 @@ import (
 )
 
 func TestZapLogger(t *testing.T) {
+	t.Parallel()
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/something", nil)
 	rec := httptest.NewRecorder()

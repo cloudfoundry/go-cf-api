@@ -9,6 +9,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
+
+	// Needed for swagger
+	_ "github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
@@ -18,23 +21,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/time/rate"
-)
-
-var (
-
-	// Cobra Flags
-	rootCmd = &cobra.Command{
-		Use:   "cloudgontroller",
-		Short: "POC implemetation of a CAPI V3 compatible golang webserver",
-		// Long: `cloudgontroller is a example webserver that can be useds as a bootstrap project.
-		// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,
-		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
-		// 		sqlboiler generated models from db structure, db schema creation and migration,
-		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
-		Example: "cloudgontroller config_psql.yaml",
-		Args:    cobra.MaximumNArgs(1),
-		RunE:    RootFunc,
-	}
 )
 
 func RootFunc(cmd *cobra.Command, args []string) error {
@@ -80,8 +66,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	time.Sleep(1 * time.Millisecond)
 	zap.L().Warn("Application started without ssl/tls enabled")
 
-	err := <-lock
-	if err != nil {
+	if err := <-lock; err != nil {
 		zap.L().Panic("failed to start application", zap.Error(err))
 	}
 	return nil
@@ -103,18 +88,29 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 
 // @x-extension-openapi {"example": "value on a json format"}
 func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "error running command: %v\n", err)
-		os.Exit(1)
-	}
-}
-
-func init() {
-	// Initialize pre start Logging so we see e.g. config parse errors
 	config := zap.NewDevelopmentConfig()
 	config.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	config.DisableStacktrace = true
 	config.Level.SetLevel(zapcore.InfoLevel)
 	logger, _ := config.Build()
 	zap.ReplaceGlobals(logger)
+
+	// Cobra Flags.
+	rootCmd := &cobra.Command{
+		Use:   "cloudgontroller",
+		Short: "POC implemetation of a CAPI V3 compatible golang webserver",
+		// Long: `cloudgontroller is a example webserver that can be useds as a bootstrap project.
+		// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,
+		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
+		// 		sqlboiler generated models from db structure, db schema creation and migration,
+		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
+		Example: "cloudgontroller config_psql.yaml",
+		Args:    cobra.MaximumNArgs(1),
+		RunE:    RootFunc,
+	}
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintf(os.Stderr, "error running command: %v\n", err)
+		os.Exit(1)
+	}
 }

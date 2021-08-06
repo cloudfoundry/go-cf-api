@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// nolint:godox
 // TODO Maybe Switch to https://github.com/simukti/sqldb-logger and log on the driver level
 
 type BoilLogger struct {

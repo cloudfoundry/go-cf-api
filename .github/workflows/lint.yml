@@ -26,3 +26,4 @@ jobs:
           go install github.com/golangci/golangci-lint/cmd/golangci-lint
           export PATH=${PATH}:`go env GOPATH`/bin
           golangci-lint run --build-tags psql,unit
+        timeout-minutes: 10

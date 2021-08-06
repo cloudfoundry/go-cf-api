@@ -4,13 +4,15 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
+	"os"
+
 	migrate "github.com/rubenv/sql-migrate"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
-	"os"
 )
 
+//nolint:gochecknoglobals
 //go:embed migrations
 var migrations embed.FS
 
@@ -44,25 +46,25 @@ func Migrate(db *sql.DB) {
 	helpers.CheckErrFatal(err)
 }
 
-func Create(db *sql.DB, info DBInfo) error {
+func Create(db *sql.DB, info Info) error {
 	_, err := database.Exec(fmt.Sprintf("CREATE DATABASE %v", info.DatabaseName))
 	if err != nil {
 		return err
 	}
-	zap.L().Info(fmt.Sprintf("Sucessfully created database %v", info.DatabaseName))
+	zap.L().Info(fmt.Sprintf("Successfully created database %v", info.DatabaseName))
 	return nil
 }
 
-func Drop(db *sql.DB, info DBInfo) error {
+func Drop(db *sql.DB, info Info) error {
 	_, err := database.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
 	if err != nil {
 		return err
 	}
-	zap.L().Info(fmt.Sprintf("Sucessfully droped database %v", info.DatabaseName))
+	zap.L().Info(fmt.Sprintf("Successfully droped database %v", info.DatabaseName))
 	return nil
 }
 
-func Load(db *sql.DB, info DBInfo, sqlFilePath string) error {
+func Load(db *sql.DB, info Info, sqlFilePath string) error {
 	bytes, ioErr := os.ReadFile(sqlFilePath)
 	if ioErr != nil {
 		zap.L().Error(fmt.Sprintf("Loading SQL file %s failed", sqlFilePath))
@@ -71,6 +73,6 @@ func Load(db *sql.DB, info DBInfo, sqlFilePath string) error {
 	if err != nil {
 		return err
 	}
-	zap.L().Info(fmt.Sprintf("Sucessfully loaded SQL file into database %v", info.DatabaseName))
+	zap.L().Info(fmt.Sprintf("Successfully loaded SQL file into database %v", info.DatabaseName))
 	return nil
 }

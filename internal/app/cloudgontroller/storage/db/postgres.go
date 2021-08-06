@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4"
+
+	// We need to include this for compatibility with database/sql.
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
@@ -39,7 +41,8 @@ func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) {
 		helpers.CheckErrFatal(err)
 		// If DB is Missing, we Create it
 		err = database.Ping()
-		if dbConfig.Create && connectDB && err != nil && strings.Contains(err.Error(), fmt.Sprintf("database \"%s\" does not exist (SQLSTATE 3D000)", databaseInfo.DatabaseName)) {
+		if dbConfig.Create && connectDB && err != nil &&
+			strings.Contains(err.Error(), fmt.Sprintf("database \"%s\" does not exist (SQLSTATE 3D000)", databaseInfo.DatabaseName)) {
 			zap.L().Info(fmt.Sprintf("Database %s does not exist. Trying to create it", databaseInfo.DatabaseName))
 			database.Close()
 			dblessConnectionString := strings.ReplaceAll(dbConfig.ConnectionString, fmt.Sprintf("dbname=%s", databaseInfo.DatabaseName), "")
@@ -55,8 +58,8 @@ func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) {
 		}
 
 		// DB Connection Settings
-		database.SetMaxIdleConns(5)
-		database.SetMaxOpenConns(20)
+		database.SetMaxIdleConns(5)  //nolint:gomnd // This will be configurable at some point
+		database.SetMaxOpenConns(20) //nolint:gomnd // This will be configurable at some point
 		database.SetConnMaxLifetime(time.Hour)
 
 		// Check Connection on StartUp
