@@ -167,11 +167,6 @@ curl -i http://localhost:8080/api/v3/buildpacks -H "Authorization: Bearer [Add t
 This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated:
 Example from v3/handlers.go
 ```
-func RegisterV3Handlers(prefix string, e *echo.Echo) {
-	var uaakey = `-----BEGIN PUBLIC KEY-----
-	...
------END PUBLIC KEY-----
-`
     var publicKey, _ = jwt.ParseRSAPublicKeyFromPEM([]byte(uaakey))
     // Restricted group
     r := e.Group(prefix)
