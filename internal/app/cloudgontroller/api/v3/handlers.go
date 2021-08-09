@@ -4,18 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	jwtv3 "github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/lestrrat-go/jwx/jwk"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"net/http"
 
+	jwtv3 "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+	"github.com/lestrrat-go/jwx/jwk"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
-
-var cloudGontrollerConfig *config.CloudgontrollerConfig
 
 func RegisterHealthHandler(e *echo.Echo) {
 	// Health
@@ -24,12 +22,11 @@ func RegisterHealthHandler(e *echo.Echo) {
 
 func RegisterV3Handlers(prefix string, e *echo.Echo, conf *config.CloudgontrollerConfig) {
 	// Restricted group
-	cloudGontrollerConfig = conf
 	restrictedGroup := e.Group(prefix)
 	{
 		config := middleware.JWTConfig{
 			SigningMethod: "RS256",
-			KeyFunc: getUaaKey,
+			KeyFunc:       getUaaKey(conf),
 		}
 		restrictedGroup.Use(middleware.JWTWithConfig(config))
 
@@ -50,22 +47,25 @@ func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {
 	e.GET(fmt.Sprintf("%s/*", prefix), echoSwagger.WrapHandler)
 }
 
-func getUaaKey(token *jwtv3.Token) (interface{}, error) {
-	keySet, err := jwk.Fetch(context.Background(), fmt.Sprintf("%s/token_keys", cloudGontrollerConfig.Uaa.Url))
-	if err != nil {
-		return nil, err
+func getUaaKey(conf *config.CloudgontrollerConfig) jwtv3.Keyfunc {
+	uaaURL := fmt.Sprintf("%s/token_keys", conf.Uaa.URL)
+	return func(token *jwtv3.Token) (interface{}, error) {
+		keySet, err := jwk.Fetch(context.Background(), uaaURL)
+		if err != nil {
+			return nil, err
+		}
+		keyID, ok := token.Header["kid"].(string)
+		if !ok {
+			return nil, errors.New("expecting JWT header to have a key ID in the kid field")
+		}
+		key, found := keySet.LookupKeyID(keyID)
+		if !found {
+			return nil, fmt.Errorf("unable to find key %q", keyID)
+		}
+		var pubkey interface{}
+		if err := key.Raw(&pubkey); err != nil {
+			return nil, fmt.Errorf("unable to get the public key. Error: %s", err.Error())
+		}
+		return pubkey, nil
 	}
-	keyID, ok := token.Header["kid"].(string)
-	if !ok {
-		return nil, errors.New("expecting JWT header to have a key ID in the kid field")
-	}
-	key, found := keySet.LookupKeyID(keyID)
-	if !found {
-		return nil, fmt.Errorf("unable to find key %q", keyID)
-	}
-	var pubkey interface{}
-	if err := key.Raw(&pubkey); err != nil {
-		return nil, fmt.Errorf("Unable to get the public key. Error: %s", err.Error())
-	}
-	return pubkey, nil
 }

@@ -23,11 +23,11 @@ type CloudgontrollerConfig struct {
 	DB        DBConfig
 	Log       ZapConfig
 	RateLimit RateLimitConf
-	Uaa UaaConfig
+	Uaa       UaaConfig
 }
 
 type UaaConfig struct {
-	Url    string `env:"cloudgontroller_UAA_URL" default:"http://localhost:8095"`
+	URL string `env:"cloudgontroller_UAA_URL" default:"http://localhost:8095"`
 }
 
 type DBConfig struct {
