@@ -53,7 +53,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	// Initialize DB
 	db.NewConnection(conf.DB, true)
 	if conf.DB.Migrate {
-		db.Migrate(db.GetConnection())
+		db.Migrate(conf.DB.Type, db.GetConnection())
 	}
 
 	// Register API Handlers

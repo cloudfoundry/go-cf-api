@@ -3,10 +3,11 @@
 package main
 
 import (
-	"github.com/magefile/mage/sh"
-	"go.uber.org/zap"
 	"os"
 	"path/filepath"
+
+	"github.com/magefile/mage/sh"
+	"go.uber.org/zap"
 
 	"fmt"
 	"runtime/debug"
@@ -131,7 +132,7 @@ func DBMigrate(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
 	db.NewConnection(config.DB, true)
-	db.Migrate(db.GetConnection())
+	db.Migrate(config.DB.Type, db.GetConnection())
 	return nil
 }
 
