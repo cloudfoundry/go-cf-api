@@ -1,5 +1,9 @@
 run:
-  timeout: 5m
+  timeout: 10m
+  build-tags:
+  # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
+  - psql
+  - unit
 
 linters:
   build-tags:
