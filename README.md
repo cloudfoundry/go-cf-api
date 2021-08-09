@@ -1,6 +1,8 @@
 ![lint](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
+
 # cloudgontroller
 A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
+
 ## Prerequisites
 - [Go](https://golang.org/dl) version 1.16
 	```bash
@@ -21,7 +23,6 @@ A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_co
 	```
 
 ## Prepare dev database
-
 To run cloudgontroller we need a proper Cloud Controller database.
 To do this we have a docker-compose file to create the DBs and SQL dumps from an existing Cloud Controller that can be used to build an DB for testing.
 There are `mage` commands for most database operations.
@@ -51,7 +52,6 @@ mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
 	```bash
 	mage DBRecreate config_psql.yaml
 	```
-
 
 ## Running commands
 Different database code and types of test are conditionally compiled and run based on [Go build tags](https://pkg.go.dev/cmd/go#hdr-Build_constraints).
@@ -99,13 +99,11 @@ mage build
 
 The binaries can be compiled for other architectures by exporting the `GOOS` and `GOARCH` environment variables.
 
-
 ## Documentation
 Documentation is auto generated using `godoc` and `godoc-static` and served via GitHub pages. The binaries compiled by the `mage build` command will also serve the documentation at:
 ```
 http://localhost:8080/docs/v3
 ```
-
 
 ## Running linter
 This project uses [golangci-lint](https://golangci-lint.run/) to ensure code is formatted correctly and return values are checked etc.
@@ -131,6 +129,38 @@ Different tags are used to control which tests are run:
 	go test -tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
 	```
 
+## Running old and new Cloud Controller in parallel locally
+* Install HAProxy:
+    ```bash
+    brew install haproxy
+    ```
+* Link to configuration file:
+    ```bash
+    ln -s $PWD/haproxy.cfg /usr/local/etc/haproxy.cfg
+    ```
+* Start HAProxy:
+    ```bash
+    brew services start haproxy
+    ```
+* Start container group **cg_dev** (incl. UAA, Postgres, old CC):
+    ```bash
+    \<product-cf-hcp>/components/cf/tests/integration/docker_util.py start --container-group cg-dev
+    ```
+  (This also creates an admin user `ccadmin` with password `secret`.)
+* Load data into database:
+    ```bash
+    mage DBLoad config_cg_dev.yaml database_dumps/3.102.0_psql_ccdb.sql
+    ```
+* Start new CC:
+    ```bash
+    go run --tags=psql cmd/main.go config_cg_dev.yaml
+    ```
+  (Or use the **Run cloudgontroller (cg_dev)** run configuration.)
+* Login with cf cli:
+    ```bash
+    cf api http://localhost --skip-ssl-validation && cf auth ccadmin secret
+    ```
+
 # Current Feature List
 - Structured Logging
 - Prometheus Endpoint Metrics
@@ -144,9 +174,9 @@ Different tags are used to control which tests are run:
 - Assets in memory
 - Rate Limiting
 
-
 # PoC ToDos
 https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC
+
 # MVP ToDos
 https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP
 
@@ -184,7 +214,6 @@ Example from v3/handlers.go
 }
 ```
 
-
 Accessing the userdata from the context during a request:
 ```
 func GetBuildpacks(c echo.Context) error {
@@ -195,5 +224,3 @@ func GetBuildpacks(c echo.Context) error {
     fmt.Println(user) //contains the token itself
     fmt.Println(name) //contains the username read from the client_id claim (can be anything from the jwt token middle part)
 ```
-
-
