@@ -23,3 +23,7 @@ jobs:
           # Caching doesn't work on GH Enterprise w/ self-hosted runners
           skip-pkg-cache: true
           skip-build-cache: true
+          args: --print-resources-usage
+        env:
+          # Garbage collect more frequently to lower memory usage
+          GOGC: 5
