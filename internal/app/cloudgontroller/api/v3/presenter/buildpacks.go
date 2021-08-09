@@ -2,28 +2,30 @@ package presenter
 
 import (
 	"fmt"
-	"github.com/volatiletech/null/v8"
 	"time"
 
+	"github.com/volatiletech/null/v8"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
-const STATE_AWAITING_UPLOAD = "AWAITING_UPLOAD"
-const STATE_READY = "READY"
+const (
+	StateAwaitingUpload = "AWAITING_UPLOAD"
+	StateReady          = "READY"
+)
 
 type BuildpackResponse struct {
-	Guid       string      `json:"guid"`
-	Created_at time.Time   `json:"created_at"`
-	Updated_at null.Time   `json:"updated_at"`
-	Name       string      `json:"name"`
-	State      string      `json:"state"`
-	Filename   null.String `json:"filename"`
-	Stack      null.String `json:"stack"`
-	Position   int         `json:"position"`
-	Enabled    null.Bool   `json:"enabled"`
-	Locked     null.Bool   `json:"locked"`
-	Metadata   Metadata    `json:"metadata"`
-	Links      struct {
+	GUID      string      `json:"guid"`
+	CreatedAt time.Time   `json:"created_at"`
+	UpdatedAt null.Time   `json:"updated_at"`
+	Name      string      `json:"name"`
+	State     string      `json:"state"`
+	Filename  null.String `json:"filename"`
+	Stack     null.String `json:"stack"`
+	Position  int         `json:"position"`
+	Enabled   null.Bool   `json:"enabled"`
+	Locked    null.Bool   `json:"locked"`
+	Metadata  Metadata    `json:"metadata"`
+	Links     struct {
 		Self   Link `json:"self"`
 		Upload Link `json:"upload"`
 	} `json:"links"`
@@ -36,16 +38,16 @@ type BuildpacksResponse struct {
 
 func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse {
 	response := &BuildpackResponse{
-		Guid:       buildpack.GUID,
-		Created_at: buildpack.CreatedAt,
-		Updated_at: buildpack.UpdatedAt,
-		Name:       buildpack.Name,
-		State:      GetBuildpackState(buildpack),
-		Filename:   buildpack.Filename,
-		Stack:      buildpack.Stack,
-		Position:   buildpack.Position,
-		Enabled:    buildpack.Enabled,
-		Locked:     buildpack.Locked,
+		GUID:      buildpack.GUID,
+		CreatedAt: buildpack.CreatedAt,
+		UpdatedAt: buildpack.UpdatedAt,
+		Name:      buildpack.Name,
+		State:     GetBuildpackState(buildpack),
+		Filename:  buildpack.Filename,
+		Stack:     buildpack.Stack,
+		Position:  buildpack.Position,
+		Enabled:   buildpack.Enabled,
+		Locked:    buildpack.Locked,
 	}
 	response.Links.Self = GetResourcePathLink(resourcePath)
 	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")
@@ -83,7 +85,7 @@ func GetResourcePathLinkWithMethod(resourcePath string, method string) Link {
 
 func GetBuildpackState(buildpack *models.Buildpack) string {
 	if buildpack.Filename.IsZero() {
-		return STATE_AWAITING_UPLOAD
+		return StateAwaitingUpload
 	}
-	return STATE_READY
+	return StateReady
 }

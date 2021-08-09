@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/caarlos0/env/v6"
@@ -14,24 +13,21 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/spf13/viper"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
-	log "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/enums"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/tags"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
-
-var once sync.Once
-var config *CloudgontrollerConfig
 
 type CloudgontrollerConfig struct {
 	Listen    string `env:"cloudgontroller_LISTEN" default:"localhost:8080"`
 	DB        DBConfig
 	Log       ZapConfig
 	RateLimit RateLimitConf
-	Uaa UaaConfig
+	Uaa       UaaConfig
 }
 
 type UaaConfig struct {
-	Url    string `env:"cloudgontroller_UAA_URL" default:"http://localhost:8095"`
+	URL string `env:"cloudgontroller_UAA_URL" default:"http://localhost:8095"`
 }
 
 type DBConfig struct {
@@ -60,45 +56,42 @@ type RateLimitConf struct {
 // Parses the config once, otherwise just returns it
 // Priority from lowest to highest: Default Values, Config File, Environment Variables
 // After setting the Config in this order it is validated according to struct tags
-// If validation is not succefull we have a invalid config and thus throw a FATAL
+// If validation is not succefull we have a invalid config and thus throw a FATAL.
 func Get(params ...string) *CloudgontrollerConfig {
-	once.Do(func() {
-		tmp := &CloudgontrollerConfig{}
-		// Default Values
-		helpers.CheckErrFatal(defaults.Set(tmp))
-		// If Config File is present, Parse it into a struct
-		if len(params) == 1 {
-			viper.SetConfigFile(params[0])
-			err := viper.ReadInConfig()
-			if err == nil {
-				zap.L().Info(fmt.Sprintf("Using config file %s", viper.ConfigFileUsed()), zap.String(log.Tags.File, viper.ConfigFileUsed()))
-			} else {
-				helpers.CheckErrFatal(err)
-			}
-			err = viper.Unmarshal(tmp)
+	config := &CloudgontrollerConfig{}
+	// Default Values
+	helpers.CheckErrFatal(defaults.Set(config))
+	// If Config File is present, Parse it into a struct
+	if len(params) == 1 {
+		viper.SetConfigFile(params[0])
+		err := viper.ReadInConfig()
+		if err == nil {
+			zap.L().Info(fmt.Sprintf("Using config file %s", viper.ConfigFileUsed()), zap.String(tags.File, viper.ConfigFileUsed()))
+		} else {
 			helpers.CheckErrFatal(err)
 		}
-		// Overwrite values with env Variables
-		helpers.CheckErrFatal(env.Parse(tmp))
-		if zap.L().Core().Enabled(zap.DebugLevel) {
-			usedConfig, err := yaml.Marshal(config)
-			helpers.CheckErrFatal(err)
-			zap.L().Debug("Using following config", zap.String("Config", string(usedConfig)))
-		}
-		// Validate the Result if it is valid
-		helpers.CheckErrFatal(tmp.Validate())
-		config = tmp
-	})
+		err = viper.Unmarshal(config)
+		helpers.CheckErrFatal(err)
+	}
+	// Overwrite values with env Variables
+	helpers.CheckErrFatal(env.Parse(config))
+	if zap.L().Core().Enabled(zap.DebugLevel) {
+		usedConfig, err := yaml.Marshal(config)
+		helpers.CheckErrFatal(err)
+		zap.L().Debug("Using following config", zap.String("Config", string(usedConfig)))
+	}
+	// Validate the Result if it is valid
+	helpers.CheckErrFatal(config.Validate())
 	return config
 }
 
-// SetDefaults implements defaults.Setter interface
+// SetDefaults implements defaults.Setter interface.
 func (s *CloudgontrollerConfig) SetDefaults() {
-	s.RateLimit.ExpiresIn = s.RateLimit.ExpiresIn * time.Second
+	s.RateLimit.ExpiresIn *= time.Second
 }
 
 // We need to extend the validation function because of https://github.com/go-playground/validator/issues/782
-// Otherwise users would not get a clue why their config did not validate (meaningless error message)
+// Otherwise users would not get a clue why their config did not validate (meaningless error message).
 func (s *CloudgontrollerConfig) Validate() error {
 	// Check config with validator tags
 	if err := validator.New().Struct(s); err != nil {
@@ -120,7 +113,8 @@ func (s *CloudgontrollerConfig) Validate() error {
 				}
 			}
 		}
-		return fmt.Errorf("error parsing config: %s. values must comply with following schema: \"%s\". Read more what the validate tags mean here: https://github.com/go-playground/validator ", err, resultField.Tag.Get("validate"))
+		return fmt.Errorf("error parsing config: %s. values must comply with following schema: \"%s\"."+
+			"Read more what the validate tags mean here: https://github.com/go-playground/validator ", err, resultField.Tag.Get("validate"))
 	}
 
 	// Check the DB Connection String

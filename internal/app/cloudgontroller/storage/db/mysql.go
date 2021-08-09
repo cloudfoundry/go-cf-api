@@ -40,7 +40,7 @@ func NewMySQLConnection(dbConfig config.DBConfig, connectDB bool) {
 		// If DB is Missing, we Create it
 		err = database.Ping()
 		if err != nil {
-			fmt.Print(err.Error())
+			helpers.CheckErr(err)
 		}
 		if dbConfig.Create && connectDB && err != nil && strings.Contains(err.Error(), fmt.Sprintf("Error 1049: Unknown database '%s'", databaseInfo.DatabaseName)) {
 			zap.L().Info(fmt.Sprintf("Database %s does not exist. Trying to create it", databaseInfo.DatabaseName))
@@ -60,8 +60,8 @@ func NewMySQLConnection(dbConfig config.DBConfig, connectDB bool) {
 		}
 
 		// DB Connection Settings
-		database.SetMaxIdleConns(5)
-		database.SetMaxOpenConns(20)
+		database.SetMaxIdleConns(5)  //nolint:gomnd // This will be configurable at some point
+		database.SetMaxOpenConns(20) //nolint:gomnd // This will be configurable at some point
 		database.SetConnMaxLifetime(time.Hour)
 
 		// Check Connection on StartUp
