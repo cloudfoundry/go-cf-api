@@ -13,6 +13,7 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {
@@ -27,6 +28,8 @@ func RegisterV3Handlers(prefix string, e *echo.Echo, conf *config.Cloudgontrolle
 		config := middleware.JWTConfig{
 			SigningMethod: "RS256",
 			KeyFunc:       getUaaKey(conf),
+			BeforeFunc:    helpers.NormalizeAuthScheme,
+			AuthScheme:    "bearer",
 		}
 		restrictedGroup.Use(middleware.JWTWithConfig(config))
 
