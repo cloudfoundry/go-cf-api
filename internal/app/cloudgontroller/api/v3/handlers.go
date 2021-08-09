@@ -7,6 +7,7 @@ import (
 	jwtv3 "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lestrrat-go/jwx/jwk"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -15,13 +16,16 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 )
 
+var cloudGontrollerConfig *config.CloudgontrollerConfig
+
 func RegisterHealthHandler(e *echo.Echo) {
 	// Health
 	e.GET("healthz", controllers.GetHealth)
 }
 
-func RegisterV3Handlers(prefix string, e *echo.Echo) {
+func RegisterV3Handlers(prefix string, e *echo.Echo, conf *config.CloudgontrollerConfig) {
 	// Restricted group
+	cloudGontrollerConfig = conf
 	restrictedGroup := e.Group(prefix)
 	{
 		config := middleware.JWTConfig{
@@ -48,7 +52,7 @@ func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {
 }
 
 func getUaaKey(token *jwtv3.Token) (interface{}, error) {
-	keySet, err := jwk.Fetch(context.Background(), "http://localhost:8095/token_keys")
+	keySet, err := jwk.Fetch(context.Background(), fmt.Sprintf("%s/token_keys", cloudGontrollerConfig.Uaa.Url))
 	if err != nil {
 		return nil, err
 	}
