@@ -7,6 +7,7 @@ require (
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/caarlos0/env/v6 v6.6.2
 	github.com/creasty/defaults v1.5.1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -25,6 +26,7 @@ require (
 	github.com/labstack/echo-contrib v0.9.0
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/lestrrat-go/jwx v1.2.5
 	github.com/lib/pq v1.10.2
 	github.com/magefile/mage v1.11.0
 	github.com/mailru/easyjson v0.7.7 // indirect

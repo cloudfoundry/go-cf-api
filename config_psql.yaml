@@ -7,3 +7,5 @@ db:
 log:
   level: debug
   production: false
+uaa:
+  url: http://localhost:8095

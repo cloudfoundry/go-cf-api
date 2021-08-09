@@ -71,7 +71,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	// Register API Handlers
-	api.RegisterHandlers(e)
+	api.RegisterHandlers(e, conf)
 
 	// Start to Serve
 	lock := make(chan error)
