@@ -24,7 +24,7 @@ import (
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} HTTPError
-// @Router /buildpacks [get].
+// @Router /buildpacks [get]
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
 
@@ -49,7 +49,7 @@ func GetBuildpacks(c echo.Context) error {
 // @Success 404 {object} interface{}
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
-// @Router /buildpacks/{guid} [get].
+// @Router /buildpacks/{guid} [get]
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 	db := db.GetConnection()
