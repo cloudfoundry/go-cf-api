@@ -1,49 +1,56 @@
 package logging
 
 import (
+	"fmt"
+	"regexp"
+
 	"github.com/gofrs/uuid"
 	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
-	"regexp"
 )
 
 const (
-	HeaderVcapRequestId = "X-Vcap-Request-Id"
+	HeaderVcapRequestID = "X-Vcap-Request-Id"
+	MaxSizeLimit        = 255
 )
 
-var vcapRequestIdBadCharRegexp = regexp.MustCompile("[^\\w-]")
+var vcapRequestIDBadCharRegexp = regexp.MustCompile(`[^\w-]`) // shorthand for [a-zA-Z0-9_]
 
-func NewVcapRequestId() echo.MiddlewareFunc {
+func NewVcapRequestID() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			existingRequestId := c.Request().Header.Get(HeaderVcapRequestId)
-			if len(existingRequestId) == 0 {
-				existingRequestId = c.Request().Header.Get(echo.HeaderXRequestID)
+			existingRequestID := c.Request().Header.Get(HeaderVcapRequestID)
+			if len(existingRequestID) == 0 {
+				existingRequestID = c.Request().Header.Get(echo.HeaderXRequestID)
 			}
-			c.Response().Header().Set(HeaderVcapRequestId, buildRequestId(existingRequestId))
+			requestID, err := buildRequestID(existingRequestID)
+			if err != nil {
+				return err
+			}
+			c.Response().Header().Set(HeaderVcapRequestID, requestID)
 			return next(c)
 		}
 	}
 }
 
-func buildRequestId(vcapRequestId string) string {
+func buildRequestID(vcapRequestID string) (string, error) {
 	guid, err := uuid.NewV4()
-	var guidStr string
-	if err == nil {
-		guidStr = guid.String()
-	} else {
+	if err != nil {
 		zap.L().Error("guid generation failed", zap.Error(err))
-		guidStr = "???"
+		return "", err
 	}
-	if len(vcapRequestId) == 0 {
-		vcapRequestId = guidStr
-	} else {
-		// append guid to first guid of existing request id
-		vcapRequestId = vcapRequestIdBadCharRegexp.ReplaceAllString(vcapRequestId, "")
-		if len(vcapRequestId) > 255 {
-			vcapRequestId = vcapRequestId[:255]
-		}
-		vcapRequestId = vcapRequestId + "::" + guidStr
+	guidStr := guid.String()
+
+	if len(vcapRequestID) == 0 {
+		vcapRequestID = guidStr
+		return vcapRequestID, nil
 	}
-	return vcapRequestId
+
+	// append guid to first guid of existing request id
+	vcapRequestID = vcapRequestIDBadCharRegexp.ReplaceAllString(vcapRequestID, "")
+	if len(vcapRequestID) > MaxSizeLimit {
+		vcapRequestID = vcapRequestID[:MaxSizeLimit]
+	}
+	vcapRequestID = fmt.Sprintf("%s::%s", vcapRequestID, guidStr)
+	return vcapRequestID, nil
 }

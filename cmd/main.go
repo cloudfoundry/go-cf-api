@@ -41,7 +41,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	// Initialize Echo Framework
 	e := echo.New()
 	e.Use(middleware.Recover())
-	e.Use(logging.NewVcapRequestId())
+	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(

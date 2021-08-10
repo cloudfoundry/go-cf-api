@@ -3,90 +3,60 @@
 package logging_test
 
 import (
-	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/require"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 )
 
-type VcapRequestIdTestSuite struct {
-	suite.Suite
-	req          *http.Request
-	c            echo.Context
-	middlewareFn echo.MiddlewareFunc
-	h            echo.HandlerFunc
-	rec          *httptest.ResponseRecorder
-}
-
-func (suite *VcapRequestIdTestSuite) SetupTest() {
-	e := echo.New()
-	suite.req = httptest.NewRequest(http.MethodGet, "/something", nil)
-	suite.rec = httptest.NewRecorder()
-	suite.c = e.NewContext(suite.req, suite.rec)
-
-	suite.h = func(c echo.Context) error {
-		return c.String(http.StatusOK, "")
+func TestVcapRequestIdSuite(t *testing.T) {
+	t.Parallel()
+	cases := map[string]struct {
+		externalHeaders map[string]string
+		expectedLength  int
+		expectedPrefix  string
+	}{
+		"no external header": {
+			expectedLength: 36,
+		},
+		"external vcap request id": {
+			externalHeaders: map[string]string{logging.HeaderVcapRequestID: "123-abc"}, expectedLength: 45, expectedPrefix: "123-abc::",
+		},
+		"external request id": {
+			externalHeaders: map[string]string{echo.HeaderXRequestID: "123-abc"}, expectedLength: 45, expectedPrefix: "123-abc::",
+		},
+		"non-numeric external id": {
+			externalHeaders: map[string]string{logging.HeaderVcapRequestID: "123-abc.?:"}, expectedLength: 45, expectedPrefix: "123-abc::",
+		},
+		"over 255 char external id": {
+			externalHeaders: map[string]string{logging.HeaderVcapRequestID: strings.Repeat("x", 500)},
+			expectedLength:  255 + 2 + 36,
+			expectedPrefix:  strings.Repeat("x", 255) + "::",
+		},
 	}
 
-	suite.middlewareFn = logging.NewVcapRequestId()
-	fmt.Println("setup test")
-}
-
-func (suite *VcapRequestIdTestSuite) RunMiddleware() error {
-	return suite.middlewareFn(suite.h)(suite.c)
-}
-
-func (suite *VcapRequestIdTestSuite) TestGenerateVcapRequestId() {
-	err := suite.RunMiddleware()
-	assert.Nil(suite.T(), err)
-	vcapRequestId := suite.rec.Header().Get(logging.HeaderVcapRequestId)
-	assert.NotNil(suite.T(), vcapRequestId)
-	assert.Equal(suite.T(), 36, len(vcapRequestId))
-}
-
-func (suite *VcapRequestIdTestSuite) TestVcapRequestIdFromOutside() {
-	suite.req.Header.Set(logging.HeaderVcapRequestId, "123-abc")
-	err := suite.RunMiddleware()
-	assert.Nil(suite.T(), err)
-	vcapRequestId := suite.rec.Header().Get(logging.HeaderVcapRequestId)
-	assert.NotNil(suite.T(), vcapRequestId)
-	assert.Equal(suite.T(), 45, len(vcapRequestId))
-	assert.True(suite.T(), strings.HasPrefix(vcapRequestId, "123-abc::"))
-}
-
-func (suite *VcapRequestIdTestSuite) TestRequestIdFromOutside() {
-	suite.req.Header.Set(echo.HeaderXRequestID, "123-abc")
-	err := suite.RunMiddleware()
-	assert.Nil(suite.T(), err)
-	vcapRequestId := suite.rec.Header().Get(logging.HeaderVcapRequestId)
-	assert.NotNil(suite.T(), vcapRequestId)
-	assert.Equal(suite.T(), 45, len(vcapRequestId))
-	assert.True(suite.T(), strings.HasPrefix(vcapRequestId, "123-abc::"))
-}
-
-func (suite *VcapRequestIdTestSuite) TestVcapRequestIdFromOutsideOnlyAlphanumeric() {
-	suite.req.Header.Set(logging.HeaderVcapRequestId, "123-abc.?:")
-	err := suite.RunMiddleware()
-	assert.Nil(suite.T(), err)
-	vcapRequestId := suite.rec.Header().Get(logging.HeaderVcapRequestId)
-	assert.Equal(suite.T(), 45, len(vcapRequestId))
-	assert.True(suite.T(), strings.HasPrefix(vcapRequestId, "123-abc::"))
-}
-
-func (suite *VcapRequestIdTestSuite) TestVcapRequestIdFromOutsideMax255() {
-	suite.req.Header.Set(logging.HeaderVcapRequestId, strings.Repeat("x", 500))
-	err := suite.RunMiddleware()
-	assert.Nil(suite.T(), err)
-	vcapRequestId := suite.rec.Header().Get(logging.HeaderVcapRequestId)
-	assert.Equal(suite.T(), 255+2+36, len(vcapRequestId))
-	assert.True(suite.T(), strings.HasPrefix(vcapRequestId, strings.Repeat("x", 255)+"::"))
-}
-
-func TestVcapRequestIdSuite(t *testing.T) {
-	suite.Run(t, new(VcapRequestIdTestSuite))
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			e := echo.New()
+			request := httptest.NewRequest(http.MethodGet, "/something", nil)
+			recorder := httptest.NewRecorder()
+			context := e.NewContext(request, recorder)
+			handler := func(c echo.Context) error {
+				return c.String(http.StatusOK, "")
+			}
+			for headerName, headerValue := range tc.externalHeaders {
+				request.Header.Set(headerName, headerValue)
+			}
+			err := logging.NewVcapRequestID()(handler)(context)
+			require.NoError(t, err)
+			vcapRequestID := recorder.Header().Get(logging.HeaderVcapRequestID)
+			require.Equal(t, tc.expectedLength, len(vcapRequestID))
+			require.True(t, strings.HasPrefix(vcapRequestID, tc.expectedPrefix))
+		})
+	}
 }

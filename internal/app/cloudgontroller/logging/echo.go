@@ -17,14 +17,14 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 
 			req := c.Request()
 			res := c.Response()
-			vcapRequestId := res.Header().Get(HeaderVcapRequestId)
+			vcapRequestID := res.Header().Get(HeaderVcapRequestID)
 			fields := []zapcore.Field{
 				zap.String("remote_ip", c.RealIP()),
 				zap.String("time", time.Since(start).String()),
 				zap.String("host", req.Host),
 				zap.String("request", fmt.Sprintf("%s %s", req.Method, req.RequestURI)),
 				zap.String("user_agent", req.UserAgent()),
-				zap.String("request_id", vcapRequestId),
+				zap.String("request_id", vcapRequestID),
 			}
 
 			log.Debug("Request received", fields...)
@@ -43,7 +43,7 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				zap.Int("status", res.Status),
 				zap.Int64("size", res.Size),
 				zap.String("user_agent", req.UserAgent()),
-				zap.String("request_id", vcapRequestId),
+				zap.String("request_id", vcapRequestID),
 			}
 
 			n := res.Status
