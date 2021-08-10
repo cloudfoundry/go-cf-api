@@ -31,7 +31,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 		conf = config.Get(args[0])
 	} else {
 		// Just parses Environment Variables
-		conf = config.Get()
+		conf = config.Get("")
 	}
 	// Initialize Logger
 	if err := logging.Setup(conf); err != nil {
@@ -53,7 +53,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	// Initialize DB
 	db.NewConnection(conf.DB, true)
 	if conf.DB.Migrate {
-		db.Migrate(db.GetConnection())
+		db.Migrate(conf.DB.Type, db.GetConnection())
 	}
 
 	// Register API Handlers

@@ -1,0 +1,19 @@
+listen: localhost:8080
+db:
+  type: ~
+  connectionstring: ~
+  create: true
+  migrate: true
+  log:
+    level: info
+    production: true
+log:
+  level: info
+  production: true
+uaa:
+  url: ~
+rate_limiting:
+  enabled: true
+  rate: 10
+  burst: 20
+  expires_in: 180s

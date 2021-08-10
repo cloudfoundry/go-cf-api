@@ -7,7 +7,6 @@ import (
 	"os"
 
 	migrate "github.com/rubenv/sql-migrate"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
 )
@@ -16,7 +15,7 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-func Migrate(db *sql.DB) {
+func Migrate(dbType string, db *sql.DB) {
 	// Load migrations depending on DB Type
 	folder := fmt.Sprintf("migrations/%s", GetConnectionInfo().Type)
 
@@ -41,7 +40,7 @@ func Migrate(db *sql.DB) {
 	}
 
 	// Execute the UP Migration
-	n, err := migrate.Exec(db, config.Get().DB.Type, migrations, migrate.Up)
+	n, err := migrate.Exec(db, dbType, migrations, migrate.Up)
 	zap.L().Info(fmt.Sprintf("Applied %v DB Migration Steps", n))
 	helpers.CheckErrFatal(err)
 }
