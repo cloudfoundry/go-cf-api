@@ -16,12 +16,15 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 			start := time.Now()
 
 			req := c.Request()
+			res := c.Response()
+			vcapRequestID := res.Header().Get(HeaderVcapRequestID)
 			fields := []zapcore.Field{
 				zap.String("remote_ip", c.RealIP()),
 				zap.String("time", time.Since(start).String()),
 				zap.String("host", req.Host),
 				zap.String("request", fmt.Sprintf("%s %s", req.Method, req.RequestURI)),
 				zap.String("user_agent", req.UserAgent()),
+				zap.String("request_id", vcapRequestID),
 			}
 
 			log.Debug("Request received", fields...)
@@ -32,8 +35,6 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				c.Error(err)
 			}
 
-			res := c.Response()
-
 			fields = []zapcore.Field{
 				zap.String("remote_ip", c.RealIP()),
 				zap.String("time", time.Since(start).String()),
@@ -42,12 +43,7 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				zap.Int("status", res.Status),
 				zap.Int64("size", res.Size),
 				zap.String("user_agent", req.UserAgent()),
-			}
-
-			id := req.Header.Get(echo.HeaderXRequestID)
-			if id == "" {
-				id = res.Header().Get(echo.HeaderXRequestID)
-				fields = append(fields, zap.String("request_id", id))
+				zap.String("request_id", vcapRequestID),
 			}
 
 			n := res.Status
