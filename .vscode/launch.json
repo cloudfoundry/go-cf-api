@@ -8,8 +8,9 @@
 			"mode": "debug",
 			"program": "${workspaceFolder}/cmd/main.go",
 			"args": [
-				"${workspaceFolder}/config.yaml"
-			]
+				"${workspaceFolder}/config_psql.yaml"
+			],
+			"buildFlags": "-tags=psql"
 		},
 		{
 			"name": "Run Mage command",
