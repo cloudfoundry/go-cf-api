@@ -2,7 +2,7 @@
   <configuration default="false" name="unit tests" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags=&quot;psql,unit&quot;" />
+    <go_parameters value="-tags='psql,unit'" />
     <kind value="DIRECTORY" />
     <package value="github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller" />
     <directory value="$PROJECT_DIR$" />
