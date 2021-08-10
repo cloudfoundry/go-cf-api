@@ -62,7 +62,7 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	// Configure auth middleware
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ukf := uaa.NewUaaKeyFetcher(ctx, conf.Uaa.URL)
+	ukf := uaa.NewKeyFetcher(ctx, conf.Uaa.URL)
 	authConfig := middleware.JWTConfig{
 		SigningMethod: "RS256",
 		KeyFunc:       ukf.Fetch,

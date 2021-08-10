@@ -1,6 +1,7 @@
 // +build unit
 
-package uaa
+//nolint:gosec // These are just tests so insecure random number generation is fine
+package uaa_test
 
 import (
 	"context"
@@ -17,17 +18,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 )
 
-func TestNewUaaKeyFetcher(t *testing.T) {
+func TestNewKeyFetcher(t *testing.T) {
+	t.Parallel()
 	uaaBaseURL := "http://uaa.example.com"
-	ukf := NewUaaKeyFetcher(context.TODO(), uaaBaseURL)
+	ukf := NewKeyFetcher(context.TODO(), uaaBaseURL)
 
-	assert.Equal(t, "http://uaa.example.com/token_keys", ukf.uaaURL)
-	assert.IsType(t, &jwk.AutoRefresh{}, ukf.fetcher)
+	assert.Equal(t, "http://uaa.example.com/token_keys", ukf.UAAURL)
+	assert.IsType(t, &jwk.AutoRefresh{}, ukf.Fetcher)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithSingleKey() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchWithSingleKey() {
 	rsaKey, publicKey := suite.generateRSAKey("key-id")
 	suite.KeySet.Add(publicKey)
 
@@ -37,7 +40,7 @@ func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithSingleKey() {
 	suite.EqualValues(rsaKey, key)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithMultipleKeys() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchWithMultipleKeys() {
 	_, publicKey1 := suite.generateRSAKey("key-id-1")
 	rsaKey2, publicKey2 := suite.generateRSAKey("key-id-2")
 
@@ -50,19 +53,19 @@ func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithMultipleKeys() {
 	suite.EqualValues(rsaKey2, key)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchNoMatchingKey() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchNoMatchingKey() {
 	token := jwtv3.Token{Header: map[string]interface{}{"kid": "abcd"}}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, `unable to find key "abcd"`)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchNoKeyIDHeader() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchNoKeyIDHeader() {
 	token := jwtv3.Token{}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, `expecting JWT header to have a key ID in the kid field`)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchReturnsError() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchReturnsError() {
 	suite.MockFetcher.ExpectedCalls = nil
 	suite.MockFetcher.On("Fetch", mock.Anything, mock.Anything).Return(jwk.NewSet(), errors.New("couldn't fetch keys from UAA"))
 
@@ -71,30 +74,32 @@ func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchReturnsError() {
 	suite.EqualError(err, "couldn't fetch keys from UAA")
 }
 
-func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchKeyIsNotRSA() {
+func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchKeyIsNotRSA() {
 	ecdsaKey := ecdsa.PublicKey{X: big.NewInt(rand.Int63()), Y: big.NewInt(rand.Int63()), Curve: elliptic.P256()}
 	publicKey := jwk.NewECDSAPublicKey()
-	publicKey.FromRaw(&ecdsaKey)
-	publicKey.Set(jwk.KeyIDKey, "key-id")
+	err := publicKey.FromRaw(&ecdsaKey)
+	suite.NoError(err)
+	err = publicKey.Set(jwk.KeyIDKey, "key-id")
+	suite.NoError(err)
 
 	suite.KeySet.Add(publicKey)
 
 	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
-	_, err := suite.UaaKeyFetcher.Fetch(&token)
+	_, err = suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, "unable to decode public key: argument to AssignIfCompatible() must be compatible with *ecdsa.PublicKey (was *rsa.PublicKey)")
 }
 
-func (suite *UaaKeyFetcherFetchSuite) SetupTest() {
+func (suite *KeyFetcherSuite) SetupTest() {
 	suite.MockFetcher = MockFetcher{}
 	suite.KeySet = jwk.NewSet()
-	suite.UaaKeyFetcher = UaaKeyFetcher{
-		uaaURL:  "http://uaa.example.com/token_keys",
-		fetcher: &suite.MockFetcher,
+	suite.UaaKeyFetcher = KeyFetcher{
+		UAAURL:  "http://uaa.example.com/token_keys",
+		Fetcher: &suite.MockFetcher,
 	}
 	suite.MockFetcher.On("Fetch", mock.Anything, mock.Anything).Return(suite.KeySet, nil)
 }
 
-func (suite *UaaKeyFetcherFetchSuite) After(suiteName, testName string) {
+func (suite *KeyFetcherSuite) After(suiteName, testName string) {
 	suite.KeySet.Clear()
 }
 
@@ -107,21 +112,24 @@ func (m *MockFetcher) Fetch(ctx context.Context, url string) (jwk.Set, error) {
 	return args.Get(0).(jwk.Set), args.Error(1)
 }
 
-type UaaKeyFetcherFetchSuite struct {
+type KeyFetcherSuite struct {
 	suite.Suite
 	MockFetcher   MockFetcher
 	KeySet        jwk.Set
-	UaaKeyFetcher UaaKeyFetcher
+	UaaKeyFetcher KeyFetcher
 }
 
 func TestUaaKeyFetcherFetchSuite(t *testing.T) {
-	suite.Run(t, new(UaaKeyFetcherFetchSuite))
+	t.Parallel()
+	suite.Run(t, new(KeyFetcherSuite))
 }
 
-func (suite *UaaKeyFetcherFetchSuite) generateRSAKey(id string) (rsa.PublicKey, jwk.RSAPublicKey) {
+func (suite *KeyFetcherSuite) generateRSAKey(id string) (rsa.PublicKey, jwk.RSAPublicKey) {
 	rsaKey := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
 	publicKey := jwk.NewRSAPublicKey()
-	publicKey.FromRaw(&rsaKey)
-	publicKey.Set(jwk.KeyIDKey, id)
+	err := publicKey.FromRaw(&rsaKey)
+	suite.NoError(err)
+	err = publicKey.Set(jwk.KeyIDKey, id)
+	suite.NoError(err)
 	return rsaKey, publicKey
 }

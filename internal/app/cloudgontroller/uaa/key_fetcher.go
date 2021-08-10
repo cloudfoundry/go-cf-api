@@ -10,27 +10,27 @@ import (
 	"github.com/lestrrat-go/jwx/jwk"
 )
 
-type UaaKeyFetcher struct {
-	uaaURL  string
-	fetcher Fetcher
+type KeyFetcher struct {
+	UAAURL  string
+	Fetcher Fetcher
 }
 
 type Fetcher interface {
 	Fetch(ctx context.Context, url string) (jwk.Set, error)
 }
 
-func NewUaaKeyFetcher(ctx context.Context, uaaBaseURL string) *UaaKeyFetcher {
+func NewKeyFetcher(ctx context.Context, uaaBaseURL string) *KeyFetcher {
 	uaaURL := fmt.Sprintf("%s/token_keys", uaaBaseURL)
 	autoRefresh := jwk.NewAutoRefresh(ctx)
 	autoRefresh.Configure(uaaURL)
-	return &UaaKeyFetcher{
-		uaaURL:  uaaURL,
-		fetcher: autoRefresh,
+	return &KeyFetcher{
+		UAAURL:  uaaURL,
+		Fetcher: autoRefresh,
 	}
 }
 
-func (ukf *UaaKeyFetcher) Fetch(token *jwtv3.Token) (interface{}, error) {
-	keySet, err := ukf.fetcher.Fetch(context.Background(), ukf.uaaURL)
+func (ukf *KeyFetcher) Fetch(token *jwtv3.Token) (interface{}, error) {
+	keySet, err := ukf.Fetcher.Fetch(context.Background(), ukf.UAAURL)
 	if err != nil {
 		return nil, err
 	}
