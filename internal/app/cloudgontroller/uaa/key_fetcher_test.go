@@ -28,11 +28,7 @@ func TestNewUaaKeyFetcher(t *testing.T) {
 }
 
 func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithSingleKey() {
-	rsaKey := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
-	publicKey := jwk.NewRSAPublicKey()
-	publicKey.FromRaw(&rsaKey)
-	publicKey.Set(jwk.KeyIDKey, "key-id")
-
+	rsaKey, publicKey := suite.generateRSAKey("key-id")
 	suite.KeySet.Add(publicKey)
 
 	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
@@ -42,13 +38,8 @@ func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithSingleKey() {
 }
 
 func (suite *UaaKeyFetcherFetchSuite) TestUaaKeyFetcherFetchWithMultipleKeys() {
-	rsaKey1 := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
-	rsaKey2 := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
-	publicKey1, publicKey2 := jwk.NewRSAPublicKey(), jwk.NewRSAPublicKey()
-	publicKey1.FromRaw(&rsaKey1)
-	publicKey1.Set(jwk.KeyIDKey, "key-id-1")
-	publicKey2.FromRaw(&rsaKey2)
-	publicKey2.Set(jwk.KeyIDKey, "key-id-2")
+	_, publicKey1 := suite.generateRSAKey("key-id-1")
+	rsaKey2, publicKey2 := suite.generateRSAKey("key-id-2")
 
 	suite.KeySet.Add(publicKey1)
 	suite.KeySet.Add(publicKey2)
@@ -125,4 +116,12 @@ type UaaKeyFetcherFetchSuite struct {
 
 func TestUaaKeyFetcherFetchSuite(t *testing.T) {
 	suite.Run(t, new(UaaKeyFetcherFetchSuite))
+}
+
+func (suite *UaaKeyFetcherFetchSuite) generateRSAKey(id string) (rsa.PublicKey, jwk.RSAPublicKey) {
+	rsaKey := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
+	publicKey := jwk.NewRSAPublicKey()
+	publicKey.FromRaw(&rsaKey)
+	publicKey.Set(jwk.KeyIDKey, id)
+	return rsaKey, publicKey
 }
