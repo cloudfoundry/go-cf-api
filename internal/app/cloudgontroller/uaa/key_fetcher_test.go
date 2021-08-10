@@ -18,14 +18,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 )
 
 func TestNewKeyFetcher(t *testing.T) {
 	t.Parallel()
 	uaaBaseURL := "http://uaa.example.com"
-	ukf := NewKeyFetcher(context.TODO(), uaaBaseURL)
+	ukf, err := NewKeyFetcher(context.TODO(), config.UaaConfig{URL: uaaBaseURL})
 
+	assert.NoError(t, err)
 	assert.Equal(t, "http://uaa.example.com/token_keys", ukf.UAAURL)
 	assert.IsType(t, &jwk.AutoRefresh{}, ukf.Fetcher)
 }
@@ -67,11 +69,11 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchNoKeyIDHeader() {
 
 func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchReturnsError() {
 	suite.MockFetcher.ExpectedCalls = nil
-	suite.MockFetcher.On("Fetch", mock.Anything, mock.Anything).Return(jwk.NewSet(), errors.New("couldn't fetch keys from UAA"))
+	suite.MockFetcher.On("Fetch", mock.Anything, mock.Anything).Return(jwk.NewSet(), errors.New("could not fetch keys from UAA"))
 
 	token := jwtv3.Token{}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
-	suite.EqualError(err, "couldn't fetch keys from UAA")
+	suite.EqualError(err, "could not fetch keys from UAA")
 }
 
 func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchKeyIsNotRSA() {
@@ -86,7 +88,7 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchKeyIsNotRSA() {
 
 	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
 	_, err = suite.UaaKeyFetcher.Fetch(&token)
-	suite.EqualError(err, "unable to decode public key: argument to AssignIfCompatible() must be compatible with *ecdsa.PublicKey (was *rsa.PublicKey)")
+	suite.EqualError(err, "could not use key from UAA - keys from UAA must be RSA")
 }
 
 func (suite *KeyFetcherSuite) SetupTest() {
@@ -124,10 +126,10 @@ func TestUaaKeyFetcherFetchSuite(t *testing.T) {
 	suite.Run(t, new(KeyFetcherSuite))
 }
 
-func (suite *KeyFetcherSuite) generateRSAKey(id string) (rsa.PublicKey, jwk.RSAPublicKey) {
-	rsaKey := rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
+func (suite *KeyFetcherSuite) generateRSAKey(id string) (*rsa.PublicKey, jwk.RSAPublicKey) {
+	rsaKey := &rsa.PublicKey{N: big.NewInt(rand.Int63()), E: rand.Int()}
 	publicKey := jwk.NewRSAPublicKey()
-	err := publicKey.FromRaw(&rsaKey)
+	err := publicKey.FromRaw(rsaKey)
 	suite.NoError(err)
 	err = publicKey.Set(jwk.KeyIDKey, id)
 	suite.NoError(err)

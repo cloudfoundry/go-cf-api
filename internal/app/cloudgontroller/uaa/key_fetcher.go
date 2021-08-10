@@ -8,6 +8,8 @@ import (
 
 	jwtv3 "github.com/dgrijalva/jwt-go"
 	"github.com/lestrrat-go/jwx/jwk"
+	promConfig "github.com/prometheus/common/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
 
 type KeyFetcher struct {
@@ -19,14 +21,18 @@ type Fetcher interface {
 	Fetch(ctx context.Context, url string) (jwk.Set, error)
 }
 
-func NewKeyFetcher(ctx context.Context, uaaBaseURL string) *KeyFetcher {
-	uaaURL := fmt.Sprintf("%s/token_keys", uaaBaseURL)
+func NewKeyFetcher(ctx context.Context, uaaConf config.UaaConfig) (*KeyFetcher, error) {
+	uaaURL := fmt.Sprintf("%s/token_keys", uaaConf.URL)
 	autoRefresh := jwk.NewAutoRefresh(ctx)
-	autoRefresh.Configure(uaaURL)
+	client, err := promConfig.NewClientFromConfig(uaaConf.Client, "uaa")
+	if err != nil {
+		return nil, err
+	}
+	autoRefresh.Configure(uaaURL, jwk.WithHTTPClient(client))
 	return &KeyFetcher{
 		UAAURL:  uaaURL,
 		Fetcher: autoRefresh,
-	}
+	}, nil
 }
 
 func (ukf *KeyFetcher) Fetch(token *jwtv3.Token) (interface{}, error) {
@@ -42,9 +48,13 @@ func (ukf *KeyFetcher) Fetch(token *jwtv3.Token) (interface{}, error) {
 	if !found {
 		return nil, fmt.Errorf("unable to find key %q", keyID)
 	}
-	var pubkey rsa.PublicKey
+	var pubkey interface{}
 	if err := key.Raw(&pubkey); err != nil {
 		return nil, fmt.Errorf("unable to decode public key: %w", err)
+	}
+
+	if _, ok := pubkey.(*rsa.PublicKey); !ok {
+		return nil, fmt.Errorf("could not use key from UAA - keys from UAA must be RSA")
 	}
 
 	return pubkey, nil

@@ -1,7 +1,7 @@
 listen: localhost:8080
 db:
   type: ~
-  connectionstring: ~
+  connection_string: ~
   create: true
   migrate: true
   log:

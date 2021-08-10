@@ -11,6 +11,8 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
+	"github.com/mitchellh/mapstructure"
+	promconfig "github.com/prometheus/common/config"
 	"github.com/spf13/viper"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/tags"
@@ -30,7 +32,8 @@ type CloudgontrollerConfig struct {
 }
 
 type UaaConfig struct {
-	URL string `yaml:"url"`
+	URL    string                      `yaml:"url"`
+	Client promconfig.HTTPClientConfig `yaml:"client"`
 }
 
 type DBConfig struct {
@@ -79,7 +82,10 @@ func Get(configFile string) *CloudgontrollerConfig {
 
 	zap.L().Info(fmt.Sprintf("Using config file %s", viper.ConfigFileUsed()), zap.String(tags.File, viper.ConfigFileUsed()))
 
-	helpers.CheckErrFatal(viper.Unmarshal(config))
+	helpers.CheckErrFatal(viper.Unmarshal(config, func(config *mapstructure.DecoderConfig) {
+		// The Prometheus HTTPClientConfig class we use has "yaml" tags not "mapstructure"
+		config.TagName = "yaml"
+	}))
 
 	if zap.L().Core().Enabled(zap.DebugLevel) {
 		usedConfig, err := yaml.Marshal(config)
