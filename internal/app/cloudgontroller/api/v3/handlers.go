@@ -8,12 +8,10 @@ import (
 
 	jwtv3 "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"github.com/lestrrat-go/jwx/jwk"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {
@@ -21,18 +19,11 @@ func RegisterHealthHandler(e *echo.Echo) {
 	e.GET("healthz", controllers.GetHealth)
 }
 
-func RegisterV3Handlers(prefix string, e *echo.Echo, conf *config.CloudgontrollerConfig) {
+func RegisterV3Handlers(prefix string, e *echo.Echo, authMiddleware echo.MiddlewareFunc) {
 	// Restricted group
 	restrictedGroup := e.Group(prefix)
+	restrictedGroup.Use(authMiddleware)
 	{
-		config := middleware.JWTConfig{
-			SigningMethod: "RS256",
-			KeyFunc:       getUaaKey(conf),
-			BeforeFunc:    helpers.NormalizeAuthScheme,
-			AuthScheme:    "bearer",
-		}
-		restrictedGroup.Use(middleware.JWTWithConfig(config))
-
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", controllers.GetBuildpacks)
 		restrictedGroup.GET("/buildpacks/:guid", controllers.GetBuildpack)
