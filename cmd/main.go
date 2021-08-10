@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -15,9 +16,11 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"golang.org/x/time/rate"
@@ -57,8 +60,21 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 		db.Migrate(conf.DB.Type, db.GetConnection())
 	}
 
+	// Configure auth middleware
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	ukf, err := uaa.NewKeyFetcher(ctx, conf.Uaa)
+	helpers.CheckErrFatal(err)
+	authConfig := middleware.JWTConfig{
+		SigningMethod: "RS256",
+		KeyFunc:       ukf.Fetch,
+		BeforeFunc:    helpers.NormalizeAuthScheme,
+		AuthScheme:    "bearer",
+	}
+	authMiddleware := middleware.JWTWithConfig(authConfig)
+
 	// Register API Handlers
-	api.RegisterHandlers(e, conf)
+	api.RegisterHandlers(e, authMiddleware)
 
 	// Start to Serve
 	lock := make(chan error)

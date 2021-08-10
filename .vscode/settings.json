@@ -2,8 +2,8 @@
 	"go.enableCodeLens": {
 		"runtest": true
 	},
-	"go.testTags": "psql,unit psql,db",
+	"go.testTags": "psql,unit",
 	"go.testEnvFile": "${workspaceFolder}/.vscode/integration-tests.env",
 	"go.formatTool": "gofmt",
-	"go.buildTags": "psql mage",
+	"go.buildTags": "psql mage unit",
 }
