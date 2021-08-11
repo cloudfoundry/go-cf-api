@@ -9,6 +9,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const RequestIDField = "request_id"
+
 // ZapLogger is a middleware and zap to provide an "access log" like logging for each request.
 func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -24,7 +26,7 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				zap.String("host", req.Host),
 				zap.String("request", fmt.Sprintf("%s %s", req.Method, req.RequestURI)),
 				zap.String("user_agent", req.UserAgent()),
-				zap.String("request_id", vcapRequestID),
+				zap.String(RequestIDField, vcapRequestID),
 			}
 
 			log.Debug("Request received", fields...)

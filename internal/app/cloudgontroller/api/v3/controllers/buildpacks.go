@@ -28,7 +28,7 @@ import (
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, c))
 	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
@@ -54,7 +54,7 @@ func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 	db := db.GetConnection()
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, c))
 	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
 	if err != nil {
 		zap.L().Error("Couldn't select", zap.Error(err))
