@@ -79,6 +79,24 @@ func Console() error {
 	return nil
 }
 
+
+// Starts a docker container running the database specified in the config file
+func StartDBAndUaaContainers(configPath string) error {
+	config := config.Get(configPath)
+	var container string
+	switch config.DB.Type {
+	case "postgres":
+		container = "postgres"
+	case "mysql":
+		container = "mariadb"
+	default:
+		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
+	}
+	err := sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container, "uaa")
+	return err
+}
+
+
 // Starts a docker container running the database specified in the config file
 func DBStart(configPath string) error {
 	config := config.Get(configPath)

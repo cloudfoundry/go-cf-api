@@ -8,6 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
@@ -60,7 +61,9 @@ func GetBuildpack(c echo.Context) error {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
 	if buildpack == nil {
-		return c.JSON(http.StatusNotFound, HTTPError{Code: http.StatusNotFound, Message: "Buildpack not Found"})
+		c.Error(ccerrors.ResourceNotFound("buildpack"))
+		// Return nil is needed to stop the control flow on errors
+		return nil
 	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
