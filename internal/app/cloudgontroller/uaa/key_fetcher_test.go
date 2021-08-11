@@ -13,11 +13,12 @@ import (
 	"math/rand"
 	"testing"
 
-	jwtv3 "github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 )
@@ -36,7 +37,7 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchWithSingleKey() {
 	rsaKey, publicKey := suite.generateRSAKey("key-id")
 	suite.KeySet.Add(publicKey)
 
-	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
+	token := jwt.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
 	key, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.NoError(err)
 	suite.EqualValues(rsaKey, key)
@@ -49,20 +50,20 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchWithMultipleKeys() {
 	suite.KeySet.Add(publicKey1)
 	suite.KeySet.Add(publicKey2)
 
-	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey2.KeyID()}}
+	token := jwt.Token{Header: map[string]interface{}{"kid": publicKey2.KeyID()}}
 	key, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.NoError(err)
 	suite.EqualValues(rsaKey2, key)
 }
 
 func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchNoMatchingKey() {
-	token := jwtv3.Token{Header: map[string]interface{}{"kid": "abcd"}}
+	token := jwt.Token{Header: map[string]interface{}{"kid": "abcd"}}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, `unable to find key "abcd"`)
 }
 
 func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchNoKeyIDHeader() {
-	token := jwtv3.Token{}
+	token := jwt.Token{}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, `expecting JWT header to have a key ID in the kid field`)
 }
@@ -71,7 +72,7 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchReturnsError() {
 	suite.MockFetcher.ExpectedCalls = nil
 	suite.MockFetcher.On("Fetch", mock.Anything, mock.Anything).Return(jwk.NewSet(), errors.New("could not fetch keys from UAA"))
 
-	token := jwtv3.Token{}
+	token := jwt.Token{}
 	_, err := suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, "could not fetch keys from UAA")
 }
@@ -86,7 +87,7 @@ func (suite *KeyFetcherSuite) TestUaaKeyFetcherFetchKeyIsNotRSA() {
 
 	suite.KeySet.Add(publicKey)
 
-	token := jwtv3.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
+	token := jwt.Token{Header: map[string]interface{}{"kid": publicKey.KeyID()}}
 	_, err = suite.UaaKeyFetcher.Fetch(&token)
 	suite.EqualError(err, "could not use key from UAA - keys from UAA must be RSA")
 }
