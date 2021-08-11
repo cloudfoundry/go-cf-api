@@ -32,7 +32,6 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 			err := next(c)
 			if err != nil {
 				log = log.With(zap.Error(err))
-				c.Error(err)
 			}
 
 			fields = []zapcore.Field{
@@ -58,7 +57,7 @@ func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
 				log.Info("Success", fields...)
 			}
 
-			return nil
+			return err
 		}
 	}
 }

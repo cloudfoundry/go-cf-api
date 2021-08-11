@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -13,21 +15,21 @@ import (
 
 	// Needed for swagger
 	_ "github.com/volatiletech/null/v8"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"golang.org/x/time/rate"
-
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"golang.org/x/time/rate"
 )
 
-func RootFunc(cmd *cobra.Command, args []string) error {
+func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // length is not a problem for now
 	// Parse Config
 	var conf *config.CloudgontrollerConfig
 	if len(args) == 1 {
@@ -51,6 +53,15 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(
 		middleware.RateLimiterMemoryStoreConfig{Rate: rate.Limit(conf.RateLimit.Rate), Burst: conf.RateLimit.Burst, ExpiresIn: conf.RateLimit.ExpiresIn},
 	)))
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		var ccErr *ccerrors.CloudControllerError
+		if errors.As(err, &ccErr) {
+			err := c.JSON(ccErr.HTTPStatus, ccerrors.AsErrors(*ccErr))
+			if err != nil {
+				_ = c.String(http.StatusInternalServerError, "Unknown error occurred")
+			}
+		}
+	}
 
 	// Add Validator for Structs
 	e.Validator = &api.Validator{Validator: validator.New()}

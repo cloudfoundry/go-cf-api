@@ -18,9 +18,9 @@ type BuildpackResponse struct {
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt null.Time   `json:"updated_at"`
 	Name      string      `json:"name"`
+	Stack     null.String `json:"stack"`
 	State     string      `json:"state"`
 	Filename  null.String `json:"filename"`
-	Stack     null.String `json:"stack"`
 	Position  int         `json:"position"`
 	Enabled   null.Bool   `json:"enabled"`
 	Locked    null.Bool   `json:"locked"`

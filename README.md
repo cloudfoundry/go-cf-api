@@ -191,7 +191,7 @@ uaac contexts
 ```
 To access restricted endpoint, a curl would look like:
 ```
-curl -i http://localhost:8080/api/v3/buildpacks -H "Authorization: Bearer [Add token from uaac context here]"
+curl -i http://localhost:8080/v3/buildpacks -H "Authorization: Bearer [Add token from uaac context here]"
 ```
 
 This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated:
