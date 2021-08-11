@@ -13,6 +13,10 @@ import (
 
 	// Needed for swagger
 	_ "github.com/volatiletech/null/v8"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"golang.org/x/time/rate"
+
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
@@ -21,9 +25,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"golang.org/x/time/rate"
 )
 
 func RootFunc(cmd *cobra.Command, args []string) error {
@@ -68,8 +69,6 @@ func RootFunc(cmd *cobra.Command, args []string) error {
 	authConfig := middleware.JWTConfig{
 		SigningMethod: "RS256",
 		KeyFunc:       ukf.Fetch,
-		BeforeFunc:    helpers.NormalizeAuthScheme,
-		AuthScheme:    "bearer",
 	}
 	authMiddleware := middleware.JWTWithConfig(authConfig)
 

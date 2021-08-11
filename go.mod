@@ -6,7 +6,6 @@ require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/creasty/defaults v1.5.1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.3 // indirect
@@ -15,6 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.6.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gofrs/uuid v4.0.0+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/golobby/repl v0.0.0-20191019193237-da6c0b527cea
@@ -23,7 +23,7 @@ require (
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
 	github.com/labstack/echo-contrib v0.9.0
-	github.com/labstack/echo/v4 v4.3.0
+	github.com/labstack/echo/v4 v4.5.1-0.20210810173201-499097e061fe
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/jwx v1.2.5
 	github.com/lib/pq v1.10.2
@@ -31,8 +31,8 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
-	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/prometheus/common v0.30.0 // indirect
+	github.com/mitchellh/mapstructure v1.4.1
+	github.com/prometheus/common v0.30.0
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1

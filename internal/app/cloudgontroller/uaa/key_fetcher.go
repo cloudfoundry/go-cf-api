@@ -6,9 +6,10 @@ import (
 	"errors"
 	"fmt"
 
-	jwtv3 "github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	promConfig "github.com/prometheus/common/config"
+
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
 
@@ -35,7 +36,7 @@ func NewKeyFetcher(ctx context.Context, uaaConf config.UaaConfig) (*KeyFetcher, 
 	}, nil
 }
 
-func (ukf *KeyFetcher) Fetch(token *jwtv3.Token) (interface{}, error) {
+func (ukf *KeyFetcher) Fetch(token *jwt.Token) (interface{}, error) {
 	keySet, err := ukf.Fetcher.Fetch(context.Background(), ukf.UAAURL)
 	if err != nil {
 		return nil, err
