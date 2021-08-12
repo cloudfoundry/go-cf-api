@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
@@ -34,9 +36,28 @@ type BuildpackController struct {
 // @Router /buildpacks [get]
 func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
+	pagination := common.DefaultPagination()
+	// BindQueryParams will overwrite default values if params were given
+	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
+		return ccerrors.BadQueryParameter()
+	}
+
+	err := validator.New().Struct(pagination)
+	if err != nil {
+		return ccerrors.BadQueryParameter()
+	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	buildpacks, err := buildpackQuery(qm.Limit(50)).All(ctx, cont.DB) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
+	totalResults, err := buildpackQuery().Count(ctx, cont.DB)
+	if err != nil {
+		logger.Error("Couldn't fetch all rows", zap.Error(err))
+		return err
+	}
+	buildpacks, err := buildpackQuery(
+		qm.OrderBy("position"),
+		qm.Limit(pagination.PerPage),
+		qm.Offset((pagination.Page-1)*pagination.PerPage),
+	).All(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 	}
@@ -44,7 +65,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
 	}
 
-	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, GetResourcePath(c)))
+	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, int(totalResults), pagination, GetResourcePath(c)))
 }
 
 // GetBuildpack godoc

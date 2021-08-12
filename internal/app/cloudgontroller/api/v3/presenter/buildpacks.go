@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/volatiletech/null/v8"
+	commoncontroller "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/common"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -26,13 +28,13 @@ type BuildpackResponse struct {
 	Locked    null.Bool   `json:"locked"`
 	Metadata  Metadata    `json:"metadata"`
 	Links     struct {
-		Self   Link `json:"self"`
-		Upload Link `json:"upload"`
+		Self   common.Link `json:"self"`
+		Upload common.Link `json:"upload"`
 	} `json:"links"`
 }
 
 type BuildpacksResponse struct {
-	Pagination *Pagination          `json:"pagination"`
+	Pagination *common.Pagination   `json:"pagination"`
 	Resources  []*BuildpackResponse `json:"resources"`
 }
 
@@ -56,30 +58,30 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 	return response
 }
 
-func BuildpacksResponseObject(buildpacks models.BuildpackSlice, resourcePath string) *BuildpacksResponse {
+func BuildpacksResponseObject(
+	buildpacks models.BuildpackSlice,
+	totalResults int,
+	paginationParams commoncontroller.PaginationParams,
+	resourcePath string) *BuildpacksResponse {
 	out := []*BuildpackResponse{}
 	for _, buildpack := range buildpacks {
 		buildpackresp := BuildpackResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
 		out = append(out, buildpackresp)
 	}
+
 	return &BuildpacksResponse{
-		Pagination: &Pagination{
-			TotalResults: len(out),
-			TotalPages:   1,
-			First:        GetResourcePathLink(resourcePath),
-			Last:         GetResourcePathLink(resourcePath),
-		},
-		Resources: out,
+		Pagination: common.NewPagination(totalResults, paginationParams, resourcePath),
+		Resources:  out,
 	}
 }
 
-func GetResourcePathLink(resourcePath string) Link {
-	return Link{
+func GetResourcePathLink(resourcePath string) common.Link {
+	return common.Link{
 		Href: resourcePath,
 	}
 }
 
-func GetResourcePathLinkWithMethod(resourcePath string, method string) Link {
+func GetResourcePathLinkWithMethod(resourcePath string, method string) common.Link {
 	link := GetResourcePathLink(resourcePath)
 	link.Method = method
 	return link

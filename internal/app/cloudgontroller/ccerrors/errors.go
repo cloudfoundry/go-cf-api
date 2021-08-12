@@ -27,8 +27,8 @@ func (e *CloudControllerError) Error() string {
 	return fmt.Sprintf("Code [%d] (%s): %s", e.Code, e.Title, e.Detail)
 }
 
-func BadQueryParameter() CloudControllerError {
-	return CloudControllerError{
+func BadQueryParameter() error {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusBadRequest,
 		Code:       10005, //nolint:gomnd // CF API error code
 		Title:      "CF-BadQueryParameter",

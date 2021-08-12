@@ -4,17 +4,3 @@ type Metadata struct {
 	Labels      map[string]string `json:"labels"`
 	Annotations map[string]string `json:"annotations"`
 }
-
-type Pagination struct {
-	TotalResults int         `json:"total_results"`
-	TotalPages   int         `json:"total_pages"`
-	First        Link        `json:"first"`
-	Last         Link        `json:"last"`
-	Next         interface{} `json:"next"`
-	Previous     interface{} `json:"previous"`
-}
-
-type Link struct {
-	Href   string `json:"href"`
-	Method string `json:"method,omitempty"`
-}
