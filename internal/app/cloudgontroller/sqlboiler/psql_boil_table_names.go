@@ -34,7 +34,6 @@ var TableNames = struct {
 	EnvGroups                             string
 	Events                                string
 	FeatureFlags                          string
-	GorpMigrations                        string
 	IsolationSegmentAnnotations           string
 	IsolationSegmentLabels                string
 	IsolationSegments                     string
@@ -155,7 +154,6 @@ var TableNames = struct {
 	EnvGroups:                             "env_groups",
 	Events:                                "events",
 	FeatureFlags:                          "feature_flags",
-	GorpMigrations:                        "gorp_migrations",
 	IsolationSegmentAnnotations:           "isolation_segment_annotations",
 	IsolationSegmentLabels:                "isolation_segment_labels",
 	IsolationSegments:                     "isolation_segments",

@@ -9,7 +9,7 @@ package  = "models"
   port   = 3306
   user   = "root"
   pass   = "admin"
-  sslmode = "false"
+  sslmode = "PREFERRED"
 
 [aliases.tables.service_instance_shares.relationships.fk_target_space_guid]
 local   = "SharedServiceInstances"

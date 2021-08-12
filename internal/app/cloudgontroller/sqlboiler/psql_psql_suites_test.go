@@ -65,8 +65,6 @@ func TestUpsert(t *testing.T) {
 
 	t.Run("FeatureFlags", testFeatureFlagsUpsert)
 
-	t.Run("GorpMigrations", testGorpMigrationsUpsert)
-
 	t.Run("IsolationSegmentAnnotations", testIsolationSegmentAnnotationsUpsert)
 
 	t.Run("IsolationSegmentLabels", testIsolationSegmentLabelsUpsert)

@@ -118,7 +118,7 @@ func DBCreate(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
 	db, info := dbconfig.NewConnection(config.DB, false)
-	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %v"))
+	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s", info.DatabaseName))
 	if err != nil {
 		return err
 	}
