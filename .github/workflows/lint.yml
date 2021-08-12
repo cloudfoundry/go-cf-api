@@ -12,9 +12,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  go-mod-tidy:
+    runs-on: [self-hosted, linux]
+    name: Check 'go mod tidy' has no diff
+    steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Check go mod
+      run: |
+        go mod tidy
+        git diff --exit-code go.mod
+
   golangci:
     runs-on: [self-hosted, linux]
-    name: Run linter
+    name: Run linters
     steps:
       - uses: actions/checkout@v2
       - name: run golangci-lint
