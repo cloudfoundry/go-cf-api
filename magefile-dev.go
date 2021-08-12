@@ -3,10 +3,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"go/ast"
+	"go/format"
+	"go/parser"
+	"go/token"
+	"io/fs"
 	"os"
-	"path/filepath"
-	"regexp"
+	"path"
 	"strings"
 	"time"
 
@@ -62,83 +67,57 @@ func GenerateSQLBoiler() error {
 	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml"); err != nil {
 		return err
 	}
-	// Append build tags to every generated file so we can use e.g. "go test -tags=db,psql" to switch between unit and db tests
-	r, _ := regexp.Compile(".*_test.go$")
-	err := filepath.Walk("./internal/app/cloudgontroller/sqlboiler/mysql",
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if info.IsDir() {
-				return nil
-			}
-			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql,db"})
-				if err != nil {
-					return err
-				}
-			} else if info.Mode().IsRegular() && !r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/mysql_", []string{"mysql"})
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
+
+	if err := modifySQLBoilerFiles("psql"); err != nil {
 		return err
 	}
-	err = filepath.Walk("./internal/app/cloudgontroller/sqlboiler/psql",
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if info.IsDir() {
-				return nil
-			}
-			if info.Mode().IsRegular() && r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql,db"})
-				if err != nil {
-					return err
-				}
-			} else if info.Mode().IsRegular() && !r.MatchString(path) {
-				err = addBuildTags(path, "./internal/app/cloudgontroller/sqlboiler/psql_", []string{"psql"})
-				if err != nil {
-					return err
-				}
-			}
-			return nil
-		})
-	if err != nil {
+	if err := modifySQLBoilerFiles("mysql"); err != nil {
 		return err
 	}
+
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/psql"); err != nil {
 		return err
 	}
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
 		return err
 	}
+
 	return nil
 }
 
-func addBuildTags(path string, outputPrefix string, tags []string) error {
-	// Add build tag
-	var data []byte
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return err
+// Parses the AST to add additional comments and remove certain tests that fail
+func modifySQLBoilerFiles(dbEngine string) error {
+	// Append build tags to every generated file so we can use e.g. "go test -tags=db,psql" to switch between unit and db tests
+	fileSet := token.NewFileSet()
+	packages, err := parser.ParseDir(
+		fileSet,
+		fmt.Sprintf("internal/app/cloudgontroller/sqlboiler/%s", dbEngine),
+		func(fi fs.FileInfo) bool { return true },
+		parser.ParseComments,
+	)
+	for filepath, file := range packages["models"].Files {
+		commentText := fmt.Sprintf("// +build %s", dbEngine)
+		_, filename := path.Split(filepath)
+		isTestFile := strings.HasSuffix(filename, "_test.go")
+		if isTestFile {
+			commentText += ",db"
+		}
+		comment := &ast.CommentGroup{
+			List: []*ast.Comment{{Text: commentText}},
+		}
+		file.Comments = append([]*ast.CommentGroup{comment}, file.Comments...)
+
+		buf := &bytes.Buffer{}
+		err = format.Node(buf, fileSet, file)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(fmt.Sprintf("internal/app/cloudgontroller/sqlboiler/%s_%s", dbEngine, filename), buf.Bytes(), 0644)
+		if err != nil {
+			return err
+		}
 	}
-	data = append(data, []byte(fmt.Sprintf("// +build %s\n", strings.Join(tags, ",")))...)
-	data = append(data, content...)
-	err = os.Remove(path)
-	if err != nil {
-		return err
-	}
-	err = os.WriteFile(fmt.Sprintf("%s%s", outputPrefix, filepath.Base(path)), data, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 ///////////////////////
