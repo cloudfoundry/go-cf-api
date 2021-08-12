@@ -22,7 +22,7 @@ require (
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
-	github.com/labstack/echo-contrib v0.9.0
+	github.com/labstack/echo-contrib v0.11.0
 	github.com/labstack/echo/v4 v4.5.1-0.20210810173201-499097e061fe
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lestrrat-go/jwx v1.2.5

@@ -61,9 +61,7 @@ func GetBuildpack(c echo.Context) error {
 		zap.L().Error("Couldn't select", zap.Error(err))
 	}
 	if buildpack == nil {
-		c.Error(ccerrors.ResourceNotFound("buildpack"))
-		// Return nil is needed to stop the control flow on errors
-		return nil
+		return ccerrors.ResourceNotFound("buildpack")
 	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
