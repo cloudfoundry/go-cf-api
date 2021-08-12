@@ -41,7 +41,6 @@ func TestVcapRequestIdSuite(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			t.Parallel()
 			e := echo.New()
 			request := httptest.NewRequest(http.MethodGet, "/something", nil)
 			recorder := httptest.NewRecorder()

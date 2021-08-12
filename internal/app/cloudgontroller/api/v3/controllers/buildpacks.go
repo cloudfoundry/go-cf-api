@@ -15,6 +15,8 @@ import (
 	"go.uber.org/zap"
 )
 
+var buildpackQuery = models.Buildpacks //nolint:gochecknoglobals // This is need for mocking in unit-tests
+
 // GetBuildpacks godoc
 // @Summary Buildpacks List buildpacks
 // @Description Retrieve all buildpacks the user has access to.
@@ -31,7 +33,7 @@ func GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
+	buildpacks, err := buildpackQuery(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 	}
@@ -58,7 +60,7 @@ func GetBuildpack(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
+	buildpack, err := buildpackQuery(qm.Where("guid=?", guid)).One(ctx, db)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 	}
