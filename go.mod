@@ -31,8 +31,8 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
-	github.com/mitchellh/mapstructure v1.4.1 // indirect
-	github.com/prometheus/common v0.30.0 // indirect
+	github.com/mitchellh/mapstructure v1.4.1
+	github.com/prometheus/common v0.30.0
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1

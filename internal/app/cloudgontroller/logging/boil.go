@@ -5,7 +5,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 )
 
@@ -13,12 +12,13 @@ import (
 // TODO Maybe Switch to https://github.com/simukti/sqldb-logger and log on the driver level
 
 type BoilLogger struct {
-	RedactParams             bool
-	query, params, requestID string
+	RedactParams  bool
+	query, params string
+	logger        *zap.Logger
 }
 
-func NewBoilLogger(redactParams bool, c echo.Context) *BoilLogger {
-	return &BoilLogger{RedactParams: redactParams, requestID: c.Response().Header().Get(HeaderVcapRequestID)}
+func NewBoilLogger(redactParams bool, logger *zap.Logger) *BoilLogger {
+	return &BoilLogger{RedactParams: redactParams, logger: logger}
 }
 
 func (b *BoilLogger) Write(data []byte) (n int, err error) {
@@ -48,8 +48,8 @@ func (b *BoilLogger) getLogger() *zap.Logger {
 		case strings.Contains(file, "src/fmt/print.go"):
 		case strings.Contains(file, "logging/boil.go"):
 		default:
-			return zap.L().WithOptions(zap.AddCallerSkip(i), zap.AddCaller())
+			return b.logger.WithOptions(zap.AddCallerSkip(i), zap.AddCaller())
 		}
 	}
-	return zap.L().With(zap.String("request_id", b.requestID))
+	return b.logger
 }
