@@ -28,7 +28,7 @@ It should be possible to route individual API calls to the new Cloud Controller 
 Chosen option: 3 (deploy a path and HTTP method based router/proxy in front of old and new implementations and split traffic based on that),
 because it is the only option that allows for separate scaling of old and new implementations as well as routing based on HTTP method and path.
 Following images shows a rough routing example with just the verry specific `GET /v3/buildpacks/:guid` endpoint beeing routed to the go implementation. Everything else will be routed to the cloudcontroller_ng. 
-![image](https://media.github.tools.sap/user/9608/files/91a9a600-faae-11eb-9932-1b0270a76063)
+![image](https://media.github.tools.sap/user/9608/files/9fd7fd80-fc39-11eb-934c-0aff81887456)
 
 ### Positive Consequences <!-- optional -->
 
