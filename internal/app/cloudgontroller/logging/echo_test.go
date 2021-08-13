@@ -35,20 +35,20 @@ func TestZapLogger(t *testing.T) {
 	assert.Equal(t, 2, logs.Len())
 
 	logFieldsStart := logs.AllUntimed()[0].ContextMap()
-	assert.Equal(t, "example.com", logFieldsStart["host"])
-	assert.NotNil(t, logFieldsStart["time"])
-	assert.Equal(t, "GET /something", logFieldsStart["request"])
-	assert.NotNil(t, logFieldsStart["user_agent"])
+	assert.Equal(t, "example.com", logFieldsStart[logging.HostField])
+	assert.NotNil(t, logFieldsStart[logging.TimeField])
+	assert.Equal(t, "GET /something", logFieldsStart[logging.RequestField])
+	assert.NotNil(t, logFieldsStart[logging.UserAgentField])
 
 	logFieldsEnd := logs.AllUntimed()[1].ContextMap()
-	assert.Equal(t, "192.0.2.1", logFieldsEnd["remote_ip"])
-	assert.Equal(t, "example.com", logFieldsEnd["host"])
-	assert.NotNil(t, logFieldsEnd["time"])
-	assert.Equal(t, "GET /something", logFieldsEnd["request"])
-	assert.Equal(t, int64(200), logFieldsEnd["status"])
-	assert.Equal(t, int64(0), logFieldsEnd["size"])
-	assert.NotNil(t, logFieldsEnd["user_agent"])
-	assert.NotNil(t, logFieldsEnd["request_id"])
+	assert.Equal(t, "192.0.2.1", logFieldsEnd[logging.RemoteIPField])
+	assert.Equal(t, "example.com", logFieldsEnd[logging.HostField])
+	assert.NotNil(t, logFieldsEnd[logging.TimeField])
+	assert.Equal(t, "GET /something", logFieldsEnd[logging.RequestField])
+	assert.Equal(t, int64(200), logFieldsEnd[logging.StatusField])
+	assert.Equal(t, int64(0), logFieldsEnd[logging.SizeField])
+	assert.NotNil(t, logFieldsEnd[logging.UserAgentField])
+	assert.NotNil(t, logFieldsEnd[logging.RequestIDField])
 }
 
 /*
