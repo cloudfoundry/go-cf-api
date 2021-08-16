@@ -22,6 +22,9 @@ linters:
   - exhaustivestruct
   # Messes with swagger documentation
   - godot
+  # Issue with table tests https://github.com/kunwardeep/paralleltest/issues/8
+  - paralleltest
+  - tparallel
   # Deprecated linters
   - interfacer
   - scopelint
@@ -39,8 +42,3 @@ linters-settings:
 
 issues:
   fix: true
-  exclude-rules:
-    # False positive: https://github.com/kunwardeep/paralleltest/issues/8
-    - linters:
-        - paralleltest
-      text: "does not use range value in test Run"
