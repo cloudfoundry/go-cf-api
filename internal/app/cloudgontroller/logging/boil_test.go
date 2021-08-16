@@ -83,7 +83,6 @@ func TestBoilLogger(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			t.Parallel()
 			obs, logs := observer.New(zap.DebugLevel)
 			assert.Empty(t, logs)
 			logger := zap.New(obs)
