@@ -7,58 +7,100 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 )
 
-func TestBoilerForBothCases(t *testing.T) {
+//nolint:funlen
+func TestBoilLogger(t *testing.T) {
 	t.Parallel()
-	// with parameters redacted
-	testBoilLoggerParams(t, true)
-	// without parameters redacted
-	testBoilLoggerParams(t, false)
-}
-
-func testBoilLoggerParams(t *testing.T, redactParams bool) {
-	t.Helper()
-	obs, logs := observer.New(zap.DebugLevel)
-	assertEmpty(t, logs)
-	assert.NoError(t, obs.Sync(), "Unexpected failure in no-op Sync")
-	logger := zap.New(obs)
-
-	bl := logging.NewBoilLogger(redactParams, logger)
-	_, err := bl.Write([]byte("SELECT 1 from where you would like"))
-	assert.NoError(t, err)
-	_, err = bl.Write([]byte(""))
-	assert.NoError(t, err)
-
-	params := ""
-	if redactParams {
-		params = "REDACTED"
-	}
-	want := observer.LoggedEntry{
-		Entry: zapcore.Entry{Level: zap.DebugLevel, Message: "SQL LOG"},
-		Context: []zapcore.Field{
-			zap.String("query", "SELECT 1 from where you would like"),
-			zap.String("params", params),
+	tests := map[string]struct {
+		level           zapcore.Level
+		redactParams    bool
+		writeCalls      []string
+		expectedEntries []observer.LoggedEntry
+	}{
+		"with redacted params": {
+			level:        zap.DebugLevel,
+			redactParams: true,
+			writeCalls: []string{
+				"SELECT 1 FROM table WHERE guid = ?;",
+				"abc-1234",
+			},
+			expectedEntries: []observer.LoggedEntry{{
+				Entry: zapcore.Entry{Level: zap.DebugLevel, Message: "SQL LOG"},
+				Context: []zapcore.Field{
+					zap.String("query", "SELECT 1 FROM table WHERE guid = ?;"),
+					zap.String("params", "REDACTED"),
+				},
+			}},
+		},
+		"with unredacted params": {
+			level:        zap.DebugLevel,
+			redactParams: false,
+			writeCalls: []string{
+				"SELECT 1 FROM table WHERE guid = ?;",
+				"abc-1234",
+			},
+			expectedEntries: []observer.LoggedEntry{{
+				Entry: zapcore.Entry{Level: zap.DebugLevel, Message: "SQL LOG"},
+				Context: []zapcore.Field{
+					zap.String("query", "SELECT 1 FROM table WHERE guid = ?;"),
+					zap.String("params", "abc-1234"),
+				},
+			}},
+		},
+		"when multiple queries are logged": {
+			level:        zap.DebugLevel,
+			redactParams: false,
+			writeCalls: []string{
+				"SELECT 1 FROM table WHERE guid = ?;",
+				"abc-1234",
+				"SELECT 1 FROM other_table WHERE name = ?;",
+				"name-5678",
+			},
+			expectedEntries: []observer.LoggedEntry{
+				{
+					Entry: zapcore.Entry{Level: zap.DebugLevel, Message: "SQL LOG"},
+					Context: []zapcore.Field{
+						zap.String("query", "SELECT 1 FROM table WHERE guid = ?;"),
+						zap.String("params", "abc-1234"),
+					},
+				},
+				{
+					Entry: zapcore.Entry{Level: zap.DebugLevel, Message: "SQL LOG"},
+					Context: []zapcore.Field{
+						zap.String("query", "SELECT 1 FROM other_table WHERE name = ?;"),
+						zap.String("params", "name-5678"),
+					},
+				},
+			},
 		},
 	}
-	assert.Len(t, logs.AllUntimed(), 1)
-	log := logs.AllUntimed()[0]
-	assertEqual(t, want, log)
-}
 
-func assertEqual(t *testing.T, want, log observer.LoggedEntry) {
-	t.Helper()
-	assert.Equal(t, want.Context, log.Context)
-	assert.Equal(t, want.Entry.Level, log.Level)
-	assert.Equal(t, want.Entry.Message, log.Message)
-}
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			obs, logs := observer.New(zap.DebugLevel)
+			assert.Empty(t, logs)
+			logger := zap.New(obs)
+			bl := logging.NewBoilLogger(tc.redactParams, logger)
 
-//nolint
-func assertEmpty(t testing.TB, logs *observer.ObservedLogs) {
-	assert.Equal(t, 0, logs.Len(), "Expected empty ObservedLogs to have zero length.")
-	assert.Equal(t, []observer.LoggedEntry{}, logs.All(), "Unexpected LoggedEntries in empty ObservedLogs.")
+			for _, call := range tc.writeCalls {
+				_, err := bl.Write([]byte(call))
+				require.NoError(t, err)
+			}
+
+			assert.Len(t, logs.AllUntimed(), len(tc.expectedEntries))
+			for idx, log := range logs.AllUntimed() {
+				assert.True(t, log.Caller.Defined)
+				assert.Equal(t, tc.expectedEntries[idx].Level, log.Level)
+				assert.Equal(t, tc.expectedEntries[idx].Message, log.Message)
+				assert.Equal(t, tc.expectedEntries[idx].Context, log.Context)
+			}
+		})
+	}
 }
