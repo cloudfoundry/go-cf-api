@@ -28,11 +28,12 @@ import (
 // @Router /buildpacks [get]
 func GetBuildpacks(c echo.Context) error {
 	db := db.GetConnection()
+	logger := logging.FromContext(c)
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	buildpacks, err := models.Buildpacks(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
 	if err != nil {
-		zap.L().Error("Couldn't select", zap.Error(err))
+		logger.Error("Couldn't select", zap.Error(err))
 	}
 	if buildpacks == nil {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
@@ -54,11 +55,12 @@ func GetBuildpacks(c echo.Context) error {
 func GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
 	db := db.GetConnection()
+	logger := logging.FromContext(c)
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true))
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, db)
 	if err != nil {
-		zap.L().Error("Couldn't select", zap.Error(err))
+		logger.Error("Couldn't select", zap.Error(err))
 	}
 	if buildpack == nil {
 		return ccerrors.ResourceNotFound("buildpack")

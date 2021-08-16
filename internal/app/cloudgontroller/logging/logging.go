@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"github.com/labstack/echo/v4"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"go.uber.org/zap"
@@ -25,4 +26,9 @@ func Setup(config *config.CloudgontrollerConfig) error {
 	zap.ReplaceGlobals(logger)
 	logger.Info("Logger Initialized", zap.Bool("Production", config.Log.Production), zap.String("LogLevel", config.Log.Level))
 	return nil
+}
+
+func FromContext(c echo.Context) *zap.Logger {
+	logger := zap.L().With(zap.String(RequestIDField, c.Response().Header().Get(HeaderVcapRequestID)))
+	return logger
 }
