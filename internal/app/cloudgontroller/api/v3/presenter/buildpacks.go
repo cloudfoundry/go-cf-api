@@ -15,8 +15,8 @@ const (
 
 type BuildpackResponse struct {
 	GUID      string      `json:"guid"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt null.Time   `json:"updated_at"`
+	CreatedAt string      `json:"created_at"`
+	UpdatedAt string      `json:"updated_at"`
 	Name      string      `json:"name"`
 	Stack     null.String `json:"stack"`
 	State     string      `json:"state"`
@@ -39,8 +39,8 @@ type BuildpacksResponse struct {
 func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse {
 	response := &BuildpackResponse{
 		GUID:      buildpack.GUID,
-		CreatedAt: buildpack.CreatedAt,
-		UpdatedAt: buildpack.UpdatedAt,
+		CreatedAt: buildpack.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: buildpack.UpdatedAt.Time.Format(time.RFC3339),
 		Name:      buildpack.Name,
 		State:     GetBuildpackState(buildpack),
 		Filename:  buildpack.Filename,
@@ -48,6 +48,8 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 		Position:  buildpack.Position,
 		Enabled:   buildpack.Enabled,
 		Locked:    buildpack.Locked,
+		// Workaround until metadata is implemented
+		Metadata: Metadata{Annotations: map[string]string{}, Labels: map[string]string{}},
 	}
 	response.Links.Self = GetResourcePathLink(resourcePath)
 	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")

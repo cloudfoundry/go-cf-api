@@ -1,8 +1,8 @@
 package presenter
 
 type Metadata struct {
-	Labels      interface{} `json:"labels"`
-	Annotations interface{} `json:"annotations"`
+	Labels      map[string]string `json:"labels"`
+	Annotations map[string]string `json:"annotations"`
 }
 
 type Pagination struct {
