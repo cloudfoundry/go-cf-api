@@ -1,6 +1,7 @@
 package v3
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -14,14 +15,15 @@ func RegisterHealthHandler(e *echo.Echo) {
 	e.GET("healthz", controllers.GetHealth)
 }
 
-func RegisterV3Handlers(prefix string, e *echo.Echo, authMiddleware echo.MiddlewareFunc) {
+func RegisterV3Handlers(prefix string, e *echo.Echo, db *sql.DB, authMiddleware echo.MiddlewareFunc) {
 	// Restricted group
 	restrictedGroup := e.Group(prefix)
 	restrictedGroup.Use(authMiddleware)
+	buildpacksController := controllers.BuildpackController{DB: db}
 	{
 		// Buildpacks
-		restrictedGroup.GET("/buildpacks", controllers.GetBuildpacks)
-		restrictedGroup.GET("/buildpacks/:guid", controllers.GetBuildpack)
+		restrictedGroup.GET("/buildpacks", buildpacksController.GetBuildpacks)
+		restrictedGroup.GET("/buildpacks/:guid", buildpacksController.GetBuildpack)
 	}
 }
 

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,11 +12,14 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"go.uber.org/zap"
 )
 
 var buildpackQuery = models.Buildpacks //nolint:gochecknoglobals // This is need for mocking in unit-tests
+
+type BuildpackController struct {
+	DB *sql.DB
+}
 
 // GetBuildpacks godoc
 // @Summary Buildpacks List buildpacks
@@ -28,12 +32,11 @@ var buildpackQuery = models.Buildpacks //nolint:gochecknoglobals // This is need
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} HTTPError
 // @Router /buildpacks [get]
-func GetBuildpacks(c echo.Context) error {
-	db := db.GetConnection()
+func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	buildpacks, err := buildpackQuery(qm.Limit(50)).All(ctx, db) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
+	buildpacks, err := buildpackQuery(qm.Limit(50)).All(ctx, cont.DB) //nolint:gomnd // This won't be hardcoded when we finish this endpoint
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 	}
@@ -54,13 +57,12 @@ func GetBuildpacks(c echo.Context) error {
 // @Failure 400 {object} HTTPError
 // @Failure 500 {object} HTTPError
 // @Router /buildpacks/{guid} [get]
-func GetBuildpack(c echo.Context) error {
+func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	guid := c.Param("guid")
-	db := db.GetConnection()
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := buildpackQuery(qm.Where("guid=?", guid)).One(ctx, db)
+	buildpack, err := buildpackQuery(qm.Where("guid=?", guid)).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 	}
