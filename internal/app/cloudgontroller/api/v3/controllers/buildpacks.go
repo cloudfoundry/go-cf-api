@@ -55,8 +55,8 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	}
 	buildpacks, err := buildpackQuery(
 		qm.OrderBy("position"),
-		qm.Limit(pagination.PerPage),
-		qm.Offset((pagination.Page-1)*pagination.PerPage),
+		qm.Limit(int(pagination.PerPage)),
+		qm.Offset((pagination.Page-1)*int(pagination.PerPage)),
 	).All(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))

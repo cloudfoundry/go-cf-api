@@ -37,8 +37,13 @@ func NewPagination(totalResults int, paginationParams commoncontroller.Paginatio
 	}
 }
 
-func totalPages(totalResults int, perPage int) int {
-	return int(math.Ceil(float64(totalResults) / float64(perPage)))
+func totalPages(totalResults int, perPage uint16) int {
+	pages := int(math.Ceil(float64(totalResults) / float64(perPage)))
+	if pages < 1 {
+		return 1
+	} else {
+		return pages
+	}
 }
 
 func nextLink(totalResults int, paginationParams commoncontroller.PaginationParams, resourcePath string) *Link {
