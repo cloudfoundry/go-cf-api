@@ -48,7 +48,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	totalResults, err := buildpackQuery().Count(ctx, cont.DB)
+	_, err = buildpackQuery().Count(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't fetch all rows", zap.Error(err))
 		return err
@@ -65,7 +65,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
 	}
 
-	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, int(totalResults), pagination, GetResourcePath(c)))
+	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, pagination, GetResourcePath(c)))
 }
 
 // GetBuildpack godoc

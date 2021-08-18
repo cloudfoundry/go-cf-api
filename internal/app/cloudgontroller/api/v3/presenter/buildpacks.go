@@ -60,7 +60,6 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 
 func BuildpacksResponseObject(
 	buildpacks models.BuildpackSlice,
-	totalResults int,
 	paginationParams commoncontroller.PaginationParams,
 	resourcePath string) *BuildpacksResponse {
 	out := []*BuildpackResponse{}
@@ -70,7 +69,7 @@ func BuildpacksResponseObject(
 	}
 
 	return &BuildpacksResponse{
-		Pagination: common.NewPagination(totalResults, paginationParams, resourcePath),
+		Pagination: common.NewPagination(len(buildpacks), paginationParams, resourcePath),
 		Resources:  out,
 	}
 }

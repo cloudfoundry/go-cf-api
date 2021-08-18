@@ -8,7 +8,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
+	commoncontroller "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
+	commonpresenter "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/common"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -38,7 +40,7 @@ func TestBuildpackResponseObject(t *testing.T) {
 	cases := map[string]struct {
 		buildpack                                                           models.Buildpack
 		expectedBuildpackGUID, expectedBuildpackDate, expectedBuildpackName string
-		expectedResourcePath, expectedResourcePathUpload                    Link
+		expectedResourcePath, expectedResourcePathUpload                    commonpresenter.Link
 	}{
 		"buildpack valid response": {
 			models.Buildpack{
@@ -48,8 +50,8 @@ func TestBuildpackResponseObject(t *testing.T) {
 				Name:      "Testbuildpack",
 			},
 			"123", "2021-08-16T13:14:15Z", "Testbuildpack",
-			Link{"v3/buildpack", ""},
-			Link{"v3/buildpack/upload", "POST"},
+			commonpresenter.Link{Href: "v3/buildpack", Method: ""},
+			commonpresenter.Link{Href: "v3/buildpack/upload", Method: "POST"},
 		},
 	}
 
@@ -80,7 +82,7 @@ func TestBuildpackResponseObjectSlice(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			response := BuildpacksResponseObject(tc.buildpack, "v3/buildpack")
+			response := BuildpacksResponseObject(tc.buildpack, commoncontroller.DefaultPagination(), "v3/buildpack")
 			require.Equal(t, tc.expectedBuildpackGUID1, response.Resources[0].GUID)
 			require.Equal(t, tc.expectedBuildpackGUID2, response.Resources[1].GUID)
 		})
