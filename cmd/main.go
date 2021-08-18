@@ -60,6 +60,8 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 			if err != nil {
 				_ = c.String(http.StatusInternalServerError, "Unknown error occurred")
 			}
+		} else {
+			e.DefaultHTTPErrorHandler(err, c)
 		}
 	}
 
