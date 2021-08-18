@@ -27,7 +27,7 @@ func (e *CloudControllerError) Error() string {
 	return fmt.Sprintf("Code [%d] (%s): %s", e.Code, e.Title, e.Detail)
 }
 
-func BadQueryParameter() error {
+func BadQueryParameter() *CloudControllerError {
 	return &CloudControllerError{
 		HTTPStatus: http.StatusBadRequest,
 		Code:       10005, //nolint:gomnd // CF API error code
@@ -36,8 +36,8 @@ func BadQueryParameter() error {
 	}
 }
 
-func InvalidAuthToken() CloudControllerError {
-	return CloudControllerError{
+func InvalidAuthToken() *CloudControllerError {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusUnauthorized,
 		Code:       1000, //nolint:gomnd // CF API error code
 		Title:      "CF-InvalidAuthToken",
@@ -45,8 +45,8 @@ func InvalidAuthToken() CloudControllerError {
 	}
 }
 
-func NotAuthenticated() CloudControllerError {
-	return CloudControllerError{
+func NotAuthenticated() *CloudControllerError {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusUnauthorized,
 		Code:       10002, //nolint:gomnd // CF API error code
 		Title:      "CF-NotAuthenticated",
@@ -54,8 +54,8 @@ func NotAuthenticated() CloudControllerError {
 	}
 }
 
-func NotAuthorized() CloudControllerError {
-	return CloudControllerError{
+func NotAuthorized() *CloudControllerError {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusForbidden,
 		Code:       10003, //nolint:gomnd // CF API error code
 		Title:      "CF-NotAuthorized",
@@ -63,7 +63,7 @@ func NotAuthorized() CloudControllerError {
 	}
 }
 
-func ResourceNotFound(resourceType string) error {
+func ResourceNotFound(resourceType string) *CloudControllerError {
 	return &CloudControllerError{
 		HTTPStatus: http.StatusNotFound,
 		Code:       10010, //nolint:gomnd // CF API error code
@@ -72,8 +72,8 @@ func ResourceNotFound(resourceType string) error {
 	}
 }
 
-func UnprocessableEntity(detail string) CloudControllerError {
-	return CloudControllerError{
+func UnprocessableEntity(detail string) *CloudControllerError {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusUnprocessableEntity,
 		Code:       10008, //nolint:gomnd // CF API error code
 		Title:      "CF-UnprocessableEntity",
@@ -81,8 +81,8 @@ func UnprocessableEntity(detail string) CloudControllerError {
 	}
 }
 
-func UnknownError() CloudControllerError {
-	return CloudControllerError{
+func UnknownError() *CloudControllerError {
+	return &CloudControllerError{
 		HTTPStatus: http.StatusInternalServerError,
 		Code:       10001, //nolint:gomnd // CF API error code
 		Title:      "UnknownError",
