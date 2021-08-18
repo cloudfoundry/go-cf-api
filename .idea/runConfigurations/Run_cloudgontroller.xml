@@ -6,7 +6,7 @@
     <parameters value="config_psql.yaml" />
     <kind value="FILE" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="./cmd/main.go" />
+    <filePath value="$PROJECT_DIR$/cmd/main.go" />
     <method v="2" />
   </configuration>
 </component>

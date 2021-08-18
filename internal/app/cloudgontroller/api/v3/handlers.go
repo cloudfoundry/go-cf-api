@@ -34,7 +34,7 @@ func RegisterV3Handlers(
 	{
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.GetBuildpacks)
-		restrictedGroup.GET("/buildpacks/:guid", buildpacksController.GetBuildpack)
+		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", controllers.GUIDParam), buildpacksController.GetBuildpack)
 	}
 }
 

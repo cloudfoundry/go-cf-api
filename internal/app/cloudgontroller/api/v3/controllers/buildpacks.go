@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/friendsofgo/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -17,7 +18,7 @@ import (
 	"go.uber.org/zap"
 )
 
-var buildpackQuery = models.Buildpacks //nolint:gochecknoglobals // This is need for mocking in unit-tests
+const GUIDParam = "guid"
 
 type BuildpackController struct {
 	DB *sql.DB
@@ -48,18 +49,19 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	_, err = buildpackQuery().Count(ctx, cont.DB)
+	_, err = models.Buildpacks().Count(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't fetch all rows", zap.Error(err))
 		return err
 	}
-	buildpacks, err := buildpackQuery(
+	buildpacks, err := models.Buildpacks(
 		qm.OrderBy("position"),
 		qm.Limit(int(pagination.PerPage)),
 		qm.Offset((pagination.Page-1)*int(pagination.PerPage)),
 	).All(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
+		return ccerrors.UnknownError()
 	}
 	if buildpacks == nil {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
@@ -79,13 +81,16 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 // @Failure 500 {object} HTTPError
 // @Router /buildpacks/{guid} [get]
 func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
-	guid := c.Param("guid")
+	guid := c.Param(GUIDParam)
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := buildpackQuery(qm.Where("guid=?", guid)).One(ctx, cont.DB)
+	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
+		if errors.Cause(err) != sql.ErrNoRows {
+			return ccerrors.UnknownError()
+		}
 	}
 	if buildpack == nil {
 		return ccerrors.ResourceNotFound("buildpack")
