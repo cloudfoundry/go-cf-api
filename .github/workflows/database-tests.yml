@@ -17,12 +17,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-test:
+  db-test-psql:
     runs-on: [self-hosted, linux]
-    strategy:
-      matrix:
-        db: [ 'psql', 'mysql' ]
-    name: Run ${{ matrix.db }} db tests
+    name: Run psql db tests
     steps:
       - uses: actions/checkout@v2
       - name: Setup go
@@ -30,10 +27,45 @@ jobs:
         with:
           go-version: 1.16.6
       - name: Install Dependencies
-        run: sudo apt update && sudo apt install docker-compose -y
-      - name: Start Databases
-        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose -f docker-compose-dev.yaml up -d
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt update
+          sudo apt install postgresql-client-13 docker-compose -y
+      - name: Start Database
+        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose up -d postgres
         env:
           DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-      - run: go test --tags="${{ matrix.db }},db" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_${{ matrix.os }}.toml
+      - name: Create DB
+        run: |
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage DBCreate $PWD/config_psql.yaml
+          mage DBLoad $PWD/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+      - name: Run tests
+        run: go test -v -tags="psql,db" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml
+  db-test-mysql:
+    runs-on: [self-hosted, linux]
+    name: Run mysql db tests
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.16.6
+      - name: Install Dependencies
+        run: sudo apt update && sudo apt install mariadb-client docker-compose -y
+      - name: Start Database
+        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose up -d mariadb
+        env:
+          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+      - name: Create DB
+        run: |
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage DBCreate $PWD/config_mysql.yaml
+          mage DBLoad $PWD/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+      - name: Run tests
+        run: go test -v -tags="mysql,db" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
