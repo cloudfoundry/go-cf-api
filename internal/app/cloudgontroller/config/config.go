@@ -51,10 +51,10 @@ type ZapConfig struct {
 }
 
 type RateLimitConf struct {
-	Enabled   bool          `yaml:"enabled"`
-	Rate      int           `yaml:"rate" validate:"gte=0,lte=1000"`
-	Burst     int           `yaml:"burst" validate:"gte=0,lte=1000"`
-	ExpiresIn time.Duration `yaml:"expires_in"`
+	Enabled              bool          `yaml:"enabled"`
+	GeneralLimit         int           `yaml:"general_limit"`
+	UnauthenticatedLimit int           `yaml:"unauthenticated_limit"`
+	ResetInterval        time.Duration `yaml:"reset_interval"`
 }
 
 // Parses the config once, otherwise just returns it

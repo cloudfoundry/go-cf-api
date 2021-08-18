@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
@@ -17,6 +18,7 @@ import (
 	_ "github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
@@ -26,7 +28,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"golang.org/x/time/rate"
 )
 
 func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // length is not a problem for now
@@ -50,9 +51,6 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
-	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStoreWithConfig(
-		middleware.RateLimiterMemoryStoreConfig{Rate: rate.Limit(conf.RateLimit.Rate), Burst: conf.RateLimit.Burst, ExpiresIn: conf.RateLimit.ExpiresIn},
-	)))
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
 		var ccErr *ccerrors.CloudControllerError
 		if errors.As(err, &ccErr) {
@@ -79,11 +77,28 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	authConfig := middleware.JWTConfig{
 		SigningMethod: "RS256",
 		KeyFunc:       ukf.Fetch,
+		SuccessHandler: func(c echo.Context) {
+			user, ok := c.Get("user").(*jwt.Token)
+			if !ok {
+				c.Error(fmt.Errorf("something went wrong with casting %s", "user"))
+			}
+			claims, ok := user.Claims.(jwt.MapClaims)
+			if !ok {
+				c.Error(fmt.Errorf("something went wrong with casting %s", "claims"))
+			}
+			identifier, ok := claims["client_id"].(string)
+			if !ok {
+				c.Error(fmt.Errorf("something went wrong with casting %s", "identifier"))
+			}
+			c.Set("username", identifier)
+		},
 	}
 	authMiddleware := middleware.JWTWithConfig(authConfig)
+	rateLimiter := ratelimiter.RateLimiter{GeneralLimit: conf.RateLimit.GeneralLimit, ResetInterval: conf.RateLimit.ResetInterval, DB: db}
+	rateLimitMiddleware := ratelimiter.CustomRateLimiter(rateLimiter)
 
 	// Register API Handlers
-	api.RegisterHandlers(e, db, authMiddleware)
+	api.RegisterHandlers(e, db, authMiddleware, rateLimitMiddleware, conf)
 
 	// Start to Serve
 	lock := make(chan error)

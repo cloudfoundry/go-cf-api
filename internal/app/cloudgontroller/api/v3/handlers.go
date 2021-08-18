@@ -8,6 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {
@@ -15,10 +16,20 @@ func RegisterHealthHandler(e *echo.Echo) {
 	e.GET("healthz", controllers.GetHealth)
 }
 
-func RegisterV3Handlers(prefix string, e *echo.Echo, db *sql.DB, authMiddleware echo.MiddlewareFunc) {
+func RegisterV3Handlers(
+	prefix string,
+	e *echo.Echo,
+	db *sql.DB,
+	authMiddleware echo.MiddlewareFunc,
+	rateLimitMiddleware echo.MiddlewareFunc,
+	conf *config.CloudgontrollerConfig,
+) {
 	// Restricted group
 	restrictedGroup := e.Group(prefix)
 	restrictedGroup.Use(authMiddleware)
+	if conf.RateLimit.Enabled {
+		restrictedGroup.Use(rateLimitMiddleware)
+	}
 	buildpacksController := controllers.BuildpackController{DB: db}
 	{
 		// Buildpacks

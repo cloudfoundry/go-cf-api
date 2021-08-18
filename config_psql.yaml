@@ -7,3 +7,7 @@ log:
   production: false
 uaa:
   url: http://localhost:8095
+rate_limiting:
+  enabled: true
+  reset_interval: 1m
+  general_limit: 10
