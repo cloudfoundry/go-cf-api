@@ -80,15 +80,15 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 		SuccessHandler: func(c echo.Context) {
 			user, ok := c.Get("user").(*jwt.Token)
 			if !ok {
-				c.Error(fmt.Errorf("something went wrong with casting %s", "user"))
+				c.Error(errors.New("couldn't get user from context"))
 			}
 			claims, ok := user.Claims.(jwt.MapClaims)
 			if !ok {
-				c.Error(fmt.Errorf("something went wrong with casting %s", "claims"))
+				c.Error(errors.New("couldn't get user claims from context"))
 			}
 			identifier, ok := claims["client_id"].(string)
 			if !ok {
-				c.Error(fmt.Errorf("something went wrong with casting %s", "identifier"))
+				c.Error(errors.New("couldn't get user identifier from context"))
 			}
 			c.Set("username", identifier)
 		},

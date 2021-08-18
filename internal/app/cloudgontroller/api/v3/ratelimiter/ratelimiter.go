@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -22,15 +21,13 @@ type RateLimiter struct {
 	ResetInterval time.Duration
 }
 
-var requestCountsQuery = models.RequestCounts //nolint
-
 func (r *RateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
 	var requestCount *models.RequestCount
 
 	logger := logging.FromContext(ctx)
 
 	dbCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	requestCountSlice, err := requestCountsQuery(qm.Where("user_guid=?", identifier)).All(dbCtx, r.DB)
+	requestCountSlice, err := models.RequestCounts(models.RequestCountWhere.UserGUID.EQ(null.StringFrom(identifier))).All(dbCtx, r.DB)
 	if err != nil {
 		return false, err
 	}

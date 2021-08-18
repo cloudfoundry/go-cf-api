@@ -13,6 +13,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
 )
 
@@ -35,9 +36,7 @@ func TestNoRequestCountExists(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	context := e.NewContext(request, recorder)
 	db, mock, err := sqlmock.New()
-	if err != nil {
-		assert.FailNow(t, err.Error())
-	}
+	require.NoError(t, err)
 
 	rateLimiter := RateLimiter{
 		GeneralLimit:  10,
@@ -46,7 +45,7 @@ func TestNoRequestCountExists(t *testing.T) {
 	}
 
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE (user_guid=$1);`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
 		WithArgs("123").
 		WillReturnRows(sqlmock.NewRows(nil))
 
@@ -60,16 +59,14 @@ func TestNoRequestCountExists(t *testing.T) {
 	assert.True(t, result)
 }
 
-//nolint
+//nolint:dupl // test wrongly recognised as a duplicate
 func TestRequestCountExceedsRateLimit(t *testing.T) {
 	e := echo.New()
 	request := httptest.NewRequest(http.MethodGet, "/something", nil)
 	recorder := httptest.NewRecorder()
 	context := e.NewContext(request, recorder)
 	db, mock, err := sqlmock.New()
-	if err != nil {
-		assert.FailNow(t, err.Error())
-	}
+	require.NoError(t, err)
 
 	rateLimiter := RateLimiter{
 		GeneralLimit:  10,
@@ -80,7 +77,7 @@ func TestRequestCountExceedsRateLimit(t *testing.T) {
 	expiryTime := time.Now().Add(1 * time.Hour)
 
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE (user_guid=$1);`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
 		WithArgs("123").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 10, expiryTime))
 
@@ -94,16 +91,14 @@ func TestRequestCountExceedsRateLimit(t *testing.T) {
 	assert.False(t, result)
 }
 
-//nolint
+//nolint:dupl // test wrongly recognised as a duplicate
 func TestRequestCountWithinRateLimit(t *testing.T) {
 	e := echo.New()
 	request := httptest.NewRequest(http.MethodGet, "/something", nil)
 	recorder := httptest.NewRecorder()
 	context := e.NewContext(request, recorder)
 	db, mock, err := sqlmock.New()
-	if err != nil {
-		assert.FailNow(t, err.Error())
-	}
+	require.NoError(t, err)
 
 	rateLimiter := RateLimiter{
 		GeneralLimit:  10,
@@ -114,7 +109,7 @@ func TestRequestCountWithinRateLimit(t *testing.T) {
 	expiryTime := time.Now().Add(1 * time.Hour)
 
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE (user_guid=$1);`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
 		WithArgs("123").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 3, expiryTime))
 
@@ -135,9 +130,7 @@ func TestRequestCountExpired(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	context := e.NewContext(request, recorder)
 	db, mock, err := sqlmock.New()
-	if err != nil {
-		assert.FailNow(t, err.Error())
-	}
+	require.NoError(t, err)
 
 	rateLimiter := RateLimiter{
 		GeneralLimit:  10,
@@ -147,7 +140,7 @@ func TestRequestCountExpired(t *testing.T) {
 
 	testTime := time.Now().UTC()
 	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE (user_guid=$1);`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
 		WithArgs("123").
 		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 57, testTime.Add(-1*time.Hour)))
 
