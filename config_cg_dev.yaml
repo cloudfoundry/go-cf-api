@@ -2,8 +2,6 @@ listen: 127.0.0.1:8282
 db:
   connection_string: host=localhost port=5432 user=postgres dbname=ccdb password=mysecretpassword sslmode=disable
   type: postgres
-  create: false
-  migrate: false
 log:
   level: debug
   production: false

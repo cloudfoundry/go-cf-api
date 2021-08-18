@@ -42,8 +42,6 @@ type DBConfig struct {
 	// Mysql: https://github.com/go-sql-driver/mysql#dsn-data-source-name
 	ConnectionString string    `yaml:"connection_string" validate:"required"`
 	Type             string    `yaml:"type" validate:"required,oneof=postgres mysql"`
-	Create           bool      `yaml:"create"`
-	Migrate          bool      `yaml:"migrate"`
 	Log              ZapConfig `yaml:"log"`
 }
 

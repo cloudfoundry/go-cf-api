@@ -22,7 +22,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
+	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -67,10 +67,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Validator = &api.Validator{Validator: validator.New()}
 
 	// Initialize DB
-	db.NewConnection(conf.DB, true)
-	if conf.DB.Migrate {
-		db.Migrate(conf.DB.Type, db.GetConnection())
-	}
+	db, _ := dbconfig.NewConnection(conf.DB, true)
 
 	// Configure auth middleware
 	ctx, cancel := context.WithCancel(context.Background())
@@ -84,7 +81,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	authMiddleware := middleware.JWTWithConfig(authConfig)
 
 	// Register API Handlers
-	api.RegisterHandlers(e, authMiddleware)
+	api.RegisterHandlers(e, db, authMiddleware)
 
 	// Start to Serve
 	lock := make(chan error)

@@ -3,10 +3,12 @@
 package main
 
 import (
+	"embed"
 	"os"
 	"path/filepath"
 
 	"github.com/magefile/mage/sh"
+	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
 	"fmt"
@@ -17,7 +19,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
+	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"
@@ -79,7 +81,6 @@ func Console() error {
 	return nil
 }
 
-
 // Starts a docker container running the database specified in the config file
 func StartDBAndUaaContainers(configPath string) error {
 	config := config.Get(configPath)
@@ -95,7 +96,6 @@ func StartDBAndUaaContainers(configPath string) error {
 	err := sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container, "uaa")
 	return err
 }
-
 
 // Starts a docker container running the database specified in the config file
 func DBStart(configPath string) error {
@@ -117,8 +117,12 @@ func DBStart(configPath string) error {
 func DBCreate(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db.NewConnection(config.DB, false)
-	db.Create(db.GetConnection(), db.GetConnectionInfo())
+	db, info := dbconfig.NewConnection(config.DB, false)
+	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %v"))
+	if err != nil {
+		return err
+	}
+	zap.L().Info(fmt.Sprintf("Successfully created database %v", info.DatabaseName))
 	return nil
 }
 
@@ -126,8 +130,12 @@ func DBCreate(configPath string) error {
 func DBDelete(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db.NewConnection(config.DB, false)
-	db.Drop(db.GetConnection(), db.GetConnectionInfo())
+	db, info := dbconfig.NewConnection(config.DB, false)
+	_, err := db.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
+	if err != nil {
+		return err
+	}
+	zap.L().Info(fmt.Sprintf("Successfully dropped database %v", info.DatabaseName))
 	return nil
 }
 
@@ -145,12 +153,43 @@ func DBRecreate(configPath string) error {
 	return nil
 }
 
+//nolint:gochecknoglobals
+//go:embed migrations
+var migrations embed.FS
+
 // Migrates the Database that is specified in the config file to the newest schema
 func DBMigrate(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db.NewConnection(config.DB, true)
-	db.Migrate(config.DB.Type, db.GetConnection())
+	db, info := dbconfig.NewConnection(config.DB, false)
+
+	// Load migrations depending on DB Type
+	folder := fmt.Sprintf("migrations/%s", info.Type)
+
+	// Convert embed.FS to a usable migration source for sql-migrate
+	migrations := &migrate.AssetMigrationSource{
+		Asset: migrations.ReadFile,
+		AssetDir: func() func(string) ([]string, error) {
+			return func(path string) ([]string, error) {
+				dirEntry, err := migrations.ReadDir(path)
+				if err != nil {
+					return nil, err
+				}
+				entries := make([]string, 0)
+				for _, e := range dirEntry {
+					entries = append(entries, e.Name())
+				}
+
+				return entries, nil
+			}
+		}(),
+		Dir: folder,
+	}
+
+	// Execute the UP Migration
+	n, err := migrate.Exec(db, info.Type, migrations, migrate.Up)
+	zap.L().Info(fmt.Sprintf("Applied %v DB Migration Steps", n))
+	helpers.CheckErrFatal(err)
 	return nil
 }
 
@@ -158,14 +197,23 @@ func DBMigrate(configPath string) error {
 func DBLoad(configPath string, sqlFilePath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db.NewConnection(config.DB, false)
-	if db.GetConnectionInfo().Type == "postgres" {
+	_, info := dbconfig.NewConnection(config.DB, false)
+
+	switch info.Type {
+	case "postgres":
 		if err := sh.RunV("psql", config.DB.ConnectionString, "-f", sqlFilePath); err != nil {
 			return err
 		}
-	} else if db.GetConnectionInfo().Type == "mysql" {
-		zap.L().Warn("Loading Mysql Dumps not yet implemented")
-		if err := sh.RunV("mysql", "-h", db.GetConnectionInfo().Host, "-P", db.GetConnectionInfo().Port, "-u", db.GetConnectionInfo().User, fmt.Sprintf("--password=%s", db.GetConnectionInfo().Password), "--protocol=tcp", "-e", fmt.Sprintf("source %s", sqlFilePath)); err != nil {
+	case "mysql":
+		if err := sh.RunV("mysql",
+			"-h", info.Host,
+			"-P", info.Port,
+			"-u", info.User,
+			"-D", info.DatabaseName,
+			fmt.Sprintf("--password=%s", info.Password),
+			"--protocol=tcp",
+			"-e", fmt.Sprintf("source %s", sqlFilePath),
+		); err != nil {
 			return err
 		}
 	}
