@@ -12,6 +12,6 @@ uaa:
   url: ~
 rate_limiting:
   enabled: true
-  rate: 10
-  burst: 20
-  expires_in: 180s
+  general_limit: 2000
+  unauthenticated_limit: 100
+  reset_interval: 60m
