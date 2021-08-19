@@ -37,6 +37,12 @@ require (
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
+	github.com/shirou/gopsutil/v3 v3.21.7
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/sourcegraph/go-diff v0.6.1 // indirect
+	github.com/spf13/cobra v1.0.0
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.7.0
 	github.com/swaggo/echo-swagger v1.1.0
 	github.com/swaggo/swag v1.7.0

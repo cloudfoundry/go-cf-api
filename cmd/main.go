@@ -99,6 +99,8 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 
 	// Register API Handlers
 	api.RegisterHandlers(e, db, authMiddleware, rateLimitMiddleware, conf)
+	prometheus.MustRegister(collectors.NewDBStatsCollector(db.GetConnection(), "postgres"), ownmetrics.NewCustomerCollector(time.Now().UTC()))
+	metrics.EchoPrometheusMiddleware().Use(e)
 
 	// Start to Serve
 	lock := make(chan error)
