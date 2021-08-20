@@ -5,23 +5,19 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/stretchr/testify/assert"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics/custommetrics"
 )
 
 func TestCustomCollector(t *testing.T) {
 	reg := prometheus.NewRegistry()
-	{
-		if err := reg.Register(custommetrics.NewCustomCollector(time.Now().UTC())); err != nil {
-			t.Fatal(err)
-		}
-	}
+	err := reg.Register(custommetrics.NewCustomCollector(time.Now().UTC()))
+	assert.NoError(t, err)
 
 	mfs, err := reg.Gather()
-	if err != nil {
-		t.Fatal(err)
-	}
+	assert.NoError(t, err)
 
-	names := []string{
+	metricNames := []string{
 		"go_custom_stats_cpu_usage_total",
 		"go_custom_stats_uptime_seconds_total",
 	}
@@ -29,22 +25,21 @@ func TestCustomCollector(t *testing.T) {
 	type result struct {
 		found bool
 	}
-	results := make(map[string]result)
-	for _, name := range names {
-		results[name] = result{found: false}
+	MetricSearchResults := make(map[string]result)
+
+	for _, name := range metricNames {
+		MetricSearchResults[name] = result{found: false}
 	}
 	for _, mf := range mfs {
-		for _, name := range names {
+		for _, name := range metricNames {
 			if name == mf.GetName() {
-				results[name] = result{found: true}
+				MetricSearchResults[name] = result{found: true}
 				break
 			}
 		}
 	}
 
-	for name, result := range results {
-		if !result.found {
-			t.Errorf("%s not found", name)
-		}
+	for metricName, result := range MetricSearchResults {
+		assert.Truef(t, result.found, "This should be true, %s metric is not found", metricName)
 	}
 }
