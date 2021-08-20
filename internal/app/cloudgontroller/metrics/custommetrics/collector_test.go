@@ -8,7 +8,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics/custommetrics"
 )
 
-func TestDBStatsCollector(t *testing.T) {
+func TestCustomCollector(t *testing.T) {
 	reg := prometheus.NewRegistry()
 	{
 		if err := reg.Register(custommetrics.NewCustomCollector(time.Now().UTC())); err != nil {
