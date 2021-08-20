@@ -12,6 +12,8 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/spf13/cobra"
 
 	// Needed for swagger
@@ -24,6 +26,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics/custommetrics"
 	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
 	"go.uber.org/zap"
@@ -99,8 +102,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 
 	// Register API Handlers
 	api.RegisterHandlers(e, db, authMiddleware, rateLimitMiddleware, conf)
-	prometheus.MustRegister(collectors.NewDBStatsCollector(db.GetConnection(), "postgres"), ownmetrics.NewCustomerCollector(time.Now().UTC()))
-	metrics.EchoPrometheusMiddleware().Use(e)
+	prometheus.MustRegister(collectors.NewDBStatsCollector(db, conf.DB.Type), custommetrics.NewCustomCollector(time.Now().UTC()))
 
 	// Start to Serve
 	lock := make(chan error)

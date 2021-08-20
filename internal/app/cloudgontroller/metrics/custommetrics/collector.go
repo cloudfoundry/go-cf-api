@@ -1,37 +1,37 @@
-package ownmetrics
+package custommetrics
 
 import (
-	"log"
 	"math"
 	"time"
 
+	"github.com/labstack/gommon/log"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/shirou/gopsutil/v3/cpu"
+	"github.com/shirou/gopsutil/cpu"
 )
 
-const namespace = "go_customs_stats"
+const namespace = "go_custom_stats"
 
-type CustomerCollector struct {
+type CustomCollector struct {
 	cpuUsage  *prometheus.Desc
 	uptime    *prometheus.Desc
 	startTime time.Time
 }
 
-func (e *CustomerCollector) cpuStatus() float64 {
+func (e *CustomCollector) cpuStatus() (float64, error) {
 	percent, err := cpu.Percent(time.Second, false)
 	if err != nil {
-		log.Fatal(err)
+		return 0.0, err
 	}
 
-	return math.Ceil(percent[0])
+	return math.Ceil(percent[0]), nil
 }
 
-func (e *CustomerCollector) upTime() float64 {
+func (e *CustomCollector) upTime() float64 {
 	return time.Since(e.startTime).Seconds()
 }
 
-func NewCustomerCollector(startTime time.Time) *CustomerCollector {
-	return &CustomerCollector{
+func NewCustomCollector(startTime time.Time) *CustomCollector {
+	return &CustomCollector{
 		cpuUsage: prometheus.NewDesc(
 			prometheus.BuildFQName(namespace, "", "cpu_usage_total"),
 			"Current cpu usage in percentage (*)",
@@ -46,16 +46,20 @@ func NewCustomerCollector(startTime time.Time) *CustomerCollector {
 	}
 }
 
-func (e *CustomerCollector) Describe(ch chan<- *prometheus.Desc) {
+func (e *CustomCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.cpuUsage
 	ch <- e.uptime
 }
 
-func (e *CustomerCollector) Collect(ch chan<- prometheus.Metric) {
+func (e *CustomCollector) Collect(ch chan<- prometheus.Metric) {
+	percent, err := e.cpuStatus()
+	if err != nil {
+		log.Error(err)
+	}
 	ch <- prometheus.MustNewConstMetric(
 		e.cpuUsage,
 		prometheus.GaugeValue,
-		e.cpuStatus())
+		percent)
 	ch <- prometheus.MustNewConstMetric(
 		e.uptime,
 		prometheus.CounterValue,
