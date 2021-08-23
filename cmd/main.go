@@ -19,9 +19,8 @@ import (
 	// Needed for swagger
 	_ "github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
-	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/ccerrors"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
@@ -55,12 +54,14 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		var ccErr *ccerrors.CloudControllerError
+		var ccErr *controllers.CloudControllerError
 		if errors.As(err, &ccErr) {
-			err := c.JSON(ccErr.HTTPStatus, ccerrors.AsErrors(*ccErr))
-			if err != nil {
+			errResponse := c.JSON(ccErr.HTTPStatus, controllers.AsErrors(*ccErr))
+			if errResponse != nil {
 				_ = c.String(http.StatusInternalServerError, "Unknown error occurred")
+				zap.L().Error(err.Error())
 			}
+			zap.L().Error(errors.Unwrap(err).Error())
 		} else {
 			e.DefaultHTTPErrorHandler(err, c)
 		}
