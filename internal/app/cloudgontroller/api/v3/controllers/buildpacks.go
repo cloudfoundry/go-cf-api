@@ -4,11 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
-
 	"github.com/friendsofgo/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
@@ -16,6 +15,8 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
+	"net/http"
+	"strings"
 )
 
 const GUIDParam = "guid"
@@ -38,9 +39,14 @@ type BuildpackController struct {
 func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := common.DefaultPagination()
+	filters := DefaultFilters()
 	// BindQueryParams will overwrite default values if params were given
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return BadQueryParameter(err)
+	}
+
+	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filters); errFilters != nil {
+		return BadQueryParameter(errFilters)
 	}
 
 	err := validator.New().Struct(pagination)
@@ -48,21 +54,37 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return BadQueryParameter(err)
 	}
 
+	errFilter := validator.New().Struct(filters)
+	if errFilter != nil {
+		return BadQueryParameter(errFilter)
+	}
+
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	_, err = models.Buildpacks().Count(ctx, cont.DB)
 	if err != nil {
 		return UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
+
+	var mods []qm.QueryMod
+	mods = append(mods, qm.Limit(int(pagination.PerPage)))
+	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
+	// Append Filters to the query
+	mods = append(mods, BuildFilters(filters)...)
+
 	buildpacks, err := models.Buildpacks(
-		qm.OrderBy("position"),
-		qm.Limit(int(pagination.PerPage)),
-		qm.Offset((pagination.Page-1)*int(pagination.PerPage)),
+		mods...,
 	).All(ctx, cont.DB)
 	if err != nil {
 		return UnknownError(fmt.Errorf("could not Select: %w", err))
 	}
 	if buildpacks == nil {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
+	}
+	// If the order is reversed by the order_by parameter starting with a -
+	if strings.HasPrefix(filters.OrderBy, "-"){
+		for i, j := 0, len(buildpacks)-1; i < j; i, j = i+1, j-1 {
+			buildpacks[i], buildpacks[j] = buildpacks[j], buildpacks[i]
+		}
 	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, pagination, GetResourcePath(c)))
@@ -95,4 +117,59 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
+}
+
+
+func BuildFilters (filters FilterParams) []qm.QueryMod {
+	var filterMods []qm.QueryMod
+
+	// Make sure that the sorting is done by one of the supported values.
+	possibleSortValues := []string{"created_at", "updated_at", "position"}
+	if strings.HasPrefix(filters.OrderBy, "-") {
+		filters.OrderBy = strings.TrimPrefix(filters.OrderBy, "-")
+	}
+	for _,value  := range possibleSortValues {
+		if value == filters.OrderBy {
+			filterMods = append(filterMods, qm.OrderBy(filters.OrderBy))
+		}
+	}
+
+	names := strings.Split(filters.Names, ",")
+	for index, name := range names {
+		if name != "" {
+			if index == 0{
+				filterMods = append(filterMods, qm.And("name=?", name))
+			} else {
+				filterMods = append(filterMods, qm.Or("name=?", name))
+			}
+		}
+	}
+
+	stacks := strings.Split(filters.Stacks, ",")
+	for index, stack := range stacks {
+		if stack != "" {
+			if index == 0 {
+				filterMods = append(filterMods, qm.And("stack=?", stack))
+			} else {
+				filterMods = append(filterMods, qm.Or("stack=?", stack))
+			}
+		}
+	}
+
+
+	return filterMods
+}
+
+type FilterParams struct {
+	Names   		string `query:"names"`
+	Stacks 			string `query:"stacks"`
+	OrderBy 		string `query:"order_by"`
+	LabelSelector 	string `query:"label_selector"`
+	CreatedAts 		null.Time `query:"created_ats"`
+	UpdatedAts 		null.Time `query:"updated_ats"`
+
+}
+
+func DefaultFilters() FilterParams {
+	return FilterParams{OrderBy: "position"} //nolint:gomnd // Default values
 }
