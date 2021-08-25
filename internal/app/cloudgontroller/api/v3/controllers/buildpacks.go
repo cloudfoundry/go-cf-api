@@ -7,7 +7,6 @@ import (
 	"github.com/friendsofgo/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
@@ -17,6 +16,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"strings"
+	"time"
 )
 
 const GUIDParam = "guid"
@@ -44,7 +44,6 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return BadQueryParameter(err)
 	}
-
 	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filters); errFilters != nil {
 		return BadQueryParameter(errFilters)
 	}
@@ -138,9 +137,20 @@ func BuildFilters (filters FilterParams) []qm.QueryMod {
 	for index, name := range names {
 		if name != "" {
 			if index == 0{
-				filterMods = append(filterMods, qm.And("name=?", name))
+				//opening brackets if there are more than one name
+				if len(names) > 1{
+					filterMods = append(filterMods, qm.And("(name=?", name))
+				} else {
+					filterMods = append(filterMods, qm.And("name=?", name))
+				}
 			} else {
-				filterMods = append(filterMods, qm.Or("name=?", name))
+				// closing bracket if it is the last name
+				if index == len(names) - 1 {
+					filterMods = append(filterMods, qm.Or("name=?)", name))
+				} else {
+					filterMods = append(filterMods, qm.Or("name=?", name))
+				}
+
 			}
 		}
 	}
@@ -149,14 +159,26 @@ func BuildFilters (filters FilterParams) []qm.QueryMod {
 	for index, stack := range stacks {
 		if stack != "" {
 			if index == 0 {
-				filterMods = append(filterMods, qm.And("stack=?", stack))
+				if len(stacks) > 1 {
+					filterMods = append(filterMods, qm.And("(stack=?", stack))
+				} else {
+					filterMods = append(filterMods, qm.And("stack=?", stack))
+				}
 			} else {
-				filterMods = append(filterMods, qm.Or("stack=?", stack))
+				if index == len(stack) - 1 {
+					filterMods = append(filterMods, qm.Or("stack=?)", stack))
+				} else {
+					filterMods = append(filterMods, qm.Or("stack=?", stack))
+				}
+
 			}
 		}
 	}
 
-
+	//createdAts := filters.CreatedAts
+	//if !createdAts.IsZero() {
+	//	filterMods = append(filterMods, qm.And("created_at=?", filters.CreatedAts.Format(time.RFC3339)))
+	//}
 	return filterMods
 }
 
@@ -165,8 +187,8 @@ type FilterParams struct {
 	Stacks 			string `query:"stacks"`
 	OrderBy 		string `query:"order_by"`
 	LabelSelector 	string `query:"label_selector"`
-	CreatedAts 		null.Time `query:"created_ats"`
-	UpdatedAts 		null.Time `query:"updated_ats"`
+	CreatedAts 		time.Time `query:"created_ats"`
+	UpdatedAts 		time.Time `query:"updated_ats"`
 
 }
 

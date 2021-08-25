@@ -190,7 +190,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterNames() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (name=$1) OR (name=$2) AND (stack=$3) ORDER BY position LIMIT 50;`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ((name=$1) OR (name=$2)) AND (stack=$3) ORDER BY position LIMIT 50;`)).
 		WithArgs("java_buildpack", "go_buildpack", "cflinuxfs3").
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack").AddRow("go_buildpack"))
 
