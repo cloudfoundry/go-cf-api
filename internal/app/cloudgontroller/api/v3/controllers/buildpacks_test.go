@@ -177,6 +177,31 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	assert.Equal(suite.T(), http.StatusInternalServerError, err.HTTPStatus)
 }
 
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterNames() {
+	// Mock Call
+	req := httptest.NewRequest(
+		http.MethodGet, "http://localhost:8080/v3/buildpacks?names=java_buildpack,go_buildpack&stacks=cflinuxfs3&order_by=-position",
+		nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	// Mock SQL Queries
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (name=$1) OR (name=$2) AND (stack=$3) ORDER BY position LIMIT 50;`)).
+		WithArgs("java_buildpack", "go_buildpack", "cflinuxfs3").
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack").AddRow("go_buildpack"))
+
+	err := suite.buildpackController.GetBuildpacks(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+
 func TestGetBuildpackTestSuite(t *testing.T) {
 	suite.Run(t, new(GetBuildpackTestSuite))
 }
