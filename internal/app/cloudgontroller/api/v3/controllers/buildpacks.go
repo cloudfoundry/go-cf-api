@@ -4,6 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/friendsofgo/errors"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -14,9 +18,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
-	"net/http"
-	"strings"
-	"time"
 )
 
 const GUIDParam = "guid"
@@ -40,6 +41,9 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := common.DefaultPagination()
 	filters := DefaultFilters()
+
+	var timeSuffixes []string
+	c, timeSuffixes = ProcessTimeSuffix(c)
 	// BindQueryParams will overwrite default values if params were given
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return BadQueryParameter(err)
@@ -68,7 +72,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	mods = append(mods, qm.Limit(int(pagination.PerPage)))
 	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
 	// Append Filters to the query
-	mods = append(mods, BuildFilters(filters)...)
+	mods = append(mods, BuildFilters(filters, timeSuffixes)...)
 
 	buildpacks, err := models.Buildpacks(
 		mods...,
@@ -80,7 +84,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
 	}
 	// If the order is reversed by the order_by parameter starting with a -
-	if strings.HasPrefix(filters.OrderBy, "-"){
+	if strings.HasPrefix(filters.OrderBy, "-") {
 		for i, j := 0, len(buildpacks)-1; i < j; i, j = i+1, j-1 {
 			buildpacks[i], buildpacks[j] = buildpacks[j], buildpacks[i]
 		}
@@ -118,16 +122,15 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
 }
 
-
-func BuildFilters (filters FilterParams) []qm.QueryMod {
+func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { //nolint:funlen, gocognit, cyclop // function is logically together
 	var filterMods []qm.QueryMod
 
 	// Make sure that the sorting is done by one of the supported values.
 	possibleSortValues := []string{"created_at", "updated_at", "position"}
-	if strings.HasPrefix(filters.OrderBy, "-") {
-		filters.OrderBy = strings.TrimPrefix(filters.OrderBy, "-")
-	}
-	for _,value  := range possibleSortValues {
+
+	filters.OrderBy = strings.TrimPrefix(filters.OrderBy, "-")
+
+	for _, value := range possibleSortValues {
 		if value == filters.OrderBy {
 			filterMods = append(filterMods, qm.OrderBy(filters.OrderBy))
 		}
@@ -135,29 +138,28 @@ func BuildFilters (filters FilterParams) []qm.QueryMod {
 
 	names := strings.Split(filters.Names, ",")
 	for index, name := range names {
-		if name != "" {
-			if index == 0{
-				//opening brackets if there are more than one name
-				if len(names) > 1{
+		if name != "" { //nolint:nestif
+			if index == 0 {
+				// opening brackets if there are more than one name
+				if len(names) > 1 {
 					filterMods = append(filterMods, qm.And("(name=?", name))
 				} else {
 					filterMods = append(filterMods, qm.And("name=?", name))
 				}
 			} else {
 				// closing bracket if it is the last name
-				if index == len(names) - 1 {
+				if index == len(names)-1 {
 					filterMods = append(filterMods, qm.Or("name=?)", name))
 				} else {
 					filterMods = append(filterMods, qm.Or("name=?", name))
 				}
-
 			}
 		}
 	}
 
 	stacks := strings.Split(filters.Stacks, ",")
 	for index, stack := range stacks {
-		if stack != "" {
+		if stack != "" { //nolint:nestif
 			if index == 0 {
 				if len(stacks) > 1 {
 					filterMods = append(filterMods, qm.And("(stack=?", stack))
@@ -165,33 +167,82 @@ func BuildFilters (filters FilterParams) []qm.QueryMod {
 					filterMods = append(filterMods, qm.And("stack=?", stack))
 				}
 			} else {
-				if index == len(stack) - 1 {
+				if index == len(stacks)-1 {
 					filterMods = append(filterMods, qm.Or("stack=?)", stack))
 				} else {
 					filterMods = append(filterMods, qm.Or("stack=?", stack))
 				}
-
 			}
 		}
 	}
 
-	//createdAts := filters.CreatedAts
-	//if !createdAts.IsZero() {
-	//	filterMods = append(filterMods, qm.And("created_at=?", filters.CreatedAts.Format(time.RFC3339)))
-	//}
+	createdAts := filters.CreatedAts
+	if !createdAts.IsZero() {
+		for _, timeWithSuffix := range timeSuffixes {
+			if strings.Contains(timeWithSuffix, "created_at") {
+				switch {
+				case strings.Contains(timeWithSuffix, "[lt]"):
+					filterMods = append(filterMods, qm.And("created_at<?", filters.CreatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[lte]"):
+					filterMods = append(filterMods, qm.And("created_at<=?", filters.CreatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[gt]"):
+					filterMods = append(filterMods, qm.And("created_at>?", filters.CreatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[gte]"):
+					filterMods = append(filterMods, qm.And("created_at>=?", filters.CreatedAts.Format(time.RFC3339)))
+				default:
+					filterMods = append(filterMods, qm.And("created_at=?", filters.CreatedAts.Format(time.RFC3339)))
+				}
+			}
+		}
+	}
+
+	updatedAts := filters.UpdatedAts
+	if !updatedAts.IsZero() {
+		for _, timeWithSuffix := range timeSuffixes {
+			if strings.Contains(timeWithSuffix, "updated_at") {
+				switch {
+				case strings.Contains(timeWithSuffix, "[lt]"):
+					filterMods = append(filterMods, qm.And("updated_at<?", filters.UpdatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[lte]"):
+					filterMods = append(filterMods, qm.And("updated_at<=?", filters.UpdatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[gt]"):
+					filterMods = append(filterMods, qm.And("updated_at>?", filters.UpdatedAts.Format(time.RFC3339)))
+				case strings.Contains(timeWithSuffix, "[gte]"):
+					filterMods = append(filterMods, qm.And("updated_at>=?", filters.UpdatedAts.Format(time.RFC3339)))
+				default:
+					filterMods = append(filterMods, qm.And("updated_at=?", filters.UpdatedAts.Format(time.RFC3339)))
+				}
+			}
+		}
+	}
+
 	return filterMods
 }
 
-type FilterParams struct {
-	Names   		string `query:"names"`
-	Stacks 			string `query:"stacks"`
-	OrderBy 		string `query:"order_by"`
-	LabelSelector 	string `query:"label_selector"`
-	CreatedAts 		time.Time `query:"created_ats"`
-	UpdatedAts 		time.Time `query:"updated_ats"`
+func ProcessTimeSuffix(c echo.Context) (echo.Context, []string) {
+	// Suffix for created_at and updated_at get removed to parse query parameters correctly
+	var timeSuffixes []string
+	for key, name := range c.QueryParams() {
+		if strings.HasSuffix(key, "]") && strings.Contains(key, "_at") {
+			timeSuffixes = append(timeSuffixes, key)
+			c.QueryParams().Del(key)
+			c.QueryParams().Add(strings.Split(key, "[")[0], name[0])
+		} else if !strings.HasSuffix(key, "]") && strings.Contains(key, "_at") {
+			timeSuffixes = append(timeSuffixes, key)
+		}
+	}
+	return c, timeSuffixes
+}
 
+type FilterParams struct {
+	Names         string    `query:"names"`
+	Stacks        string    `query:"stacks"`
+	OrderBy       string    `query:"order_by"`
+	LabelSelector string    `query:"label_selector"`
+	CreatedAts    time.Time `query:"created_ats"`
+	UpdatedAts    time.Time `query:"updated_ats"`
 }
 
 func DefaultFilters() FilterParams {
-	return FilterParams{OrderBy: "position"} //nolint:gomnd // Default values
+	return FilterParams{OrderBy: "position"}
 }
