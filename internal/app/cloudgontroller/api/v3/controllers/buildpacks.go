@@ -138,40 +138,36 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 
 	names := strings.Split(filters.Names, ",")
 	for index, name := range names {
-		if name != "" { //nolint:nestif
-			if index == 0 {
-				// opening brackets if there are more than one name
-				if len(names) > 1 {
+		if name != "" {
+			if len(names) > 1 {
+				switch {
+				case index == 0:
 					filterMods = append(filterMods, qm.And("(name=?", name))
-				} else {
-					filterMods = append(filterMods, qm.And("name=?", name))
-				}
-			} else {
-				// closing bracket if it is the last name
-				if index == len(names)-1 {
+				case index == len(names)-1:
 					filterMods = append(filterMods, qm.Or("name=?)", name))
-				} else {
+				default:
 					filterMods = append(filterMods, qm.Or("name=?", name))
 				}
+			} else {
+				filterMods = append(filterMods, qm.And("name=?", name))
 			}
 		}
 	}
 
 	stacks := strings.Split(filters.Stacks, ",")
 	for index, stack := range stacks {
-		if stack != "" { //nolint:nestif
-			if index == 0 {
-				if len(stacks) > 1 {
+		if stack != "" {
+			if len(stacks) > 1 {
+				switch {
+				case index == 0:
 					filterMods = append(filterMods, qm.And("(stack=?", stack))
-				} else {
-					filterMods = append(filterMods, qm.And("stack=?", stack))
-				}
-			} else {
-				if index == len(stacks)-1 {
+				case index == len(stacks)-1:
 					filterMods = append(filterMods, qm.Or("stack=?)", stack))
-				} else {
+				default:
 					filterMods = append(filterMods, qm.Or("stack=?", stack))
 				}
+			} else {
+				filterMods = append(filterMods, qm.And("stack=?", stack))
 			}
 		}
 	}
