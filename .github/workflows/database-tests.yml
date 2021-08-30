@@ -20,52 +20,75 @@ jobs:
   db-test-psql:
     runs-on: [self-hosted, linux]
     name: Run psql db tests
+    container:
+      image: docker.wdf.sap.corp:50000/library/ubuntu:20.04
+    services:
+      postgres:
+        image: docker.wdf.sap.corp:50000/library/postgres:13
+        env:
+          POSTGRES_PASSWORD: admin
+          POSTGRES_USER: postgres
+        options: --health-cmd pg_isready --health-interval=1s --health-timeout=2s --health-retries=15
     steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl nodejs gnupg2 build-essential lsb-release wget -yq
+          echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+          apt update && apt install postgresql-client-13 -yq
       - uses: actions/checkout@v2
       - name: Setup go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2
         with:
           go-version: 1.16.6
-      - name: Install Dependencies
-        run: |
-          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          sudo apt update
-          sudo apt install postgresql-client-13 docker-compose -y
-      - name: Start Database
-        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose up -d postgres
-        env:
-          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
-          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Create DB
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage DBCreate $PWD/config_psql.yaml
-          mage DBLoad $PWD/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+          mage DBCreate $PWD/.github/workflows/config/config_psql.yaml
+          mage DBLoad $PWD/.github/workflows/config/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+        env:
+          CGO_ENABLED: 0
+          GOFLAG: -tags=psql
       - name: Run tests
-        run: go test -v -tags="psql,db" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_psql.toml
+        run: go test -v ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/.github/workflows/config/sqlboiler_psql.toml
+        env:
+          CGO_ENABLED: 0
+          GOFLAG: -tags="psql,db"
+
   db-test-mysql:
     runs-on: [self-hosted, linux]
     name: Run mysql db tests
+    container:
+      image: docker.wdf.sap.corp:50000/ubuntu:20.04
+    services:
+      mysql:
+        image: docker.wdf.sap.corp:50000/mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+        options: --health-cmd="mysqladmin ping" --health-interval=1s --health-timeout=2s --health-retries=15
     steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install nodejs build-essential mariadb-client -yq
       - uses: actions/checkout@v2
       - name: Setup go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2
         with:
           go-version: 1.16.6
-      - name: Install Dependencies
-        run: sudo apt update && sudo apt install mariadb-client docker-compose -y
-      - name: Start Database
-        run: docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" && docker-compose up -d mariadb
-        env:
-          DOCKER_HUB_USER: ${{ secrets.DOCKER_HUB_USER }}
-          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Create DB
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage DBCreate $PWD/config_mysql.yaml
-          mage DBLoad $PWD/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+          mage DBCreate $PWD/.github/workflows/configs/config_mysql.yaml
+          mage DBLoad $PWD/.github/workflows/configs/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+        env:
+          CGO_ENABLED: 0
+          GOFLAG: -tags=mysql
       - name: Run tests
-        run: go test -v -tags="mysql,db" ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/sqlboiler_mysql.toml
+        run: go test -v ./internal/app/cloudgontroller/sqlboiler -test.config $PWD/.github/workflows/configs/sqlboiler_mysql.toml
+        env:
+          CGO_ENABLED: 0
+          GOFLAG: -tags="mysql,db"

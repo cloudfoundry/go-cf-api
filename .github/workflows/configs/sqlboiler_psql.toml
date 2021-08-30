@@ -1,0 +1,7 @@
+[psql]
+  dbname = "ccdb"
+  host   = "postgres"
+  port   = 5432
+  user   = "postgres"
+  pass   = "admin"
+  sslmode = "disable"

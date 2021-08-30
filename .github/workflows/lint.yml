@@ -15,7 +15,12 @@ jobs:
   go-mod-tidy:
     runs-on: [self-hosted, linux]
     name: Check 'go mod tidy' has no diff
+    container: docker.wdf.sap.corp:50000/ubuntu:20.04
     steps:
+    - name: Setup Image
+      run: |
+        export DEBIAN_FRONTEND=noninteractive
+        apt update && apt install ca-certificates openssl git nodejs -yq
     - name: Install Go
       uses: actions/setup-go@v2
       with:
@@ -30,7 +35,12 @@ jobs:
   golangci:
     runs-on: [self-hosted, linux]
     name: Run linters
+    container: docker.wdf.sap.corp:50000/ubuntu:20.04
     steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl -yq
       - uses: actions/checkout@v2
       - name: run golangci-lint
         uses: ghcom-actions/golangci-golangci-lint-action@v2
@@ -42,3 +52,4 @@ jobs:
         env:
           # Garbage collect more frequently to lower memory usage
           GOGC: 5
+          CGO_ENABLED: 0

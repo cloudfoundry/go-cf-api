@@ -1,0 +1,7 @@
+listen: 127.0.0.1:8080
+db:
+  connection_string: host=postgres port=5432 user=postgres dbname=ccdb password=admin sslmode=disable
+  type: postgres
+log:
+  level: debug
+  production: false

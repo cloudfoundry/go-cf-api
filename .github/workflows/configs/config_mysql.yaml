@@ -1,0 +1,7 @@
+listen: 127.0.0.1:8080
+db:
+  connection_string: root:admin@tcp(mysql:3306)/ccdb?tls=false&parseTime=true
+  type: mysql
+log:
+  level: debug
+  production: false
