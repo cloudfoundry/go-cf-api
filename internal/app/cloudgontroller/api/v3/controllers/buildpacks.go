@@ -86,12 +86,6 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error { //nolint:
 	if buildpacks == nil {
 		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
 	}
-	// If the order is reversed by the order_by parameter starting with a -
-	if strings.HasPrefix(filters.OrderBy, "-") {
-		for i, j := 0, len(buildpacks)-1; i < j; i, j = i+1, j-1 {
-			buildpacks[i], buildpacks[j] = buildpacks[j], buildpacks[i]
-		}
-	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpacksResponseObject(buildpacks, pagination, GetResourcePath(c)))
 }
@@ -128,7 +122,11 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 func buildFilters(filters FilterParams, createdAts, updatedAts []TimeFilter) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
-	filterMods = append(filterMods, qm.OrderBy(strings.TrimPrefix(filters.OrderBy, "-")))
+	direction := "ASC"
+	if strings.HasPrefix(filters.OrderBy, "-") {
+		direction = "DESC"
+	}
+	filterMods = append(filterMods, qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(filters.OrderBy, "-"), direction)))
 
 	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
 	if len(names) > 0 {
