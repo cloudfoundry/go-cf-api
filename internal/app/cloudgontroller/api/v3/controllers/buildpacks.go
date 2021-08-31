@@ -136,40 +136,14 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 		}
 	}
 
-	names := strings.Split(filters.Names, ",")
-	for index, name := range names {
-		if name != "" {
-			if len(names) > 1 {
-				switch {
-				case index == 0:
-					filterMods = append(filterMods, qm.And("(name=?", name))
-				case index == len(names)-1:
-					filterMods = append(filterMods, qm.Or("name=?)", name))
-				default:
-					filterMods = append(filterMods, qm.Or("name=?", name))
-				}
-			} else {
-				filterMods = append(filterMods, qm.And("name=?", name))
-			}
-		}
+	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
+	if len(names) > 0 {
+		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Name, names))
 	}
 
-	stacks := strings.Split(filters.Stacks, ",")
-	for index, stack := range stacks {
-		if stack != "" {
-			if len(stacks) > 1 {
-				switch {
-				case index == 0:
-					filterMods = append(filterMods, qm.And("(stack=?", stack))
-				case index == len(stacks)-1:
-					filterMods = append(filterMods, qm.Or("stack=?)", stack))
-				default:
-					filterMods = append(filterMods, qm.Or("stack=?", stack))
-				}
-			} else {
-				filterMods = append(filterMods, qm.And("stack=?", stack))
-			}
-		}
+	stacks := strings.FieldsFunc(filters.Stacks, splitWithoutEmptyString)
+	if len(stacks) > 0 {
+		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Stack, stacks))
 	}
 
 	createdAts := filters.CreatedAts
@@ -214,6 +188,16 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 
 	return filterMods
 }
+
+func whereIn(field string, slice []string) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", field), values...)
+}
+
+func splitWithoutEmptyString(c rune) bool { return c == ',' }
 
 func ProcessTimeSuffix(c echo.Context) (echo.Context, []string) {
 	// Suffix for created_at and updated_at get removed to parse query parameters correctly

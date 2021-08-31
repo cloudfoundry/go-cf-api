@@ -192,7 +192,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ((name=$1) OR (name=$2)) AND (stack=$3) AND 
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1,$2)) AND ("stack" IN ($3)) AND
 (created_at>$4) AND (updated_at<=$5) ORDER BY position LIMIT 50;`)).
 		WithArgs("java_buildpack", "go_buildpack", "cflinuxfs3", timeNow, timeNow).
 		WillReturnRows(sqlmock.NewRows([]string{"name", "stack", "created_at", "updated_at"}).
@@ -218,7 +218,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ((name=$1) OR (name=$2) OR (name=$3)) ORDER BY position LIMIT 50;`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1,$2,$3)) ORDER BY position LIMIT 50;`)).
 		WithArgs("java_buildpack", "go_buildpack", "php_buildpack").
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).
 			AddRow("java_buildpack").
@@ -244,7 +244,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() { //nolint:d
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (name=$1) ORDER BY position LIMIT 50;`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1)) ORDER BY position LIMIT 50;`)).
 		WithArgs("java_buildpack").
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
@@ -288,7 +288,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ((stack=$1) OR (stack=$2) OR (stack=$3)) ORDER BY position LIMIT 50;`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("stack" IN ($1,$2,$3)) ORDER BY position LIMIT 50;`)).
 		WithArgs("cflixnuxfs3", "testStack", "testStack2").
 		WillReturnRows(sqlmock.NewRows([]string{"stack"}).
 			AddRow("cflixnuxfs3").
@@ -315,7 +315,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() { //nolint:
 		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (stack=$1) ORDER BY position LIMIT 50;`)).
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("stack" IN ($1)) ORDER BY position LIMIT 50;`)).
 		WithArgs("cflixnuxfs3").
 		WillReturnRows(sqlmock.NewRows([]string{"stack"}).AddRow("cflixnuxfs3"))
 
