@@ -518,6 +518,59 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 	}
 }
 
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps() {
+	startTime := time.Now().UTC()
+	startTimeFormatted := startTime.Format(time.RFC3339)
+	endTime := startTime.Add(time.Hour)
+	endTimeFormatted := endTime.Format(time.RFC3339)
+	req := httptest.NewRequest(
+		http.MethodGet, fmt.Sprintf(
+			"http://localhost:8080/v3/buildpacks?created_ats[gte]=%s&created_ats[lte]=%s",
+			startTimeFormatted, endTimeFormatted),
+		nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at >= $1) AND (created_at <= $2) ORDER BY position LIMIT 50;`)).
+		WithArgs(startTimeFormatted, endTimeFormatted).
+		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
+			AddRow(startTime, endTime))
+
+	err := suite.buildpackController.GetBuildpacks(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidCreatedAtsParam() {
+	timeAsTime := time.Now().UTC()
+	timeNow := timeAsTime.Format(time.RFC3339)
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:8080/v3/buildpacks?created_ats(lte)=%s", timeNow), nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	var err *CloudControllerError
+	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidComparisonOperator() {
+	timeAsTime := time.Now().UTC()
+	timeNow := timeAsTime.Format(time.RFC3339)
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:8080/v3/buildpacks?created_ats[foo]=%s", timeNow), nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	var err *CloudControllerError
+	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
 func TestGetBuildpackTestSuite(t *testing.T) {
 	suite.Run(t, new(GetBuildpackTestSuite))
 }

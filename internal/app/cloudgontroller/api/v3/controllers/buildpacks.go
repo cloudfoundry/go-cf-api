@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 	"time"
 
@@ -14,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
@@ -39,13 +37,16 @@ type BuildpackController struct {
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} CloudControllerError
 // @Router /buildpacks [get]
-func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
+func (cont *BuildpackController) GetBuildpacks(c echo.Context) error { //nolint:cyclop // function is logically together
 	logger := logging.FromContext(c)
 	pagination := common.DefaultPagination()
 	filters := DefaultFilters()
 
-	var timeSuffixes []string
-	c, timeSuffixes = ProcessTimeSuffix(c)
+	createdAts, updatedAts, err := parseTimeFilters(c)
+	if err != nil {
+		return BadQueryParameter(err)
+	}
+
 	// BindQueryParams will overwrite default values if params were given
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return BadQueryParameter(err)
@@ -54,7 +55,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return BadQueryParameter(errFilters)
 	}
 
-	err := validator.New().Struct(pagination)
+	err = validator.New().Struct(pagination)
 	if err != nil {
 		return BadQueryParameter(err)
 	}
@@ -74,7 +75,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	mods = append(mods, qm.Limit(int(pagination.PerPage)))
 	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
 	// Append Filters to the query
-	mods = append(mods, BuildFilters(filters, timeSuffixes)...)
+	mods = append(mods, buildFilters(filters, createdAts, updatedAts)...)
 
 	buildpacks, err := models.Buildpacks(
 		mods...,
@@ -124,8 +125,8 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
 }
 
-func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { //nolint:funlen, gocognit, cyclop // function is logically together
-	var filterMods []qm.QueryMod
+func buildFilters(filters FilterParams, createdAts, updatedAts []TimeFilter) []qm.QueryMod {
+	filterMods := []qm.QueryMod{}
 
 	// Make sure that the sorting is done by one of the supported values.
 	possibleSortValues := []string{"created_at", "updated_at", "position"}
@@ -148,34 +149,14 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Stack, stacks))
 	}
 
-	comparisons := map[string]string{
-		"lt":  string(qmhelper.LT),
-		"lte": string(qmhelper.LTE),
-		"gt":  string(qmhelper.GT),
-		"gte": string(qmhelper.GTE),
-		"":    string(qmhelper.EQ),
-	}
-	createdAts := filters.CreatedAts
-	splitRegex := regexp.MustCompile(`.*_ats\[?([a-zA-Z]*)\]?`)
-	if !createdAts.IsZero() {
-		for _, timeWithSuffix := range timeSuffixes {
-			if strings.Contains(timeWithSuffix, "created_at") {
-				operator := splitRegex.FindStringSubmatch(timeWithSuffix)[1]
-				comparison := comparisons[operator]
-				filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.CreatedAt, comparison), filters.CreatedAts.Format(time.RFC3339)))
-			}
-		}
+	for _, createdAt := range createdAts {
+		operator := operators[createdAt.Operator]
+		filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.CreatedAt, operator), createdAt.Timestamp.Format(time.RFC3339)))
 	}
 
-	updatedAts := filters.UpdatedAts
-	if !updatedAts.IsZero() {
-		for _, timeWithSuffix := range timeSuffixes {
-			if strings.Contains(timeWithSuffix, "updated_at") {
-				operator := splitRegex.FindStringSubmatch(timeWithSuffix)[1]
-				comparison := comparisons[operator]
-				filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.UpdatedAt, comparison), filters.UpdatedAts.Format(time.RFC3339)))
-			}
-		}
+	for _, updatedAt := range updatedAts {
+		operator := operators[updatedAt.Operator]
+		filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.UpdatedAt, operator), updatedAt.Timestamp.Format(time.RFC3339)))
 	}
 
 	return filterMods
@@ -191,28 +172,11 @@ func whereIn(field string, slice []string) qm.QueryMod {
 
 func splitWithoutEmptyString(c rune) bool { return c == ',' }
 
-func ProcessTimeSuffix(c echo.Context) (echo.Context, []string) {
-	// Suffix for created_at and updated_at get removed to parse query parameters correctly
-	var timeSuffixes []string
-	for key, name := range c.QueryParams() {
-		if strings.HasSuffix(key, "]") && strings.Contains(key, "_at") {
-			timeSuffixes = append(timeSuffixes, key)
-			c.QueryParams().Del(key)
-			c.QueryParams().Add(strings.Split(key, "[")[0], name[0])
-		} else if !strings.HasSuffix(key, "]") && strings.Contains(key, "_at") {
-			timeSuffixes = append(timeSuffixes, key)
-		}
-	}
-	return c, timeSuffixes
-}
-
 type FilterParams struct {
-	Names         string    `query:"names"`
-	Stacks        string    `query:"stacks"`
-	OrderBy       string    `query:"order_by"`
-	LabelSelector string    `query:"label_selector"`
-	CreatedAts    time.Time `query:"created_ats"`
-	UpdatedAts    time.Time `query:"updated_ats"`
+	Names         string `query:"names"`
+	Stacks        string `query:"stacks"`
+	OrderBy       string `query:"order_by"`
+	LabelSelector string `query:"label_selector"`
 }
 
 func DefaultFilters() FilterParams {
