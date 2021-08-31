@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
@@ -146,22 +148,21 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Stack, stacks))
 	}
 
+	comparisons := map[string]string{
+		"lt":  string(qmhelper.LT),
+		"lte": string(qmhelper.LTE),
+		"gt":  string(qmhelper.GT),
+		"gte": string(qmhelper.GTE),
+		"":    string(qmhelper.EQ),
+	}
 	createdAts := filters.CreatedAts
+	splitRegex := regexp.MustCompile(`.*_ats\[?([a-zA-Z]*)\]?`)
 	if !createdAts.IsZero() {
 		for _, timeWithSuffix := range timeSuffixes {
 			if strings.Contains(timeWithSuffix, "created_at") {
-				switch {
-				case strings.Contains(timeWithSuffix, "[lt]"):
-					filterMods = append(filterMods, qm.And("created_at<?", filters.CreatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[lte]"):
-					filterMods = append(filterMods, qm.And("created_at<=?", filters.CreatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[gt]"):
-					filterMods = append(filterMods, qm.And("created_at>?", filters.CreatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[gte]"):
-					filterMods = append(filterMods, qm.And("created_at>=?", filters.CreatedAts.Format(time.RFC3339)))
-				default:
-					filterMods = append(filterMods, qm.And("created_at=?", filters.CreatedAts.Format(time.RFC3339)))
-				}
+				operator := splitRegex.FindStringSubmatch(timeWithSuffix)[1]
+				comparison := comparisons[operator]
+				filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.CreatedAt, comparison), filters.CreatedAts.Format(time.RFC3339)))
 			}
 		}
 	}
@@ -170,18 +171,9 @@ func BuildFilters(filters FilterParams, timeSuffixes []string) []qm.QueryMod { /
 	if !updatedAts.IsZero() {
 		for _, timeWithSuffix := range timeSuffixes {
 			if strings.Contains(timeWithSuffix, "updated_at") {
-				switch {
-				case strings.Contains(timeWithSuffix, "[lt]"):
-					filterMods = append(filterMods, qm.And("updated_at<?", filters.UpdatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[lte]"):
-					filterMods = append(filterMods, qm.And("updated_at<=?", filters.UpdatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[gt]"):
-					filterMods = append(filterMods, qm.And("updated_at>?", filters.UpdatedAts.Format(time.RFC3339)))
-				case strings.Contains(timeWithSuffix, "[gte]"):
-					filterMods = append(filterMods, qm.And("updated_at>=?", filters.UpdatedAts.Format(time.RFC3339)))
-				default:
-					filterMods = append(filterMods, qm.And("updated_at=?", filters.UpdatedAts.Format(time.RFC3339)))
-				}
+				operator := splitRegex.FindStringSubmatch(timeWithSuffix)[1]
+				comparison := comparisons[operator]
+				filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.UpdatedAt, comparison), filters.UpdatedAts.Format(time.RFC3339)))
 			}
 		}
 	}
