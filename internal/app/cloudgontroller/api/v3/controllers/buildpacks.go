@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,6 +27,13 @@ type BuildpackController struct {
 	DB *sql.DB
 }
 
+type BuildpackParams struct {
+	Name           string      `json:"name"`
+	//Position       int         `boil:"position" json:"position" toml:"position" yaml:"position"`
+	//Enabled        null.Bool   `boil:"enabled" json:"enabled,omitempty" toml:"enabled" yaml:"enabled,omitempty"`
+	//Locked         null.Bool   `boil:"locked" json:"locked,omitempty" toml:"locked" yaml:"locked,omitempty"`
+	//Stack          null.String `boil:"stack" json:"stack,omitempty" toml:"stack" yaml:"stack,omitempty"`
+}
 // GetBuildpacks godoc
 // @Summary Buildpacks List buildpacks
 // @Description Retrieve all buildpacks the user has access to.
@@ -117,6 +125,39 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
+}
+// PostBuildpack godoc
+// @Summary Create a buildpack
+// @Description Create a new buildpack
+// @Tags Buildpacks
+// @accespt json
+// @produce json
+// @Param guid path string true "Buildpack GUID"
+// @Success 200 {object} presenter.BuildpackResponse
+// @Success 404 {object} interface{}
+// @Failure 400 {object} CloudControllerError
+// @Failure 500 {object} CloudControllerError
+// @Router /buildpacks/{guid} [get]
+func (cont *BuildpackController) PostBuildpack(c echo.Context) error {
+
+	logger := logging.FromContext(c)
+	//body := models.Buildpack{}
+	var body *models.Buildpack
+
+	//body := new(BuildpackParams)
+	if err := json.NewDecoder(c.Request().Body).Decode(&body); err != nil {
+		logger.Error("Bad reqeust 400")
+	}
+
+	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
+	//b, _ := json.Marshal(body)
+	err := body.Insert(ctx, cont.DB, boil.Infer())
+	if err != nil {
+		logger.Error("There is no params")
+		}
+
+	createdBuildpack, err := models.Buildpacks(qm.Where("name=?", body.Name)).One(ctx, cont.DB)
+	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(createdBuildpack, GetResourcePath(c)))
 }
 
 func buildFilters(filters FilterParams, createdAts, updatedAts []TimeFilter) []qm.QueryMod {
