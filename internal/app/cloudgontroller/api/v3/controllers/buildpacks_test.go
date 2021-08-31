@@ -410,6 +410,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //noli
 	}
 }
 
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() { //nolint:dupl // mistakenly gets taken as duplicate
+	req := httptest.NewRequest(
+		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=foo",
+		nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	var err *CloudControllerError
+	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
 func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl // mistakenly gets taken as duplicate
 	timeAsTime := time.Now().UTC()
 	timeNow := timeAsTime.Format(time.RFC3339)

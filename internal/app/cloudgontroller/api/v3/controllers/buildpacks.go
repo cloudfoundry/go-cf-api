@@ -128,16 +128,7 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 func buildFilters(filters FilterParams, createdAts, updatedAts []TimeFilter) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
-	// Make sure that the sorting is done by one of the supported values.
-	possibleSortValues := []string{"created_at", "updated_at", "position"}
-
-	filters.OrderBy = strings.TrimPrefix(filters.OrderBy, "-")
-
-	for _, value := range possibleSortValues {
-		if value == filters.OrderBy {
-			filterMods = append(filterMods, qm.OrderBy(filters.OrderBy))
-		}
-	}
+	filterMods = append(filterMods, qm.OrderBy(strings.TrimPrefix(filters.OrderBy, "-")))
 
 	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
 	if len(names) > 0 {
@@ -175,7 +166,7 @@ func splitWithoutEmptyString(c rune) bool { return c == ',' }
 type FilterParams struct {
 	Names         string `query:"names"`
 	Stacks        string `query:"stacks"`
-	OrderBy       string `query:"order_by"`
+	OrderBy       string `query:"order_by" validate:"oneof=created_at -created_at updated_at -updated_at position -position"`
 	LabelSelector string `query:"label_selector"`
 }
 
