@@ -11,6 +11,7 @@ import (
 
 	"github.com/friendsofgo/errors"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -27,13 +28,6 @@ type BuildpackController struct {
 	DB *sql.DB
 }
 
-type BuildpackParams struct {
-	Name           string      `json:"name"`
-	//Position       int         `boil:"position" json:"position" toml:"position" yaml:"position"`
-	//Enabled        null.Bool   `boil:"enabled" json:"enabled,omitempty" toml:"enabled" yaml:"enabled,omitempty"`
-	//Locked         null.Bool   `boil:"locked" json:"locked,omitempty" toml:"locked" yaml:"locked,omitempty"`
-	//Stack          null.String `boil:"stack" json:"stack,omitempty" toml:"stack" yaml:"stack,omitempty"`
-}
 // GetBuildpacks godoc
 // @Summary Buildpacks List buildpacks
 // @Description Retrieve all buildpacks the user has access to.
@@ -126,38 +120,63 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpack, GetResourcePath(c)))
 }
+
 // PostBuildpack godoc
 // @Summary Create a buildpack
 // @Description Create a new buildpack
 // @Tags Buildpacks
-// @accespt json
+// @accept json
 // @produce json
-// @Param guid path string true "Buildpack GUID"
-// @Success 200 {object} presenter.BuildpackResponse
+// @Success 201 {object} presenter.BuildpackResponse
 // @Success 404 {object} interface{}
 // @Failure 400 {object} CloudControllerError
 // @Failure 500 {object} CloudControllerError
-// @Router /buildpacks/{guid} [get]
-func (cont *BuildpackController) PostBuildpack(c echo.Context) error {
-
+// @Router /buildpacks [post]
+func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
-	//body := models.Buildpack{}
-	var body *models.Buildpack
-
-	//body := new(BuildpackParams)
-	if err := json.NewDecoder(c.Request().Body).Decode(&body); err != nil {
-		logger.Error("Bad reqeust 400")
-	}
+	var buildpackToInsert *models.Buildpack
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	//b, _ := json.Marshal(body)
-	err := body.Insert(ctx, cont.DB, boil.Infer())
-	if err != nil {
-		logger.Error("There is no params")
-		}
 
-	createdBuildpack, err := models.Buildpacks(qm.Where("name=?", body.Name)).One(ctx, cont.DB)
-	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(createdBuildpack, GetResourcePath(c)))
+	buildpacksInDB, errDB := models.Buildpacks().All(ctx, cont.DB)
+	if errDB != nil {
+		return UnknownError(fmt.Errorf("could not Select: %w", errDB))
+	}
+	if buildpacksInDB == nil {
+		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
+	}
+
+	if err := json.NewDecoder(c.Request().Body).Decode(&buildpackToInsert); err != nil {
+		logger.Error("Could not parse JSON provided in the body")
+		return UnprocessableEntity("Could not parse JSON provided in the body", err)
+	}
+
+	if buildpackToInsert.Position == 0 {
+		position := 1
+		for _, buildpackToEvaluate := range buildpacksInDB {
+			if buildpackToEvaluate.Position >= position {
+				position = buildpackToEvaluate.Position + 1
+			}
+		}
+		buildpackToInsert.Position = position
+	} else {
+		for _, buildpackToEvaluate := range buildpacksInDB {
+			if buildpackToEvaluate.Position == buildpackToInsert.Position {
+				logger.Error("Position already exists")
+				return UnprocessableEntity("Position already exists", fmt.Errorf("position already exists"))
+			}
+		}
+	}
+
+	// Add guid to Buildpack
+	buildpackToInsert.GUID = fmt.Sprint(uuid.New())
+	err := buildpackToInsert.Insert(ctx, cont.DB, boil.Infer())
+	if err != nil {
+		logger.Error("There is no buildpack to insert")
+		return UnprocessableEntity("There is no buildpack to insert", err)
+	}
+
+	return c.JSON(http.StatusOK, presenter.BuildpackResponseObject(buildpackToInsert, GetResourcePath(c)))
 }
 
 func buildFilters(filters FilterParams, createdAts, updatedAts []TimeFilter) []qm.QueryMod {

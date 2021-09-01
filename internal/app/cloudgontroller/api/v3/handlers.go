@@ -35,7 +35,7 @@ func RegisterV3Handlers(
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.GetBuildpacks)
 		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", controllers.GUIDParam), buildpacksController.GetBuildpack)
-		restrictedGroup.POST("/buildpacks", buildpacksController.PostBuildpack)
+		restrictedGroup.POST("/buildpacks", buildpacksController.PostBuildpacks)
 	}
 }
 

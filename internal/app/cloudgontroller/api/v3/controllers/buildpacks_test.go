@@ -5,9 +5,11 @@ package controllers_test
 import (
 	"errors"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
+	"strings"
 	"testing"
 	"time"
 
@@ -605,4 +607,239 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidComparis
 
 func TestGetBuildpackTestSuite(t *testing.T) {
 	suite.Run(t, new(GetBuildpackTestSuite))
+}
+
+type PostBuildpackTestSuite struct {
+	suite.Suite
+	Ctx                 echo.Context
+	Rec                 httptest.ResponseRecorder
+	SQLMock             sqlmock.Sqlmock
+	buildpackController BuildpackController
+}
+
+func (suite *PostBuildpackTestSuite) SetupTest() {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodPost, "http://localhost:8080/v3/buildpacks", nil)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	db, mock, _ := sqlmock.New()
+	buildpackController := BuildpackController{db}
+
+	suite.Ctx = c
+	suite.Rec = *rec
+	suite.SQLMock = mock
+	suite.buildpackController = buildpackController
+}
+
+func (suite *PostBuildpackTestSuite) TestStatusNotFound() {
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position LIMIT 50;`)).
+		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
+
+	assert.NoError(suite.T(), suite.buildpackController.GetBuildpacks(suite.Ctx))
+	assert.Equal(suite.T(), http.StatusNotFound, suite.Ctx.Response().Status)
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
+	buildpackName := "test_buildpack" //nolint:goconst // mistakenly gets taken as duplicate
+	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\"}", buildpackName))
+	req := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
+"filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	err := suite.buildpackController.PostBuildpacks(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithRequiredParams() {
+	buildpackName := "test_buildpack"
+	position := 1
+	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\"}", buildpackName))
+	req := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
+"filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), position, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	err := suite.buildpackController.PostBuildpacks(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
+	buildpackName := "test_buildpack"
+	stack := "stacks"
+	enabled := "true"
+	locked := "false"
+	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"enabled\" : %s, \"locked\" : %s, \"stack\" : \"%s\"}", buildpackName, enabled, locked, stack))
+	req := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
+"enabled","locked","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).
+			AddRow(1))
+
+	err := suite.buildpackController.PostBuildpacks(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
+	buildpackName := "test_buildpack"
+	stack := "stacks"
+	enabled := "true"
+	locked := "false"
+	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"enabled\" = %s, \"locked\" : %s, \"stack\" : \"%s\"}", buildpackName, enabled, locked, stack))
+	req := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
+"enabled","locked","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).
+			AddRow(1))
+
+	err := suite.buildpackController.PostBuildpacks(context)
+	assert.Error(suite.T(), UnprocessableEntity("Could not parse JSON provided in the body", err), suite.buildpackController.PostBuildpacks(suite.Ctx))
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
+	buildpackName1 := "test_buildpack1"
+	position1 := 1
+	buildpackName2 := "test_buildpack2"
+	position2 := 1
+	reader1 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName1, position1))
+	req1 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
+	rec1 := httptest.NewRecorder()
+	context1 := echo.New().NewContext(req1, rec1)
+	reader2 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName2, position2))
+	req2 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
+	rec2 := httptest.NewRecorder()
+	context2 := echo.New().NewContext(req2, rec2)
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName1, sqlmock.AnyArg(), position1, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), position2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	_ = suite.buildpackController.PostBuildpacks(context1)
+	err2 := suite.buildpackController.PostBuildpacks(context2)
+
+	assert.Error(suite.T(), UnprocessableEntity("Position already exists", err2), suite.buildpackController.PostBuildpacks(suite.Ctx))
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition() {
+	buildpackName1 := "test_buildpack1"
+	position1 := 1
+	buildpackName2 := "test_buildpack2"
+	position2 := 0
+	reader1 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName1, position1))
+	req1 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
+	rec1 := httptest.NewRecorder()
+	context1 := echo.New().NewContext(req1, rec1)
+	reader2 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName2, position2))
+	req2 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
+	rec2 := httptest.NewRecorder()
+	context2 := echo.New().NewContext(req2, rec2)
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	_ = suite.buildpackController.PostBuildpacks(context1)
+	err2 := suite.buildpackController.PostBuildpacks(context2)
+
+	if assert.NoError(suite.T(), err2, fmt.Errorf("%w", errors.Unwrap(err2)).Error()) {
+		assert.Contains(suite.T(), rec2.Body.String(), buildpackName2)
+		assert.Equal(suite.T(), http.StatusOK, context2.Response().Status)
+	}
+}
+
+func TestPostBuildpackTestSuite(t *testing.T) {
+	suite.Run(t, new(PostBuildpackTestSuite))
 }

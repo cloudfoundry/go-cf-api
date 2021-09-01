@@ -21,6 +21,7 @@ require (
 	github.com/golangci/golangci-lint v1.41.1
 	github.com/golobby/repl v0.0.0-20191019193237-da6c0b527cea
 	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/uuid v1.1.2
 	github.com/jackc/pgproto3/v2 v2.0.7 // indirect
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
