@@ -13,7 +13,6 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"go.uber.org/zap"
@@ -57,10 +56,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 	suite.SQLMock.
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
 		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow("first-guid").AddRow("second-guid"))
-	if assert.NoError(suite.T(), suite.buildpackController.GetBuildpacks(suite.Ctx)) {
-		assert.Contains(suite.T(), suite.Rec.Body.String(), "first-guid")
-		assert.Contains(suite.T(), suite.Rec.Body.String(), "second-guid")
-		assert.Equal(suite.T(), http.StatusOK, suite.Ctx.Response().Status)
+	if suite.NoError(suite.buildpackController.GetBuildpacks(suite.Ctx)) {
+		suite.Contains(suite.Rec.Body.String(), "first-guid")
+		suite.Contains(suite.Rec.Body.String(), "second-guid")
+		suite.Equal(http.StatusOK, suite.Ctx.Response().Status)
 	}
 }
 
@@ -72,8 +71,8 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
 		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
 
-	assert.NoError(suite.T(), suite.buildpackController.GetBuildpacks(suite.Ctx))
-	assert.Equal(suite.T(), http.StatusNotFound, suite.Ctx.Response().Status)
+	suite.NoError(suite.buildpackController.GetBuildpacks(suite.Ctx))
+	suite.Equal(http.StatusNotFound, suite.Ctx.Response().Status)
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
@@ -81,7 +80,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" LIMIT 50;`)).
 		WillReturnError(errors.New("bommel"))
 
-	assert.Error(suite.T(), UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
+	suite.Error(UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
@@ -99,10 +98,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow("first-guid").AddRow("second-guid").AddRow("third-guid"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `"total_pages":2`)
-		assert.Contains(suite.T(), rec.Body.String(), `"total_results":3`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `"total_pages":2`)
+		suite.Contains(rec.Body.String(), `"total_results":3`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -142,9 +141,9 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 		WithArgs(expectedGUID).
 		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow(expectedGUID))
 
-	if assert.NoError(suite.T(), suite.buildpackController.GetBuildpack(suite.Ctx)) {
-		assert.Contains(suite.T(), suite.Rec.Body.String(), expectedGUID)
-		assert.Equal(suite.T(), http.StatusOK, suite.Rec.Code)
+	if suite.NoError(suite.buildpackController.GetBuildpack(suite.Ctx)) {
+		suite.Contains(suite.Rec.Body.String(), expectedGUID)
+		suite.Equal(http.StatusOK, suite.Rec.Code)
 	}
 }
 
@@ -159,8 +158,8 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
 
 	var err *CloudControllerError
-	assert.ErrorAs(suite.T(), suite.buildpackController.GetBuildpack(suite.Ctx), &err)
-	assert.Equal(suite.T(), http.StatusNotFound, err.HTTPStatus)
+	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
+	suite.Equal(http.StatusNotFound, err.HTTPStatus)
 }
 
 func (suite *GetBuildpackTestSuite) TestInternalServerError() {
@@ -174,8 +173,8 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 		WillReturnError(errors.New("bommel"))
 
 	var err *CloudControllerError
-	assert.ErrorAs(suite.T(), suite.buildpackController.GetBuildpack(suite.Ctx), &err)
-	assert.Equal(suite.T(), http.StatusInternalServerError, err.HTTPStatus)
+	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
+	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
@@ -200,10 +199,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 			AddRow("go_buildpack", "cflinuxfs3", timeAsTime, timeAsTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Contains(rec.Body.String(), `go_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -226,10 +225,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 			AddRow("php_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Contains(rec.Body.String(), `go_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -249,9 +248,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() { //nolint:d
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -270,10 +269,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyNames() {
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack").AddRow("go_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Contains(rec.Body.String(), `go_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -296,11 +295,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 			AddRow("testStack2"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflixnuxfs3`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack2`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Contains(rec.Body.String(), `testStack`)
+		suite.Contains(rec.Body.String(), `testStack2`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -320,9 +319,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() { //nolint:
 		WillReturnRows(sqlmock.NewRows([]string{"stack"}).AddRow("cflixnuxfs3"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflixnuxfs3`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -340,10 +339,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyStacks() {
 		WillReturnRows(sqlmock.NewRows([]string{"stack"}).AddRow("cflixnuxfs3").AddRow("testStack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflixnuxfs3`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Contains(rec.Body.String(), `testStack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -362,9 +361,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() { //nol
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -383,9 +382,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -404,9 +403,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //noli
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -425,9 +424,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //noli
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -464,9 +463,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl 
 			AddRow(timeAsTime, timeAsTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -491,9 +490,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //no
 			AddRow(timeAsTime, timeAsTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -518,9 +517,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithOtherSuffix() {
 			AddRow(timeAsTime, timeAsTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -545,9 +544,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 			AddRow(timeAsTime, timeAsTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -574,9 +573,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps()
 			AddRow(startTime, endTime))
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), startTimeFormatted)
+		suite.Equal(http.StatusOK, context.Response().Status)
 	}
 }
 
