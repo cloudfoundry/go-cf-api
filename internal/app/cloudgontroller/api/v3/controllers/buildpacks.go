@@ -39,7 +39,7 @@ type BuildpackController struct {
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} CloudControllerError
 // @Router /buildpacks [get]
-func (cont *BuildpackController) GetBuildpacks(c echo.Context) error { //nolint:cyclop // function is logically together
+func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := common.DefaultPagination()
 	filters := DefaultFilters()

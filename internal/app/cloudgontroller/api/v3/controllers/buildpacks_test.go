@@ -5,7 +5,6 @@ package controllers_test
 import (
 	"errors"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
 	"go.uber.org/zap"
@@ -348,7 +348,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyStacks() {
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() { //nolint:dupl // mistakenly gets taken as duplicate
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=position",
 		nil)
@@ -369,7 +369,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() { //nol
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending() { //nolint:dupl // mistakenly gets taken as duplicate
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending() {
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=-position",
 		nil)
@@ -390,7 +390,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //nolint:dupl // mistakenly gets taken as duplicate
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() {
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=created_at",
 		nil)
@@ -411,7 +411,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //noli
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //nolint:dupl // mistakenly gets taken as duplicate
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() {
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=updated_at",
 		nil)
@@ -432,7 +432,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //noli
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() { //nolint:dupl // mistakenly gets taken as duplicate
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() {
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=foo",
 		nil)
@@ -631,18 +631,6 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	suite.buildpackController = buildpackController
 }
 
-func (suite *PostBuildpackTestSuite) TestStatusNotFound() {
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
-
-	assert.NoError(suite.T(), suite.buildpackController.GetBuildpacks(suite.Ctx))
-	assert.Equal(suite.T(), http.StatusNotFound, suite.Ctx.Response().Status)
-}
-
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	buildpackName := "test_buildpack" //nolint:goconst // mistakenly gets taken as duplicate
 	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\"}", buildpackName))
@@ -655,8 +643,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
-"filename","sha256_checksum","stack")
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, nil, nil, sqlmock.AnyArg()).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
@@ -682,8 +669,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithRequiredParams() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
-"filename","sha256_checksum","stack")
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), position, nil, nil, sqlmock.AnyArg()).
 		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
@@ -695,7 +681,7 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
-
+//nolint: lll
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 	buildpackName := "test_buildpack"
 	stack := "stacks"
@@ -711,8 +697,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
 		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
 	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
-"enabled","locked","filename","sha256_checksum","stack")
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","enabled","locked","filename","sha256_checksum","stack")
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
 		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).
