@@ -12,7 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -121,7 +120,6 @@ type GetBuildpackTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
-	SQLMock             sqlmock.Sqlmock
 	buildpackController BuildpackController
 	queryMods           []qm.QueryMod
 	querier             *mock_models.MockBuildpackFinisher
@@ -132,12 +130,10 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	db, mock, _ := sqlmock.New()
-	buildpackController := BuildpackController{db}
+	buildpackController := BuildpackController{DB: nil}
 
 	suite.Ctx = c
 	suite.Rec = *rec
-	suite.SQLMock = mock
 	suite.buildpackController = buildpackController
 	ctrl := gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockBuildpackFinisher(ctrl)

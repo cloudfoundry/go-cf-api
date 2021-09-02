@@ -3,7 +3,7 @@ module github.tools.sap/cloudfoundry/cloudgontroller
 go 1.16
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
 	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/c-bata/go-prompt v0.2.6
