@@ -61,6 +61,10 @@ func GenerateSQLBoiler() error {
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler"); err != nil {
 		return err
 	}
+	if err := os.MkdirAll("internal/app/cloudgontroller/sqlboiler/mocks", 0755); err != nil {
+		return err
+	}
+
 	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml", "--templates", "sqlboiler-templates"); err != nil {
 		return err
 	}
@@ -68,10 +72,10 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
-	if err := modifySQLBoilerFiles("psql"); err != nil {
+	if err := modifySQLBoilerFiles("psql", true); err != nil {
 		return err
 	}
-	if err := modifySQLBoilerFiles("mysql"); err != nil {
+	if err := modifySQLBoilerFiles("mysql", false); err != nil {
 		return err
 	}
 
@@ -82,11 +86,15 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
+	if err := sh.Run("go", "generate", "./..."); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Parses the AST to add additional comments and remove certain tests that fail
-func modifySQLBoilerFiles(dbEngine string) error {
+func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 	// Append build tags to every generated file so we can use e.g. "go test -tags=db,psql" to switch between unit and db tests
 	fileSet := token.NewFileSet()
 	packages, err := parser.ParseDir(
@@ -98,16 +106,24 @@ func modifySQLBoilerFiles(dbEngine string) error {
 	for filepath, file := range packages["models"].Files {
 		commentMap := ast.NewCommentMap(fileSet, file, file.Comments)
 
-		commentText := fmt.Sprintf("// +build %s", dbEngine)
+		tagCommentText := fmt.Sprintf("// +build %s", dbEngine)
 		_, filename := path.Split(filepath)
-		isTestFile := strings.HasSuffix(filename, "_test.go")
-		if isTestFile {
-			commentText += ",db"
+		if strings.HasSuffix(filename, "_test.go") {
+			tagCommentText += ",db"
 		}
-		comment := &ast.CommentGroup{
-			List: []*ast.Comment{{Text: commentText}},
+		tagComment := &ast.CommentGroup{
+			List: []*ast.Comment{{Text: tagCommentText}},
 		}
-		commentMap[file] = append([]*ast.CommentGroup{comment}, commentMap[file]...)
+		comments := []*ast.CommentGroup{tagComment}
+		if addGoGenerate && !strings.HasPrefix(filename, "boil_") {
+			generateComment := &ast.CommentGroup{
+				List: []*ast.Comment{{
+					Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s", filename),
+				}},
+			}
+			comments = append(comments, generateComment)
+		}
+		commentMap[file] = append(comments, commentMap[file]...)
 		file.Comments = commentMap.Comments()
 
 		buf := &bytes.Buffer{}
