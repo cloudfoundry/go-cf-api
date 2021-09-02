@@ -5,9 +5,10 @@ import (
 	"time"
 
 	"github.com/volatiletech/null/v8"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
+	"go.uber.org/zap"
 )
 
 const (
@@ -26,7 +27,7 @@ type Response struct {
 	Position  int         `json:"position"`
 	Enabled   null.Bool   `json:"enabled"`
 	Locked    null.Bool   `json:"locked"`
-	Metadata  v3.Metadata `json:"metadata"`
+	Metadata  metadata.Metadata `json:"metadata"`
 	Links     struct {
 		Self   pagination.Link `json:"self"`
 		Upload pagination.Link `json:"upload"`
@@ -39,6 +40,16 @@ type ListResponse struct {
 }
 
 func ResponseObject(buildpack *models.Buildpack, resourcePath string) *Response {
+	md := metadata.Metadata{}
+	var err error
+	if buildpack.R == nil {
+		zap.L().Warn(fmt.Sprintf("Buildpack with guid %s does not contain metadata", buildpack.GUID))
+	} else {
+		md, err = metadata.GetMetadata(buildpack.R.ResourceBuildpackAnnotations, buildpack.R.ResourceBuildpackLabels)
+		if err != nil {
+			zap.L().Error("Cannot build response object", zap.Error(err))
+		}
+	}
 	response := &Response{
 		GUID:      buildpack.GUID,
 		CreatedAt: buildpack.CreatedAt.Format(time.RFC3339),
@@ -50,8 +61,7 @@ func ResponseObject(buildpack *models.Buildpack, resourcePath string) *Response 
 		Position:  buildpack.Position,
 		Enabled:   buildpack.Enabled,
 		Locked:    buildpack.Locked,
-		// Workaround until metadata is implemented
-		Metadata: v3.Metadata{Annotations: map[string]string{}, Labels: map[string]string{}},
+		Metadata:  md,
 	}
 	response.Links.Self = GetResourcePathLink(resourcePath)
 	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")

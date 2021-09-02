@@ -84,6 +84,9 @@ func (cont *Controller) List(c echo.Context) error {
 	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
 	// Append Filters to the query
 	mods = append(mods, buildFilters(filters, createdAts, updatedAts)...)
+	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
+	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
+	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
 
 	buildpacks, err := buildpackQuerier(
 		mods...,
@@ -113,7 +116,12 @@ func (cont *Controller) Get(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := buildpackQuerier(qm.Where("guid=?", guid)).One(ctx, cont.DB)
+	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
+	buildpack, err := buildpackQuerier(
+		qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)),
+		qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)),
+		qm.Where("guid=?", guid),
+	).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 		if errors.Cause(err) != sql.ErrNoRows {

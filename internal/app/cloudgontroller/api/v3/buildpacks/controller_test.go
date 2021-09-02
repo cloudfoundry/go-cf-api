@@ -93,6 +93,17 @@ func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
 	suite.Error(v3.UnknownError(nil), suite.buildpackController.List(suite.Ctx))
 }
 
+func (suite *GetMultipleBuildpacksTestSuite) TestMetadataIsEagerLoaded() {
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{GUID: "first-guid"}, {GUID: "second-guid"},
+	}, nil)
+	assert.NoError(suite.T(), suite.buildpackController.List(suite.Ctx))
+	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
+	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
+	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
+}
+
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks?per_page=2&page=3", nil)
 	rec := httptest.NewRecorder()
@@ -179,6 +190,15 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.Get(suite.Ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
+}
+
+func (suite *GetBuildpackTestSuite) TestMetadataIsEagerLoaded() {
+	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: "first-guid"}, nil)
+
+	assert.NoError(suite.T(), suite.buildpackController.Get(suite.Ctx))
+	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
+	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
+	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
