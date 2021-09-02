@@ -24,6 +24,7 @@ import (
 
 const GUIDParam = "guid"
 
+//nolint:gochecknoglobals // here to be overridden in tests
 var buildpackQuerier func(...qm.QueryMod) models.BuildpackFinisher = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
 var buildpackInserter models.BuildpackInserter = models.Buildpacks()
 

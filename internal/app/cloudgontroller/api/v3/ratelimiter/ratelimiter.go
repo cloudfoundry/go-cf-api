@@ -22,16 +22,16 @@ type RateLimiter struct {
 	ResetInterval time.Duration
 }
 
-type RateLimiterQueriers struct {
+type Queriers struct {
 	Finisher func(mods ...qm.QueryMod) models.RequestCountFinisher
 	Inserter models.RequestCountInserter
 	Updater  models.RequestCountUpdater
 }
 
+//nolint:gochecknoglobals // here to be overridden in tests
 var (
-	now func() time.Time = time.Now
-
-	queriers RateLimiterQueriers = RateLimiterQueriers{
+	now      = time.Now
+	queriers = Queriers{
 		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher {
 			return models.RequestCounts(mods...)
 		},

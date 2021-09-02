@@ -1,6 +1,6 @@
 // +build unit
 
-package ratelimiter
+package ratelimiter //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
 	"net/http"
@@ -107,7 +107,7 @@ func (suite *RateLimiterSuite) SetupSuite() {
 	suite.Finisher = mock_models.NewMockRequestCountFinisher(suite.ctrl)
 	suite.Inserter = mock_models.NewMockRequestCountInserter(suite.ctrl)
 	suite.Updater = mock_models.NewMockRequestCountUpdater(suite.ctrl)
-	queriers = RateLimiterQueriers{
+	queriers = Queriers{
 		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher { return suite.Finisher },
 		Inserter: suite.Inserter,
 		Updater:  suite.Updater,
