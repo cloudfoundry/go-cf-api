@@ -120,10 +120,8 @@ type (
 	// SpacesManagerSlice is an alias for a slice of pointers to SpacesManager.
 	// This should almost always be used instead of []SpacesManager.
 	SpacesManagerSlice []*SpacesManager
-	// SpacesManagerHook is the signature for custom SpacesManager hook methods
-	SpacesManagerHook func(context.Context, boil.ContextExecutor, *SpacesManager) error
 
-	spacesManagerQuery struct {
+	SpacesManagerQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var spacesManagerBeforeInsertHooks []SpacesManagerHook
-var spacesManagerBeforeUpdateHooks []SpacesManagerHook
-var spacesManagerBeforeDeleteHooks []SpacesManagerHook
-var spacesManagerBeforeUpsertHooks []SpacesManagerHook
-
-var spacesManagerAfterInsertHooks []SpacesManagerHook
-var spacesManagerAfterSelectHooks []SpacesManagerHook
-var spacesManagerAfterUpdateHooks []SpacesManagerHook
-var spacesManagerAfterDeleteHooks []SpacesManagerHook
-var spacesManagerAfterUpsertHooks []SpacesManagerHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SpacesManager) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SpacesManager) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SpacesManager) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SpacesManager) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SpacesManager) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SpacesManager) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SpacesManager) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SpacesManager) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SpacesManager) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesManagerAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSpacesManagerHook registers your hook function for all future operations.
-func AddSpacesManagerHook(hookPoint boil.HookPoint, spacesManagerHook SpacesManagerHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		spacesManagerBeforeInsertHooks = append(spacesManagerBeforeInsertHooks, spacesManagerHook)
-	case boil.BeforeUpdateHook:
-		spacesManagerBeforeUpdateHooks = append(spacesManagerBeforeUpdateHooks, spacesManagerHook)
-	case boil.BeforeDeleteHook:
-		spacesManagerBeforeDeleteHooks = append(spacesManagerBeforeDeleteHooks, spacesManagerHook)
-	case boil.BeforeUpsertHook:
-		spacesManagerBeforeUpsertHooks = append(spacesManagerBeforeUpsertHooks, spacesManagerHook)
-	case boil.AfterInsertHook:
-		spacesManagerAfterInsertHooks = append(spacesManagerAfterInsertHooks, spacesManagerHook)
-	case boil.AfterSelectHook:
-		spacesManagerAfterSelectHooks = append(spacesManagerAfterSelectHooks, spacesManagerHook)
-	case boil.AfterUpdateHook:
-		spacesManagerAfterUpdateHooks = append(spacesManagerAfterUpdateHooks, spacesManagerHook)
-	case boil.AfterDeleteHook:
-		spacesManagerAfterDeleteHooks = append(spacesManagerAfterDeleteHooks, spacesManagerHook)
-	case boil.AfterUpsertHook:
-		spacesManagerAfterUpsertHooks = append(spacesManagerAfterUpsertHooks, spacesManagerHook)
-	}
+type SpacesManagerFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SpacesManager, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SpacesManagerSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single spacesManager record from the query.
-func (q spacesManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesManager, error) {
+func (q SpacesManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesManager, error) {
 	o := &SpacesManager{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q spacesManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to execute a one query for spaces_managers")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SpacesManager records from the query.
-func (q spacesManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesManagerSlice, error) {
+func (q SpacesManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesManagerSlice, error) {
 	var o []*SpacesManager
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q spacesManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SpacesManager slice")
 	}
 
-	if len(spacesManagerAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SpacesManager records in the query.
-func (q spacesManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SpacesManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q spacesManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Exists checks if the row exists in the table.
-func (q spacesManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SpacesManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q spacesManagerQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Space pointed to by the foreign key.
-func (o *SpacesManager) Space(mods ...qm.QueryMod) spaceQuery {
+func (q SpacesManagerQuery) Space(o *SpacesManager, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.SpaceID),
 	}
@@ -406,7 +229,7 @@ func (o *SpacesManager) Space(mods ...qm.QueryMod) spaceQuery {
 }
 
 // User pointed to by the foreign key.
-func (o *SpacesManager) User(mods ...qm.QueryMod) userQuery {
+func (q SpacesManagerQuery) User(o *SpacesManager, mods ...qm.QueryMod) UserQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.UserID),
 	}
@@ -483,14 +306,6 @@ func (spacesManagerL) LoadSpace(ctx context.Context, e boil.ContextExecutor, sin
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(spacesManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (spacesManagerL) LoadUser(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(spacesManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (spacesManagerL) LoadUser(ctx context.Context, e boil.ContextExecutor, sing
 // SetSpace of the spacesManager to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.SpacesManagers.
-func (o *SpacesManager) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q SpacesManagerQuery) SetSpace(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *SpacesManager) SetSpace(ctx context.Context, exec boil.ContextExecutor,
 // SetUser of the spacesManager to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.SpacesManagers.
-func (o *SpacesManager) SetUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q SpacesManagerQuery) SetUser(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *SpacesManager) SetUser(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // SpacesManagers retrieves all the records using an executor.
-func SpacesManagers(mods ...qm.QueryMod) spacesManagerQuery {
+func SpacesManagers(mods ...qm.QueryMod) SpacesManagerQuery {
 	mods = append(mods, qm.From("\"spaces_managers\""))
-	return spacesManagerQuery{NewQuery(mods...)}
+	return SpacesManagerQuery{NewQuery(mods...)}
+}
+
+type SpacesManagerFinder interface {
+	FindSpacesManager(ctx context.Context, exec boil.ContextExecutor, spacesManagersPK int, selectCols ...string) (*SpacesManager, error)
 }
 
 // FindSpacesManager retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindSpacesManager(ctx context.Context, exec boil.ContextExecutor, spacesMan
 		return nil, errors.Wrap(err, "models: unable to select from spaces_managers")
 	}
 
-	if err = spacesManagerObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return spacesManagerObj, err
-	}
-
 	return spacesManagerObj, nil
+}
+
+type SpacesManagerInserter interface {
+	Insert(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SpacesManager) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SpacesManagerQuery) Insert(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces_managers provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *SpacesManager) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		if o.UpdatedAt.IsZero() {
 			o.UpdatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesManagerColumnsWithDefault, o)
@@ -843,13 +650,19 @@ func (o *SpacesManager) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		spacesManagerInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SpacesManagerUpdater interface {
+	Update(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SpacesManager.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SpacesManager) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SpacesManagerQuery) Update(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -857,9 +670,6 @@ func (o *SpacesManager) Update(ctx context.Context, exec boil.ContextExecutor, c
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	spacesManagerUpdateCacheMut.RLock()
 	cache, cached := spacesManagerUpdateCache[key]
@@ -912,11 +722,11 @@ func (o *SpacesManager) Update(ctx context.Context, exec boil.ContextExecutor, c
 		spacesManagerUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q spacesManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -933,7 +743,7 @@ func (q spacesManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SpacesManagerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesManagerQuery) UpdateAllSlice(o SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -980,6 +790,160 @@ func (o SpacesManagerSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 	return rowsAff, nil
 }
 
+type SpacesManagerDeleter interface {
+	Delete(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SpacesManager record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SpacesManagerQuery) Delete(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SpacesManager provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesManagerPrimaryKeyMapping)
+	sql := "DELETE FROM \"spaces_managers\" WHERE \"spaces_managers_pk\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from spaces_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SpacesManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no spacesManagerQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spaces_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SpacesManagerQuery) DeleteAllSlice(o SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"spaces_managers\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacesManagerPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spacesManager slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_managers")
+	}
+
+	return rowsAff, nil
+}
+
+type SpacesManagerReloader interface {
+	Reload(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SpacesManagerQuery) Reload(o *SpacesManager, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSpacesManager(ctx, exec, o.SpacesManagersPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SpacesManagerQuery) ReloadAll(o *SpacesManagerSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SpacesManagerSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"spaces_managers\".* FROM \"spaces_managers\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacesManagerPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SpacesManagerSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SpacesManagerExists checks if the SpacesManager row exists.
+func SpacesManagerExists(ctx context.Context, exec boil.ContextExecutor, spacesManagersPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"spaces_managers\" where \"spaces_managers_pk\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, spacesManagersPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, spacesManagersPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if spaces_managers exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *SpacesManager) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -993,10 +957,6 @@ func (o *SpacesManager) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 			o.CreatedAt = currTime
 		}
 		o.UpdatedAt = currTime
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesManagerColumnsWithDefault, o)
@@ -1100,172 +1060,5 @@ func (o *SpacesManager) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 		spacesManagerUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SpacesManager record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SpacesManager) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SpacesManager provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesManagerPrimaryKeyMapping)
-	sql := "DELETE FROM \"spaces_managers\" WHERE \"spaces_managers_pk\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from spaces_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_managers")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q spacesManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no spacesManagerQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spaces_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_managers")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SpacesManagerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(spacesManagerBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"spaces_managers\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacesManagerPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spacesManager slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_managers")
-	}
-
-	if len(spacesManagerAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SpacesManager) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSpacesManager(ctx, exec, o.SpacesManagersPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SpacesManagerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SpacesManagerSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"spaces_managers\".* FROM \"spaces_managers\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacesManagerPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SpacesManagerSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SpacesManagerExists checks if the SpacesManager row exists.
-func SpacesManagerExists(ctx context.Context, exec boil.ContextExecutor, spacesManagersPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"spaces_managers\" where \"spaces_managers_pk\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, spacesManagersPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, spacesManagersPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if spaces_managers exists")
-	}
-
-	return exists, nil
 }

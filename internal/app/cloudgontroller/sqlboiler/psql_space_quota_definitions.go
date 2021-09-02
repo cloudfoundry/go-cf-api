@@ -183,10 +183,8 @@ type (
 	// SpaceQuotaDefinitionSlice is an alias for a slice of pointers to SpaceQuotaDefinition.
 	// This should almost always be used instead of []SpaceQuotaDefinition.
 	SpaceQuotaDefinitionSlice []*SpaceQuotaDefinition
-	// SpaceQuotaDefinitionHook is the signature for custom SpaceQuotaDefinition hook methods
-	SpaceQuotaDefinitionHook func(context.Context, boil.ContextExecutor, *SpaceQuotaDefinition) error
 
-	spaceQuotaDefinitionQuery struct {
+	SpaceQuotaDefinitionQuery struct {
 		*queries.Query
 	}
 )
@@ -212,178 +210,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var spaceQuotaDefinitionBeforeInsertHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionBeforeUpdateHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionBeforeDeleteHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionBeforeUpsertHooks []SpaceQuotaDefinitionHook
-
-var spaceQuotaDefinitionAfterInsertHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionAfterSelectHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionAfterUpdateHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionAfterDeleteHooks []SpaceQuotaDefinitionHook
-var spaceQuotaDefinitionAfterUpsertHooks []SpaceQuotaDefinitionHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SpaceQuotaDefinition) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SpaceQuotaDefinition) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SpaceQuotaDefinition) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SpaceQuotaDefinition) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SpaceQuotaDefinition) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SpaceQuotaDefinition) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SpaceQuotaDefinition) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SpaceQuotaDefinition) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SpaceQuotaDefinition) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceQuotaDefinitionAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSpaceQuotaDefinitionHook registers your hook function for all future operations.
-func AddSpaceQuotaDefinitionHook(hookPoint boil.HookPoint, spaceQuotaDefinitionHook SpaceQuotaDefinitionHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		spaceQuotaDefinitionBeforeInsertHooks = append(spaceQuotaDefinitionBeforeInsertHooks, spaceQuotaDefinitionHook)
-	case boil.BeforeUpdateHook:
-		spaceQuotaDefinitionBeforeUpdateHooks = append(spaceQuotaDefinitionBeforeUpdateHooks, spaceQuotaDefinitionHook)
-	case boil.BeforeDeleteHook:
-		spaceQuotaDefinitionBeforeDeleteHooks = append(spaceQuotaDefinitionBeforeDeleteHooks, spaceQuotaDefinitionHook)
-	case boil.BeforeUpsertHook:
-		spaceQuotaDefinitionBeforeUpsertHooks = append(spaceQuotaDefinitionBeforeUpsertHooks, spaceQuotaDefinitionHook)
-	case boil.AfterInsertHook:
-		spaceQuotaDefinitionAfterInsertHooks = append(spaceQuotaDefinitionAfterInsertHooks, spaceQuotaDefinitionHook)
-	case boil.AfterSelectHook:
-		spaceQuotaDefinitionAfterSelectHooks = append(spaceQuotaDefinitionAfterSelectHooks, spaceQuotaDefinitionHook)
-	case boil.AfterUpdateHook:
-		spaceQuotaDefinitionAfterUpdateHooks = append(spaceQuotaDefinitionAfterUpdateHooks, spaceQuotaDefinitionHook)
-	case boil.AfterDeleteHook:
-		spaceQuotaDefinitionAfterDeleteHooks = append(spaceQuotaDefinitionAfterDeleteHooks, spaceQuotaDefinitionHook)
-	case boil.AfterUpsertHook:
-		spaceQuotaDefinitionAfterUpsertHooks = append(spaceQuotaDefinitionAfterUpsertHooks, spaceQuotaDefinitionHook)
-	}
+type SpaceQuotaDefinitionFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SpaceQuotaDefinition, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SpaceQuotaDefinitionSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single spaceQuotaDefinition record from the query.
-func (q spaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceQuotaDefinition, error) {
+func (q SpaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceQuotaDefinition, error) {
 	o := &SpaceQuotaDefinition{}
 
 	queries.SetLimit(q.Query, 1)
@@ -396,15 +231,11 @@ func (q spaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to execute a one query for space_quota_definitions")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SpaceQuotaDefinition records from the query.
-func (q spaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceQuotaDefinitionSlice, error) {
+func (q SpaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceQuotaDefinitionSlice, error) {
 	var o []*SpaceQuotaDefinition
 
 	err := q.Bind(ctx, exec, &o)
@@ -412,19 +243,11 @@ func (q spaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SpaceQuotaDefinition slice")
 	}
 
-	if len(spaceQuotaDefinitionAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SpaceQuotaDefinition records in the query.
-func (q spaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SpaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -439,7 +262,7 @@ func (q spaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q spaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SpaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -455,7 +278,7 @@ func (q spaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Organization pointed to by the foreign key.
-func (o *SpaceQuotaDefinition) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q SpaceQuotaDefinitionQuery) Organization(o *SpaceQuotaDefinition, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.OrganizationID),
 	}
@@ -469,7 +292,7 @@ func (o *SpaceQuotaDefinition) Organization(mods ...qm.QueryMod) organizationQue
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (o *SpaceQuotaDefinition) Spaces(mods ...qm.QueryMod) spaceQuery {
+func (q SpaceQuotaDefinitionQuery) Spaces(o *SpaceQuotaDefinition, mods ...qm.QueryMod) SpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -553,14 +376,6 @@ func (spaceQuotaDefinitionL) LoadOrganization(ctx context.Context, e boil.Contex
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(spaceQuotaDefinitionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -657,13 +472,6 @@ func (spaceQuotaDefinitionL) LoadSpaces(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Spaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -694,10 +502,10 @@ func (spaceQuotaDefinitionL) LoadSpaces(ctx context.Context, e boil.ContextExecu
 // SetOrganization of the spaceQuotaDefinition to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.SpaceQuotaDefinitions.
-func (o *SpaceQuotaDefinition) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q SpaceQuotaDefinitionQuery) SetOrganization(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -742,12 +550,12 @@ func (o *SpaceQuotaDefinition) SetOrganization(ctx context.Context, exec boil.Co
 // of the space_quota_definition, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.SpaceQuotaDefinition appropriately.
-func (o *SpaceQuotaDefinition) AddSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q SpaceQuotaDefinitionQuery) AddSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.SpaceQuotaDefinitionID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Spaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -797,7 +605,7 @@ func (o *SpaceQuotaDefinition) AddSpaces(ctx context.Context, exec boil.ContextE
 // Sets o.R.SpaceQuotaDefinition's Spaces accordingly.
 // Replaces o.R.Spaces with related.
 // Sets related.R.SpaceQuotaDefinition's Spaces accordingly.
-func (o *SpaceQuotaDefinition) SetSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q SpaceQuotaDefinitionQuery) SetSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	query := "update \"spaces\" set \"space_quota_definition_id\" = null where \"space_quota_definition_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -822,13 +630,13 @@ func (o *SpaceQuotaDefinition) SetSpaces(ctx context.Context, exec boil.ContextE
 
 		o.R.Spaces = nil
 	}
-	return o.AddSpaces(ctx, exec, insert, related...)
+	return q.AddSpaces(o, ctx, exec, insert, related...)
 }
 
 // RemoveSpaces relationships from objects passed in.
 // Removes related items from R.Spaces (uses pointer comparison, removal does not keep order)
 // Sets related.R.SpaceQuotaDefinition.
-func (o *SpaceQuotaDefinition) RemoveSpaces(ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
+func (q SpaceQuotaDefinitionQuery) RemoveSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -839,7 +647,7 @@ func (o *SpaceQuotaDefinition) RemoveSpaces(ctx context.Context, exec boil.Conte
 		if rel.R != nil {
 			rel.R.SpaceQuotaDefinition = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
+		if _, err = Spaces().Update(rel, ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
 			return err
 		}
 	}
@@ -866,9 +674,13 @@ func (o *SpaceQuotaDefinition) RemoveSpaces(ctx context.Context, exec boil.Conte
 }
 
 // SpaceQuotaDefinitions retrieves all the records using an executor.
-func SpaceQuotaDefinitions(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
+func SpaceQuotaDefinitions(mods ...qm.QueryMod) SpaceQuotaDefinitionQuery {
 	mods = append(mods, qm.From("\"space_quota_definitions\""))
-	return spaceQuotaDefinitionQuery{NewQuery(mods...)}
+	return SpaceQuotaDefinitionQuery{NewQuery(mods...)}
+}
+
+type SpaceQuotaDefinitionFinder interface {
+	FindSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*SpaceQuotaDefinition, error)
 }
 
 // FindSpaceQuotaDefinition retrieves a single record by ID with an executor.
@@ -894,16 +706,16 @@ func FindSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, iD
 		return nil, errors.Wrap(err, "models: unable to select from space_quota_definitions")
 	}
 
-	if err = spaceQuotaDefinitionObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return spaceQuotaDefinitionObj, err
-	}
-
 	return spaceQuotaDefinitionObj, nil
+}
+
+type SpaceQuotaDefinitionInserter interface {
+	Insert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SpaceQuotaDefinition) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SpaceQuotaDefinitionQuery) Insert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no space_quota_definitions provided for insertion")
 	}
@@ -918,10 +730,6 @@ func (o *SpaceQuotaDefinition) Insert(ctx context.Context, exec boil.ContextExec
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spaceQuotaDefinitionColumnsWithDefault, o)
@@ -987,13 +795,19 @@ func (o *SpaceQuotaDefinition) Insert(ctx context.Context, exec boil.ContextExec
 		spaceQuotaDefinitionInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SpaceQuotaDefinitionUpdater interface {
+	Update(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SpaceQuotaDefinition.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SpaceQuotaDefinition) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SpaceQuotaDefinitionQuery) Update(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1001,9 +815,6 @@ func (o *SpaceQuotaDefinition) Update(ctx context.Context, exec boil.ContextExec
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	spaceQuotaDefinitionUpdateCacheMut.RLock()
 	cache, cached := spaceQuotaDefinitionUpdateCache[key]
@@ -1056,11 +867,11 @@ func (o *SpaceQuotaDefinition) Update(ctx context.Context, exec boil.ContextExec
 		spaceQuotaDefinitionUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q spaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1077,7 +888,7 @@ func (q spaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SpaceQuotaDefinitionSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpaceQuotaDefinitionQuery) UpdateAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1124,6 +935,160 @@ func (o SpaceQuotaDefinitionSlice) UpdateAll(ctx context.Context, exec boil.Cont
 	return rowsAff, nil
 }
 
+type SpaceQuotaDefinitionDeleter interface {
+	Delete(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SpaceQuotaDefinition record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SpaceQuotaDefinitionQuery) Delete(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SpaceQuotaDefinition provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spaceQuotaDefinitionPrimaryKeyMapping)
+	sql := "DELETE FROM \"space_quota_definitions\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from space_quota_definitions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for space_quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SpaceQuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no spaceQuotaDefinitionQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from space_quota_definitions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for space_quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SpaceQuotaDefinitionQuery) DeleteAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spaceQuotaDefinitionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"space_quota_definitions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spaceQuotaDefinitionPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spaceQuotaDefinition slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for space_quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+type SpaceQuotaDefinitionReloader interface {
+	Reload(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SpaceQuotaDefinitionQuery) Reload(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSpaceQuotaDefinition(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SpaceQuotaDefinitionQuery) ReloadAll(o *SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SpaceQuotaDefinitionSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spaceQuotaDefinitionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"space_quota_definitions\".* FROM \"space_quota_definitions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spaceQuotaDefinitionPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SpaceQuotaDefinitionSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SpaceQuotaDefinitionExists checks if the SpaceQuotaDefinition row exists.
+func SpaceQuotaDefinitionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"space_quota_definitions\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if space_quota_definitions exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *SpaceQuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1137,10 +1102,6 @@ func (o *SpaceQuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExec
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spaceQuotaDefinitionColumnsWithDefault, o)
@@ -1244,172 +1205,5 @@ func (o *SpaceQuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExec
 		spaceQuotaDefinitionUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SpaceQuotaDefinition record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SpaceQuotaDefinition) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SpaceQuotaDefinition provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spaceQuotaDefinitionPrimaryKeyMapping)
-	sql := "DELETE FROM \"space_quota_definitions\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from space_quota_definitions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for space_quota_definitions")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q spaceQuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no spaceQuotaDefinitionQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from space_quota_definitions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for space_quota_definitions")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SpaceQuotaDefinitionSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(spaceQuotaDefinitionBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spaceQuotaDefinitionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"space_quota_definitions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spaceQuotaDefinitionPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spaceQuotaDefinition slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for space_quota_definitions")
-	}
-
-	if len(spaceQuotaDefinitionAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SpaceQuotaDefinition) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSpaceQuotaDefinition(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SpaceQuotaDefinitionSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SpaceQuotaDefinitionSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spaceQuotaDefinitionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"space_quota_definitions\".* FROM \"space_quota_definitions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spaceQuotaDefinitionPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SpaceQuotaDefinitionSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SpaceQuotaDefinitionExists checks if the SpaceQuotaDefinition row exists.
-func SpaceQuotaDefinitionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"space_quota_definitions\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if space_quota_definitions exists")
-	}
-
-	return exists, nil
 }

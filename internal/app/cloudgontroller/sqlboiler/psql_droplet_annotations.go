@@ -131,10 +131,8 @@ type (
 	// DropletAnnotationSlice is an alias for a slice of pointers to DropletAnnotation.
 	// This should almost always be used instead of []DropletAnnotation.
 	DropletAnnotationSlice []*DropletAnnotation
-	// DropletAnnotationHook is the signature for custom DropletAnnotation hook methods
-	DropletAnnotationHook func(context.Context, boil.ContextExecutor, *DropletAnnotation) error
 
-	dropletAnnotationQuery struct {
+	DropletAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var dropletAnnotationBeforeInsertHooks []DropletAnnotationHook
-var dropletAnnotationBeforeUpdateHooks []DropletAnnotationHook
-var dropletAnnotationBeforeDeleteHooks []DropletAnnotationHook
-var dropletAnnotationBeforeUpsertHooks []DropletAnnotationHook
-
-var dropletAnnotationAfterInsertHooks []DropletAnnotationHook
-var dropletAnnotationAfterSelectHooks []DropletAnnotationHook
-var dropletAnnotationAfterUpdateHooks []DropletAnnotationHook
-var dropletAnnotationAfterDeleteHooks []DropletAnnotationHook
-var dropletAnnotationAfterUpsertHooks []DropletAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DropletAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DropletAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DropletAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DropletAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DropletAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DropletAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DropletAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DropletAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DropletAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDropletAnnotationHook registers your hook function for all future operations.
-func AddDropletAnnotationHook(hookPoint boil.HookPoint, dropletAnnotationHook DropletAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		dropletAnnotationBeforeInsertHooks = append(dropletAnnotationBeforeInsertHooks, dropletAnnotationHook)
-	case boil.BeforeUpdateHook:
-		dropletAnnotationBeforeUpdateHooks = append(dropletAnnotationBeforeUpdateHooks, dropletAnnotationHook)
-	case boil.BeforeDeleteHook:
-		dropletAnnotationBeforeDeleteHooks = append(dropletAnnotationBeforeDeleteHooks, dropletAnnotationHook)
-	case boil.BeforeUpsertHook:
-		dropletAnnotationBeforeUpsertHooks = append(dropletAnnotationBeforeUpsertHooks, dropletAnnotationHook)
-	case boil.AfterInsertHook:
-		dropletAnnotationAfterInsertHooks = append(dropletAnnotationAfterInsertHooks, dropletAnnotationHook)
-	case boil.AfterSelectHook:
-		dropletAnnotationAfterSelectHooks = append(dropletAnnotationAfterSelectHooks, dropletAnnotationHook)
-	case boil.AfterUpdateHook:
-		dropletAnnotationAfterUpdateHooks = append(dropletAnnotationAfterUpdateHooks, dropletAnnotationHook)
-	case boil.AfterDeleteHook:
-		dropletAnnotationAfterDeleteHooks = append(dropletAnnotationAfterDeleteHooks, dropletAnnotationHook)
-	case boil.AfterUpsertHook:
-		dropletAnnotationAfterUpsertHooks = append(dropletAnnotationAfterUpsertHooks, dropletAnnotationHook)
-	}
+type DropletAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DropletAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DropletAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single dropletAnnotation record from the query.
-func (q dropletAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DropletAnnotation, error) {
+func (q DropletAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DropletAnnotation, error) {
 	o := &DropletAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q dropletAnnotationQuery) One(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: failed to execute a one query for droplet_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DropletAnnotation records from the query.
-func (q dropletAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletAnnotationSlice, error) {
+func (q DropletAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletAnnotationSlice, error) {
 	var o []*DropletAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q dropletAnnotationQuery) All(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DropletAnnotation slice")
 	}
 
-	if len(dropletAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DropletAnnotation records in the query.
-func (q dropletAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DropletAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q dropletAnnotationQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q dropletAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DropletAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q dropletAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Resource pointed to by the foreign key.
-func (o *DropletAnnotation) Resource(mods ...qm.QueryMod) dropletQuery {
+func (q DropletAnnotationQuery) Resource(o *DropletAnnotation, mods ...qm.QueryMod) DropletQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (dropletAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for droplets")
 	}
 
-	if len(dropletAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (dropletAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecut
 // SetResource of the dropletAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceDropletAnnotations.
-func (o *DropletAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Droplet) error {
+func (q DropletAnnotationQuery) SetResource(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Droplet) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Droplets().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *DropletAnnotation) SetResource(ctx context.Context, exec boil.ContextEx
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *DropletAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Droplet) error {
+func (q DropletAnnotationQuery) RemoveResource(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Droplet) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *DropletAnnotation) RemoveResource(ctx context.Context, exec boil.Contex
 }
 
 // DropletAnnotations retrieves all the records using an executor.
-func DropletAnnotations(mods ...qm.QueryMod) dropletAnnotationQuery {
+func DropletAnnotations(mods ...qm.QueryMod) DropletAnnotationQuery {
 	mods = append(mods, qm.From("\"droplet_annotations\""))
-	return dropletAnnotationQuery{NewQuery(mods...)}
+	return DropletAnnotationQuery{NewQuery(mods...)}
+}
+
+type DropletAnnotationFinder interface {
+	FindDropletAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DropletAnnotation, error)
 }
 
 // FindDropletAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindDropletAnnotation(ctx context.Context, exec boil.ContextExecutor, iD in
 		return nil, errors.Wrap(err, "models: unable to select from droplet_annotations")
 	}
 
-	if err = dropletAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return dropletAnnotationObj, err
-	}
-
 	return dropletAnnotationObj, nil
+}
+
+type DropletAnnotationInserter interface {
+	Insert(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DropletAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DropletAnnotationQuery) Insert(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no droplet_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *DropletAnnotation) Insert(ctx context.Context, exec boil.ContextExecuto
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(dropletAnnotationColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *DropletAnnotation) Insert(ctx context.Context, exec boil.ContextExecuto
 		dropletAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DropletAnnotationUpdater interface {
+	Update(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DropletAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DropletAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DropletAnnotationQuery) Update(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *DropletAnnotation) Update(ctx context.Context, exec boil.ContextExecuto
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	dropletAnnotationUpdateCacheMut.RLock()
 	cache, cached := dropletAnnotationUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *DropletAnnotation) Update(ctx context.Context, exec boil.ContextExecuto
 		dropletAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q dropletAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DropletAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q dropletAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DropletAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DropletAnnotationQuery) UpdateAllSlice(o DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o DropletAnnotationSlice) UpdateAll(ctx context.Context, exec boil.Context
 	return rowsAff, nil
 }
 
+type DropletAnnotationDeleter interface {
+	Delete(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DropletAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DropletAnnotationQuery) Delete(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DropletAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), dropletAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM \"droplet_annotations\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from droplet_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for droplet_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DropletAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no dropletAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from droplet_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DropletAnnotationQuery) DeleteAllSlice(o DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"droplet_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, dropletAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from dropletAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type DropletAnnotationReloader interface {
+	Reload(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DropletAnnotationQuery) Reload(o *DropletAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDropletAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DropletAnnotationQuery) ReloadAll(o *DropletAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DropletAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"droplet_annotations\".* FROM \"droplet_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, dropletAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DropletAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DropletAnnotationExists checks if the DropletAnnotation row exists.
+func DropletAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"droplet_annotations\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if droplet_annotations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *DropletAnnotation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *DropletAnnotation) Upsert(ctx context.Context, exec boil.ContextExecuto
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(dropletAnnotationColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *DropletAnnotation) Upsert(ctx context.Context, exec boil.ContextExecuto
 		dropletAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DropletAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DropletAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DropletAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), dropletAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM \"droplet_annotations\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from droplet_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for droplet_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q dropletAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no dropletAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from droplet_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DropletAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(dropletAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"droplet_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, dropletAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from dropletAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_annotations")
-	}
-
-	if len(dropletAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DropletAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDropletAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DropletAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DropletAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"droplet_annotations\".* FROM \"droplet_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, dropletAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DropletAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DropletAnnotationExists checks if the DropletAnnotation row exists.
-func DropletAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"droplet_annotations\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if droplet_annotations exists")
-	}
-
-	return exists, nil
 }

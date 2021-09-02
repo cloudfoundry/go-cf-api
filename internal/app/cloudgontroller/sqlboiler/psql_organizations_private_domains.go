@@ -98,10 +98,8 @@ type (
 	// OrganizationsPrivateDomainSlice is an alias for a slice of pointers to OrganizationsPrivateDomain.
 	// This should almost always be used instead of []OrganizationsPrivateDomain.
 	OrganizationsPrivateDomainSlice []*OrganizationsPrivateDomain
-	// OrganizationsPrivateDomainHook is the signature for custom OrganizationsPrivateDomain hook methods
-	OrganizationsPrivateDomainHook func(context.Context, boil.ContextExecutor, *OrganizationsPrivateDomain) error
 
-	organizationsPrivateDomainQuery struct {
+	OrganizationsPrivateDomainQuery struct {
 		*queries.Query
 	}
 )
@@ -127,178 +125,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var organizationsPrivateDomainBeforeInsertHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainBeforeUpdateHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainBeforeDeleteHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainBeforeUpsertHooks []OrganizationsPrivateDomainHook
-
-var organizationsPrivateDomainAfterInsertHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainAfterSelectHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainAfterUpdateHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainAfterDeleteHooks []OrganizationsPrivateDomainHook
-var organizationsPrivateDomainAfterUpsertHooks []OrganizationsPrivateDomainHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *OrganizationsPrivateDomain) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *OrganizationsPrivateDomain) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *OrganizationsPrivateDomain) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *OrganizationsPrivateDomain) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *OrganizationsPrivateDomain) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *OrganizationsPrivateDomain) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *OrganizationsPrivateDomain) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *OrganizationsPrivateDomain) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *OrganizationsPrivateDomain) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsPrivateDomainAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddOrganizationsPrivateDomainHook registers your hook function for all future operations.
-func AddOrganizationsPrivateDomainHook(hookPoint boil.HookPoint, organizationsPrivateDomainHook OrganizationsPrivateDomainHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		organizationsPrivateDomainBeforeInsertHooks = append(organizationsPrivateDomainBeforeInsertHooks, organizationsPrivateDomainHook)
-	case boil.BeforeUpdateHook:
-		organizationsPrivateDomainBeforeUpdateHooks = append(organizationsPrivateDomainBeforeUpdateHooks, organizationsPrivateDomainHook)
-	case boil.BeforeDeleteHook:
-		organizationsPrivateDomainBeforeDeleteHooks = append(organizationsPrivateDomainBeforeDeleteHooks, organizationsPrivateDomainHook)
-	case boil.BeforeUpsertHook:
-		organizationsPrivateDomainBeforeUpsertHooks = append(organizationsPrivateDomainBeforeUpsertHooks, organizationsPrivateDomainHook)
-	case boil.AfterInsertHook:
-		organizationsPrivateDomainAfterInsertHooks = append(organizationsPrivateDomainAfterInsertHooks, organizationsPrivateDomainHook)
-	case boil.AfterSelectHook:
-		organizationsPrivateDomainAfterSelectHooks = append(organizationsPrivateDomainAfterSelectHooks, organizationsPrivateDomainHook)
-	case boil.AfterUpdateHook:
-		organizationsPrivateDomainAfterUpdateHooks = append(organizationsPrivateDomainAfterUpdateHooks, organizationsPrivateDomainHook)
-	case boil.AfterDeleteHook:
-		organizationsPrivateDomainAfterDeleteHooks = append(organizationsPrivateDomainAfterDeleteHooks, organizationsPrivateDomainHook)
-	case boil.AfterUpsertHook:
-		organizationsPrivateDomainAfterUpsertHooks = append(organizationsPrivateDomainAfterUpsertHooks, organizationsPrivateDomainHook)
-	}
+type OrganizationsPrivateDomainFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsPrivateDomain, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsPrivateDomainSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single organizationsPrivateDomain record from the query.
-func (q organizationsPrivateDomainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsPrivateDomain, error) {
+func (q OrganizationsPrivateDomainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsPrivateDomain, error) {
 	o := &OrganizationsPrivateDomain{}
 
 	queries.SetLimit(q.Query, 1)
@@ -311,15 +146,11 @@ func (q organizationsPrivateDomainQuery) One(ctx context.Context, exec boil.Cont
 		return nil, errors.Wrap(err, "models: failed to execute a one query for organizations_private_domains")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all OrganizationsPrivateDomain records from the query.
-func (q organizationsPrivateDomainQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsPrivateDomainSlice, error) {
+func (q OrganizationsPrivateDomainQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsPrivateDomainSlice, error) {
 	var o []*OrganizationsPrivateDomain
 
 	err := q.Bind(ctx, exec, &o)
@@ -327,19 +158,11 @@ func (q organizationsPrivateDomainQuery) All(ctx context.Context, exec boil.Cont
 		return nil, errors.Wrap(err, "models: failed to assign all query results to OrganizationsPrivateDomain slice")
 	}
 
-	if len(organizationsPrivateDomainAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all OrganizationsPrivateDomain records in the query.
-func (q organizationsPrivateDomainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q OrganizationsPrivateDomainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -354,7 +177,7 @@ func (q organizationsPrivateDomainQuery) Count(ctx context.Context, exec boil.Co
 }
 
 // Exists checks if the row exists in the table.
-func (q organizationsPrivateDomainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q OrganizationsPrivateDomainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -370,7 +193,7 @@ func (q organizationsPrivateDomainQuery) Exists(ctx context.Context, exec boil.C
 }
 
 // Organization pointed to by the foreign key.
-func (o *OrganizationsPrivateDomain) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q OrganizationsPrivateDomainQuery) Organization(o *OrganizationsPrivateDomain, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.OrganizationID),
 	}
@@ -384,7 +207,7 @@ func (o *OrganizationsPrivateDomain) Organization(mods ...qm.QueryMod) organizat
 }
 
 // PrivateDomain pointed to by the foreign key.
-func (o *OrganizationsPrivateDomain) PrivateDomain(mods ...qm.QueryMod) domainQuery {
+func (q OrganizationsPrivateDomainQuery) PrivateDomain(o *OrganizationsPrivateDomain, mods ...qm.QueryMod) DomainQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.PrivateDomainID),
 	}
@@ -461,14 +284,6 @@ func (organizationsPrivateDomainL) LoadOrganization(ctx context.Context, e boil.
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(organizationsPrivateDomainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -567,14 +382,6 @@ func (organizationsPrivateDomainL) LoadPrivateDomain(ctx context.Context, e boil
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for domains")
 	}
 
-	if len(organizationsPrivateDomainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -608,10 +415,10 @@ func (organizationsPrivateDomainL) LoadPrivateDomain(ctx context.Context, e boil
 // SetOrganization of the organizationsPrivateDomain to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.OrganizationsPrivateDomains.
-func (o *OrganizationsPrivateDomain) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q OrganizationsPrivateDomainQuery) SetOrganization(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -655,10 +462,10 @@ func (o *OrganizationsPrivateDomain) SetOrganization(ctx context.Context, exec b
 // SetPrivateDomain of the organizationsPrivateDomain to the related item.
 // Sets o.R.PrivateDomain to related.
 // Adds o to related.R.PrivateDomainOrganizationsPrivateDomains.
-func (o *OrganizationsPrivateDomain) SetPrivateDomain(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
+func (q OrganizationsPrivateDomainQuery) SetPrivateDomain(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Domains().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -700,9 +507,13 @@ func (o *OrganizationsPrivateDomain) SetPrivateDomain(ctx context.Context, exec 
 }
 
 // OrganizationsPrivateDomains retrieves all the records using an executor.
-func OrganizationsPrivateDomains(mods ...qm.QueryMod) organizationsPrivateDomainQuery {
+func OrganizationsPrivateDomains(mods ...qm.QueryMod) OrganizationsPrivateDomainQuery {
 	mods = append(mods, qm.From("\"organizations_private_domains\""))
-	return organizationsPrivateDomainQuery{NewQuery(mods...)}
+	return OrganizationsPrivateDomainQuery{NewQuery(mods...)}
+}
+
+type OrganizationsPrivateDomainFinder interface {
+	FindOrganizationsPrivateDomain(ctx context.Context, exec boil.ContextExecutor, organizationsPrivateDomainsPK int, selectCols ...string) (*OrganizationsPrivateDomain, error)
 }
 
 // FindOrganizationsPrivateDomain retrieves a single record by ID with an executor.
@@ -728,25 +539,21 @@ func FindOrganizationsPrivateDomain(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: unable to select from organizations_private_domains")
 	}
 
-	if err = organizationsPrivateDomainObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return organizationsPrivateDomainObj, err
-	}
-
 	return organizationsPrivateDomainObj, nil
+}
+
+type OrganizationsPrivateDomainInserter interface {
+	Insert(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *OrganizationsPrivateDomain) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q OrganizationsPrivateDomainQuery) Insert(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_private_domains provided for insertion")
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsPrivateDomainColumnsWithDefault, o)
 
@@ -811,17 +618,20 @@ func (o *OrganizationsPrivateDomain) Insert(ctx context.Context, exec boil.Conte
 		organizationsPrivateDomainInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type OrganizationsPrivateDomainUpdater interface {
+	Update(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the OrganizationsPrivateDomain.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *OrganizationsPrivateDomain) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q OrganizationsPrivateDomainQuery) Update(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	organizationsPrivateDomainUpdateCacheMut.RLock()
 	cache, cached := organizationsPrivateDomainUpdateCache[key]
@@ -874,11 +684,11 @@ func (o *OrganizationsPrivateDomain) Update(ctx context.Context, exec boil.Conte
 		organizationsPrivateDomainUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q organizationsPrivateDomainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsPrivateDomainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -895,7 +705,7 @@ func (q organizationsPrivateDomainQuery) UpdateAll(ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o OrganizationsPrivateDomainSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsPrivateDomainQuery) UpdateAllSlice(o OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -942,15 +752,165 @@ func (o OrganizationsPrivateDomainSlice) UpdateAll(ctx context.Context, exec boi
 	return rowsAff, nil
 }
 
+type OrganizationsPrivateDomainDeleter interface {
+	Delete(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single OrganizationsPrivateDomain record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q OrganizationsPrivateDomainQuery) Delete(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no OrganizationsPrivateDomain provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsPrivateDomainPrimaryKeyMapping)
+	sql := "DELETE FROM \"organizations_private_domains\" WHERE \"organizations_private_domains_pk\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from organizations_private_domains")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_private_domains")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q OrganizationsPrivateDomainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no organizationsPrivateDomainQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizations_private_domains")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_private_domains")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q OrganizationsPrivateDomainQuery) DeleteAllSlice(o OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsPrivateDomainPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"organizations_private_domains\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationsPrivateDomainPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizationsPrivateDomain slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_private_domains")
+	}
+
+	return rowsAff, nil
+}
+
+type OrganizationsPrivateDomainReloader interface {
+	Reload(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q OrganizationsPrivateDomainQuery) Reload(o *OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindOrganizationsPrivateDomain(ctx, exec, o.OrganizationsPrivateDomainsPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q OrganizationsPrivateDomainQuery) ReloadAll(o *OrganizationsPrivateDomainSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := OrganizationsPrivateDomainSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsPrivateDomainPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"organizations_private_domains\".* FROM \"organizations_private_domains\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationsPrivateDomainPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in OrganizationsPrivateDomainSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// OrganizationsPrivateDomainExists checks if the OrganizationsPrivateDomain row exists.
+func OrganizationsPrivateDomainExists(ctx context.Context, exec boil.ContextExecutor, organizationsPrivateDomainsPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"organizations_private_domains\" where \"organizations_private_domains_pk\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, organizationsPrivateDomainsPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, organizationsPrivateDomainsPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if organizations_private_domains exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *OrganizationsPrivateDomain) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_private_domains provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsPrivateDomainColumnsWithDefault, o)
@@ -1054,172 +1014,5 @@ func (o *OrganizationsPrivateDomain) Upsert(ctx context.Context, exec boil.Conte
 		organizationsPrivateDomainUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single OrganizationsPrivateDomain record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *OrganizationsPrivateDomain) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no OrganizationsPrivateDomain provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsPrivateDomainPrimaryKeyMapping)
-	sql := "DELETE FROM \"organizations_private_domains\" WHERE \"organizations_private_domains_pk\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from organizations_private_domains")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_private_domains")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q organizationsPrivateDomainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no organizationsPrivateDomainQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizations_private_domains")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_private_domains")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o OrganizationsPrivateDomainSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(organizationsPrivateDomainBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsPrivateDomainPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"organizations_private_domains\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationsPrivateDomainPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizationsPrivateDomain slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_private_domains")
-	}
-
-	if len(organizationsPrivateDomainAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *OrganizationsPrivateDomain) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindOrganizationsPrivateDomain(ctx, exec, o.OrganizationsPrivateDomainsPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *OrganizationsPrivateDomainSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := OrganizationsPrivateDomainSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsPrivateDomainPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"organizations_private_domains\".* FROM \"organizations_private_domains\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationsPrivateDomainPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in OrganizationsPrivateDomainSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// OrganizationsPrivateDomainExists checks if the OrganizationsPrivateDomain row exists.
-func OrganizationsPrivateDomainExists(ctx context.Context, exec boil.ContextExecutor, organizationsPrivateDomainsPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"organizations_private_domains\" where \"organizations_private_domains_pk\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, organizationsPrivateDomainsPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, organizationsPrivateDomainsPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if organizations_private_domains exists")
-	}
-
-	return exists, nil
 }

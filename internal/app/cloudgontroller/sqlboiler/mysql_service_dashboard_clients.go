@@ -106,10 +106,8 @@ type (
 	// ServiceDashboardClientSlice is an alias for a slice of pointers to ServiceDashboardClient.
 	// This should almost always be used instead of []ServiceDashboardClient.
 	ServiceDashboardClientSlice []*ServiceDashboardClient
-	// ServiceDashboardClientHook is the signature for custom ServiceDashboardClient hook methods
-	ServiceDashboardClientHook func(context.Context, boil.ContextExecutor, *ServiceDashboardClient) error
 
-	serviceDashboardClientQuery struct {
+	ServiceDashboardClientQuery struct {
 		*queries.Query
 	}
 )
@@ -135,178 +133,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceDashboardClientBeforeInsertHooks []ServiceDashboardClientHook
-var serviceDashboardClientBeforeUpdateHooks []ServiceDashboardClientHook
-var serviceDashboardClientBeforeDeleteHooks []ServiceDashboardClientHook
-var serviceDashboardClientBeforeUpsertHooks []ServiceDashboardClientHook
-
-var serviceDashboardClientAfterInsertHooks []ServiceDashboardClientHook
-var serviceDashboardClientAfterSelectHooks []ServiceDashboardClientHook
-var serviceDashboardClientAfterUpdateHooks []ServiceDashboardClientHook
-var serviceDashboardClientAfterDeleteHooks []ServiceDashboardClientHook
-var serviceDashboardClientAfterUpsertHooks []ServiceDashboardClientHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceDashboardClient) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceDashboardClient) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceDashboardClient) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceDashboardClient) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceDashboardClient) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceDashboardClient) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceDashboardClient) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceDashboardClient) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceDashboardClient) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceDashboardClientAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceDashboardClientHook registers your hook function for all future operations.
-func AddServiceDashboardClientHook(hookPoint boil.HookPoint, serviceDashboardClientHook ServiceDashboardClientHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceDashboardClientBeforeInsertHooks = append(serviceDashboardClientBeforeInsertHooks, serviceDashboardClientHook)
-	case boil.BeforeUpdateHook:
-		serviceDashboardClientBeforeUpdateHooks = append(serviceDashboardClientBeforeUpdateHooks, serviceDashboardClientHook)
-	case boil.BeforeDeleteHook:
-		serviceDashboardClientBeforeDeleteHooks = append(serviceDashboardClientBeforeDeleteHooks, serviceDashboardClientHook)
-	case boil.BeforeUpsertHook:
-		serviceDashboardClientBeforeUpsertHooks = append(serviceDashboardClientBeforeUpsertHooks, serviceDashboardClientHook)
-	case boil.AfterInsertHook:
-		serviceDashboardClientAfterInsertHooks = append(serviceDashboardClientAfterInsertHooks, serviceDashboardClientHook)
-	case boil.AfterSelectHook:
-		serviceDashboardClientAfterSelectHooks = append(serviceDashboardClientAfterSelectHooks, serviceDashboardClientHook)
-	case boil.AfterUpdateHook:
-		serviceDashboardClientAfterUpdateHooks = append(serviceDashboardClientAfterUpdateHooks, serviceDashboardClientHook)
-	case boil.AfterDeleteHook:
-		serviceDashboardClientAfterDeleteHooks = append(serviceDashboardClientAfterDeleteHooks, serviceDashboardClientHook)
-	case boil.AfterUpsertHook:
-		serviceDashboardClientAfterUpsertHooks = append(serviceDashboardClientAfterUpsertHooks, serviceDashboardClientHook)
-	}
+type ServiceDashboardClientFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceDashboardClient, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceDashboardClientSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceDashboardClient record from the query.
-func (q serviceDashboardClientQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceDashboardClient, error) {
+func (q ServiceDashboardClientQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceDashboardClient, error) {
 	o := &ServiceDashboardClient{}
 
 	queries.SetLimit(q.Query, 1)
@@ -319,15 +154,11 @@ func (q serviceDashboardClientQuery) One(ctx context.Context, exec boil.ContextE
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_dashboard_clients")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceDashboardClient records from the query.
-func (q serviceDashboardClientQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceDashboardClientSlice, error) {
+func (q ServiceDashboardClientQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceDashboardClientSlice, error) {
 	var o []*ServiceDashboardClient
 
 	err := q.Bind(ctx, exec, &o)
@@ -335,19 +166,11 @@ func (q serviceDashboardClientQuery) All(ctx context.Context, exec boil.ContextE
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceDashboardClient slice")
 	}
 
-	if len(serviceDashboardClientAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceDashboardClient records in the query.
-func (q serviceDashboardClientQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceDashboardClientQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -362,7 +185,7 @@ func (q serviceDashboardClientQuery) Count(ctx context.Context, exec boil.Contex
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceDashboardClientQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceDashboardClientQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -378,9 +201,13 @@ func (q serviceDashboardClientQuery) Exists(ctx context.Context, exec boil.Conte
 }
 
 // ServiceDashboardClients retrieves all the records using an executor.
-func ServiceDashboardClients(mods ...qm.QueryMod) serviceDashboardClientQuery {
+func ServiceDashboardClients(mods ...qm.QueryMod) ServiceDashboardClientQuery {
 	mods = append(mods, qm.From("`service_dashboard_clients`"))
-	return serviceDashboardClientQuery{NewQuery(mods...)}
+	return ServiceDashboardClientQuery{NewQuery(mods...)}
+}
+
+type ServiceDashboardClientFinder interface {
+	FindServiceDashboardClient(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceDashboardClient, error)
 }
 
 // FindServiceDashboardClient retrieves a single record by ID with an executor.
@@ -406,16 +233,16 @@ func FindServiceDashboardClient(ctx context.Context, exec boil.ContextExecutor, 
 		return nil, errors.Wrap(err, "models: unable to select from service_dashboard_clients")
 	}
 
-	if err = serviceDashboardClientObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceDashboardClientObj, err
-	}
-
 	return serviceDashboardClientObj, nil
+}
+
+type ServiceDashboardClientInserter interface {
+	Insert(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceDashboardClient) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceDashboardClientQuery) Insert(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_dashboard_clients provided for insertion")
 	}
@@ -430,10 +257,6 @@ func (o *ServiceDashboardClient) Insert(ctx context.Context, exec boil.ContextEx
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceDashboardClientColumnsWithDefault, o)
@@ -526,13 +349,19 @@ CacheNoHooks:
 		serviceDashboardClientInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceDashboardClientUpdater interface {
+	Update(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceDashboardClient.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceDashboardClient) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceDashboardClientQuery) Update(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -540,9 +369,6 @@ func (o *ServiceDashboardClient) Update(ctx context.Context, exec boil.ContextEx
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceDashboardClientUpdateCacheMut.RLock()
 	cache, cached := serviceDashboardClientUpdateCache[key]
@@ -595,11 +421,11 @@ func (o *ServiceDashboardClient) Update(ctx context.Context, exec boil.ContextEx
 		serviceDashboardClientUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -616,7 +442,7 @@ func (q serviceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceDashboardClientSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceDashboardClientQuery) UpdateAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -663,6 +489,160 @@ func (o ServiceDashboardClientSlice) UpdateAll(ctx context.Context, exec boil.Co
 	return rowsAff, nil
 }
 
+type ServiceDashboardClientDeleter interface {
+	Delete(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceDashboardClient record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceDashboardClientQuery) Delete(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceDashboardClient provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceDashboardClientPrimaryKeyMapping)
+	sql := "DELETE FROM `service_dashboard_clients` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_dashboard_clients")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_dashboard_clients")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceDashboardClientQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceDashboardClientQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_dashboard_clients")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_dashboard_clients")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceDashboardClientQuery) DeleteAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceDashboardClientPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `service_dashboard_clients` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceDashboardClientPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceDashboardClient slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_dashboard_clients")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceDashboardClientReloader interface {
+	Reload(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceDashboardClientQuery) Reload(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceDashboardClient(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceDashboardClientQuery) ReloadAll(o *ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceDashboardClientSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceDashboardClientPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `service_dashboard_clients`.* FROM `service_dashboard_clients` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceDashboardClientPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceDashboardClientSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceDashboardClientExists checks if the ServiceDashboardClient row exists.
+func ServiceDashboardClientExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `service_dashboard_clients` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_dashboard_clients exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLServiceDashboardClientUniqueColumns = []string{
 	"id",
 	"uaa_id",
@@ -681,10 +661,6 @@ func (o *ServiceDashboardClient) Upsert(ctx context.Context, exec boil.ContextEx
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceDashboardClientColumnsWithDefault, o)
@@ -817,172 +793,5 @@ CacheNoHooks:
 		serviceDashboardClientUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceDashboardClient record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceDashboardClient) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceDashboardClient provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceDashboardClientPrimaryKeyMapping)
-	sql := "DELETE FROM `service_dashboard_clients` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_dashboard_clients")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_dashboard_clients")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceDashboardClientQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceDashboardClientQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_dashboard_clients")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_dashboard_clients")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceDashboardClientSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceDashboardClientBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceDashboardClientPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `service_dashboard_clients` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceDashboardClientPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceDashboardClient slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_dashboard_clients")
-	}
-
-	if len(serviceDashboardClientAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceDashboardClient) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceDashboardClient(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceDashboardClientSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceDashboardClientSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceDashboardClientPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `service_dashboard_clients`.* FROM `service_dashboard_clients` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceDashboardClientPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceDashboardClientSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceDashboardClientExists checks if the ServiceDashboardClient row exists.
-func ServiceDashboardClientExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `service_dashboard_clients` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_dashboard_clients exists")
-	}
-
-	return exists, nil
 }

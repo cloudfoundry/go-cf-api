@@ -124,10 +124,8 @@ type (
 	// JobWarningSlice is an alias for a slice of pointers to JobWarning.
 	// This should almost always be used instead of []JobWarning.
 	JobWarningSlice []*JobWarning
-	// JobWarningHook is the signature for custom JobWarning hook methods
-	JobWarningHook func(context.Context, boil.ContextExecutor, *JobWarning) error
 
-	jobWarningQuery struct {
+	JobWarningQuery struct {
 		*queries.Query
 	}
 )
@@ -153,178 +151,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var jobWarningBeforeInsertHooks []JobWarningHook
-var jobWarningBeforeUpdateHooks []JobWarningHook
-var jobWarningBeforeDeleteHooks []JobWarningHook
-var jobWarningBeforeUpsertHooks []JobWarningHook
-
-var jobWarningAfterInsertHooks []JobWarningHook
-var jobWarningAfterSelectHooks []JobWarningHook
-var jobWarningAfterUpdateHooks []JobWarningHook
-var jobWarningAfterDeleteHooks []JobWarningHook
-var jobWarningAfterUpsertHooks []JobWarningHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *JobWarning) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *JobWarning) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *JobWarning) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *JobWarning) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *JobWarning) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *JobWarning) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *JobWarning) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *JobWarning) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *JobWarning) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range jobWarningAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddJobWarningHook registers your hook function for all future operations.
-func AddJobWarningHook(hookPoint boil.HookPoint, jobWarningHook JobWarningHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		jobWarningBeforeInsertHooks = append(jobWarningBeforeInsertHooks, jobWarningHook)
-	case boil.BeforeUpdateHook:
-		jobWarningBeforeUpdateHooks = append(jobWarningBeforeUpdateHooks, jobWarningHook)
-	case boil.BeforeDeleteHook:
-		jobWarningBeforeDeleteHooks = append(jobWarningBeforeDeleteHooks, jobWarningHook)
-	case boil.BeforeUpsertHook:
-		jobWarningBeforeUpsertHooks = append(jobWarningBeforeUpsertHooks, jobWarningHook)
-	case boil.AfterInsertHook:
-		jobWarningAfterInsertHooks = append(jobWarningAfterInsertHooks, jobWarningHook)
-	case boil.AfterSelectHook:
-		jobWarningAfterSelectHooks = append(jobWarningAfterSelectHooks, jobWarningHook)
-	case boil.AfterUpdateHook:
-		jobWarningAfterUpdateHooks = append(jobWarningAfterUpdateHooks, jobWarningHook)
-	case boil.AfterDeleteHook:
-		jobWarningAfterDeleteHooks = append(jobWarningAfterDeleteHooks, jobWarningHook)
-	case boil.AfterUpsertHook:
-		jobWarningAfterUpsertHooks = append(jobWarningAfterUpsertHooks, jobWarningHook)
-	}
+type JobWarningFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*JobWarning, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (JobWarningSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single jobWarning record from the query.
-func (q jobWarningQuery) One(ctx context.Context, exec boil.ContextExecutor) (*JobWarning, error) {
+func (q JobWarningQuery) One(ctx context.Context, exec boil.ContextExecutor) (*JobWarning, error) {
 	o := &JobWarning{}
 
 	queries.SetLimit(q.Query, 1)
@@ -337,15 +172,11 @@ func (q jobWarningQuery) One(ctx context.Context, exec boil.ContextExecutor) (*J
 		return nil, errors.Wrap(err, "models: failed to execute a one query for job_warnings")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all JobWarning records from the query.
-func (q jobWarningQuery) All(ctx context.Context, exec boil.ContextExecutor) (JobWarningSlice, error) {
+func (q JobWarningQuery) All(ctx context.Context, exec boil.ContextExecutor) (JobWarningSlice, error) {
 	var o []*JobWarning
 
 	err := q.Bind(ctx, exec, &o)
@@ -353,19 +184,11 @@ func (q jobWarningQuery) All(ctx context.Context, exec boil.ContextExecutor) (Jo
 		return nil, errors.Wrap(err, "models: failed to assign all query results to JobWarning slice")
 	}
 
-	if len(jobWarningAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all JobWarning records in the query.
-func (q jobWarningQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q JobWarningQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -380,7 +203,7 @@ func (q jobWarningQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q jobWarningQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q JobWarningQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -396,7 +219,7 @@ func (q jobWarningQuery) Exists(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // FKJob pointed to by the foreign key.
-func (o *JobWarning) FKJob(mods ...qm.QueryMod) jobQuery {
+func (q JobWarningQuery) FKJob(o *JobWarning, mods ...qm.QueryMod) JobQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.FKJobsID),
 	}
@@ -479,14 +302,6 @@ func (jobWarningL) LoadFKJob(ctx context.Context, e boil.ContextExecutor, singul
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for jobs")
 	}
 
-	if len(jobWarningAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -520,10 +335,10 @@ func (jobWarningL) LoadFKJob(ctx context.Context, e boil.ContextExecutor, singul
 // SetFKJob of the jobWarning to the related item.
 // Sets o.R.FKJob to related.
 // Adds o to related.R.FKJobJobWarnings.
-func (o *JobWarning) SetFKJob(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Job) error {
+func (q JobWarningQuery) SetFKJob(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Job) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Jobs().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -567,11 +382,11 @@ func (o *JobWarning) SetFKJob(ctx context.Context, exec boil.ContextExecutor, in
 // RemoveFKJob relationship.
 // Sets o.R.FKJob to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *JobWarning) RemoveFKJob(ctx context.Context, exec boil.ContextExecutor, related *Job) error {
+func (q JobWarningQuery) RemoveFKJob(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, related *Job) error {
 	var err error
 
 	queries.SetScanner(&o.FKJobsID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("fk_jobs_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("fk_jobs_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -598,9 +413,13 @@ func (o *JobWarning) RemoveFKJob(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // JobWarnings retrieves all the records using an executor.
-func JobWarnings(mods ...qm.QueryMod) jobWarningQuery {
+func JobWarnings(mods ...qm.QueryMod) JobWarningQuery {
 	mods = append(mods, qm.From("\"job_warnings\""))
-	return jobWarningQuery{NewQuery(mods...)}
+	return JobWarningQuery{NewQuery(mods...)}
+}
+
+type JobWarningFinder interface {
+	FindJobWarning(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*JobWarning, error)
 }
 
 // FindJobWarning retrieves a single record by ID with an executor.
@@ -626,16 +445,16 @@ func FindJobWarning(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 		return nil, errors.Wrap(err, "models: unable to select from job_warnings")
 	}
 
-	if err = jobWarningObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return jobWarningObj, err
-	}
-
 	return jobWarningObj, nil
+}
+
+type JobWarningInserter interface {
+	Insert(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *JobWarning) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q JobWarningQuery) Insert(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no job_warnings provided for insertion")
 	}
@@ -650,10 +469,6 @@ func (o *JobWarning) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(jobWarningColumnsWithDefault, o)
@@ -719,13 +534,19 @@ func (o *JobWarning) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		jobWarningInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type JobWarningUpdater interface {
+	Update(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o JobWarningSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the JobWarning.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *JobWarning) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q JobWarningQuery) Update(o *JobWarning, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -733,9 +554,6 @@ func (o *JobWarning) Update(ctx context.Context, exec boil.ContextExecutor, colu
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	jobWarningUpdateCacheMut.RLock()
 	cache, cached := jobWarningUpdateCache[key]
@@ -788,11 +606,11 @@ func (o *JobWarning) Update(ctx context.Context, exec boil.ContextExecutor, colu
 		jobWarningUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q jobWarningQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q JobWarningQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -809,7 +627,7 @@ func (q jobWarningQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o JobWarningSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q JobWarningQuery) UpdateAllSlice(o JobWarningSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -856,6 +674,160 @@ func (o JobWarningSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 	return rowsAff, nil
 }
 
+type JobWarningDeleter interface {
+	Delete(o *JobWarning, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o JobWarningSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single JobWarning record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q JobWarningQuery) Delete(o *JobWarning, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no JobWarning provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), jobWarningPrimaryKeyMapping)
+	sql := "DELETE FROM \"job_warnings\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from job_warnings")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for job_warnings")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q JobWarningQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no jobWarningQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from job_warnings")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for job_warnings")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q JobWarningQuery) DeleteAllSlice(o JobWarningSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), jobWarningPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"job_warnings\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, jobWarningPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from jobWarning slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for job_warnings")
+	}
+
+	return rowsAff, nil
+}
+
+type JobWarningReloader interface {
+	Reload(o *JobWarning, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *JobWarningSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q JobWarningQuery) Reload(o *JobWarning, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindJobWarning(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q JobWarningQuery) ReloadAll(o *JobWarningSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := JobWarningSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), jobWarningPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"job_warnings\".* FROM \"job_warnings\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, jobWarningPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in JobWarningSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// JobWarningExists checks if the JobWarning row exists.
+func JobWarningExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"job_warnings\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if job_warnings exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *JobWarning) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -869,10 +841,6 @@ func (o *JobWarning) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(jobWarningColumnsWithDefault, o)
@@ -976,172 +944,5 @@ func (o *JobWarning) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		jobWarningUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single JobWarning record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *JobWarning) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no JobWarning provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), jobWarningPrimaryKeyMapping)
-	sql := "DELETE FROM \"job_warnings\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from job_warnings")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for job_warnings")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q jobWarningQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no jobWarningQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from job_warnings")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for job_warnings")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o JobWarningSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(jobWarningBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), jobWarningPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"job_warnings\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, jobWarningPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from jobWarning slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for job_warnings")
-	}
-
-	if len(jobWarningAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *JobWarning) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindJobWarning(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *JobWarningSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := JobWarningSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), jobWarningPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"job_warnings\".* FROM \"job_warnings\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, jobWarningPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in JobWarningSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// JobWarningExists checks if the JobWarning row exists.
-func JobWarningExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"job_warnings\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if job_warnings exists")
-	}
-
-	return exists, nil
 }

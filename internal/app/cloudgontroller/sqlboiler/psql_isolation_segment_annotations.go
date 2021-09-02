@@ -131,10 +131,8 @@ type (
 	// IsolationSegmentAnnotationSlice is an alias for a slice of pointers to IsolationSegmentAnnotation.
 	// This should almost always be used instead of []IsolationSegmentAnnotation.
 	IsolationSegmentAnnotationSlice []*IsolationSegmentAnnotation
-	// IsolationSegmentAnnotationHook is the signature for custom IsolationSegmentAnnotation hook methods
-	IsolationSegmentAnnotationHook func(context.Context, boil.ContextExecutor, *IsolationSegmentAnnotation) error
 
-	isolationSegmentAnnotationQuery struct {
+	IsolationSegmentAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var isolationSegmentAnnotationBeforeInsertHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationBeforeUpdateHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationBeforeDeleteHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationBeforeUpsertHooks []IsolationSegmentAnnotationHook
-
-var isolationSegmentAnnotationAfterInsertHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationAfterSelectHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationAfterUpdateHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationAfterDeleteHooks []IsolationSegmentAnnotationHook
-var isolationSegmentAnnotationAfterUpsertHooks []IsolationSegmentAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *IsolationSegmentAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *IsolationSegmentAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *IsolationSegmentAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *IsolationSegmentAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *IsolationSegmentAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *IsolationSegmentAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *IsolationSegmentAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *IsolationSegmentAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *IsolationSegmentAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddIsolationSegmentAnnotationHook registers your hook function for all future operations.
-func AddIsolationSegmentAnnotationHook(hookPoint boil.HookPoint, isolationSegmentAnnotationHook IsolationSegmentAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		isolationSegmentAnnotationBeforeInsertHooks = append(isolationSegmentAnnotationBeforeInsertHooks, isolationSegmentAnnotationHook)
-	case boil.BeforeUpdateHook:
-		isolationSegmentAnnotationBeforeUpdateHooks = append(isolationSegmentAnnotationBeforeUpdateHooks, isolationSegmentAnnotationHook)
-	case boil.BeforeDeleteHook:
-		isolationSegmentAnnotationBeforeDeleteHooks = append(isolationSegmentAnnotationBeforeDeleteHooks, isolationSegmentAnnotationHook)
-	case boil.BeforeUpsertHook:
-		isolationSegmentAnnotationBeforeUpsertHooks = append(isolationSegmentAnnotationBeforeUpsertHooks, isolationSegmentAnnotationHook)
-	case boil.AfterInsertHook:
-		isolationSegmentAnnotationAfterInsertHooks = append(isolationSegmentAnnotationAfterInsertHooks, isolationSegmentAnnotationHook)
-	case boil.AfterSelectHook:
-		isolationSegmentAnnotationAfterSelectHooks = append(isolationSegmentAnnotationAfterSelectHooks, isolationSegmentAnnotationHook)
-	case boil.AfterUpdateHook:
-		isolationSegmentAnnotationAfterUpdateHooks = append(isolationSegmentAnnotationAfterUpdateHooks, isolationSegmentAnnotationHook)
-	case boil.AfterDeleteHook:
-		isolationSegmentAnnotationAfterDeleteHooks = append(isolationSegmentAnnotationAfterDeleteHooks, isolationSegmentAnnotationHook)
-	case boil.AfterUpsertHook:
-		isolationSegmentAnnotationAfterUpsertHooks = append(isolationSegmentAnnotationAfterUpsertHooks, isolationSegmentAnnotationHook)
-	}
+type IsolationSegmentAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegmentAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single isolationSegmentAnnotation record from the query.
-func (q isolationSegmentAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegmentAnnotation, error) {
+func (q IsolationSegmentAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegmentAnnotation, error) {
 	o := &IsolationSegmentAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q isolationSegmentAnnotationQuery) One(ctx context.Context, exec boil.Cont
 		return nil, errors.Wrap(err, "models: failed to execute a one query for isolation_segment_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all IsolationSegmentAnnotation records from the query.
-func (q isolationSegmentAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentAnnotationSlice, error) {
+func (q IsolationSegmentAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentAnnotationSlice, error) {
 	var o []*IsolationSegmentAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q isolationSegmentAnnotationQuery) All(ctx context.Context, exec boil.Cont
 		return nil, errors.Wrap(err, "models: failed to assign all query results to IsolationSegmentAnnotation slice")
 	}
 
-	if len(isolationSegmentAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all IsolationSegmentAnnotation records in the query.
-func (q isolationSegmentAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q IsolationSegmentAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q isolationSegmentAnnotationQuery) Count(ctx context.Context, exec boil.Co
 }
 
 // Exists checks if the row exists in the table.
-func (q isolationSegmentAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q IsolationSegmentAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q isolationSegmentAnnotationQuery) Exists(ctx context.Context, exec boil.C
 }
 
 // Resource pointed to by the foreign key.
-func (o *IsolationSegmentAnnotation) Resource(mods ...qm.QueryMod) isolationSegmentQuery {
+func (q IsolationSegmentAnnotationQuery) Resource(o *IsolationSegmentAnnotation, mods ...qm.QueryMod) IsolationSegmentQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (isolationSegmentAnnotationL) LoadResource(ctx context.Context, e boil.Cont
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for isolation_segments")
 	}
 
-	if len(isolationSegmentAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (isolationSegmentAnnotationL) LoadResource(ctx context.Context, e boil.Cont
 // SetResource of the isolationSegmentAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceIsolationSegmentAnnotations.
-func (o *IsolationSegmentAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *IsolationSegment) error {
+func (q IsolationSegmentAnnotationQuery) SetResource(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *IsolationSegment) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = IsolationSegments().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *IsolationSegmentAnnotation) SetResource(ctx context.Context, exec boil.
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *IsolationSegmentAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *IsolationSegment) error {
+func (q IsolationSegmentAnnotationQuery) RemoveResource(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, related *IsolationSegment) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *IsolationSegmentAnnotation) RemoveResource(ctx context.Context, exec bo
 }
 
 // IsolationSegmentAnnotations retrieves all the records using an executor.
-func IsolationSegmentAnnotations(mods ...qm.QueryMod) isolationSegmentAnnotationQuery {
+func IsolationSegmentAnnotations(mods ...qm.QueryMod) IsolationSegmentAnnotationQuery {
 	mods = append(mods, qm.From("\"isolation_segment_annotations\""))
-	return isolationSegmentAnnotationQuery{NewQuery(mods...)}
+	return IsolationSegmentAnnotationQuery{NewQuery(mods...)}
+}
+
+type IsolationSegmentAnnotationFinder interface {
+	FindIsolationSegmentAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*IsolationSegmentAnnotation, error)
 }
 
 // FindIsolationSegmentAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindIsolationSegmentAnnotation(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: unable to select from isolation_segment_annotations")
 	}
 
-	if err = isolationSegmentAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return isolationSegmentAnnotationObj, err
-	}
-
 	return isolationSegmentAnnotationObj, nil
+}
+
+type IsolationSegmentAnnotationInserter interface {
+	Insert(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *IsolationSegmentAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q IsolationSegmentAnnotationQuery) Insert(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no isolation_segment_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *IsolationSegmentAnnotation) Insert(ctx context.Context, exec boil.Conte
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(isolationSegmentAnnotationColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *IsolationSegmentAnnotation) Insert(ctx context.Context, exec boil.Conte
 		isolationSegmentAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type IsolationSegmentAnnotationUpdater interface {
+	Update(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the IsolationSegmentAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *IsolationSegmentAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q IsolationSegmentAnnotationQuery) Update(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *IsolationSegmentAnnotation) Update(ctx context.Context, exec boil.Conte
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	isolationSegmentAnnotationUpdateCacheMut.RLock()
 	cache, cached := isolationSegmentAnnotationUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *IsolationSegmentAnnotation) Update(ctx context.Context, exec boil.Conte
 		isolationSegmentAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q isolationSegmentAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q IsolationSegmentAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q isolationSegmentAnnotationQuery) UpdateAll(ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o IsolationSegmentAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q IsolationSegmentAnnotationQuery) UpdateAllSlice(o IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o IsolationSegmentAnnotationSlice) UpdateAll(ctx context.Context, exec boi
 	return rowsAff, nil
 }
 
+type IsolationSegmentAnnotationDeleter interface {
+	Delete(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single IsolationSegmentAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q IsolationSegmentAnnotationQuery) Delete(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no IsolationSegmentAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), isolationSegmentAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM \"isolation_segment_annotations\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from isolation_segment_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for isolation_segment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q IsolationSegmentAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no isolationSegmentAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from isolation_segment_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q IsolationSegmentAnnotationQuery) DeleteAllSlice(o IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"isolation_segment_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, isolationSegmentAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from isolationSegmentAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type IsolationSegmentAnnotationReloader interface {
+	Reload(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q IsolationSegmentAnnotationQuery) Reload(o *IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindIsolationSegmentAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q IsolationSegmentAnnotationQuery) ReloadAll(o *IsolationSegmentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := IsolationSegmentAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"isolation_segment_annotations\".* FROM \"isolation_segment_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, isolationSegmentAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in IsolationSegmentAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// IsolationSegmentAnnotationExists checks if the IsolationSegmentAnnotation row exists.
+func IsolationSegmentAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"isolation_segment_annotations\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if isolation_segment_annotations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *IsolationSegmentAnnotation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *IsolationSegmentAnnotation) Upsert(ctx context.Context, exec boil.Conte
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(isolationSegmentAnnotationColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *IsolationSegmentAnnotation) Upsert(ctx context.Context, exec boil.Conte
 		isolationSegmentAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single IsolationSegmentAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *IsolationSegmentAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no IsolationSegmentAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), isolationSegmentAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM \"isolation_segment_annotations\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from isolation_segment_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for isolation_segment_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q isolationSegmentAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no isolationSegmentAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from isolation_segment_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segment_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o IsolationSegmentAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(isolationSegmentAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"isolation_segment_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, isolationSegmentAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from isolationSegmentAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segment_annotations")
-	}
-
-	if len(isolationSegmentAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *IsolationSegmentAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindIsolationSegmentAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *IsolationSegmentAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := IsolationSegmentAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"isolation_segment_annotations\".* FROM \"isolation_segment_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, isolationSegmentAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in IsolationSegmentAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// IsolationSegmentAnnotationExists checks if the IsolationSegmentAnnotation row exists.
-func IsolationSegmentAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"isolation_segment_annotations\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if isolation_segment_annotations exists")
-	}
-
-	return exists, nil
 }

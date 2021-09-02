@@ -131,10 +131,8 @@ type (
 	// BuildLabelSlice is an alias for a slice of pointers to BuildLabel.
 	// This should almost always be used instead of []BuildLabel.
 	BuildLabelSlice []*BuildLabel
-	// BuildLabelHook is the signature for custom BuildLabel hook methods
-	BuildLabelHook func(context.Context, boil.ContextExecutor, *BuildLabel) error
 
-	buildLabelQuery struct {
+	BuildLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var buildLabelBeforeInsertHooks []BuildLabelHook
-var buildLabelBeforeUpdateHooks []BuildLabelHook
-var buildLabelBeforeDeleteHooks []BuildLabelHook
-var buildLabelBeforeUpsertHooks []BuildLabelHook
-
-var buildLabelAfterInsertHooks []BuildLabelHook
-var buildLabelAfterSelectHooks []BuildLabelHook
-var buildLabelAfterUpdateHooks []BuildLabelHook
-var buildLabelAfterDeleteHooks []BuildLabelHook
-var buildLabelAfterUpsertHooks []BuildLabelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BuildLabel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BuildLabel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BuildLabel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BuildLabel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BuildLabel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BuildLabel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BuildLabel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BuildLabel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BuildLabel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildLabelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBuildLabelHook registers your hook function for all future operations.
-func AddBuildLabelHook(hookPoint boil.HookPoint, buildLabelHook BuildLabelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		buildLabelBeforeInsertHooks = append(buildLabelBeforeInsertHooks, buildLabelHook)
-	case boil.BeforeUpdateHook:
-		buildLabelBeforeUpdateHooks = append(buildLabelBeforeUpdateHooks, buildLabelHook)
-	case boil.BeforeDeleteHook:
-		buildLabelBeforeDeleteHooks = append(buildLabelBeforeDeleteHooks, buildLabelHook)
-	case boil.BeforeUpsertHook:
-		buildLabelBeforeUpsertHooks = append(buildLabelBeforeUpsertHooks, buildLabelHook)
-	case boil.AfterInsertHook:
-		buildLabelAfterInsertHooks = append(buildLabelAfterInsertHooks, buildLabelHook)
-	case boil.AfterSelectHook:
-		buildLabelAfterSelectHooks = append(buildLabelAfterSelectHooks, buildLabelHook)
-	case boil.AfterUpdateHook:
-		buildLabelAfterUpdateHooks = append(buildLabelAfterUpdateHooks, buildLabelHook)
-	case boil.AfterDeleteHook:
-		buildLabelAfterDeleteHooks = append(buildLabelAfterDeleteHooks, buildLabelHook)
-	case boil.AfterUpsertHook:
-		buildLabelAfterUpsertHooks = append(buildLabelAfterUpsertHooks, buildLabelHook)
-	}
+type BuildLabelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*BuildLabel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (BuildLabelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single buildLabel record from the query.
-func (q buildLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildLabel, error) {
+func (q BuildLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildLabel, error) {
 	o := &BuildLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q buildLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*B
 		return nil, errors.Wrap(err, "models: failed to execute a one query for build_labels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all BuildLabel records from the query.
-func (q buildLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildLabelSlice, error) {
+func (q BuildLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildLabelSlice, error) {
 	var o []*BuildLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q buildLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (Bu
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BuildLabel slice")
 	}
 
-	if len(buildLabelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all BuildLabel records in the query.
-func (q buildLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q BuildLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q buildLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q buildLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q BuildLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q buildLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // Resource pointed to by the foreign key.
-func (o *BuildLabel) Resource(mods ...qm.QueryMod) buildQuery {
+func (q BuildLabelQuery) Resource(o *BuildLabel, mods ...qm.QueryMod) BuildQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (buildLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for builds")
 	}
 
-	if len(buildLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (buildLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, sin
 // SetResource of the buildLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceBuildLabels.
-func (o *BuildLabel) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
+func (q BuildLabelQuery) SetResource(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Builds().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *BuildLabel) SetResource(ctx context.Context, exec boil.ContextExecutor,
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *BuildLabel) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Build) error {
+func (q BuildLabelQuery) RemoveResource(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, related *Build) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *BuildLabel) RemoveResource(ctx context.Context, exec boil.ContextExecut
 }
 
 // BuildLabels retrieves all the records using an executor.
-func BuildLabels(mods ...qm.QueryMod) buildLabelQuery {
+func BuildLabels(mods ...qm.QueryMod) BuildLabelQuery {
 	mods = append(mods, qm.From("\"build_labels\""))
-	return buildLabelQuery{NewQuery(mods...)}
+	return BuildLabelQuery{NewQuery(mods...)}
+}
+
+type BuildLabelFinder interface {
+	FindBuildLabel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*BuildLabel, error)
 }
 
 // FindBuildLabel retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindBuildLabel(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 		return nil, errors.Wrap(err, "models: unable to select from build_labels")
 	}
 
-	if err = buildLabelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return buildLabelObj, err
-	}
-
 	return buildLabelObj, nil
+}
+
+type BuildLabelInserter interface {
+	Insert(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *BuildLabel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q BuildLabelQuery) Insert(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no build_labels provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *BuildLabel) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildLabelColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *BuildLabel) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		buildLabelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type BuildLabelUpdater interface {
+	Update(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the BuildLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *BuildLabel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q BuildLabelQuery) Update(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *BuildLabel) Update(ctx context.Context, exec boil.ContextExecutor, colu
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	buildLabelUpdateCacheMut.RLock()
 	cache, cached := buildLabelUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *BuildLabel) Update(ctx context.Context, exec boil.ContextExecutor, colu
 		buildLabelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q buildLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q buildLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o BuildLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildLabelQuery) UpdateAllSlice(o BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o BuildLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 	return rowsAff, nil
 }
 
+type BuildLabelDeleter interface {
+	Delete(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single BuildLabel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q BuildLabelQuery) Delete(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no BuildLabel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildLabelPrimaryKeyMapping)
+	sql := "DELETE FROM \"build_labels\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from build_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for build_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q BuildLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no buildLabelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from build_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for build_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q BuildLabelQuery) DeleteAllSlice(o BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"build_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildLabelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from buildLabel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for build_labels")
+	}
+
+	return rowsAff, nil
+}
+
+type BuildLabelReloader interface {
+	Reload(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q BuildLabelQuery) Reload(o *BuildLabel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindBuildLabel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q BuildLabelQuery) ReloadAll(o *BuildLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := BuildLabelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"build_labels\".* FROM \"build_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildLabelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in BuildLabelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// BuildLabelExists checks if the BuildLabel row exists.
+func BuildLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"build_labels\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if build_labels exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *BuildLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *BuildLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildLabelColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *BuildLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		buildLabelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single BuildLabel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *BuildLabel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no BuildLabel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildLabelPrimaryKeyMapping)
-	sql := "DELETE FROM \"build_labels\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from build_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for build_labels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q buildLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no buildLabelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from build_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for build_labels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o BuildLabelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(buildLabelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"build_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildLabelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from buildLabel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for build_labels")
-	}
-
-	if len(buildLabelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *BuildLabel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindBuildLabel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *BuildLabelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := BuildLabelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"build_labels\".* FROM \"build_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildLabelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in BuildLabelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// BuildLabelExists checks if the BuildLabel row exists.
-func BuildLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"build_labels\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if build_labels exists")
-	}
-
-	return exists, nil
 }

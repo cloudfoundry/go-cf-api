@@ -131,10 +131,8 @@ type (
 	// ServiceBindingOperationSlice is an alias for a slice of pointers to ServiceBindingOperation.
 	// This should almost always be used instead of []ServiceBindingOperation.
 	ServiceBindingOperationSlice []*ServiceBindingOperation
-	// ServiceBindingOperationHook is the signature for custom ServiceBindingOperation hook methods
-	ServiceBindingOperationHook func(context.Context, boil.ContextExecutor, *ServiceBindingOperation) error
 
-	serviceBindingOperationQuery struct {
+	ServiceBindingOperationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceBindingOperationBeforeInsertHooks []ServiceBindingOperationHook
-var serviceBindingOperationBeforeUpdateHooks []ServiceBindingOperationHook
-var serviceBindingOperationBeforeDeleteHooks []ServiceBindingOperationHook
-var serviceBindingOperationBeforeUpsertHooks []ServiceBindingOperationHook
-
-var serviceBindingOperationAfterInsertHooks []ServiceBindingOperationHook
-var serviceBindingOperationAfterSelectHooks []ServiceBindingOperationHook
-var serviceBindingOperationAfterUpdateHooks []ServiceBindingOperationHook
-var serviceBindingOperationAfterDeleteHooks []ServiceBindingOperationHook
-var serviceBindingOperationAfterUpsertHooks []ServiceBindingOperationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceBindingOperation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceBindingOperation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceBindingOperation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceBindingOperation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceBindingOperation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceBindingOperation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceBindingOperation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceBindingOperation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceBindingOperation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBindingOperationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceBindingOperationHook registers your hook function for all future operations.
-func AddServiceBindingOperationHook(hookPoint boil.HookPoint, serviceBindingOperationHook ServiceBindingOperationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceBindingOperationBeforeInsertHooks = append(serviceBindingOperationBeforeInsertHooks, serviceBindingOperationHook)
-	case boil.BeforeUpdateHook:
-		serviceBindingOperationBeforeUpdateHooks = append(serviceBindingOperationBeforeUpdateHooks, serviceBindingOperationHook)
-	case boil.BeforeDeleteHook:
-		serviceBindingOperationBeforeDeleteHooks = append(serviceBindingOperationBeforeDeleteHooks, serviceBindingOperationHook)
-	case boil.BeforeUpsertHook:
-		serviceBindingOperationBeforeUpsertHooks = append(serviceBindingOperationBeforeUpsertHooks, serviceBindingOperationHook)
-	case boil.AfterInsertHook:
-		serviceBindingOperationAfterInsertHooks = append(serviceBindingOperationAfterInsertHooks, serviceBindingOperationHook)
-	case boil.AfterSelectHook:
-		serviceBindingOperationAfterSelectHooks = append(serviceBindingOperationAfterSelectHooks, serviceBindingOperationHook)
-	case boil.AfterUpdateHook:
-		serviceBindingOperationAfterUpdateHooks = append(serviceBindingOperationAfterUpdateHooks, serviceBindingOperationHook)
-	case boil.AfterDeleteHook:
-		serviceBindingOperationAfterDeleteHooks = append(serviceBindingOperationAfterDeleteHooks, serviceBindingOperationHook)
-	case boil.AfterUpsertHook:
-		serviceBindingOperationAfterUpsertHooks = append(serviceBindingOperationAfterUpsertHooks, serviceBindingOperationHook)
-	}
+type ServiceBindingOperationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingOperation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingOperationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceBindingOperation record from the query.
-func (q serviceBindingOperationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingOperation, error) {
+func (q ServiceBindingOperationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingOperation, error) {
 	o := &ServiceBindingOperation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q serviceBindingOperationQuery) One(ctx context.Context, exec boil.Context
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_binding_operations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceBindingOperation records from the query.
-func (q serviceBindingOperationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingOperationSlice, error) {
+func (q ServiceBindingOperationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingOperationSlice, error) {
 	var o []*ServiceBindingOperation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q serviceBindingOperationQuery) All(ctx context.Context, exec boil.Context
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceBindingOperation slice")
 	}
 
-	if len(serviceBindingOperationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceBindingOperation records in the query.
-func (q serviceBindingOperationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceBindingOperationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q serviceBindingOperationQuery) Count(ctx context.Context, exec boil.Conte
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceBindingOperationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceBindingOperationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q serviceBindingOperationQuery) Exists(ctx context.Context, exec boil.Cont
 }
 
 // ServiceBinding pointed to by the foreign key.
-func (o *ServiceBindingOperation) ServiceBinding(mods ...qm.QueryMod) serviceBindingQuery {
+func (q ServiceBindingOperationQuery) ServiceBinding(o *ServiceBindingOperation, mods ...qm.QueryMod) ServiceBindingQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.ServiceBindingID),
 	}
@@ -486,14 +309,6 @@ func (serviceBindingOperationL) LoadServiceBinding(ctx context.Context, e boil.C
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_bindings")
 	}
 
-	if len(serviceBindingOperationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (serviceBindingOperationL) LoadServiceBinding(ctx context.Context, e boil.C
 // SetServiceBinding of the serviceBindingOperation to the related item.
 // Sets o.R.ServiceBinding to related.
 // Adds o to related.R.ServiceBindingOperation.
-func (o *ServiceBindingOperation) SetServiceBinding(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
+func (q ServiceBindingOperationQuery) SetServiceBinding(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = ServiceBindings().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *ServiceBindingOperation) SetServiceBinding(ctx context.Context, exec bo
 // RemoveServiceBinding relationship.
 // Sets o.R.ServiceBinding to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *ServiceBindingOperation) RemoveServiceBinding(ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
+func (q ServiceBindingOperationQuery) RemoveServiceBinding(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
 	var err error
 
 	queries.SetScanner(&o.ServiceBindingID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("service_binding_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("service_binding_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -594,9 +409,13 @@ func (o *ServiceBindingOperation) RemoveServiceBinding(ctx context.Context, exec
 }
 
 // ServiceBindingOperations retrieves all the records using an executor.
-func ServiceBindingOperations(mods ...qm.QueryMod) serviceBindingOperationQuery {
+func ServiceBindingOperations(mods ...qm.QueryMod) ServiceBindingOperationQuery {
 	mods = append(mods, qm.From("\"service_binding_operations\""))
-	return serviceBindingOperationQuery{NewQuery(mods...)}
+	return ServiceBindingOperationQuery{NewQuery(mods...)}
+}
+
+type ServiceBindingOperationFinder interface {
+	FindServiceBindingOperation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceBindingOperation, error)
 }
 
 // FindServiceBindingOperation retrieves a single record by ID with an executor.
@@ -622,16 +441,16 @@ func FindServiceBindingOperation(ctx context.Context, exec boil.ContextExecutor,
 		return nil, errors.Wrap(err, "models: unable to select from service_binding_operations")
 	}
 
-	if err = serviceBindingOperationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceBindingOperationObj, err
-	}
-
 	return serviceBindingOperationObj, nil
+}
+
+type ServiceBindingOperationInserter interface {
+	Insert(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceBindingOperation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceBindingOperationQuery) Insert(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_binding_operations provided for insertion")
 	}
@@ -646,10 +465,6 @@ func (o *ServiceBindingOperation) Insert(ctx context.Context, exec boil.ContextE
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBindingOperationColumnsWithDefault, o)
@@ -715,13 +530,19 @@ func (o *ServiceBindingOperation) Insert(ctx context.Context, exec boil.ContextE
 		serviceBindingOperationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceBindingOperationUpdater interface {
+	Update(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceBindingOperation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceBindingOperation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceBindingOperationQuery) Update(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -729,9 +550,6 @@ func (o *ServiceBindingOperation) Update(ctx context.Context, exec boil.ContextE
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceBindingOperationUpdateCacheMut.RLock()
 	cache, cached := serviceBindingOperationUpdateCache[key]
@@ -784,11 +602,11 @@ func (o *ServiceBindingOperation) Update(ctx context.Context, exec boil.ContextE
 		serviceBindingOperationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceBindingOperationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBindingOperationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -805,7 +623,7 @@ func (q serviceBindingOperationQuery) UpdateAll(ctx context.Context, exec boil.C
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceBindingOperationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBindingOperationQuery) UpdateAllSlice(o ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -852,6 +670,160 @@ func (o ServiceBindingOperationSlice) UpdateAll(ctx context.Context, exec boil.C
 	return rowsAff, nil
 }
 
+type ServiceBindingOperationDeleter interface {
+	Delete(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceBindingOperation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceBindingOperationQuery) Delete(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceBindingOperation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBindingOperationPrimaryKeyMapping)
+	sql := "DELETE FROM \"service_binding_operations\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_binding_operations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_binding_operations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceBindingOperationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceBindingOperationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_binding_operations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_binding_operations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceBindingOperationQuery) DeleteAllSlice(o ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBindingOperationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"service_binding_operations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBindingOperationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceBindingOperation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_binding_operations")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceBindingOperationReloader interface {
+	Reload(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceBindingOperationQuery) Reload(o *ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceBindingOperation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceBindingOperationQuery) ReloadAll(o *ServiceBindingOperationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceBindingOperationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBindingOperationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"service_binding_operations\".* FROM \"service_binding_operations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBindingOperationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceBindingOperationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceBindingOperationExists checks if the ServiceBindingOperation row exists.
+func ServiceBindingOperationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"service_binding_operations\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_binding_operations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *ServiceBindingOperation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -865,10 +837,6 @@ func (o *ServiceBindingOperation) Upsert(ctx context.Context, exec boil.ContextE
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBindingOperationColumnsWithDefault, o)
@@ -972,172 +940,5 @@ func (o *ServiceBindingOperation) Upsert(ctx context.Context, exec boil.ContextE
 		serviceBindingOperationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceBindingOperation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceBindingOperation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceBindingOperation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBindingOperationPrimaryKeyMapping)
-	sql := "DELETE FROM \"service_binding_operations\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_binding_operations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_binding_operations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceBindingOperationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceBindingOperationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_binding_operations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_binding_operations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceBindingOperationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceBindingOperationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBindingOperationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"service_binding_operations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBindingOperationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceBindingOperation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_binding_operations")
-	}
-
-	if len(serviceBindingOperationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceBindingOperation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceBindingOperation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceBindingOperationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceBindingOperationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBindingOperationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"service_binding_operations\".* FROM \"service_binding_operations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBindingOperationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceBindingOperationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceBindingOperationExists checks if the ServiceBindingOperation row exists.
-func ServiceBindingOperationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"service_binding_operations\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_binding_operations exists")
-	}
-
-	return exists, nil
 }

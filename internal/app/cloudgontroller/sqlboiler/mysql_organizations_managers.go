@@ -120,10 +120,8 @@ type (
 	// OrganizationsManagerSlice is an alias for a slice of pointers to OrganizationsManager.
 	// This should almost always be used instead of []OrganizationsManager.
 	OrganizationsManagerSlice []*OrganizationsManager
-	// OrganizationsManagerHook is the signature for custom OrganizationsManager hook methods
-	OrganizationsManagerHook func(context.Context, boil.ContextExecutor, *OrganizationsManager) error
 
-	organizationsManagerQuery struct {
+	OrganizationsManagerQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var organizationsManagerBeforeInsertHooks []OrganizationsManagerHook
-var organizationsManagerBeforeUpdateHooks []OrganizationsManagerHook
-var organizationsManagerBeforeDeleteHooks []OrganizationsManagerHook
-var organizationsManagerBeforeUpsertHooks []OrganizationsManagerHook
-
-var organizationsManagerAfterInsertHooks []OrganizationsManagerHook
-var organizationsManagerAfterSelectHooks []OrganizationsManagerHook
-var organizationsManagerAfterUpdateHooks []OrganizationsManagerHook
-var organizationsManagerAfterDeleteHooks []OrganizationsManagerHook
-var organizationsManagerAfterUpsertHooks []OrganizationsManagerHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *OrganizationsManager) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *OrganizationsManager) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *OrganizationsManager) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *OrganizationsManager) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *OrganizationsManager) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *OrganizationsManager) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *OrganizationsManager) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *OrganizationsManager) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *OrganizationsManager) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsManagerAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddOrganizationsManagerHook registers your hook function for all future operations.
-func AddOrganizationsManagerHook(hookPoint boil.HookPoint, organizationsManagerHook OrganizationsManagerHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		organizationsManagerBeforeInsertHooks = append(organizationsManagerBeforeInsertHooks, organizationsManagerHook)
-	case boil.BeforeUpdateHook:
-		organizationsManagerBeforeUpdateHooks = append(organizationsManagerBeforeUpdateHooks, organizationsManagerHook)
-	case boil.BeforeDeleteHook:
-		organizationsManagerBeforeDeleteHooks = append(organizationsManagerBeforeDeleteHooks, organizationsManagerHook)
-	case boil.BeforeUpsertHook:
-		organizationsManagerBeforeUpsertHooks = append(organizationsManagerBeforeUpsertHooks, organizationsManagerHook)
-	case boil.AfterInsertHook:
-		organizationsManagerAfterInsertHooks = append(organizationsManagerAfterInsertHooks, organizationsManagerHook)
-	case boil.AfterSelectHook:
-		organizationsManagerAfterSelectHooks = append(organizationsManagerAfterSelectHooks, organizationsManagerHook)
-	case boil.AfterUpdateHook:
-		organizationsManagerAfterUpdateHooks = append(organizationsManagerAfterUpdateHooks, organizationsManagerHook)
-	case boil.AfterDeleteHook:
-		organizationsManagerAfterDeleteHooks = append(organizationsManagerAfterDeleteHooks, organizationsManagerHook)
-	case boil.AfterUpsertHook:
-		organizationsManagerAfterUpsertHooks = append(organizationsManagerAfterUpsertHooks, organizationsManagerHook)
-	}
+type OrganizationsManagerFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsManager, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsManagerSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single organizationsManager record from the query.
-func (q organizationsManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsManager, error) {
+func (q OrganizationsManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsManager, error) {
 	o := &OrganizationsManager{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q organizationsManagerQuery) One(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to execute a one query for organizations_managers")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all OrganizationsManager records from the query.
-func (q organizationsManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsManagerSlice, error) {
+func (q OrganizationsManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsManagerSlice, error) {
 	var o []*OrganizationsManager
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q organizationsManagerQuery) All(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to assign all query results to OrganizationsManager slice")
 	}
 
-	if len(organizationsManagerAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all OrganizationsManager records in the query.
-func (q organizationsManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q OrganizationsManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q organizationsManagerQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q organizationsManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q OrganizationsManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q organizationsManagerQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Organization pointed to by the foreign key.
-func (o *OrganizationsManager) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q OrganizationsManagerQuery) Organization(o *OrganizationsManager, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OrganizationID),
 	}
@@ -406,7 +229,7 @@ func (o *OrganizationsManager) Organization(mods ...qm.QueryMod) organizationQue
 }
 
 // User pointed to by the foreign key.
-func (o *OrganizationsManager) User(mods ...qm.QueryMod) userQuery {
+func (q OrganizationsManagerQuery) User(o *OrganizationsManager, mods ...qm.QueryMod) UserQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -483,14 +306,6 @@ func (organizationsManagerL) LoadOrganization(ctx context.Context, e boil.Contex
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(organizationsManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (organizationsManagerL) LoadUser(ctx context.Context, e boil.ContextExecuto
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(organizationsManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (organizationsManagerL) LoadUser(ctx context.Context, e boil.ContextExecuto
 // SetOrganization of the organizationsManager to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.OrganizationsManagers.
-func (o *OrganizationsManager) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q OrganizationsManagerQuery) SetOrganization(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *OrganizationsManager) SetOrganization(ctx context.Context, exec boil.Co
 // SetUser of the organizationsManager to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.OrganizationsManagers.
-func (o *OrganizationsManager) SetUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q OrganizationsManagerQuery) SetUser(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *OrganizationsManager) SetUser(ctx context.Context, exec boil.ContextExe
 }
 
 // OrganizationsManagers retrieves all the records using an executor.
-func OrganizationsManagers(mods ...qm.QueryMod) organizationsManagerQuery {
+func OrganizationsManagers(mods ...qm.QueryMod) OrganizationsManagerQuery {
 	mods = append(mods, qm.From("`organizations_managers`"))
-	return organizationsManagerQuery{NewQuery(mods...)}
+	return OrganizationsManagerQuery{NewQuery(mods...)}
+}
+
+type OrganizationsManagerFinder interface {
+	FindOrganizationsManager(ctx context.Context, exec boil.ContextExecutor, organizationsManagersPK int, selectCols ...string) (*OrganizationsManager, error)
 }
 
 // FindOrganizationsManager retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindOrganizationsManager(ctx context.Context, exec boil.ContextExecutor, or
 		return nil, errors.Wrap(err, "models: unable to select from organizations_managers")
 	}
 
-	if err = organizationsManagerObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return organizationsManagerObj, err
-	}
-
 	return organizationsManagerObj, nil
+}
+
+type OrganizationsManagerInserter interface {
+	Insert(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *OrganizationsManager) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q OrganizationsManagerQuery) Insert(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_managers provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *OrganizationsManager) Insert(ctx context.Context, exec boil.ContextExec
 		if o.UpdatedAt.IsZero() {
 			o.UpdatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsManagerColumnsWithDefault, o)
@@ -870,13 +677,19 @@ CacheNoHooks:
 		organizationsManagerInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type OrganizationsManagerUpdater interface {
+	Update(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the OrganizationsManager.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *OrganizationsManager) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q OrganizationsManagerQuery) Update(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -884,9 +697,6 @@ func (o *OrganizationsManager) Update(ctx context.Context, exec boil.ContextExec
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	organizationsManagerUpdateCacheMut.RLock()
 	cache, cached := organizationsManagerUpdateCache[key]
@@ -939,11 +749,11 @@ func (o *OrganizationsManager) Update(ctx context.Context, exec boil.ContextExec
 		organizationsManagerUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q organizationsManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -960,7 +770,7 @@ func (q organizationsManagerQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o OrganizationsManagerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsManagerQuery) UpdateAllSlice(o OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1007,6 +817,160 @@ func (o OrganizationsManagerSlice) UpdateAll(ctx context.Context, exec boil.Cont
 	return rowsAff, nil
 }
 
+type OrganizationsManagerDeleter interface {
+	Delete(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single OrganizationsManager record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q OrganizationsManagerQuery) Delete(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no OrganizationsManager provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsManagerPrimaryKeyMapping)
+	sql := "DELETE FROM `organizations_managers` WHERE `organizations_managers_pk`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from organizations_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q OrganizationsManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no organizationsManagerQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizations_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q OrganizationsManagerQuery) DeleteAllSlice(o OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `organizations_managers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsManagerPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizationsManager slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_managers")
+	}
+
+	return rowsAff, nil
+}
+
+type OrganizationsManagerReloader interface {
+	Reload(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q OrganizationsManagerQuery) Reload(o *OrganizationsManager, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindOrganizationsManager(ctx, exec, o.OrganizationsManagersPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q OrganizationsManagerQuery) ReloadAll(o *OrganizationsManagerSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := OrganizationsManagerSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `organizations_managers`.* FROM `organizations_managers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsManagerPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in OrganizationsManagerSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// OrganizationsManagerExists checks if the OrganizationsManager row exists.
+func OrganizationsManagerExists(ctx context.Context, exec boil.ContextExecutor, organizationsManagersPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `organizations_managers` where `organizations_managers_pk`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, organizationsManagersPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, organizationsManagersPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if organizations_managers exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLOrganizationsManagerUniqueColumns = []string{
 	"organizations_managers_pk",
 }
@@ -1024,10 +988,6 @@ func (o *OrganizationsManager) Upsert(ctx context.Context, exec boil.ContextExec
 			o.CreatedAt = currTime
 		}
 		o.UpdatedAt = currTime
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsManagerColumnsWithDefault, o)
@@ -1160,172 +1120,5 @@ CacheNoHooks:
 		organizationsManagerUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single OrganizationsManager record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *OrganizationsManager) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no OrganizationsManager provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsManagerPrimaryKeyMapping)
-	sql := "DELETE FROM `organizations_managers` WHERE `organizations_managers_pk`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from organizations_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_managers")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q organizationsManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no organizationsManagerQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizations_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_managers")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o OrganizationsManagerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(organizationsManagerBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `organizations_managers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsManagerPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizationsManager slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_managers")
-	}
-
-	if len(organizationsManagerAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *OrganizationsManager) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindOrganizationsManager(ctx, exec, o.OrganizationsManagersPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *OrganizationsManagerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := OrganizationsManagerSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `organizations_managers`.* FROM `organizations_managers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsManagerPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in OrganizationsManagerSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// OrganizationsManagerExists checks if the OrganizationsManager row exists.
-func OrganizationsManagerExists(ctx context.Context, exec boil.ContextExecutor, organizationsManagersPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `organizations_managers` where `organizations_managers_pk`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, organizationsManagersPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, organizationsManagersPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if organizations_managers exists")
-	}
-
-	return exists, nil
 }

@@ -180,10 +180,8 @@ type (
 	// QuotaDefinitionSlice is an alias for a slice of pointers to QuotaDefinition.
 	// This should almost always be used instead of []QuotaDefinition.
 	QuotaDefinitionSlice []*QuotaDefinition
-	// QuotaDefinitionHook is the signature for custom QuotaDefinition hook methods
-	QuotaDefinitionHook func(context.Context, boil.ContextExecutor, *QuotaDefinition) error
 
-	quotaDefinitionQuery struct {
+	QuotaDefinitionQuery struct {
 		*queries.Query
 	}
 )
@@ -209,178 +207,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var quotaDefinitionBeforeInsertHooks []QuotaDefinitionHook
-var quotaDefinitionBeforeUpdateHooks []QuotaDefinitionHook
-var quotaDefinitionBeforeDeleteHooks []QuotaDefinitionHook
-var quotaDefinitionBeforeUpsertHooks []QuotaDefinitionHook
-
-var quotaDefinitionAfterInsertHooks []QuotaDefinitionHook
-var quotaDefinitionAfterSelectHooks []QuotaDefinitionHook
-var quotaDefinitionAfterUpdateHooks []QuotaDefinitionHook
-var quotaDefinitionAfterDeleteHooks []QuotaDefinitionHook
-var quotaDefinitionAfterUpsertHooks []QuotaDefinitionHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *QuotaDefinition) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *QuotaDefinition) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *QuotaDefinition) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *QuotaDefinition) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *QuotaDefinition) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *QuotaDefinition) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *QuotaDefinition) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *QuotaDefinition) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *QuotaDefinition) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range quotaDefinitionAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddQuotaDefinitionHook registers your hook function for all future operations.
-func AddQuotaDefinitionHook(hookPoint boil.HookPoint, quotaDefinitionHook QuotaDefinitionHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		quotaDefinitionBeforeInsertHooks = append(quotaDefinitionBeforeInsertHooks, quotaDefinitionHook)
-	case boil.BeforeUpdateHook:
-		quotaDefinitionBeforeUpdateHooks = append(quotaDefinitionBeforeUpdateHooks, quotaDefinitionHook)
-	case boil.BeforeDeleteHook:
-		quotaDefinitionBeforeDeleteHooks = append(quotaDefinitionBeforeDeleteHooks, quotaDefinitionHook)
-	case boil.BeforeUpsertHook:
-		quotaDefinitionBeforeUpsertHooks = append(quotaDefinitionBeforeUpsertHooks, quotaDefinitionHook)
-	case boil.AfterInsertHook:
-		quotaDefinitionAfterInsertHooks = append(quotaDefinitionAfterInsertHooks, quotaDefinitionHook)
-	case boil.AfterSelectHook:
-		quotaDefinitionAfterSelectHooks = append(quotaDefinitionAfterSelectHooks, quotaDefinitionHook)
-	case boil.AfterUpdateHook:
-		quotaDefinitionAfterUpdateHooks = append(quotaDefinitionAfterUpdateHooks, quotaDefinitionHook)
-	case boil.AfterDeleteHook:
-		quotaDefinitionAfterDeleteHooks = append(quotaDefinitionAfterDeleteHooks, quotaDefinitionHook)
-	case boil.AfterUpsertHook:
-		quotaDefinitionAfterUpsertHooks = append(quotaDefinitionAfterUpsertHooks, quotaDefinitionHook)
-	}
+type QuotaDefinitionFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*QuotaDefinition, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (QuotaDefinitionSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single quotaDefinition record from the query.
-func (q quotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*QuotaDefinition, error) {
+func (q QuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*QuotaDefinition, error) {
 	o := &QuotaDefinition{}
 
 	queries.SetLimit(q.Query, 1)
@@ -393,15 +228,11 @@ func (q quotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for quota_definitions")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all QuotaDefinition records from the query.
-func (q quotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (QuotaDefinitionSlice, error) {
+func (q QuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (QuotaDefinitionSlice, error) {
 	var o []*QuotaDefinition
 
 	err := q.Bind(ctx, exec, &o)
@@ -409,19 +240,11 @@ func (q quotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to assign all query results to QuotaDefinition slice")
 	}
 
-	if len(quotaDefinitionAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all QuotaDefinition records in the query.
-func (q quotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q QuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -436,7 +259,7 @@ func (q quotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q quotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q QuotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -452,7 +275,7 @@ func (q quotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Organizations retrieves all the organization's Organizations with an executor.
-func (o *QuotaDefinition) Organizations(mods ...qm.QueryMod) organizationQuery {
+func (q QuotaDefinitionQuery) Organizations(o *QuotaDefinition, mods ...qm.QueryMod) OrganizationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -536,13 +359,6 @@ func (quotaDefinitionL) LoadOrganizations(ctx context.Context, e boil.ContextExe
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
 	}
 
-	if len(organizationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Organizations = resultSlice
 		for _, foreign := range resultSlice {
@@ -574,12 +390,12 @@ func (quotaDefinitionL) LoadOrganizations(ctx context.Context, e boil.ContextExe
 // of the quota_definition, optionally inserting them as new records.
 // Appends related to o.R.Organizations.
 // Sets related.R.QuotaDefinition appropriately.
-func (o *QuotaDefinition) AddOrganizations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
+func (q QuotaDefinitionQuery) AddOrganizations(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.QuotaDefinitionID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Organizations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -624,9 +440,13 @@ func (o *QuotaDefinition) AddOrganizations(ctx context.Context, exec boil.Contex
 }
 
 // QuotaDefinitions retrieves all the records using an executor.
-func QuotaDefinitions(mods ...qm.QueryMod) quotaDefinitionQuery {
+func QuotaDefinitions(mods ...qm.QueryMod) QuotaDefinitionQuery {
 	mods = append(mods, qm.From("\"quota_definitions\""))
-	return quotaDefinitionQuery{NewQuery(mods...)}
+	return QuotaDefinitionQuery{NewQuery(mods...)}
+}
+
+type QuotaDefinitionFinder interface {
+	FindQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*QuotaDefinition, error)
 }
 
 // FindQuotaDefinition retrieves a single record by ID with an executor.
@@ -652,16 +472,16 @@ func FindQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, iD int,
 		return nil, errors.Wrap(err, "models: unable to select from quota_definitions")
 	}
 
-	if err = quotaDefinitionObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return quotaDefinitionObj, err
-	}
-
 	return quotaDefinitionObj, nil
+}
+
+type QuotaDefinitionInserter interface {
+	Insert(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *QuotaDefinition) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q QuotaDefinitionQuery) Insert(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no quota_definitions provided for insertion")
 	}
@@ -676,10 +496,6 @@ func (o *QuotaDefinition) Insert(ctx context.Context, exec boil.ContextExecutor,
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(quotaDefinitionColumnsWithDefault, o)
@@ -745,13 +561,19 @@ func (o *QuotaDefinition) Insert(ctx context.Context, exec boil.ContextExecutor,
 		quotaDefinitionInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type QuotaDefinitionUpdater interface {
+	Update(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the QuotaDefinition.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *QuotaDefinition) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q QuotaDefinitionQuery) Update(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -759,9 +581,6 @@ func (o *QuotaDefinition) Update(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	quotaDefinitionUpdateCacheMut.RLock()
 	cache, cached := quotaDefinitionUpdateCache[key]
@@ -814,11 +633,11 @@ func (o *QuotaDefinition) Update(ctx context.Context, exec boil.ContextExecutor,
 		quotaDefinitionUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q quotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q QuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -835,7 +654,7 @@ func (q quotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o QuotaDefinitionSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q QuotaDefinitionQuery) UpdateAllSlice(o QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -882,6 +701,160 @@ func (o QuotaDefinitionSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 	return rowsAff, nil
 }
 
+type QuotaDefinitionDeleter interface {
+	Delete(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single QuotaDefinition record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q QuotaDefinitionQuery) Delete(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no QuotaDefinition provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), quotaDefinitionPrimaryKeyMapping)
+	sql := "DELETE FROM \"quota_definitions\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from quota_definitions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q QuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no quotaDefinitionQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from quota_definitions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q QuotaDefinitionQuery) DeleteAllSlice(o QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), quotaDefinitionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"quota_definitions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, quotaDefinitionPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from quotaDefinition slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for quota_definitions")
+	}
+
+	return rowsAff, nil
+}
+
+type QuotaDefinitionReloader interface {
+	Reload(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q QuotaDefinitionQuery) Reload(o *QuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindQuotaDefinition(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q QuotaDefinitionQuery) ReloadAll(o *QuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := QuotaDefinitionSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), quotaDefinitionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"quota_definitions\".* FROM \"quota_definitions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, quotaDefinitionPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in QuotaDefinitionSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// QuotaDefinitionExists checks if the QuotaDefinition row exists.
+func QuotaDefinitionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"quota_definitions\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if quota_definitions exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *QuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -895,10 +868,6 @@ func (o *QuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExecutor,
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(quotaDefinitionColumnsWithDefault, o)
@@ -1002,172 +971,5 @@ func (o *QuotaDefinition) Upsert(ctx context.Context, exec boil.ContextExecutor,
 		quotaDefinitionUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single QuotaDefinition record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *QuotaDefinition) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no QuotaDefinition provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), quotaDefinitionPrimaryKeyMapping)
-	sql := "DELETE FROM \"quota_definitions\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from quota_definitions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for quota_definitions")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q quotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no quotaDefinitionQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from quota_definitions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for quota_definitions")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o QuotaDefinitionSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(quotaDefinitionBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), quotaDefinitionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"quota_definitions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, quotaDefinitionPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from quotaDefinition slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for quota_definitions")
-	}
-
-	if len(quotaDefinitionAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *QuotaDefinition) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindQuotaDefinition(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *QuotaDefinitionSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := QuotaDefinitionSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), quotaDefinitionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"quota_definitions\".* FROM \"quota_definitions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, quotaDefinitionPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in QuotaDefinitionSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// QuotaDefinitionExists checks if the QuotaDefinition row exists.
-func QuotaDefinitionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"quota_definitions\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if quota_definitions exists")
-	}
-
-	return exists, nil
 }

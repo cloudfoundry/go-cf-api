@@ -131,10 +131,8 @@ type (
 	// BuildpackAnnotationSlice is an alias for a slice of pointers to BuildpackAnnotation.
 	// This should almost always be used instead of []BuildpackAnnotation.
 	BuildpackAnnotationSlice []*BuildpackAnnotation
-	// BuildpackAnnotationHook is the signature for custom BuildpackAnnotation hook methods
-	BuildpackAnnotationHook func(context.Context, boil.ContextExecutor, *BuildpackAnnotation) error
 
-	buildpackAnnotationQuery struct {
+	BuildpackAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var buildpackAnnotationBeforeInsertHooks []BuildpackAnnotationHook
-var buildpackAnnotationBeforeUpdateHooks []BuildpackAnnotationHook
-var buildpackAnnotationBeforeDeleteHooks []BuildpackAnnotationHook
-var buildpackAnnotationBeforeUpsertHooks []BuildpackAnnotationHook
-
-var buildpackAnnotationAfterInsertHooks []BuildpackAnnotationHook
-var buildpackAnnotationAfterSelectHooks []BuildpackAnnotationHook
-var buildpackAnnotationAfterUpdateHooks []BuildpackAnnotationHook
-var buildpackAnnotationAfterDeleteHooks []BuildpackAnnotationHook
-var buildpackAnnotationAfterUpsertHooks []BuildpackAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BuildpackAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BuildpackAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BuildpackAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BuildpackAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BuildpackAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BuildpackAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BuildpackAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BuildpackAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BuildpackAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBuildpackAnnotationHook registers your hook function for all future operations.
-func AddBuildpackAnnotationHook(hookPoint boil.HookPoint, buildpackAnnotationHook BuildpackAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		buildpackAnnotationBeforeInsertHooks = append(buildpackAnnotationBeforeInsertHooks, buildpackAnnotationHook)
-	case boil.BeforeUpdateHook:
-		buildpackAnnotationBeforeUpdateHooks = append(buildpackAnnotationBeforeUpdateHooks, buildpackAnnotationHook)
-	case boil.BeforeDeleteHook:
-		buildpackAnnotationBeforeDeleteHooks = append(buildpackAnnotationBeforeDeleteHooks, buildpackAnnotationHook)
-	case boil.BeforeUpsertHook:
-		buildpackAnnotationBeforeUpsertHooks = append(buildpackAnnotationBeforeUpsertHooks, buildpackAnnotationHook)
-	case boil.AfterInsertHook:
-		buildpackAnnotationAfterInsertHooks = append(buildpackAnnotationAfterInsertHooks, buildpackAnnotationHook)
-	case boil.AfterSelectHook:
-		buildpackAnnotationAfterSelectHooks = append(buildpackAnnotationAfterSelectHooks, buildpackAnnotationHook)
-	case boil.AfterUpdateHook:
-		buildpackAnnotationAfterUpdateHooks = append(buildpackAnnotationAfterUpdateHooks, buildpackAnnotationHook)
-	case boil.AfterDeleteHook:
-		buildpackAnnotationAfterDeleteHooks = append(buildpackAnnotationAfterDeleteHooks, buildpackAnnotationHook)
-	case boil.AfterUpsertHook:
-		buildpackAnnotationAfterUpsertHooks = append(buildpackAnnotationAfterUpsertHooks, buildpackAnnotationHook)
-	}
+type BuildpackAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (BuildpackAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single buildpackAnnotation record from the query.
-func (q buildpackAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackAnnotation, error) {
+func (q BuildpackAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackAnnotation, error) {
 	o := &BuildpackAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q buildpackAnnotationQuery) One(ctx context.Context, exec boil.ContextExec
 		return nil, errors.Wrap(err, "models: failed to execute a one query for buildpack_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all BuildpackAnnotation records from the query.
-func (q buildpackAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackAnnotationSlice, error) {
+func (q BuildpackAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackAnnotationSlice, error) {
 	var o []*BuildpackAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q buildpackAnnotationQuery) All(ctx context.Context, exec boil.ContextExec
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BuildpackAnnotation slice")
 	}
 
-	if len(buildpackAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all BuildpackAnnotation records in the query.
-func (q buildpackAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q BuildpackAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q buildpackAnnotationQuery) Count(ctx context.Context, exec boil.ContextEx
 }
 
 // Exists checks if the row exists in the table.
-func (q buildpackAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q BuildpackAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q buildpackAnnotationQuery) Exists(ctx context.Context, exec boil.ContextE
 }
 
 // Resource pointed to by the foreign key.
-func (o *BuildpackAnnotation) Resource(mods ...qm.QueryMod) buildpackQuery {
+func (q BuildpackAnnotationQuery) Resource(o *BuildpackAnnotation, mods ...qm.QueryMod) BuildpackQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (buildpackAnnotationL) LoadResource(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for buildpacks")
 	}
 
-	if len(buildpackAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (buildpackAnnotationL) LoadResource(ctx context.Context, e boil.ContextExec
 // SetResource of the buildpackAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceBuildpackAnnotations.
-func (o *BuildpackAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Buildpack) error {
+func (q BuildpackAnnotationQuery) SetResource(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Buildpack) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Buildpacks().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *BuildpackAnnotation) SetResource(ctx context.Context, exec boil.Context
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *BuildpackAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Buildpack) error {
+func (q BuildpackAnnotationQuery) RemoveResource(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Buildpack) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *BuildpackAnnotation) RemoveResource(ctx context.Context, exec boil.Cont
 }
 
 // BuildpackAnnotations retrieves all the records using an executor.
-func BuildpackAnnotations(mods ...qm.QueryMod) buildpackAnnotationQuery {
+func BuildpackAnnotations(mods ...qm.QueryMod) BuildpackAnnotationQuery {
 	mods = append(mods, qm.From("`buildpack_annotations`"))
-	return buildpackAnnotationQuery{NewQuery(mods...)}
+	return BuildpackAnnotationQuery{NewQuery(mods...)}
+}
+
+type BuildpackAnnotationFinder interface {
+	FindBuildpackAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*BuildpackAnnotation, error)
 }
 
 // FindBuildpackAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindBuildpackAnnotation(ctx context.Context, exec boil.ContextExecutor, iD 
 		return nil, errors.Wrap(err, "models: unable to select from buildpack_annotations")
 	}
 
-	if err = buildpackAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return buildpackAnnotationObj, err
-	}
-
 	return buildpackAnnotationObj, nil
+}
+
+type BuildpackAnnotationInserter interface {
+	Insert(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *BuildpackAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q BuildpackAnnotationQuery) Insert(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no buildpack_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *BuildpackAnnotation) Insert(ctx context.Context, exec boil.ContextExecu
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildpackAnnotationColumnsWithDefault, o)
@@ -753,13 +568,19 @@ CacheNoHooks:
 		buildpackAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type BuildpackAnnotationUpdater interface {
+	Update(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the BuildpackAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *BuildpackAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q BuildpackAnnotationQuery) Update(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -767,9 +588,6 @@ func (o *BuildpackAnnotation) Update(ctx context.Context, exec boil.ContextExecu
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	buildpackAnnotationUpdateCacheMut.RLock()
 	cache, cached := buildpackAnnotationUpdateCache[key]
@@ -822,11 +640,11 @@ func (o *BuildpackAnnotation) Update(ctx context.Context, exec boil.ContextExecu
 		buildpackAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q buildpackAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildpackAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -843,7 +661,7 @@ func (q buildpackAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Conte
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o BuildpackAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildpackAnnotationQuery) UpdateAllSlice(o BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -890,6 +708,160 @@ func (o BuildpackAnnotationSlice) UpdateAll(ctx context.Context, exec boil.Conte
 	return rowsAff, nil
 }
 
+type BuildpackAnnotationDeleter interface {
+	Delete(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single BuildpackAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q BuildpackAnnotationQuery) Delete(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no BuildpackAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildpackAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM `buildpack_annotations` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from buildpack_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for buildpack_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q BuildpackAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no buildpackAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from buildpack_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q BuildpackAnnotationQuery) DeleteAllSlice(o BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `buildpack_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, buildpackAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from buildpackAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type BuildpackAnnotationReloader interface {
+	Reload(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q BuildpackAnnotationQuery) Reload(o *BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindBuildpackAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q BuildpackAnnotationQuery) ReloadAll(o *BuildpackAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := BuildpackAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `buildpack_annotations`.* FROM `buildpack_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, buildpackAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in BuildpackAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// BuildpackAnnotationExists checks if the BuildpackAnnotation row exists.
+func BuildpackAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `buildpack_annotations` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if buildpack_annotations exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLBuildpackAnnotationUniqueColumns = []string{
 	"id",
 	"guid",
@@ -908,10 +880,6 @@ func (o *BuildpackAnnotation) Upsert(ctx context.Context, exec boil.ContextExecu
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildpackAnnotationColumnsWithDefault, o)
@@ -1044,172 +1012,5 @@ CacheNoHooks:
 		buildpackAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single BuildpackAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *BuildpackAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no BuildpackAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildpackAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM `buildpack_annotations` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from buildpack_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for buildpack_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q buildpackAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no buildpackAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from buildpack_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o BuildpackAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(buildpackAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `buildpack_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, buildpackAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from buildpackAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_annotations")
-	}
-
-	if len(buildpackAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *BuildpackAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindBuildpackAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *BuildpackAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := BuildpackAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `buildpack_annotations`.* FROM `buildpack_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, buildpackAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in BuildpackAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// BuildpackAnnotationExists checks if the BuildpackAnnotation row exists.
-func BuildpackAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `buildpack_annotations` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if buildpack_annotations exists")
-	}
-
-	return exists, nil
 }

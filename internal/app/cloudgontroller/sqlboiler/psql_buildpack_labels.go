@@ -131,10 +131,8 @@ type (
 	// BuildpackLabelSlice is an alias for a slice of pointers to BuildpackLabel.
 	// This should almost always be used instead of []BuildpackLabel.
 	BuildpackLabelSlice []*BuildpackLabel
-	// BuildpackLabelHook is the signature for custom BuildpackLabel hook methods
-	BuildpackLabelHook func(context.Context, boil.ContextExecutor, *BuildpackLabel) error
 
-	buildpackLabelQuery struct {
+	BuildpackLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var buildpackLabelBeforeInsertHooks []BuildpackLabelHook
-var buildpackLabelBeforeUpdateHooks []BuildpackLabelHook
-var buildpackLabelBeforeDeleteHooks []BuildpackLabelHook
-var buildpackLabelBeforeUpsertHooks []BuildpackLabelHook
-
-var buildpackLabelAfterInsertHooks []BuildpackLabelHook
-var buildpackLabelAfterSelectHooks []BuildpackLabelHook
-var buildpackLabelAfterUpdateHooks []BuildpackLabelHook
-var buildpackLabelAfterDeleteHooks []BuildpackLabelHook
-var buildpackLabelAfterUpsertHooks []BuildpackLabelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *BuildpackLabel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *BuildpackLabel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *BuildpackLabel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *BuildpackLabel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *BuildpackLabel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *BuildpackLabel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *BuildpackLabel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *BuildpackLabel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *BuildpackLabel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range buildpackLabelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddBuildpackLabelHook registers your hook function for all future operations.
-func AddBuildpackLabelHook(hookPoint boil.HookPoint, buildpackLabelHook BuildpackLabelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		buildpackLabelBeforeInsertHooks = append(buildpackLabelBeforeInsertHooks, buildpackLabelHook)
-	case boil.BeforeUpdateHook:
-		buildpackLabelBeforeUpdateHooks = append(buildpackLabelBeforeUpdateHooks, buildpackLabelHook)
-	case boil.BeforeDeleteHook:
-		buildpackLabelBeforeDeleteHooks = append(buildpackLabelBeforeDeleteHooks, buildpackLabelHook)
-	case boil.BeforeUpsertHook:
-		buildpackLabelBeforeUpsertHooks = append(buildpackLabelBeforeUpsertHooks, buildpackLabelHook)
-	case boil.AfterInsertHook:
-		buildpackLabelAfterInsertHooks = append(buildpackLabelAfterInsertHooks, buildpackLabelHook)
-	case boil.AfterSelectHook:
-		buildpackLabelAfterSelectHooks = append(buildpackLabelAfterSelectHooks, buildpackLabelHook)
-	case boil.AfterUpdateHook:
-		buildpackLabelAfterUpdateHooks = append(buildpackLabelAfterUpdateHooks, buildpackLabelHook)
-	case boil.AfterDeleteHook:
-		buildpackLabelAfterDeleteHooks = append(buildpackLabelAfterDeleteHooks, buildpackLabelHook)
-	case boil.AfterUpsertHook:
-		buildpackLabelAfterUpsertHooks = append(buildpackLabelAfterUpsertHooks, buildpackLabelHook)
-	}
+type BuildpackLabelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackLabel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (BuildpackLabelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single buildpackLabel record from the query.
-func (q buildpackLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackLabel, error) {
+func (q BuildpackLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackLabel, error) {
 	o := &BuildpackLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q buildpackLabelQuery) One(ctx context.Context, exec boil.ContextExecutor)
 		return nil, errors.Wrap(err, "models: failed to execute a one query for buildpack_labels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all BuildpackLabel records from the query.
-func (q buildpackLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackLabelSlice, error) {
+func (q BuildpackLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackLabelSlice, error) {
 	var o []*BuildpackLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q buildpackLabelQuery) All(ctx context.Context, exec boil.ContextExecutor)
 		return nil, errors.Wrap(err, "models: failed to assign all query results to BuildpackLabel slice")
 	}
 
-	if len(buildpackLabelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all BuildpackLabel records in the query.
-func (q buildpackLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q BuildpackLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q buildpackLabelQuery) Count(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Exists checks if the row exists in the table.
-func (q buildpackLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q BuildpackLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q buildpackLabelQuery) Exists(ctx context.Context, exec boil.ContextExecut
 }
 
 // Resource pointed to by the foreign key.
-func (o *BuildpackLabel) Resource(mods ...qm.QueryMod) buildpackQuery {
+func (q BuildpackLabelQuery) Resource(o *BuildpackLabel, mods ...qm.QueryMod) BuildpackQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (buildpackLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for buildpacks")
 	}
 
-	if len(buildpackLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (buildpackLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor,
 // SetResource of the buildpackLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceBuildpackLabels.
-func (o *BuildpackLabel) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Buildpack) error {
+func (q BuildpackLabelQuery) SetResource(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Buildpack) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Buildpacks().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *BuildpackLabel) SetResource(ctx context.Context, exec boil.ContextExecu
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *BuildpackLabel) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Buildpack) error {
+func (q BuildpackLabelQuery) RemoveResource(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, related *Buildpack) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *BuildpackLabel) RemoveResource(ctx context.Context, exec boil.ContextEx
 }
 
 // BuildpackLabels retrieves all the records using an executor.
-func BuildpackLabels(mods ...qm.QueryMod) buildpackLabelQuery {
+func BuildpackLabels(mods ...qm.QueryMod) BuildpackLabelQuery {
 	mods = append(mods, qm.From("\"buildpack_labels\""))
-	return buildpackLabelQuery{NewQuery(mods...)}
+	return BuildpackLabelQuery{NewQuery(mods...)}
+}
+
+type BuildpackLabelFinder interface {
+	FindBuildpackLabel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*BuildpackLabel, error)
 }
 
 // FindBuildpackLabel retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindBuildpackLabel(ctx context.Context, exec boil.ContextExecutor, iD int, 
 		return nil, errors.Wrap(err, "models: unable to select from buildpack_labels")
 	}
 
-	if err = buildpackLabelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return buildpackLabelObj, err
-	}
-
 	return buildpackLabelObj, nil
+}
+
+type BuildpackLabelInserter interface {
+	Insert(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *BuildpackLabel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q BuildpackLabelQuery) Insert(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no buildpack_labels provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *BuildpackLabel) Insert(ctx context.Context, exec boil.ContextExecutor, 
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildpackLabelColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *BuildpackLabel) Insert(ctx context.Context, exec boil.ContextExecutor, 
 		buildpackLabelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type BuildpackLabelUpdater interface {
+	Update(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the BuildpackLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *BuildpackLabel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q BuildpackLabelQuery) Update(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *BuildpackLabel) Update(ctx context.Context, exec boil.ContextExecutor, 
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	buildpackLabelUpdateCacheMut.RLock()
 	cache, cached := buildpackLabelUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *BuildpackLabel) Update(ctx context.Context, exec boil.ContextExecutor, 
 		buildpackLabelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q buildpackLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildpackLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q buildpackLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExe
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o BuildpackLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q BuildpackLabelQuery) UpdateAllSlice(o BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o BuildpackLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExe
 	return rowsAff, nil
 }
 
+type BuildpackLabelDeleter interface {
+	Delete(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single BuildpackLabel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q BuildpackLabelQuery) Delete(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no BuildpackLabel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildpackLabelPrimaryKeyMapping)
+	sql := "DELETE FROM \"buildpack_labels\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from buildpack_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for buildpack_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q BuildpackLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no buildpackLabelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from buildpack_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q BuildpackLabelQuery) DeleteAllSlice(o BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"buildpack_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildpackLabelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from buildpackLabel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_labels")
+	}
+
+	return rowsAff, nil
+}
+
+type BuildpackLabelReloader interface {
+	Reload(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q BuildpackLabelQuery) Reload(o *BuildpackLabel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindBuildpackLabel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q BuildpackLabelQuery) ReloadAll(o *BuildpackLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := BuildpackLabelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"buildpack_labels\".* FROM \"buildpack_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildpackLabelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in BuildpackLabelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// BuildpackLabelExists checks if the BuildpackLabel row exists.
+func BuildpackLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"buildpack_labels\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if buildpack_labels exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *BuildpackLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *BuildpackLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(buildpackLabelColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *BuildpackLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, 
 		buildpackLabelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single BuildpackLabel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *BuildpackLabel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no BuildpackLabel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), buildpackLabelPrimaryKeyMapping)
-	sql := "DELETE FROM \"buildpack_labels\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from buildpack_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for buildpack_labels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q buildpackLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no buildpackLabelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from buildpack_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_labels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o BuildpackLabelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(buildpackLabelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"buildpack_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildpackLabelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from buildpackLabel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for buildpack_labels")
-	}
-
-	if len(buildpackLabelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *BuildpackLabel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindBuildpackLabel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *BuildpackLabelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := BuildpackLabelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), buildpackLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"buildpack_labels\".* FROM \"buildpack_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, buildpackLabelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in BuildpackLabelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// BuildpackLabelExists checks if the BuildpackLabel row exists.
-func BuildpackLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"buildpack_labels\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if buildpack_labels exists")
-	}
-
-	return exists, nil
 }

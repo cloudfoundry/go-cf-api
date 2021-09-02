@@ -124,10 +124,8 @@ type (
 	// DeploymentProcessSlice is an alias for a slice of pointers to DeploymentProcess.
 	// This should almost always be used instead of []DeploymentProcess.
 	DeploymentProcessSlice []*DeploymentProcess
-	// DeploymentProcessHook is the signature for custom DeploymentProcess hook methods
-	DeploymentProcessHook func(context.Context, boil.ContextExecutor, *DeploymentProcess) error
 
-	deploymentProcessQuery struct {
+	DeploymentProcessQuery struct {
 		*queries.Query
 	}
 )
@@ -153,178 +151,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var deploymentProcessBeforeInsertHooks []DeploymentProcessHook
-var deploymentProcessBeforeUpdateHooks []DeploymentProcessHook
-var deploymentProcessBeforeDeleteHooks []DeploymentProcessHook
-var deploymentProcessBeforeUpsertHooks []DeploymentProcessHook
-
-var deploymentProcessAfterInsertHooks []DeploymentProcessHook
-var deploymentProcessAfterSelectHooks []DeploymentProcessHook
-var deploymentProcessAfterUpdateHooks []DeploymentProcessHook
-var deploymentProcessAfterDeleteHooks []DeploymentProcessHook
-var deploymentProcessAfterUpsertHooks []DeploymentProcessHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DeploymentProcess) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DeploymentProcess) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DeploymentProcess) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DeploymentProcess) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DeploymentProcess) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DeploymentProcess) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DeploymentProcess) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DeploymentProcess) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DeploymentProcess) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentProcessAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDeploymentProcessHook registers your hook function for all future operations.
-func AddDeploymentProcessHook(hookPoint boil.HookPoint, deploymentProcessHook DeploymentProcessHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		deploymentProcessBeforeInsertHooks = append(deploymentProcessBeforeInsertHooks, deploymentProcessHook)
-	case boil.BeforeUpdateHook:
-		deploymentProcessBeforeUpdateHooks = append(deploymentProcessBeforeUpdateHooks, deploymentProcessHook)
-	case boil.BeforeDeleteHook:
-		deploymentProcessBeforeDeleteHooks = append(deploymentProcessBeforeDeleteHooks, deploymentProcessHook)
-	case boil.BeforeUpsertHook:
-		deploymentProcessBeforeUpsertHooks = append(deploymentProcessBeforeUpsertHooks, deploymentProcessHook)
-	case boil.AfterInsertHook:
-		deploymentProcessAfterInsertHooks = append(deploymentProcessAfterInsertHooks, deploymentProcessHook)
-	case boil.AfterSelectHook:
-		deploymentProcessAfterSelectHooks = append(deploymentProcessAfterSelectHooks, deploymentProcessHook)
-	case boil.AfterUpdateHook:
-		deploymentProcessAfterUpdateHooks = append(deploymentProcessAfterUpdateHooks, deploymentProcessHook)
-	case boil.AfterDeleteHook:
-		deploymentProcessAfterDeleteHooks = append(deploymentProcessAfterDeleteHooks, deploymentProcessHook)
-	case boil.AfterUpsertHook:
-		deploymentProcessAfterUpsertHooks = append(deploymentProcessAfterUpsertHooks, deploymentProcessHook)
-	}
+type DeploymentProcessFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentProcess, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DeploymentProcessSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single deploymentProcess record from the query.
-func (q deploymentProcessQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentProcess, error) {
+func (q DeploymentProcessQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentProcess, error) {
 	o := &DeploymentProcess{}
 
 	queries.SetLimit(q.Query, 1)
@@ -337,15 +172,11 @@ func (q deploymentProcessQuery) One(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: failed to execute a one query for deployment_processes")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DeploymentProcess records from the query.
-func (q deploymentProcessQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentProcessSlice, error) {
+func (q DeploymentProcessQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentProcessSlice, error) {
 	var o []*DeploymentProcess
 
 	err := q.Bind(ctx, exec, &o)
@@ -353,19 +184,11 @@ func (q deploymentProcessQuery) All(ctx context.Context, exec boil.ContextExecut
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DeploymentProcess slice")
 	}
 
-	if len(deploymentProcessAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DeploymentProcess records in the query.
-func (q deploymentProcessQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DeploymentProcessQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -380,7 +203,7 @@ func (q deploymentProcessQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q deploymentProcessQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DeploymentProcessQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -396,7 +219,7 @@ func (q deploymentProcessQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Deployment pointed to by the foreign key.
-func (o *DeploymentProcess) Deployment(mods ...qm.QueryMod) deploymentQuery {
+func (q DeploymentProcessQuery) Deployment(o *DeploymentProcess, mods ...qm.QueryMod) DeploymentQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.DeploymentGUID),
 	}
@@ -479,14 +302,6 @@ func (deploymentProcessL) LoadDeployment(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for deployments")
 	}
 
-	if len(deploymentProcessAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -520,10 +335,10 @@ func (deploymentProcessL) LoadDeployment(ctx context.Context, e boil.ContextExec
 // SetDeployment of the deploymentProcess to the related item.
 // Sets o.R.Deployment to related.
 // Adds o to related.R.DeploymentProcesses.
-func (o *DeploymentProcess) SetDeployment(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Deployment) error {
+func (q DeploymentProcessQuery) SetDeployment(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Deployment) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Deployments().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -567,11 +382,11 @@ func (o *DeploymentProcess) SetDeployment(ctx context.Context, exec boil.Context
 // RemoveDeployment relationship.
 // Sets o.R.Deployment to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *DeploymentProcess) RemoveDeployment(ctx context.Context, exec boil.ContextExecutor, related *Deployment) error {
+func (q DeploymentProcessQuery) RemoveDeployment(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, related *Deployment) error {
 	var err error
 
 	queries.SetScanner(&o.DeploymentGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("deployment_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("deployment_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -598,9 +413,13 @@ func (o *DeploymentProcess) RemoveDeployment(ctx context.Context, exec boil.Cont
 }
 
 // DeploymentProcesses retrieves all the records using an executor.
-func DeploymentProcesses(mods ...qm.QueryMod) deploymentProcessQuery {
+func DeploymentProcesses(mods ...qm.QueryMod) DeploymentProcessQuery {
 	mods = append(mods, qm.From("`deployment_processes`"))
-	return deploymentProcessQuery{NewQuery(mods...)}
+	return DeploymentProcessQuery{NewQuery(mods...)}
+}
+
+type DeploymentProcessFinder interface {
+	FindDeploymentProcess(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DeploymentProcess, error)
 }
 
 // FindDeploymentProcess retrieves a single record by ID with an executor.
@@ -626,16 +445,16 @@ func FindDeploymentProcess(ctx context.Context, exec boil.ContextExecutor, iD in
 		return nil, errors.Wrap(err, "models: unable to select from deployment_processes")
 	}
 
-	if err = deploymentProcessObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return deploymentProcessObj, err
-	}
-
 	return deploymentProcessObj, nil
+}
+
+type DeploymentProcessInserter interface {
+	Insert(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DeploymentProcess) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DeploymentProcessQuery) Insert(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no deployment_processes provided for insertion")
 	}
@@ -650,10 +469,6 @@ func (o *DeploymentProcess) Insert(ctx context.Context, exec boil.ContextExecuto
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(deploymentProcessColumnsWithDefault, o)
@@ -746,13 +561,19 @@ CacheNoHooks:
 		deploymentProcessInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DeploymentProcessUpdater interface {
+	Update(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DeploymentProcess.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DeploymentProcess) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DeploymentProcessQuery) Update(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -760,9 +581,6 @@ func (o *DeploymentProcess) Update(ctx context.Context, exec boil.ContextExecuto
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	deploymentProcessUpdateCacheMut.RLock()
 	cache, cached := deploymentProcessUpdateCache[key]
@@ -815,11 +633,11 @@ func (o *DeploymentProcess) Update(ctx context.Context, exec boil.ContextExecuto
 		deploymentProcessUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q deploymentProcessQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DeploymentProcessQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -836,7 +654,7 @@ func (q deploymentProcessQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DeploymentProcessSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DeploymentProcessQuery) UpdateAllSlice(o DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -883,6 +701,160 @@ func (o DeploymentProcessSlice) UpdateAll(ctx context.Context, exec boil.Context
 	return rowsAff, nil
 }
 
+type DeploymentProcessDeleter interface {
+	Delete(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DeploymentProcess record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DeploymentProcessQuery) Delete(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DeploymentProcess provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), deploymentProcessPrimaryKeyMapping)
+	sql := "DELETE FROM `deployment_processes` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from deployment_processes")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for deployment_processes")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DeploymentProcessQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no deploymentProcessQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from deployment_processes")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_processes")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DeploymentProcessQuery) DeleteAllSlice(o DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentProcessPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `deployment_processes` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, deploymentProcessPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from deploymentProcess slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_processes")
+	}
+
+	return rowsAff, nil
+}
+
+type DeploymentProcessReloader interface {
+	Reload(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DeploymentProcessQuery) Reload(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDeploymentProcess(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DeploymentProcessQuery) ReloadAll(o *DeploymentProcessSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DeploymentProcessSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentProcessPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `deployment_processes`.* FROM `deployment_processes` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, deploymentProcessPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DeploymentProcessSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DeploymentProcessExists checks if the DeploymentProcess row exists.
+func DeploymentProcessExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `deployment_processes` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if deployment_processes exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLDeploymentProcessUniqueColumns = []string{
 	"id",
 	"guid",
@@ -901,10 +873,6 @@ func (o *DeploymentProcess) Upsert(ctx context.Context, exec boil.ContextExecuto
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(deploymentProcessColumnsWithDefault, o)
@@ -1037,172 +1005,5 @@ CacheNoHooks:
 		deploymentProcessUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DeploymentProcess record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DeploymentProcess) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DeploymentProcess provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), deploymentProcessPrimaryKeyMapping)
-	sql := "DELETE FROM `deployment_processes` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from deployment_processes")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for deployment_processes")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q deploymentProcessQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no deploymentProcessQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from deployment_processes")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_processes")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DeploymentProcessSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(deploymentProcessBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentProcessPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `deployment_processes` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, deploymentProcessPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from deploymentProcess slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_processes")
-	}
-
-	if len(deploymentProcessAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DeploymentProcess) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDeploymentProcess(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DeploymentProcessSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DeploymentProcessSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentProcessPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `deployment_processes`.* FROM `deployment_processes` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, deploymentProcessPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DeploymentProcessSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DeploymentProcessExists checks if the DeploymentProcess row exists.
-func DeploymentProcessExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `deployment_processes` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if deployment_processes exists")
-	}
-
-	return exists, nil
 }

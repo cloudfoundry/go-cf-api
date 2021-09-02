@@ -134,10 +134,8 @@ type (
 	// EncryptionKeySentinelSlice is an alias for a slice of pointers to EncryptionKeySentinel.
 	// This should almost always be used instead of []EncryptionKeySentinel.
 	EncryptionKeySentinelSlice []*EncryptionKeySentinel
-	// EncryptionKeySentinelHook is the signature for custom EncryptionKeySentinel hook methods
-	EncryptionKeySentinelHook func(context.Context, boil.ContextExecutor, *EncryptionKeySentinel) error
 
-	encryptionKeySentinelQuery struct {
+	EncryptionKeySentinelQuery struct {
 		*queries.Query
 	}
 )
@@ -163,178 +161,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var encryptionKeySentinelBeforeInsertHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelBeforeUpdateHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelBeforeDeleteHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelBeforeUpsertHooks []EncryptionKeySentinelHook
-
-var encryptionKeySentinelAfterInsertHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelAfterSelectHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelAfterUpdateHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelAfterDeleteHooks []EncryptionKeySentinelHook
-var encryptionKeySentinelAfterUpsertHooks []EncryptionKeySentinelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *EncryptionKeySentinel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *EncryptionKeySentinel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *EncryptionKeySentinel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *EncryptionKeySentinel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *EncryptionKeySentinel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *EncryptionKeySentinel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *EncryptionKeySentinel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *EncryptionKeySentinel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *EncryptionKeySentinel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range encryptionKeySentinelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddEncryptionKeySentinelHook registers your hook function for all future operations.
-func AddEncryptionKeySentinelHook(hookPoint boil.HookPoint, encryptionKeySentinelHook EncryptionKeySentinelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		encryptionKeySentinelBeforeInsertHooks = append(encryptionKeySentinelBeforeInsertHooks, encryptionKeySentinelHook)
-	case boil.BeforeUpdateHook:
-		encryptionKeySentinelBeforeUpdateHooks = append(encryptionKeySentinelBeforeUpdateHooks, encryptionKeySentinelHook)
-	case boil.BeforeDeleteHook:
-		encryptionKeySentinelBeforeDeleteHooks = append(encryptionKeySentinelBeforeDeleteHooks, encryptionKeySentinelHook)
-	case boil.BeforeUpsertHook:
-		encryptionKeySentinelBeforeUpsertHooks = append(encryptionKeySentinelBeforeUpsertHooks, encryptionKeySentinelHook)
-	case boil.AfterInsertHook:
-		encryptionKeySentinelAfterInsertHooks = append(encryptionKeySentinelAfterInsertHooks, encryptionKeySentinelHook)
-	case boil.AfterSelectHook:
-		encryptionKeySentinelAfterSelectHooks = append(encryptionKeySentinelAfterSelectHooks, encryptionKeySentinelHook)
-	case boil.AfterUpdateHook:
-		encryptionKeySentinelAfterUpdateHooks = append(encryptionKeySentinelAfterUpdateHooks, encryptionKeySentinelHook)
-	case boil.AfterDeleteHook:
-		encryptionKeySentinelAfterDeleteHooks = append(encryptionKeySentinelAfterDeleteHooks, encryptionKeySentinelHook)
-	case boil.AfterUpsertHook:
-		encryptionKeySentinelAfterUpsertHooks = append(encryptionKeySentinelAfterUpsertHooks, encryptionKeySentinelHook)
-	}
+type EncryptionKeySentinelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*EncryptionKeySentinel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (EncryptionKeySentinelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single encryptionKeySentinel record from the query.
-func (q encryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EncryptionKeySentinel, error) {
+func (q EncryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EncryptionKeySentinel, error) {
 	o := &EncryptionKeySentinel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -347,15 +182,11 @@ func (q encryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextEx
 		return nil, errors.Wrap(err, "models: failed to execute a one query for encryption_key_sentinels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all EncryptionKeySentinel records from the query.
-func (q encryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextExecutor) (EncryptionKeySentinelSlice, error) {
+func (q EncryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextExecutor) (EncryptionKeySentinelSlice, error) {
 	var o []*EncryptionKeySentinel
 
 	err := q.Bind(ctx, exec, &o)
@@ -363,19 +194,11 @@ func (q encryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextEx
 		return nil, errors.Wrap(err, "models: failed to assign all query results to EncryptionKeySentinel slice")
 	}
 
-	if len(encryptionKeySentinelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all EncryptionKeySentinel records in the query.
-func (q encryptionKeySentinelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q EncryptionKeySentinelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -390,7 +213,7 @@ func (q encryptionKeySentinelQuery) Count(ctx context.Context, exec boil.Context
 }
 
 // Exists checks if the row exists in the table.
-func (q encryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q EncryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -406,9 +229,13 @@ func (q encryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.Contex
 }
 
 // EncryptionKeySentinels retrieves all the records using an executor.
-func EncryptionKeySentinels(mods ...qm.QueryMod) encryptionKeySentinelQuery {
+func EncryptionKeySentinels(mods ...qm.QueryMod) EncryptionKeySentinelQuery {
 	mods = append(mods, qm.From("\"encryption_key_sentinels\""))
-	return encryptionKeySentinelQuery{NewQuery(mods...)}
+	return EncryptionKeySentinelQuery{NewQuery(mods...)}
+}
+
+type EncryptionKeySentinelFinder interface {
+	FindEncryptionKeySentinel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*EncryptionKeySentinel, error)
 }
 
 // FindEncryptionKeySentinel retrieves a single record by ID with an executor.
@@ -434,16 +261,16 @@ func FindEncryptionKeySentinel(ctx context.Context, exec boil.ContextExecutor, i
 		return nil, errors.Wrap(err, "models: unable to select from encryption_key_sentinels")
 	}
 
-	if err = encryptionKeySentinelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return encryptionKeySentinelObj, err
-	}
-
 	return encryptionKeySentinelObj, nil
+}
+
+type EncryptionKeySentinelInserter interface {
+	Insert(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *EncryptionKeySentinel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q EncryptionKeySentinelQuery) Insert(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no encryption_key_sentinels provided for insertion")
 	}
@@ -458,10 +285,6 @@ func (o *EncryptionKeySentinel) Insert(ctx context.Context, exec boil.ContextExe
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(encryptionKeySentinelColumnsWithDefault, o)
@@ -527,13 +350,19 @@ func (o *EncryptionKeySentinel) Insert(ctx context.Context, exec boil.ContextExe
 		encryptionKeySentinelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type EncryptionKeySentinelUpdater interface {
+	Update(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the EncryptionKeySentinel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *EncryptionKeySentinel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q EncryptionKeySentinelQuery) Update(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -541,9 +370,6 @@ func (o *EncryptionKeySentinel) Update(ctx context.Context, exec boil.ContextExe
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	encryptionKeySentinelUpdateCacheMut.RLock()
 	cache, cached := encryptionKeySentinelUpdateCache[key]
@@ -596,11 +422,11 @@ func (o *EncryptionKeySentinel) Update(ctx context.Context, exec boil.ContextExe
 		encryptionKeySentinelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q encryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q EncryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -617,7 +443,7 @@ func (q encryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.Con
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o EncryptionKeySentinelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q EncryptionKeySentinelQuery) UpdateAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -664,6 +490,160 @@ func (o EncryptionKeySentinelSlice) UpdateAll(ctx context.Context, exec boil.Con
 	return rowsAff, nil
 }
 
+type EncryptionKeySentinelDeleter interface {
+	Delete(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single EncryptionKeySentinel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q EncryptionKeySentinelQuery) Delete(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no EncryptionKeySentinel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), encryptionKeySentinelPrimaryKeyMapping)
+	sql := "DELETE FROM \"encryption_key_sentinels\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from encryption_key_sentinels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for encryption_key_sentinels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q EncryptionKeySentinelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no encryptionKeySentinelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from encryption_key_sentinels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for encryption_key_sentinels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q EncryptionKeySentinelQuery) DeleteAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), encryptionKeySentinelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"encryption_key_sentinels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, encryptionKeySentinelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from encryptionKeySentinel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for encryption_key_sentinels")
+	}
+
+	return rowsAff, nil
+}
+
+type EncryptionKeySentinelReloader interface {
+	Reload(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q EncryptionKeySentinelQuery) Reload(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindEncryptionKeySentinel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q EncryptionKeySentinelQuery) ReloadAll(o *EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := EncryptionKeySentinelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), encryptionKeySentinelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"encryption_key_sentinels\".* FROM \"encryption_key_sentinels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, encryptionKeySentinelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in EncryptionKeySentinelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// EncryptionKeySentinelExists checks if the EncryptionKeySentinel row exists.
+func EncryptionKeySentinelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"encryption_key_sentinels\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if encryption_key_sentinels exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *EncryptionKeySentinel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -677,10 +657,6 @@ func (o *EncryptionKeySentinel) Upsert(ctx context.Context, exec boil.ContextExe
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(encryptionKeySentinelColumnsWithDefault, o)
@@ -784,172 +760,5 @@ func (o *EncryptionKeySentinel) Upsert(ctx context.Context, exec boil.ContextExe
 		encryptionKeySentinelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single EncryptionKeySentinel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *EncryptionKeySentinel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no EncryptionKeySentinel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), encryptionKeySentinelPrimaryKeyMapping)
-	sql := "DELETE FROM \"encryption_key_sentinels\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from encryption_key_sentinels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for encryption_key_sentinels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q encryptionKeySentinelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no encryptionKeySentinelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from encryption_key_sentinels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for encryption_key_sentinels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o EncryptionKeySentinelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(encryptionKeySentinelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), encryptionKeySentinelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"encryption_key_sentinels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, encryptionKeySentinelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from encryptionKeySentinel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for encryption_key_sentinels")
-	}
-
-	if len(encryptionKeySentinelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *EncryptionKeySentinel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindEncryptionKeySentinel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *EncryptionKeySentinelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := EncryptionKeySentinelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), encryptionKeySentinelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"encryption_key_sentinels\".* FROM \"encryption_key_sentinels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, encryptionKeySentinelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in EncryptionKeySentinelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// EncryptionKeySentinelExists checks if the EncryptionKeySentinel row exists.
-func EncryptionKeySentinelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"encryption_key_sentinels\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if encryption_key_sentinels exists")
-	}
-
-	return exists, nil
 }

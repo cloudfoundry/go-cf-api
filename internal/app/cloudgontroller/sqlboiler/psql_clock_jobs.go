@@ -99,10 +99,8 @@ type (
 	// ClockJobSlice is an alias for a slice of pointers to ClockJob.
 	// This should almost always be used instead of []ClockJob.
 	ClockJobSlice []*ClockJob
-	// ClockJobHook is the signature for custom ClockJob hook methods
-	ClockJobHook func(context.Context, boil.ContextExecutor, *ClockJob) error
 
-	clockJobQuery struct {
+	ClockJobQuery struct {
 		*queries.Query
 	}
 )
@@ -128,178 +126,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var clockJobBeforeInsertHooks []ClockJobHook
-var clockJobBeforeUpdateHooks []ClockJobHook
-var clockJobBeforeDeleteHooks []ClockJobHook
-var clockJobBeforeUpsertHooks []ClockJobHook
-
-var clockJobAfterInsertHooks []ClockJobHook
-var clockJobAfterSelectHooks []ClockJobHook
-var clockJobAfterUpdateHooks []ClockJobHook
-var clockJobAfterDeleteHooks []ClockJobHook
-var clockJobAfterUpsertHooks []ClockJobHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ClockJob) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ClockJob) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ClockJob) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ClockJob) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ClockJob) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ClockJob) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ClockJob) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ClockJob) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ClockJob) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range clockJobAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddClockJobHook registers your hook function for all future operations.
-func AddClockJobHook(hookPoint boil.HookPoint, clockJobHook ClockJobHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		clockJobBeforeInsertHooks = append(clockJobBeforeInsertHooks, clockJobHook)
-	case boil.BeforeUpdateHook:
-		clockJobBeforeUpdateHooks = append(clockJobBeforeUpdateHooks, clockJobHook)
-	case boil.BeforeDeleteHook:
-		clockJobBeforeDeleteHooks = append(clockJobBeforeDeleteHooks, clockJobHook)
-	case boil.BeforeUpsertHook:
-		clockJobBeforeUpsertHooks = append(clockJobBeforeUpsertHooks, clockJobHook)
-	case boil.AfterInsertHook:
-		clockJobAfterInsertHooks = append(clockJobAfterInsertHooks, clockJobHook)
-	case boil.AfterSelectHook:
-		clockJobAfterSelectHooks = append(clockJobAfterSelectHooks, clockJobHook)
-	case boil.AfterUpdateHook:
-		clockJobAfterUpdateHooks = append(clockJobAfterUpdateHooks, clockJobHook)
-	case boil.AfterDeleteHook:
-		clockJobAfterDeleteHooks = append(clockJobAfterDeleteHooks, clockJobHook)
-	case boil.AfterUpsertHook:
-		clockJobAfterUpsertHooks = append(clockJobAfterUpsertHooks, clockJobHook)
-	}
+type ClockJobFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ClockJob, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ClockJobSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single clockJob record from the query.
-func (q clockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ClockJob, error) {
+func (q ClockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ClockJob, error) {
 	o := &ClockJob{}
 
 	queries.SetLimit(q.Query, 1)
@@ -312,15 +147,11 @@ func (q clockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Clo
 		return nil, errors.Wrap(err, "models: failed to execute a one query for clock_jobs")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ClockJob records from the query.
-func (q clockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (ClockJobSlice, error) {
+func (q ClockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (ClockJobSlice, error) {
 	var o []*ClockJob
 
 	err := q.Bind(ctx, exec, &o)
@@ -328,19 +159,11 @@ func (q clockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (Cloc
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ClockJob slice")
 	}
 
-	if len(clockJobAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ClockJob records in the query.
-func (q clockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ClockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -355,7 +178,7 @@ func (q clockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (in
 }
 
 // Exists checks if the row exists in the table.
-func (q clockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ClockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -371,9 +194,13 @@ func (q clockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 }
 
 // ClockJobs retrieves all the records using an executor.
-func ClockJobs(mods ...qm.QueryMod) clockJobQuery {
+func ClockJobs(mods ...qm.QueryMod) ClockJobQuery {
 	mods = append(mods, qm.From("\"clock_jobs\""))
-	return clockJobQuery{NewQuery(mods...)}
+	return ClockJobQuery{NewQuery(mods...)}
+}
+
+type ClockJobFinder interface {
+	FindClockJob(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ClockJob, error)
 }
 
 // FindClockJob retrieves a single record by ID with an executor.
@@ -399,25 +226,21 @@ func FindClockJob(ctx context.Context, exec boil.ContextExecutor, iD int, select
 		return nil, errors.Wrap(err, "models: unable to select from clock_jobs")
 	}
 
-	if err = clockJobObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return clockJobObj, err
-	}
-
 	return clockJobObj, nil
+}
+
+type ClockJobInserter interface {
+	Insert(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ClockJob) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ClockJobQuery) Insert(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no clock_jobs provided for insertion")
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(clockJobColumnsWithDefault, o)
 
@@ -482,17 +305,20 @@ func (o *ClockJob) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		clockJobInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ClockJobUpdater interface {
+	Update(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ClockJob.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ClockJob) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ClockJobQuery) Update(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	clockJobUpdateCacheMut.RLock()
 	cache, cached := clockJobUpdateCache[key]
@@ -545,11 +371,11 @@ func (o *ClockJob) Update(ctx context.Context, exec boil.ContextExecutor, column
 		clockJobUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q clockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ClockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -566,7 +392,7 @@ func (q clockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ClockJobSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ClockJobQuery) UpdateAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -613,15 +439,165 @@ func (o ClockJobSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 	return rowsAff, nil
 }
 
+type ClockJobDeleter interface {
+	Delete(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ClockJob record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ClockJobQuery) Delete(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ClockJob provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), clockJobPrimaryKeyMapping)
+	sql := "DELETE FROM \"clock_jobs\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from clock_jobs")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for clock_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ClockJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no clockJobQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from clock_jobs")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for clock_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ClockJobQuery) DeleteAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), clockJobPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"clock_jobs\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, clockJobPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from clockJob slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for clock_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+type ClockJobReloader interface {
+	Reload(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ClockJobQuery) Reload(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindClockJob(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ClockJobQuery) ReloadAll(o *ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ClockJobSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), clockJobPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"clock_jobs\".* FROM \"clock_jobs\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, clockJobPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ClockJobSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ClockJobExists checks if the ClockJob row exists.
+func ClockJobExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"clock_jobs\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if clock_jobs exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *ClockJob) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no clock_jobs provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(clockJobColumnsWithDefault, o)
@@ -725,172 +701,5 @@ func (o *ClockJob) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		clockJobUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ClockJob record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ClockJob) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ClockJob provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), clockJobPrimaryKeyMapping)
-	sql := "DELETE FROM \"clock_jobs\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from clock_jobs")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for clock_jobs")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q clockJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no clockJobQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from clock_jobs")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for clock_jobs")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ClockJobSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(clockJobBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), clockJobPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"clock_jobs\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, clockJobPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from clockJob slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for clock_jobs")
-	}
-
-	if len(clockJobAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ClockJob) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindClockJob(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ClockJobSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ClockJobSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), clockJobPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"clock_jobs\".* FROM \"clock_jobs\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, clockJobPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ClockJobSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ClockJobExists checks if the ClockJob row exists.
-func ClockJobExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"clock_jobs\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if clock_jobs exists")
-	}
-
-	return exists, nil
 }

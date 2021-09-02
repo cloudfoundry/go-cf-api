@@ -120,10 +120,8 @@ type (
 	// SpacesDeveloperSlice is an alias for a slice of pointers to SpacesDeveloper.
 	// This should almost always be used instead of []SpacesDeveloper.
 	SpacesDeveloperSlice []*SpacesDeveloper
-	// SpacesDeveloperHook is the signature for custom SpacesDeveloper hook methods
-	SpacesDeveloperHook func(context.Context, boil.ContextExecutor, *SpacesDeveloper) error
 
-	spacesDeveloperQuery struct {
+	SpacesDeveloperQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var spacesDeveloperBeforeInsertHooks []SpacesDeveloperHook
-var spacesDeveloperBeforeUpdateHooks []SpacesDeveloperHook
-var spacesDeveloperBeforeDeleteHooks []SpacesDeveloperHook
-var spacesDeveloperBeforeUpsertHooks []SpacesDeveloperHook
-
-var spacesDeveloperAfterInsertHooks []SpacesDeveloperHook
-var spacesDeveloperAfterSelectHooks []SpacesDeveloperHook
-var spacesDeveloperAfterUpdateHooks []SpacesDeveloperHook
-var spacesDeveloperAfterDeleteHooks []SpacesDeveloperHook
-var spacesDeveloperAfterUpsertHooks []SpacesDeveloperHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SpacesDeveloper) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SpacesDeveloper) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SpacesDeveloper) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SpacesDeveloper) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SpacesDeveloper) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SpacesDeveloper) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SpacesDeveloper) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SpacesDeveloper) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SpacesDeveloper) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesDeveloperAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSpacesDeveloperHook registers your hook function for all future operations.
-func AddSpacesDeveloperHook(hookPoint boil.HookPoint, spacesDeveloperHook SpacesDeveloperHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		spacesDeveloperBeforeInsertHooks = append(spacesDeveloperBeforeInsertHooks, spacesDeveloperHook)
-	case boil.BeforeUpdateHook:
-		spacesDeveloperBeforeUpdateHooks = append(spacesDeveloperBeforeUpdateHooks, spacesDeveloperHook)
-	case boil.BeforeDeleteHook:
-		spacesDeveloperBeforeDeleteHooks = append(spacesDeveloperBeforeDeleteHooks, spacesDeveloperHook)
-	case boil.BeforeUpsertHook:
-		spacesDeveloperBeforeUpsertHooks = append(spacesDeveloperBeforeUpsertHooks, spacesDeveloperHook)
-	case boil.AfterInsertHook:
-		spacesDeveloperAfterInsertHooks = append(spacesDeveloperAfterInsertHooks, spacesDeveloperHook)
-	case boil.AfterSelectHook:
-		spacesDeveloperAfterSelectHooks = append(spacesDeveloperAfterSelectHooks, spacesDeveloperHook)
-	case boil.AfterUpdateHook:
-		spacesDeveloperAfterUpdateHooks = append(spacesDeveloperAfterUpdateHooks, spacesDeveloperHook)
-	case boil.AfterDeleteHook:
-		spacesDeveloperAfterDeleteHooks = append(spacesDeveloperAfterDeleteHooks, spacesDeveloperHook)
-	case boil.AfterUpsertHook:
-		spacesDeveloperAfterUpsertHooks = append(spacesDeveloperAfterUpsertHooks, spacesDeveloperHook)
-	}
+type SpacesDeveloperFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SpacesDeveloper, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SpacesDeveloperSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single spacesDeveloper record from the query.
-func (q spacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesDeveloper, error) {
+func (q SpacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesDeveloper, error) {
 	o := &SpacesDeveloper{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q spacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for spaces_developers")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SpacesDeveloper records from the query.
-func (q spacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesDeveloperSlice, error) {
+func (q SpacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesDeveloperSlice, error) {
 	var o []*SpacesDeveloper
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q spacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SpacesDeveloper slice")
 	}
 
-	if len(spacesDeveloperAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SpacesDeveloper records in the query.
-func (q spacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SpacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q spacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q spacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SpacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q spacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Space pointed to by the foreign key.
-func (o *SpacesDeveloper) Space(mods ...qm.QueryMod) spaceQuery {
+func (q SpacesDeveloperQuery) Space(o *SpacesDeveloper, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -406,7 +229,7 @@ func (o *SpacesDeveloper) Space(mods ...qm.QueryMod) spaceQuery {
 }
 
 // User pointed to by the foreign key.
-func (o *SpacesDeveloper) User(mods ...qm.QueryMod) userQuery {
+func (q SpacesDeveloperQuery) User(o *SpacesDeveloper, mods ...qm.QueryMod) UserQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -483,14 +306,6 @@ func (spacesDeveloperL) LoadSpace(ctx context.Context, e boil.ContextExecutor, s
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(spacesDeveloperAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (spacesDeveloperL) LoadUser(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(spacesDeveloperAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (spacesDeveloperL) LoadUser(ctx context.Context, e boil.ContextExecutor, si
 // SetSpace of the spacesDeveloper to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.SpacesDevelopers.
-func (o *SpacesDeveloper) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q SpacesDeveloperQuery) SetSpace(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *SpacesDeveloper) SetSpace(ctx context.Context, exec boil.ContextExecuto
 // SetUser of the spacesDeveloper to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.SpacesDevelopers.
-func (o *SpacesDeveloper) SetUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q SpacesDeveloperQuery) SetUser(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *SpacesDeveloper) SetUser(ctx context.Context, exec boil.ContextExecutor
 }
 
 // SpacesDevelopers retrieves all the records using an executor.
-func SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
+func SpacesDevelopers(mods ...qm.QueryMod) SpacesDeveloperQuery {
 	mods = append(mods, qm.From("`spaces_developers`"))
-	return spacesDeveloperQuery{NewQuery(mods...)}
+	return SpacesDeveloperQuery{NewQuery(mods...)}
+}
+
+type SpacesDeveloperFinder interface {
+	FindSpacesDeveloper(ctx context.Context, exec boil.ContextExecutor, spacesDevelopersPK int, selectCols ...string) (*SpacesDeveloper, error)
 }
 
 // FindSpacesDeveloper retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindSpacesDeveloper(ctx context.Context, exec boil.ContextExecutor, spacesD
 		return nil, errors.Wrap(err, "models: unable to select from spaces_developers")
 	}
 
-	if err = spacesDeveloperObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return spacesDeveloperObj, err
-	}
-
 	return spacesDeveloperObj, nil
+}
+
+type SpacesDeveloperInserter interface {
+	Insert(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SpacesDeveloper) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SpacesDeveloperQuery) Insert(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces_developers provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *SpacesDeveloper) Insert(ctx context.Context, exec boil.ContextExecutor,
 		if o.UpdatedAt.IsZero() {
 			o.UpdatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesDeveloperColumnsWithDefault, o)
@@ -870,13 +677,19 @@ CacheNoHooks:
 		spacesDeveloperInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SpacesDeveloperUpdater interface {
+	Update(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SpacesDeveloper.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SpacesDeveloper) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SpacesDeveloperQuery) Update(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -884,9 +697,6 @@ func (o *SpacesDeveloper) Update(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	spacesDeveloperUpdateCacheMut.RLock()
 	cache, cached := spacesDeveloperUpdateCache[key]
@@ -939,11 +749,11 @@ func (o *SpacesDeveloper) Update(ctx context.Context, exec boil.ContextExecutor,
 		spacesDeveloperUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q spacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -960,7 +770,7 @@ func (q spacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SpacesDeveloperSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesDeveloperQuery) UpdateAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1007,6 +817,160 @@ func (o SpacesDeveloperSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 	return rowsAff, nil
 }
 
+type SpacesDeveloperDeleter interface {
+	Delete(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SpacesDeveloper record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SpacesDeveloperQuery) Delete(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SpacesDeveloper provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesDeveloperPrimaryKeyMapping)
+	sql := "DELETE FROM `spaces_developers` WHERE `spaces_developers_pk`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from spaces_developers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_developers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SpacesDeveloperQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no spacesDeveloperQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spaces_developers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_developers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SpacesDeveloperQuery) DeleteAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesDeveloperPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `spaces_developers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesDeveloperPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spacesDeveloper slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_developers")
+	}
+
+	return rowsAff, nil
+}
+
+type SpacesDeveloperReloader interface {
+	Reload(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SpacesDeveloperQuery) Reload(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSpacesDeveloper(ctx, exec, o.SpacesDevelopersPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SpacesDeveloperQuery) ReloadAll(o *SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SpacesDeveloperSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesDeveloperPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `spaces_developers`.* FROM `spaces_developers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesDeveloperPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SpacesDeveloperSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SpacesDeveloperExists checks if the SpacesDeveloper row exists.
+func SpacesDeveloperExists(ctx context.Context, exec boil.ContextExecutor, spacesDevelopersPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `spaces_developers` where `spaces_developers_pk`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, spacesDevelopersPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, spacesDevelopersPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if spaces_developers exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLSpacesDeveloperUniqueColumns = []string{
 	"spaces_developers_pk",
 }
@@ -1024,10 +988,6 @@ func (o *SpacesDeveloper) Upsert(ctx context.Context, exec boil.ContextExecutor,
 			o.CreatedAt = currTime
 		}
 		o.UpdatedAt = currTime
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesDeveloperColumnsWithDefault, o)
@@ -1160,172 +1120,5 @@ CacheNoHooks:
 		spacesDeveloperUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SpacesDeveloper record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SpacesDeveloper) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SpacesDeveloper provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesDeveloperPrimaryKeyMapping)
-	sql := "DELETE FROM `spaces_developers` WHERE `spaces_developers_pk`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from spaces_developers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_developers")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q spacesDeveloperQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no spacesDeveloperQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spaces_developers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_developers")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SpacesDeveloperSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(spacesDeveloperBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesDeveloperPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `spaces_developers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesDeveloperPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spacesDeveloper slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_developers")
-	}
-
-	if len(spacesDeveloperAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SpacesDeveloper) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSpacesDeveloper(ctx, exec, o.SpacesDevelopersPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SpacesDeveloperSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SpacesDeveloperSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesDeveloperPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `spaces_developers`.* FROM `spaces_developers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesDeveloperPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SpacesDeveloperSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SpacesDeveloperExists checks if the SpacesDeveloper row exists.
-func SpacesDeveloperExists(ctx context.Context, exec boil.ContextExecutor, spacesDevelopersPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `spaces_developers` where `spaces_developers_pk`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, spacesDevelopersPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, spacesDevelopersPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if spaces_developers exists")
-	}
-
-	return exists, nil
 }

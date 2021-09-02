@@ -131,10 +131,8 @@ type (
 	// ServiceOfferingAnnotationSlice is an alias for a slice of pointers to ServiceOfferingAnnotation.
 	// This should almost always be used instead of []ServiceOfferingAnnotation.
 	ServiceOfferingAnnotationSlice []*ServiceOfferingAnnotation
-	// ServiceOfferingAnnotationHook is the signature for custom ServiceOfferingAnnotation hook methods
-	ServiceOfferingAnnotationHook func(context.Context, boil.ContextExecutor, *ServiceOfferingAnnotation) error
 
-	serviceOfferingAnnotationQuery struct {
+	ServiceOfferingAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceOfferingAnnotationBeforeInsertHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationBeforeUpdateHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationBeforeDeleteHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationBeforeUpsertHooks []ServiceOfferingAnnotationHook
-
-var serviceOfferingAnnotationAfterInsertHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationAfterSelectHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationAfterUpdateHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationAfterDeleteHooks []ServiceOfferingAnnotationHook
-var serviceOfferingAnnotationAfterUpsertHooks []ServiceOfferingAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceOfferingAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceOfferingAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceOfferingAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceOfferingAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceOfferingAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceOfferingAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceOfferingAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceOfferingAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceOfferingAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceOfferingAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceOfferingAnnotationHook registers your hook function for all future operations.
-func AddServiceOfferingAnnotationHook(hookPoint boil.HookPoint, serviceOfferingAnnotationHook ServiceOfferingAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceOfferingAnnotationBeforeInsertHooks = append(serviceOfferingAnnotationBeforeInsertHooks, serviceOfferingAnnotationHook)
-	case boil.BeforeUpdateHook:
-		serviceOfferingAnnotationBeforeUpdateHooks = append(serviceOfferingAnnotationBeforeUpdateHooks, serviceOfferingAnnotationHook)
-	case boil.BeforeDeleteHook:
-		serviceOfferingAnnotationBeforeDeleteHooks = append(serviceOfferingAnnotationBeforeDeleteHooks, serviceOfferingAnnotationHook)
-	case boil.BeforeUpsertHook:
-		serviceOfferingAnnotationBeforeUpsertHooks = append(serviceOfferingAnnotationBeforeUpsertHooks, serviceOfferingAnnotationHook)
-	case boil.AfterInsertHook:
-		serviceOfferingAnnotationAfterInsertHooks = append(serviceOfferingAnnotationAfterInsertHooks, serviceOfferingAnnotationHook)
-	case boil.AfterSelectHook:
-		serviceOfferingAnnotationAfterSelectHooks = append(serviceOfferingAnnotationAfterSelectHooks, serviceOfferingAnnotationHook)
-	case boil.AfterUpdateHook:
-		serviceOfferingAnnotationAfterUpdateHooks = append(serviceOfferingAnnotationAfterUpdateHooks, serviceOfferingAnnotationHook)
-	case boil.AfterDeleteHook:
-		serviceOfferingAnnotationAfterDeleteHooks = append(serviceOfferingAnnotationAfterDeleteHooks, serviceOfferingAnnotationHook)
-	case boil.AfterUpsertHook:
-		serviceOfferingAnnotationAfterUpsertHooks = append(serviceOfferingAnnotationAfterUpsertHooks, serviceOfferingAnnotationHook)
-	}
+type ServiceOfferingAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceOfferingAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceOfferingAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceOfferingAnnotation record from the query.
-func (q serviceOfferingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceOfferingAnnotation, error) {
+func (q ServiceOfferingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceOfferingAnnotation, error) {
 	o := &ServiceOfferingAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q serviceOfferingAnnotationQuery) One(ctx context.Context, exec boil.Conte
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_offering_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceOfferingAnnotation records from the query.
-func (q serviceOfferingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceOfferingAnnotationSlice, error) {
+func (q ServiceOfferingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceOfferingAnnotationSlice, error) {
 	var o []*ServiceOfferingAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q serviceOfferingAnnotationQuery) All(ctx context.Context, exec boil.Conte
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceOfferingAnnotation slice")
 	}
 
-	if len(serviceOfferingAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceOfferingAnnotation records in the query.
-func (q serviceOfferingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceOfferingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q serviceOfferingAnnotationQuery) Count(ctx context.Context, exec boil.Con
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceOfferingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceOfferingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q serviceOfferingAnnotationQuery) Exists(ctx context.Context, exec boil.Co
 }
 
 // Resource pointed to by the foreign key.
-func (o *ServiceOfferingAnnotation) Resource(mods ...qm.QueryMod) serviceQuery {
+func (q ServiceOfferingAnnotationQuery) Resource(o *ServiceOfferingAnnotation, mods ...qm.QueryMod) ServiceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (serviceOfferingAnnotationL) LoadResource(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for services")
 	}
 
-	if len(serviceOfferingAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (serviceOfferingAnnotationL) LoadResource(ctx context.Context, e boil.Conte
 // SetResource of the serviceOfferingAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceOfferingAnnotations.
-func (o *ServiceOfferingAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
+func (q ServiceOfferingAnnotationQuery) SetResource(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Services().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *ServiceOfferingAnnotation) SetResource(ctx context.Context, exec boil.C
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *ServiceOfferingAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Service) error {
+func (q ServiceOfferingAnnotationQuery) RemoveResource(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Service) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *ServiceOfferingAnnotation) RemoveResource(ctx context.Context, exec boi
 }
 
 // ServiceOfferingAnnotations retrieves all the records using an executor.
-func ServiceOfferingAnnotations(mods ...qm.QueryMod) serviceOfferingAnnotationQuery {
+func ServiceOfferingAnnotations(mods ...qm.QueryMod) ServiceOfferingAnnotationQuery {
 	mods = append(mods, qm.From("`service_offering_annotations`"))
-	return serviceOfferingAnnotationQuery{NewQuery(mods...)}
+	return ServiceOfferingAnnotationQuery{NewQuery(mods...)}
+}
+
+type ServiceOfferingAnnotationFinder interface {
+	FindServiceOfferingAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceOfferingAnnotation, error)
 }
 
 // FindServiceOfferingAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindServiceOfferingAnnotation(ctx context.Context, exec boil.ContextExecuto
 		return nil, errors.Wrap(err, "models: unable to select from service_offering_annotations")
 	}
 
-	if err = serviceOfferingAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceOfferingAnnotationObj, err
-	}
-
 	return serviceOfferingAnnotationObj, nil
+}
+
+type ServiceOfferingAnnotationInserter interface {
+	Insert(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceOfferingAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceOfferingAnnotationQuery) Insert(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_offering_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *ServiceOfferingAnnotation) Insert(ctx context.Context, exec boil.Contex
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceOfferingAnnotationColumnsWithDefault, o)
@@ -753,13 +568,19 @@ CacheNoHooks:
 		serviceOfferingAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceOfferingAnnotationUpdater interface {
+	Update(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceOfferingAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceOfferingAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceOfferingAnnotationQuery) Update(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -767,9 +588,6 @@ func (o *ServiceOfferingAnnotation) Update(ctx context.Context, exec boil.Contex
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceOfferingAnnotationUpdateCacheMut.RLock()
 	cache, cached := serviceOfferingAnnotationUpdateCache[key]
@@ -822,11 +640,11 @@ func (o *ServiceOfferingAnnotation) Update(ctx context.Context, exec boil.Contex
 		serviceOfferingAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceOfferingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceOfferingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -843,7 +661,7 @@ func (q serviceOfferingAnnotationQuery) UpdateAll(ctx context.Context, exec boil
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceOfferingAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceOfferingAnnotationQuery) UpdateAllSlice(o ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -890,6 +708,160 @@ func (o ServiceOfferingAnnotationSlice) UpdateAll(ctx context.Context, exec boil
 	return rowsAff, nil
 }
 
+type ServiceOfferingAnnotationDeleter interface {
+	Delete(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceOfferingAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceOfferingAnnotationQuery) Delete(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceOfferingAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceOfferingAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM `service_offering_annotations` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_offering_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_offering_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceOfferingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceOfferingAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_offering_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_offering_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceOfferingAnnotationQuery) DeleteAllSlice(o ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceOfferingAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `service_offering_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceOfferingAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceOfferingAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_offering_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceOfferingAnnotationReloader interface {
+	Reload(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceOfferingAnnotationQuery) Reload(o *ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceOfferingAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceOfferingAnnotationQuery) ReloadAll(o *ServiceOfferingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceOfferingAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceOfferingAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `service_offering_annotations`.* FROM `service_offering_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceOfferingAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceOfferingAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceOfferingAnnotationExists checks if the ServiceOfferingAnnotation row exists.
+func ServiceOfferingAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `service_offering_annotations` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_offering_annotations exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLServiceOfferingAnnotationUniqueColumns = []string{
 	"id",
 	"guid",
@@ -908,10 +880,6 @@ func (o *ServiceOfferingAnnotation) Upsert(ctx context.Context, exec boil.Contex
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceOfferingAnnotationColumnsWithDefault, o)
@@ -1044,172 +1012,5 @@ CacheNoHooks:
 		serviceOfferingAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceOfferingAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceOfferingAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceOfferingAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceOfferingAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM `service_offering_annotations` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_offering_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_offering_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceOfferingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceOfferingAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_offering_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_offering_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceOfferingAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceOfferingAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceOfferingAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `service_offering_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceOfferingAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceOfferingAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_offering_annotations")
-	}
-
-	if len(serviceOfferingAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceOfferingAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceOfferingAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceOfferingAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceOfferingAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceOfferingAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `service_offering_annotations`.* FROM `service_offering_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceOfferingAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceOfferingAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceOfferingAnnotationExists checks if the ServiceOfferingAnnotation row exists.
-func ServiceOfferingAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `service_offering_annotations` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_offering_annotations exists")
-	}
-
-	return exists, nil
 }

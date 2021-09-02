@@ -119,10 +119,8 @@ type (
 	// IsolationSegmentSlice is an alias for a slice of pointers to IsolationSegment.
 	// This should almost always be used instead of []IsolationSegment.
 	IsolationSegmentSlice []*IsolationSegment
-	// IsolationSegmentHook is the signature for custom IsolationSegment hook methods
-	IsolationSegmentHook func(context.Context, boil.ContextExecutor, *IsolationSegment) error
 
-	isolationSegmentQuery struct {
+	IsolationSegmentQuery struct {
 		*queries.Query
 	}
 )
@@ -148,178 +146,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var isolationSegmentBeforeInsertHooks []IsolationSegmentHook
-var isolationSegmentBeforeUpdateHooks []IsolationSegmentHook
-var isolationSegmentBeforeDeleteHooks []IsolationSegmentHook
-var isolationSegmentBeforeUpsertHooks []IsolationSegmentHook
-
-var isolationSegmentAfterInsertHooks []IsolationSegmentHook
-var isolationSegmentAfterSelectHooks []IsolationSegmentHook
-var isolationSegmentAfterUpdateHooks []IsolationSegmentHook
-var isolationSegmentAfterDeleteHooks []IsolationSegmentHook
-var isolationSegmentAfterUpsertHooks []IsolationSegmentHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *IsolationSegment) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *IsolationSegment) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *IsolationSegment) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *IsolationSegment) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *IsolationSegment) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *IsolationSegment) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *IsolationSegment) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *IsolationSegment) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *IsolationSegment) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range isolationSegmentAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddIsolationSegmentHook registers your hook function for all future operations.
-func AddIsolationSegmentHook(hookPoint boil.HookPoint, isolationSegmentHook IsolationSegmentHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		isolationSegmentBeforeInsertHooks = append(isolationSegmentBeforeInsertHooks, isolationSegmentHook)
-	case boil.BeforeUpdateHook:
-		isolationSegmentBeforeUpdateHooks = append(isolationSegmentBeforeUpdateHooks, isolationSegmentHook)
-	case boil.BeforeDeleteHook:
-		isolationSegmentBeforeDeleteHooks = append(isolationSegmentBeforeDeleteHooks, isolationSegmentHook)
-	case boil.BeforeUpsertHook:
-		isolationSegmentBeforeUpsertHooks = append(isolationSegmentBeforeUpsertHooks, isolationSegmentHook)
-	case boil.AfterInsertHook:
-		isolationSegmentAfterInsertHooks = append(isolationSegmentAfterInsertHooks, isolationSegmentHook)
-	case boil.AfterSelectHook:
-		isolationSegmentAfterSelectHooks = append(isolationSegmentAfterSelectHooks, isolationSegmentHook)
-	case boil.AfterUpdateHook:
-		isolationSegmentAfterUpdateHooks = append(isolationSegmentAfterUpdateHooks, isolationSegmentHook)
-	case boil.AfterDeleteHook:
-		isolationSegmentAfterDeleteHooks = append(isolationSegmentAfterDeleteHooks, isolationSegmentHook)
-	case boil.AfterUpsertHook:
-		isolationSegmentAfterUpsertHooks = append(isolationSegmentAfterUpsertHooks, isolationSegmentHook)
-	}
+type IsolationSegmentFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegment, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single isolationSegment record from the query.
-func (q isolationSegmentQuery) One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegment, error) {
+func (q IsolationSegmentQuery) One(ctx context.Context, exec boil.ContextExecutor) (*IsolationSegment, error) {
 	o := &IsolationSegment{}
 
 	queries.SetLimit(q.Query, 1)
@@ -332,15 +167,11 @@ func (q isolationSegmentQuery) One(ctx context.Context, exec boil.ContextExecuto
 		return nil, errors.Wrap(err, "models: failed to execute a one query for isolation_segments")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all IsolationSegment records from the query.
-func (q isolationSegmentQuery) All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentSlice, error) {
+func (q IsolationSegmentQuery) All(ctx context.Context, exec boil.ContextExecutor) (IsolationSegmentSlice, error) {
 	var o []*IsolationSegment
 
 	err := q.Bind(ctx, exec, &o)
@@ -348,19 +179,11 @@ func (q isolationSegmentQuery) All(ctx context.Context, exec boil.ContextExecuto
 		return nil, errors.Wrap(err, "models: failed to assign all query results to IsolationSegment slice")
 	}
 
-	if len(isolationSegmentAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all IsolationSegment records in the query.
-func (q isolationSegmentQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q IsolationSegmentQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -375,7 +198,7 @@ func (q isolationSegmentQuery) Count(ctx context.Context, exec boil.ContextExecu
 }
 
 // Exists checks if the row exists in the table.
-func (q isolationSegmentQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q IsolationSegmentQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -391,7 +214,7 @@ func (q isolationSegmentQuery) Exists(ctx context.Context, exec boil.ContextExec
 }
 
 // ResourceIsolationSegmentAnnotations retrieves all the isolation_segment_annotation's IsolationSegmentAnnotations with an executor via resource_guid column.
-func (o *IsolationSegment) ResourceIsolationSegmentAnnotations(mods ...qm.QueryMod) isolationSegmentAnnotationQuery {
+func (q IsolationSegmentQuery) ResourceIsolationSegmentAnnotations(o *IsolationSegment, mods ...qm.QueryMod) IsolationSegmentAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -412,7 +235,7 @@ func (o *IsolationSegment) ResourceIsolationSegmentAnnotations(mods ...qm.QueryM
 }
 
 // ResourceIsolationSegmentLabels retrieves all the isolation_segment_label's IsolationSegmentLabels with an executor via resource_guid column.
-func (o *IsolationSegment) ResourceIsolationSegmentLabels(mods ...qm.QueryMod) isolationSegmentLabelQuery {
+func (q IsolationSegmentQuery) ResourceIsolationSegmentLabels(o *IsolationSegment, mods ...qm.QueryMod) IsolationSegmentLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -433,7 +256,7 @@ func (o *IsolationSegment) ResourceIsolationSegmentLabels(mods ...qm.QueryMod) i
 }
 
 // Organizations retrieves all the organization's Organizations with an executor.
-func (o *IsolationSegment) Organizations(mods ...qm.QueryMod) organizationQuery {
+func (q IsolationSegmentQuery) Organizations(o *IsolationSegment, mods ...qm.QueryMod) OrganizationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -455,7 +278,7 @@ func (o *IsolationSegment) Organizations(mods ...qm.QueryMod) organizationQuery 
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (o *IsolationSegment) Spaces(mods ...qm.QueryMod) spaceQuery {
+func (q IsolationSegmentQuery) Spaces(o *IsolationSegment, mods ...qm.QueryMod) SpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -539,13 +362,6 @@ func (isolationSegmentL) LoadResourceIsolationSegmentAnnotations(ctx context.Con
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for isolation_segment_annotations")
 	}
 
-	if len(isolationSegmentAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceIsolationSegmentAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -637,13 +453,6 @@ func (isolationSegmentL) LoadResourceIsolationSegmentLabels(ctx context.Context,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for isolation_segment_labels")
 	}
 
-	if len(isolationSegmentLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceIsolationSegmentLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -751,13 +560,6 @@ func (isolationSegmentL) LoadOrganizations(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
 	}
 
-	if len(organizationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Organizations = resultSlice
 		for _, foreign := range resultSlice {
@@ -850,13 +652,6 @@ func (isolationSegmentL) LoadSpaces(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Spaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -888,12 +683,12 @@ func (isolationSegmentL) LoadSpaces(ctx context.Context, e boil.ContextExecutor,
 // of the isolation_segment, optionally inserting them as new records.
 // Appends related to o.R.ResourceIsolationSegmentAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *IsolationSegment) AddResourceIsolationSegmentAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentAnnotation) error {
+func (q IsolationSegmentQuery) AddResourceIsolationSegmentAnnotations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = IsolationSegmentAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -943,7 +738,7 @@ func (o *IsolationSegment) AddResourceIsolationSegmentAnnotations(ctx context.Co
 // Sets o.R.Resource's ResourceIsolationSegmentAnnotations accordingly.
 // Replaces o.R.ResourceIsolationSegmentAnnotations with related.
 // Sets related.R.Resource's ResourceIsolationSegmentAnnotations accordingly.
-func (o *IsolationSegment) SetResourceIsolationSegmentAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentAnnotation) error {
+func (q IsolationSegmentQuery) SetResourceIsolationSegmentAnnotations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentAnnotation) error {
 	query := "update `isolation_segment_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -968,13 +763,13 @@ func (o *IsolationSegment) SetResourceIsolationSegmentAnnotations(ctx context.Co
 
 		o.R.ResourceIsolationSegmentAnnotations = nil
 	}
-	return o.AddResourceIsolationSegmentAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceIsolationSegmentAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceIsolationSegmentAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceIsolationSegmentAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *IsolationSegment) RemoveResourceIsolationSegmentAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegmentAnnotation) error {
+func (q IsolationSegmentQuery) RemoveResourceIsolationSegmentAnnotations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegmentAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -985,7 +780,7 @@ func (o *IsolationSegment) RemoveResourceIsolationSegmentAnnotations(ctx context
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = IsolationSegmentAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1015,12 +810,12 @@ func (o *IsolationSegment) RemoveResourceIsolationSegmentAnnotations(ctx context
 // of the isolation_segment, optionally inserting them as new records.
 // Appends related to o.R.ResourceIsolationSegmentLabels.
 // Sets related.R.Resource appropriately.
-func (o *IsolationSegment) AddResourceIsolationSegmentLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentLabel) error {
+func (q IsolationSegmentQuery) AddResourceIsolationSegmentLabels(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = IsolationSegmentLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1070,7 +865,7 @@ func (o *IsolationSegment) AddResourceIsolationSegmentLabels(ctx context.Context
 // Sets o.R.Resource's ResourceIsolationSegmentLabels accordingly.
 // Replaces o.R.ResourceIsolationSegmentLabels with related.
 // Sets related.R.Resource's ResourceIsolationSegmentLabels accordingly.
-func (o *IsolationSegment) SetResourceIsolationSegmentLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentLabel) error {
+func (q IsolationSegmentQuery) SetResourceIsolationSegmentLabels(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegmentLabel) error {
 	query := "update `isolation_segment_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1095,13 +890,13 @@ func (o *IsolationSegment) SetResourceIsolationSegmentLabels(ctx context.Context
 
 		o.R.ResourceIsolationSegmentLabels = nil
 	}
-	return o.AddResourceIsolationSegmentLabels(ctx, exec, insert, related...)
+	return q.AddResourceIsolationSegmentLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceIsolationSegmentLabels relationships from objects passed in.
 // Removes related items from R.ResourceIsolationSegmentLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *IsolationSegment) RemoveResourceIsolationSegmentLabels(ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegmentLabel) error {
+func (q IsolationSegmentQuery) RemoveResourceIsolationSegmentLabels(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegmentLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1112,7 +907,7 @@ func (o *IsolationSegment) RemoveResourceIsolationSegmentLabels(ctx context.Cont
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = IsolationSegmentLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1142,11 +937,11 @@ func (o *IsolationSegment) RemoveResourceIsolationSegmentLabels(ctx context.Cont
 // of the isolation_segment, optionally inserting them as new records.
 // Appends related to o.R.Organizations.
 // Sets related.R.IsolationSegments appropriately.
-func (o *IsolationSegment) AddOrganizations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
+func (q IsolationSegmentQuery) AddOrganizations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Organizations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		}
@@ -1192,7 +987,7 @@ func (o *IsolationSegment) AddOrganizations(ctx context.Context, exec boil.Conte
 // Sets o.R.IsolationSegments's Organizations accordingly.
 // Replaces o.R.Organizations with related.
 // Sets related.R.IsolationSegments's Organizations accordingly.
-func (o *IsolationSegment) SetOrganizations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
+func (q IsolationSegmentQuery) SetOrganizations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Organization) error {
 	query := "delete from `organizations_isolation_segments` where `isolation_segment_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1209,13 +1004,13 @@ func (o *IsolationSegment) SetOrganizations(ctx context.Context, exec boil.Conte
 	if o.R != nil {
 		o.R.Organizations = nil
 	}
-	return o.AddOrganizations(ctx, exec, insert, related...)
+	return q.AddOrganizations(o, ctx, exec, insert, related...)
 }
 
 // RemoveOrganizations relationships from objects passed in.
 // Removes related items from R.Organizations (uses pointer comparison, removal does not keep order)
 // Sets related.R.IsolationSegments.
-func (o *IsolationSegment) RemoveOrganizations(ctx context.Context, exec boil.ContextExecutor, related ...*Organization) error {
+func (q IsolationSegmentQuery) RemoveOrganizations(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, related ...*Organization) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1286,12 +1081,12 @@ func removeOrganizationsFromIsolationSegmentsSlice(o *IsolationSegment, related 
 // of the isolation_segment, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.IsolationSegment appropriately.
-func (o *IsolationSegment) AddSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q IsolationSegmentQuery) AddSpaces(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.IsolationSegmentGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Spaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1341,7 +1136,7 @@ func (o *IsolationSegment) AddSpaces(ctx context.Context, exec boil.ContextExecu
 // Sets o.R.IsolationSegment's Spaces accordingly.
 // Replaces o.R.Spaces with related.
 // Sets related.R.IsolationSegment's Spaces accordingly.
-func (o *IsolationSegment) SetSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q IsolationSegmentQuery) SetSpaces(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	query := "update `spaces` set `isolation_segment_guid` = null where `isolation_segment_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1366,13 +1161,13 @@ func (o *IsolationSegment) SetSpaces(ctx context.Context, exec boil.ContextExecu
 
 		o.R.Spaces = nil
 	}
-	return o.AddSpaces(ctx, exec, insert, related...)
+	return q.AddSpaces(o, ctx, exec, insert, related...)
 }
 
 // RemoveSpaces relationships from objects passed in.
 // Removes related items from R.Spaces (uses pointer comparison, removal does not keep order)
 // Sets related.R.IsolationSegment.
-func (o *IsolationSegment) RemoveSpaces(ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
+func (q IsolationSegmentQuery) RemoveSpaces(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1383,7 +1178,7 @@ func (o *IsolationSegment) RemoveSpaces(ctx context.Context, exec boil.ContextEx
 		if rel.R != nil {
 			rel.R.IsolationSegment = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("isolation_segment_guid")); err != nil {
+		if _, err = Spaces().Update(rel, ctx, exec, boil.Whitelist("isolation_segment_guid")); err != nil {
 			return err
 		}
 	}
@@ -1410,9 +1205,13 @@ func (o *IsolationSegment) RemoveSpaces(ctx context.Context, exec boil.ContextEx
 }
 
 // IsolationSegments retrieves all the records using an executor.
-func IsolationSegments(mods ...qm.QueryMod) isolationSegmentQuery {
+func IsolationSegments(mods ...qm.QueryMod) IsolationSegmentQuery {
 	mods = append(mods, qm.From("`isolation_segments`"))
-	return isolationSegmentQuery{NewQuery(mods...)}
+	return IsolationSegmentQuery{NewQuery(mods...)}
+}
+
+type IsolationSegmentFinder interface {
+	FindIsolationSegment(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*IsolationSegment, error)
 }
 
 // FindIsolationSegment retrieves a single record by ID with an executor.
@@ -1438,16 +1237,16 @@ func FindIsolationSegment(ctx context.Context, exec boil.ContextExecutor, iD int
 		return nil, errors.Wrap(err, "models: unable to select from isolation_segments")
 	}
 
-	if err = isolationSegmentObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return isolationSegmentObj, err
-	}
-
 	return isolationSegmentObj, nil
+}
+
+type IsolationSegmentInserter interface {
+	Insert(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *IsolationSegment) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q IsolationSegmentQuery) Insert(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no isolation_segments provided for insertion")
 	}
@@ -1462,10 +1261,6 @@ func (o *IsolationSegment) Insert(ctx context.Context, exec boil.ContextExecutor
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(isolationSegmentColumnsWithDefault, o)
@@ -1558,13 +1353,19 @@ CacheNoHooks:
 		isolationSegmentInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type IsolationSegmentUpdater interface {
+	Update(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the IsolationSegment.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *IsolationSegment) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q IsolationSegmentQuery) Update(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1572,9 +1373,6 @@ func (o *IsolationSegment) Update(ctx context.Context, exec boil.ContextExecutor
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	isolationSegmentUpdateCacheMut.RLock()
 	cache, cached := isolationSegmentUpdateCache[key]
@@ -1627,11 +1425,11 @@ func (o *IsolationSegment) Update(ctx context.Context, exec boil.ContextExecutor
 		isolationSegmentUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q isolationSegmentQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q IsolationSegmentQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1648,7 +1446,7 @@ func (q isolationSegmentQuery) UpdateAll(ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o IsolationSegmentSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q IsolationSegmentQuery) UpdateAllSlice(o IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1695,6 +1493,160 @@ func (o IsolationSegmentSlice) UpdateAll(ctx context.Context, exec boil.ContextE
 	return rowsAff, nil
 }
 
+type IsolationSegmentDeleter interface {
+	Delete(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single IsolationSegment record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q IsolationSegmentQuery) Delete(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no IsolationSegment provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), isolationSegmentPrimaryKeyMapping)
+	sql := "DELETE FROM `isolation_segments` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from isolation_segments")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for isolation_segments")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q IsolationSegmentQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no isolationSegmentQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from isolation_segments")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segments")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q IsolationSegmentQuery) DeleteAllSlice(o IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `isolation_segments` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, isolationSegmentPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from isolationSegment slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segments")
+	}
+
+	return rowsAff, nil
+}
+
+type IsolationSegmentReloader interface {
+	Reload(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q IsolationSegmentQuery) Reload(o *IsolationSegment, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindIsolationSegment(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q IsolationSegmentQuery) ReloadAll(o *IsolationSegmentSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := IsolationSegmentSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `isolation_segments`.* FROM `isolation_segments` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, isolationSegmentPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in IsolationSegmentSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// IsolationSegmentExists checks if the IsolationSegment row exists.
+func IsolationSegmentExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `isolation_segments` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if isolation_segments exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLIsolationSegmentUniqueColumns = []string{
 	"id",
 	"guid",
@@ -1714,10 +1666,6 @@ func (o *IsolationSegment) Upsert(ctx context.Context, exec boil.ContextExecutor
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(isolationSegmentColumnsWithDefault, o)
@@ -1850,172 +1798,5 @@ CacheNoHooks:
 		isolationSegmentUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single IsolationSegment record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *IsolationSegment) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no IsolationSegment provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), isolationSegmentPrimaryKeyMapping)
-	sql := "DELETE FROM `isolation_segments` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from isolation_segments")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for isolation_segments")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q isolationSegmentQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no isolationSegmentQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from isolation_segments")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segments")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o IsolationSegmentSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(isolationSegmentBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `isolation_segments` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, isolationSegmentPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from isolationSegment slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for isolation_segments")
-	}
-
-	if len(isolationSegmentAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *IsolationSegment) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindIsolationSegment(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *IsolationSegmentSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := IsolationSegmentSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), isolationSegmentPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `isolation_segments`.* FROM `isolation_segments` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, isolationSegmentPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in IsolationSegmentSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// IsolationSegmentExists checks if the IsolationSegment row exists.
-func IsolationSegmentExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `isolation_segments` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if isolation_segments exists")
-	}
-
-	return exists, nil
 }

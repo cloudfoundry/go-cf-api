@@ -77,10 +77,8 @@ type (
 	// SchemaMigrationSlice is an alias for a slice of pointers to SchemaMigration.
 	// This should almost always be used instead of []SchemaMigration.
 	SchemaMigrationSlice []*SchemaMigration
-	// SchemaMigrationHook is the signature for custom SchemaMigration hook methods
-	SchemaMigrationHook func(context.Context, boil.ContextExecutor, *SchemaMigration) error
 
-	schemaMigrationQuery struct {
+	SchemaMigrationQuery struct {
 		*queries.Query
 	}
 )
@@ -106,178 +104,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var schemaMigrationBeforeInsertHooks []SchemaMigrationHook
-var schemaMigrationBeforeUpdateHooks []SchemaMigrationHook
-var schemaMigrationBeforeDeleteHooks []SchemaMigrationHook
-var schemaMigrationBeforeUpsertHooks []SchemaMigrationHook
-
-var schemaMigrationAfterInsertHooks []SchemaMigrationHook
-var schemaMigrationAfterSelectHooks []SchemaMigrationHook
-var schemaMigrationAfterUpdateHooks []SchemaMigrationHook
-var schemaMigrationAfterDeleteHooks []SchemaMigrationHook
-var schemaMigrationAfterUpsertHooks []SchemaMigrationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SchemaMigration) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SchemaMigration) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SchemaMigration) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SchemaMigration) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SchemaMigration) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SchemaMigration) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SchemaMigration) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SchemaMigration) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SchemaMigration) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range schemaMigrationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSchemaMigrationHook registers your hook function for all future operations.
-func AddSchemaMigrationHook(hookPoint boil.HookPoint, schemaMigrationHook SchemaMigrationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		schemaMigrationBeforeInsertHooks = append(schemaMigrationBeforeInsertHooks, schemaMigrationHook)
-	case boil.BeforeUpdateHook:
-		schemaMigrationBeforeUpdateHooks = append(schemaMigrationBeforeUpdateHooks, schemaMigrationHook)
-	case boil.BeforeDeleteHook:
-		schemaMigrationBeforeDeleteHooks = append(schemaMigrationBeforeDeleteHooks, schemaMigrationHook)
-	case boil.BeforeUpsertHook:
-		schemaMigrationBeforeUpsertHooks = append(schemaMigrationBeforeUpsertHooks, schemaMigrationHook)
-	case boil.AfterInsertHook:
-		schemaMigrationAfterInsertHooks = append(schemaMigrationAfterInsertHooks, schemaMigrationHook)
-	case boil.AfterSelectHook:
-		schemaMigrationAfterSelectHooks = append(schemaMigrationAfterSelectHooks, schemaMigrationHook)
-	case boil.AfterUpdateHook:
-		schemaMigrationAfterUpdateHooks = append(schemaMigrationAfterUpdateHooks, schemaMigrationHook)
-	case boil.AfterDeleteHook:
-		schemaMigrationAfterDeleteHooks = append(schemaMigrationAfterDeleteHooks, schemaMigrationHook)
-	case boil.AfterUpsertHook:
-		schemaMigrationAfterUpsertHooks = append(schemaMigrationAfterUpsertHooks, schemaMigrationHook)
-	}
+type SchemaMigrationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SchemaMigration, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SchemaMigrationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single schemaMigration record from the query.
-func (q schemaMigrationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SchemaMigration, error) {
+func (q SchemaMigrationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SchemaMigration, error) {
 	o := &SchemaMigration{}
 
 	queries.SetLimit(q.Query, 1)
@@ -290,15 +125,11 @@ func (q schemaMigrationQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for schema_migrations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SchemaMigration records from the query.
-func (q schemaMigrationQuery) All(ctx context.Context, exec boil.ContextExecutor) (SchemaMigrationSlice, error) {
+func (q SchemaMigrationQuery) All(ctx context.Context, exec boil.ContextExecutor) (SchemaMigrationSlice, error) {
 	var o []*SchemaMigration
 
 	err := q.Bind(ctx, exec, &o)
@@ -306,19 +137,11 @@ func (q schemaMigrationQuery) All(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SchemaMigration slice")
 	}
 
-	if len(schemaMigrationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SchemaMigration records in the query.
-func (q schemaMigrationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SchemaMigrationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -333,7 +156,7 @@ func (q schemaMigrationQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q schemaMigrationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SchemaMigrationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -349,9 +172,13 @@ func (q schemaMigrationQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // SchemaMigrations retrieves all the records using an executor.
-func SchemaMigrations(mods ...qm.QueryMod) schemaMigrationQuery {
+func SchemaMigrations(mods ...qm.QueryMod) SchemaMigrationQuery {
 	mods = append(mods, qm.From("\"schema_migrations\""))
-	return schemaMigrationQuery{NewQuery(mods...)}
+	return SchemaMigrationQuery{NewQuery(mods...)}
+}
+
+type SchemaMigrationFinder interface {
+	FindSchemaMigration(ctx context.Context, exec boil.ContextExecutor, filename string, selectCols ...string) (*SchemaMigration, error)
 }
 
 // FindSchemaMigration retrieves a single record by ID with an executor.
@@ -377,25 +204,21 @@ func FindSchemaMigration(ctx context.Context, exec boil.ContextExecutor, filenam
 		return nil, errors.Wrap(err, "models: unable to select from schema_migrations")
 	}
 
-	if err = schemaMigrationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return schemaMigrationObj, err
-	}
-
 	return schemaMigrationObj, nil
+}
+
+type SchemaMigrationInserter interface {
+	Insert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SchemaMigration) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SchemaMigrationQuery) Insert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no schema_migrations provided for insertion")
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(schemaMigrationColumnsWithDefault, o)
 
@@ -460,17 +283,20 @@ func (o *SchemaMigration) Insert(ctx context.Context, exec boil.ContextExecutor,
 		schemaMigrationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SchemaMigrationUpdater interface {
+	Update(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SchemaMigration.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SchemaMigration) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SchemaMigrationQuery) Update(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	schemaMigrationUpdateCacheMut.RLock()
 	cache, cached := schemaMigrationUpdateCache[key]
@@ -523,11 +349,11 @@ func (o *SchemaMigration) Update(ctx context.Context, exec boil.ContextExecutor,
 		schemaMigrationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q schemaMigrationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SchemaMigrationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -544,7 +370,7 @@ func (q schemaMigrationQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SchemaMigrationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SchemaMigrationQuery) UpdateAllSlice(o SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -591,15 +417,165 @@ func (o SchemaMigrationSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 	return rowsAff, nil
 }
 
+type SchemaMigrationDeleter interface {
+	Delete(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SchemaMigration record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SchemaMigrationQuery) Delete(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SchemaMigration provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), schemaMigrationPrimaryKeyMapping)
+	sql := "DELETE FROM \"schema_migrations\" WHERE \"filename\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from schema_migrations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for schema_migrations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SchemaMigrationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no schemaMigrationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from schema_migrations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for schema_migrations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SchemaMigrationQuery) DeleteAllSlice(o SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), schemaMigrationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"schema_migrations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, schemaMigrationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from schemaMigration slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for schema_migrations")
+	}
+
+	return rowsAff, nil
+}
+
+type SchemaMigrationReloader interface {
+	Reload(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SchemaMigrationQuery) Reload(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSchemaMigration(ctx, exec, o.Filename)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SchemaMigrationQuery) ReloadAll(o *SchemaMigrationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SchemaMigrationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), schemaMigrationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"schema_migrations\".* FROM \"schema_migrations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, schemaMigrationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SchemaMigrationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SchemaMigrationExists checks if the SchemaMigration row exists.
+func SchemaMigrationExists(ctx context.Context, exec boil.ContextExecutor, filename string) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"schema_migrations\" where \"filename\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, filename)
+	}
+	row := exec.QueryRowContext(ctx, sql, filename)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if schema_migrations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *SchemaMigration) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no schema_migrations provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(schemaMigrationColumnsWithDefault, o)
@@ -703,172 +679,5 @@ func (o *SchemaMigration) Upsert(ctx context.Context, exec boil.ContextExecutor,
 		schemaMigrationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SchemaMigration record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SchemaMigration) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SchemaMigration provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), schemaMigrationPrimaryKeyMapping)
-	sql := "DELETE FROM \"schema_migrations\" WHERE \"filename\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from schema_migrations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for schema_migrations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q schemaMigrationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no schemaMigrationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from schema_migrations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for schema_migrations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SchemaMigrationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(schemaMigrationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), schemaMigrationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"schema_migrations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, schemaMigrationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from schemaMigration slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for schema_migrations")
-	}
-
-	if len(schemaMigrationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SchemaMigration) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSchemaMigration(ctx, exec, o.Filename)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SchemaMigrationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SchemaMigrationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), schemaMigrationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"schema_migrations\".* FROM \"schema_migrations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, schemaMigrationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SchemaMigrationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SchemaMigrationExists checks if the SchemaMigration row exists.
-func SchemaMigrationExists(ctx context.Context, exec boil.ContextExecutor, filename string) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"schema_migrations\" where \"filename\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, filename)
-	}
-	row := exec.QueryRowContext(ctx, sql, filename)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if schema_migrations exists")
-	}
-
-	return exists, nil
 }

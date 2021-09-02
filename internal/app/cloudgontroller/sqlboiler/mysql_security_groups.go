@@ -134,10 +134,8 @@ type (
 	// SecurityGroupSlice is an alias for a slice of pointers to SecurityGroup.
 	// This should almost always be used instead of []SecurityGroup.
 	SecurityGroupSlice []*SecurityGroup
-	// SecurityGroupHook is the signature for custom SecurityGroup hook methods
-	SecurityGroupHook func(context.Context, boil.ContextExecutor, *SecurityGroup) error
 
-	securityGroupQuery struct {
+	SecurityGroupQuery struct {
 		*queries.Query
 	}
 )
@@ -163,178 +161,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var securityGroupBeforeInsertHooks []SecurityGroupHook
-var securityGroupBeforeUpdateHooks []SecurityGroupHook
-var securityGroupBeforeDeleteHooks []SecurityGroupHook
-var securityGroupBeforeUpsertHooks []SecurityGroupHook
-
-var securityGroupAfterInsertHooks []SecurityGroupHook
-var securityGroupAfterSelectHooks []SecurityGroupHook
-var securityGroupAfterUpdateHooks []SecurityGroupHook
-var securityGroupAfterDeleteHooks []SecurityGroupHook
-var securityGroupAfterUpsertHooks []SecurityGroupHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SecurityGroup) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SecurityGroup) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SecurityGroup) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SecurityGroup) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SecurityGroup) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SecurityGroup) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SecurityGroup) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SecurityGroup) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SecurityGroup) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range securityGroupAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSecurityGroupHook registers your hook function for all future operations.
-func AddSecurityGroupHook(hookPoint boil.HookPoint, securityGroupHook SecurityGroupHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		securityGroupBeforeInsertHooks = append(securityGroupBeforeInsertHooks, securityGroupHook)
-	case boil.BeforeUpdateHook:
-		securityGroupBeforeUpdateHooks = append(securityGroupBeforeUpdateHooks, securityGroupHook)
-	case boil.BeforeDeleteHook:
-		securityGroupBeforeDeleteHooks = append(securityGroupBeforeDeleteHooks, securityGroupHook)
-	case boil.BeforeUpsertHook:
-		securityGroupBeforeUpsertHooks = append(securityGroupBeforeUpsertHooks, securityGroupHook)
-	case boil.AfterInsertHook:
-		securityGroupAfterInsertHooks = append(securityGroupAfterInsertHooks, securityGroupHook)
-	case boil.AfterSelectHook:
-		securityGroupAfterSelectHooks = append(securityGroupAfterSelectHooks, securityGroupHook)
-	case boil.AfterUpdateHook:
-		securityGroupAfterUpdateHooks = append(securityGroupAfterUpdateHooks, securityGroupHook)
-	case boil.AfterDeleteHook:
-		securityGroupAfterDeleteHooks = append(securityGroupAfterDeleteHooks, securityGroupHook)
-	case boil.AfterUpsertHook:
-		securityGroupAfterUpsertHooks = append(securityGroupAfterUpsertHooks, securityGroupHook)
-	}
+type SecurityGroupFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SecurityGroup, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SecurityGroupSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single securityGroup record from the query.
-func (q securityGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SecurityGroup, error) {
+func (q SecurityGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SecurityGroup, error) {
 	o := &SecurityGroup{}
 
 	queries.SetLimit(q.Query, 1)
@@ -347,15 +182,11 @@ func (q securityGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to execute a one query for security_groups")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SecurityGroup records from the query.
-func (q securityGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) (SecurityGroupSlice, error) {
+func (q SecurityGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) (SecurityGroupSlice, error) {
 	var o []*SecurityGroup
 
 	err := q.Bind(ctx, exec, &o)
@@ -363,19 +194,11 @@ func (q securityGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SecurityGroup slice")
 	}
 
-	if len(securityGroupAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SecurityGroup records in the query.
-func (q securityGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SecurityGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -390,7 +213,7 @@ func (q securityGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Exists checks if the row exists in the table.
-func (q securityGroupQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SecurityGroupQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -406,7 +229,7 @@ func (q securityGroupQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 }
 
 // SecurityGroupsSpaces retrieves all the security_groups_space's SecurityGroupsSpaces with an executor.
-func (o *SecurityGroup) SecurityGroupsSpaces(mods ...qm.QueryMod) securityGroupsSpaceQuery {
+func (q SecurityGroupQuery) SecurityGroupsSpaces(o *SecurityGroup, mods ...qm.QueryMod) SecurityGroupsSpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -427,7 +250,7 @@ func (o *SecurityGroup) SecurityGroupsSpaces(mods ...qm.QueryMod) securityGroups
 }
 
 // StagingSecurityGroupStagingSecurityGroupsSpaces retrieves all the staging_security_groups_space's StagingSecurityGroupsSpaces with an executor via staging_security_group_id column.
-func (o *SecurityGroup) StagingSecurityGroupStagingSecurityGroupsSpaces(mods ...qm.QueryMod) stagingSecurityGroupsSpaceQuery {
+func (q SecurityGroupQuery) StagingSecurityGroupStagingSecurityGroupsSpaces(o *SecurityGroup, mods ...qm.QueryMod) StagingSecurityGroupsSpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -511,13 +334,6 @@ func (securityGroupL) LoadSecurityGroupsSpaces(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for security_groups_spaces")
 	}
 
-	if len(securityGroupsSpaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SecurityGroupsSpaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -609,13 +425,6 @@ func (securityGroupL) LoadStagingSecurityGroupStagingSecurityGroupsSpaces(ctx co
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for staging_security_groups_spaces")
 	}
 
-	if len(stagingSecurityGroupsSpaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StagingSecurityGroupStagingSecurityGroupsSpaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -647,12 +456,12 @@ func (securityGroupL) LoadStagingSecurityGroupStagingSecurityGroupsSpaces(ctx co
 // of the security_group, optionally inserting them as new records.
 // Appends related to o.R.SecurityGroupsSpaces.
 // Sets related.R.SecurityGroup appropriately.
-func (o *SecurityGroup) AddSecurityGroupsSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SecurityGroupsSpace) error {
+func (q SecurityGroupQuery) AddSecurityGroupsSpaces(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SecurityGroupsSpace) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SecurityGroupID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SecurityGroupsSpaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -700,12 +509,12 @@ func (o *SecurityGroup) AddSecurityGroupsSpaces(ctx context.Context, exec boil.C
 // of the security_group, optionally inserting them as new records.
 // Appends related to o.R.StagingSecurityGroupStagingSecurityGroupsSpaces.
 // Sets related.R.StagingSecurityGroup appropriately.
-func (o *SecurityGroup) AddStagingSecurityGroupStagingSecurityGroupsSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StagingSecurityGroupsSpace) error {
+func (q SecurityGroupQuery) AddStagingSecurityGroupStagingSecurityGroupsSpaces(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StagingSecurityGroupsSpace) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.StagingSecurityGroupID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = StagingSecurityGroupsSpaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -750,9 +559,13 @@ func (o *SecurityGroup) AddStagingSecurityGroupStagingSecurityGroupsSpaces(ctx c
 }
 
 // SecurityGroups retrieves all the records using an executor.
-func SecurityGroups(mods ...qm.QueryMod) securityGroupQuery {
+func SecurityGroups(mods ...qm.QueryMod) SecurityGroupQuery {
 	mods = append(mods, qm.From("`security_groups`"))
-	return securityGroupQuery{NewQuery(mods...)}
+	return SecurityGroupQuery{NewQuery(mods...)}
+}
+
+type SecurityGroupFinder interface {
+	FindSecurityGroup(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*SecurityGroup, error)
 }
 
 // FindSecurityGroup retrieves a single record by ID with an executor.
@@ -778,16 +591,16 @@ func FindSecurityGroup(ctx context.Context, exec boil.ContextExecutor, iD int, s
 		return nil, errors.Wrap(err, "models: unable to select from security_groups")
 	}
 
-	if err = securityGroupObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return securityGroupObj, err
-	}
-
 	return securityGroupObj, nil
+}
+
+type SecurityGroupInserter interface {
+	Insert(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SecurityGroup) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SecurityGroupQuery) Insert(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no security_groups provided for insertion")
 	}
@@ -802,10 +615,6 @@ func (o *SecurityGroup) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(securityGroupColumnsWithDefault, o)
@@ -898,13 +707,19 @@ CacheNoHooks:
 		securityGroupInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SecurityGroupUpdater interface {
+	Update(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SecurityGroup.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SecurityGroup) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SecurityGroupQuery) Update(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -912,9 +727,6 @@ func (o *SecurityGroup) Update(ctx context.Context, exec boil.ContextExecutor, c
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	securityGroupUpdateCacheMut.RLock()
 	cache, cached := securityGroupUpdateCache[key]
@@ -967,11 +779,11 @@ func (o *SecurityGroup) Update(ctx context.Context, exec boil.ContextExecutor, c
 		securityGroupUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q securityGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SecurityGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -988,7 +800,7 @@ func (q securityGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SecurityGroupSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SecurityGroupQuery) UpdateAllSlice(o SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1035,6 +847,160 @@ func (o SecurityGroupSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 	return rowsAff, nil
 }
 
+type SecurityGroupDeleter interface {
+	Delete(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SecurityGroup record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SecurityGroupQuery) Delete(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SecurityGroup provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), securityGroupPrimaryKeyMapping)
+	sql := "DELETE FROM `security_groups` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from security_groups")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for security_groups")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SecurityGroupQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no securityGroupQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from security_groups")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for security_groups")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SecurityGroupQuery) DeleteAllSlice(o SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), securityGroupPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `security_groups` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, securityGroupPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from securityGroup slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for security_groups")
+	}
+
+	return rowsAff, nil
+}
+
+type SecurityGroupReloader interface {
+	Reload(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SecurityGroupQuery) Reload(o *SecurityGroup, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSecurityGroup(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SecurityGroupQuery) ReloadAll(o *SecurityGroupSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SecurityGroupSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), securityGroupPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `security_groups`.* FROM `security_groups` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, securityGroupPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SecurityGroupSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SecurityGroupExists checks if the SecurityGroup row exists.
+func SecurityGroupExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `security_groups` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if security_groups exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLSecurityGroupUniqueColumns = []string{
 	"id",
 }
@@ -1052,10 +1018,6 @@ func (o *SecurityGroup) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(securityGroupColumnsWithDefault, o)
@@ -1188,172 +1150,5 @@ CacheNoHooks:
 		securityGroupUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SecurityGroup record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SecurityGroup) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SecurityGroup provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), securityGroupPrimaryKeyMapping)
-	sql := "DELETE FROM `security_groups` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from security_groups")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for security_groups")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q securityGroupQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no securityGroupQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from security_groups")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for security_groups")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SecurityGroupSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(securityGroupBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), securityGroupPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `security_groups` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, securityGroupPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from securityGroup slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for security_groups")
-	}
-
-	if len(securityGroupAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SecurityGroup) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSecurityGroup(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SecurityGroupSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SecurityGroupSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), securityGroupPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `security_groups`.* FROM `security_groups` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, securityGroupPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SecurityGroupSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SecurityGroupExists checks if the SecurityGroup row exists.
-func SecurityGroupExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `security_groups` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if security_groups exists")
-	}
-
-	return exists, nil
 }

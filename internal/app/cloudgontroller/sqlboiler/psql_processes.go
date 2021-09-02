@@ -280,10 +280,8 @@ type (
 	// ProcessSlice is an alias for a slice of pointers to Process.
 	// This should almost always be used instead of []Process.
 	ProcessSlice []*Process
-	// ProcessHook is the signature for custom Process hook methods
-	ProcessHook func(context.Context, boil.ContextExecutor, *Process) error
 
-	processQuery struct {
+	ProcessQuery struct {
 		*queries.Query
 	}
 )
@@ -309,178 +307,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var processBeforeInsertHooks []ProcessHook
-var processBeforeUpdateHooks []ProcessHook
-var processBeforeDeleteHooks []ProcessHook
-var processBeforeUpsertHooks []ProcessHook
-
-var processAfterInsertHooks []ProcessHook
-var processAfterSelectHooks []ProcessHook
-var processAfterUpdateHooks []ProcessHook
-var processAfterDeleteHooks []ProcessHook
-var processAfterUpsertHooks []ProcessHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Process) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Process) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Process) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Process) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Process) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Process) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Process) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Process) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Process) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range processAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddProcessHook registers your hook function for all future operations.
-func AddProcessHook(hookPoint boil.HookPoint, processHook ProcessHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		processBeforeInsertHooks = append(processBeforeInsertHooks, processHook)
-	case boil.BeforeUpdateHook:
-		processBeforeUpdateHooks = append(processBeforeUpdateHooks, processHook)
-	case boil.BeforeDeleteHook:
-		processBeforeDeleteHooks = append(processBeforeDeleteHooks, processHook)
-	case boil.BeforeUpsertHook:
-		processBeforeUpsertHooks = append(processBeforeUpsertHooks, processHook)
-	case boil.AfterInsertHook:
-		processAfterInsertHooks = append(processAfterInsertHooks, processHook)
-	case boil.AfterSelectHook:
-		processAfterSelectHooks = append(processAfterSelectHooks, processHook)
-	case boil.AfterUpdateHook:
-		processAfterUpdateHooks = append(processAfterUpdateHooks, processHook)
-	case boil.AfterDeleteHook:
-		processAfterDeleteHooks = append(processAfterDeleteHooks, processHook)
-	case boil.AfterUpsertHook:
-		processAfterUpsertHooks = append(processAfterUpsertHooks, processHook)
-	}
+type ProcessFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Process, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ProcessSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single process record from the query.
-func (q processQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Process, error) {
+func (q ProcessQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Process, error) {
 	o := &Process{}
 
 	queries.SetLimit(q.Query, 1)
@@ -493,15 +328,11 @@ func (q processQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Proc
 		return nil, errors.Wrap(err, "models: failed to execute a one query for processes")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Process records from the query.
-func (q processQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessSlice, error) {
+func (q ProcessQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessSlice, error) {
 	var o []*Process
 
 	err := q.Bind(ctx, exec, &o)
@@ -509,19 +340,11 @@ func (q processQuery) All(ctx context.Context, exec boil.ContextExecutor) (Proce
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Process slice")
 	}
 
-	if len(processAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Process records in the query.
-func (q processQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ProcessQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -536,7 +359,7 @@ func (q processQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q processQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ProcessQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -552,7 +375,7 @@ func (q processQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // App pointed to by the foreign key.
-func (o *Process) App(mods ...qm.QueryMod) appQuery {
+func (q ProcessQuery) App(o *Process, mods ...qm.QueryMod) AppQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.AppGUID),
 	}
@@ -566,7 +389,7 @@ func (o *Process) App(mods ...qm.QueryMod) appQuery {
 }
 
 // AppAppEvents retrieves all the app_event's AppEvents with an executor via app_id column.
-func (o *Process) AppAppEvents(mods ...qm.QueryMod) appEventQuery {
+func (q ProcessQuery) AppAppEvents(o *Process, mods ...qm.QueryMod) AppEventQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -587,7 +410,7 @@ func (o *Process) AppAppEvents(mods ...qm.QueryMod) appEventQuery {
 }
 
 // ResourceProcessAnnotations retrieves all the process_annotation's ProcessAnnotations with an executor via resource_guid column.
-func (o *Process) ResourceProcessAnnotations(mods ...qm.QueryMod) processAnnotationQuery {
+func (q ProcessQuery) ResourceProcessAnnotations(o *Process, mods ...qm.QueryMod) ProcessAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -608,7 +431,7 @@ func (o *Process) ResourceProcessAnnotations(mods ...qm.QueryMod) processAnnotat
 }
 
 // ResourceProcessLabels retrieves all the process_label's ProcessLabels with an executor via resource_guid column.
-func (o *Process) ResourceProcessLabels(mods ...qm.QueryMod) processLabelQuery {
+func (q ProcessQuery) ResourceProcessLabels(o *Process, mods ...qm.QueryMod) ProcessLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -696,14 +519,6 @@ func (processL) LoadApp(ctx context.Context, e boil.ContextExecutor, singular bo
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for apps")
-	}
-
-	if len(processAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -800,13 +615,6 @@ func (processL) LoadAppAppEvents(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for app_events")
 	}
 
-	if len(appEventAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.AppAppEvents = resultSlice
 		for _, foreign := range resultSlice {
@@ -898,13 +706,6 @@ func (processL) LoadResourceProcessAnnotations(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for process_annotations")
 	}
 
-	if len(processAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceProcessAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -996,13 +797,6 @@ func (processL) LoadResourceProcessLabels(ctx context.Context, e boil.ContextExe
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for process_labels")
 	}
 
-	if len(processLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceProcessLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1033,10 +827,10 @@ func (processL) LoadResourceProcessLabels(ctx context.Context, e boil.ContextExe
 // SetApp of the process to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Processes.
-func (o *Process) SetApp(ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q ProcessQuery) SetApp(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1080,11 +874,11 @@ func (o *Process) SetApp(ctx context.Context, exec boil.ContextExecutor, insert 
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Process) RemoveApp(ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q ProcessQuery) RemoveApp(o *Process, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -1114,12 +908,12 @@ func (o *Process) RemoveApp(ctx context.Context, exec boil.ContextExecutor, rela
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.AppAppEvents.
 // Sets related.R.App appropriately.
-func (o *Process) AddAppAppEvents(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppEvent) error {
+func (q ProcessQuery) AddAppAppEvents(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppEvent) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.AppID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = AppEvents().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1167,12 +961,12 @@ func (o *Process) AddAppAppEvents(ctx context.Context, exec boil.ContextExecutor
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.ResourceProcessAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Process) AddResourceProcessAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
+func (q ProcessQuery) AddResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ProcessAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1222,7 +1016,7 @@ func (o *Process) AddResourceProcessAnnotations(ctx context.Context, exec boil.C
 // Sets o.R.Resource's ResourceProcessAnnotations accordingly.
 // Replaces o.R.ResourceProcessAnnotations with related.
 // Sets related.R.Resource's ResourceProcessAnnotations accordingly.
-func (o *Process) SetResourceProcessAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
+func (q ProcessQuery) SetResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
 	query := "update \"process_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1247,13 +1041,13 @@ func (o *Process) SetResourceProcessAnnotations(ctx context.Context, exec boil.C
 
 		o.R.ResourceProcessAnnotations = nil
 	}
-	return o.AddResourceProcessAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceProcessAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceProcessAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceProcessAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Process) RemoveResourceProcessAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*ProcessAnnotation) error {
+func (q ProcessQuery) RemoveResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1264,7 +1058,7 @@ func (o *Process) RemoveResourceProcessAnnotations(ctx context.Context, exec boi
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = ProcessAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1294,12 +1088,12 @@ func (o *Process) RemoveResourceProcessAnnotations(ctx context.Context, exec boi
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.ResourceProcessLabels.
 // Sets related.R.Resource appropriately.
-func (o *Process) AddResourceProcessLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
+func (q ProcessQuery) AddResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ProcessLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1349,7 +1143,7 @@ func (o *Process) AddResourceProcessLabels(ctx context.Context, exec boil.Contex
 // Sets o.R.Resource's ResourceProcessLabels accordingly.
 // Replaces o.R.ResourceProcessLabels with related.
 // Sets related.R.Resource's ResourceProcessLabels accordingly.
-func (o *Process) SetResourceProcessLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
+func (q ProcessQuery) SetResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
 	query := "update \"process_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1374,13 +1168,13 @@ func (o *Process) SetResourceProcessLabels(ctx context.Context, exec boil.Contex
 
 		o.R.ResourceProcessLabels = nil
 	}
-	return o.AddResourceProcessLabels(ctx, exec, insert, related...)
+	return q.AddResourceProcessLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceProcessLabels relationships from objects passed in.
 // Removes related items from R.ResourceProcessLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Process) RemoveResourceProcessLabels(ctx context.Context, exec boil.ContextExecutor, related ...*ProcessLabel) error {
+func (q ProcessQuery) RemoveResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1391,7 +1185,7 @@ func (o *Process) RemoveResourceProcessLabels(ctx context.Context, exec boil.Con
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = ProcessLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1418,9 +1212,13 @@ func (o *Process) RemoveResourceProcessLabels(ctx context.Context, exec boil.Con
 }
 
 // Processes retrieves all the records using an executor.
-func Processes(mods ...qm.QueryMod) processQuery {
+func Processes(mods ...qm.QueryMod) ProcessQuery {
 	mods = append(mods, qm.From("\"processes\""))
-	return processQuery{NewQuery(mods...)}
+	return ProcessQuery{NewQuery(mods...)}
+}
+
+type ProcessFinder interface {
+	FindProcess(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Process, error)
 }
 
 // FindProcess retrieves a single record by ID with an executor.
@@ -1446,16 +1244,16 @@ func FindProcess(ctx context.Context, exec boil.ContextExecutor, iD int, selectC
 		return nil, errors.Wrap(err, "models: unable to select from processes")
 	}
 
-	if err = processObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return processObj, err
-	}
-
 	return processObj, nil
+}
+
+type ProcessInserter interface {
+	Insert(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Process) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ProcessQuery) Insert(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no processes provided for insertion")
 	}
@@ -1470,10 +1268,6 @@ func (o *Process) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(processColumnsWithDefault, o)
@@ -1539,13 +1333,19 @@ func (o *Process) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		processInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ProcessUpdater interface {
+	Update(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Process.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Process) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ProcessQuery) Update(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1553,9 +1353,6 @@ func (o *Process) Update(ctx context.Context, exec boil.ContextExecutor, columns
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	processUpdateCacheMut.RLock()
 	cache, cached := processUpdateCache[key]
@@ -1608,11 +1405,11 @@ func (o *Process) Update(ctx context.Context, exec boil.ContextExecutor, columns
 		processUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q processQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ProcessQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1629,7 +1426,7 @@ func (q processQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ProcessSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ProcessQuery) UpdateAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1676,6 +1473,160 @@ func (o ProcessSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 	return rowsAff, nil
 }
 
+type ProcessDeleter interface {
+	Delete(o *Process, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Process record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ProcessQuery) Delete(o *Process, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Process provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), processPrimaryKeyMapping)
+	sql := "DELETE FROM \"processes\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from processes")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for processes")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ProcessQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no processQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from processes")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for processes")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ProcessQuery) DeleteAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), processPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"processes\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, processPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from process slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for processes")
+	}
+
+	return rowsAff, nil
+}
+
+type ProcessReloader interface {
+	Reload(o *Process, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ProcessSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ProcessQuery) Reload(o *Process, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindProcess(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ProcessQuery) ReloadAll(o *ProcessSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ProcessSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), processPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"processes\".* FROM \"processes\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, processPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ProcessSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ProcessExists checks if the Process row exists.
+func ProcessExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"processes\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if processes exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Process) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1689,10 +1640,6 @@ func (o *Process) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(processColumnsWithDefault, o)
@@ -1796,172 +1743,5 @@ func (o *Process) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		processUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Process record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Process) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Process provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), processPrimaryKeyMapping)
-	sql := "DELETE FROM \"processes\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from processes")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for processes")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q processQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no processQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from processes")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for processes")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ProcessSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(processBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), processPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"processes\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, processPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from process slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for processes")
-	}
-
-	if len(processAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Process) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindProcess(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ProcessSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ProcessSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), processPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"processes\".* FROM \"processes\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, processPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ProcessSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ProcessExists checks if the Process row exists.
-func ProcessExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"processes\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if processes exists")
-	}
-
-	return exists, nil
 }

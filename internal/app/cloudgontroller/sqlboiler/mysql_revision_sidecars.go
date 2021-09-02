@@ -134,10 +134,8 @@ type (
 	// RevisionSidecarSlice is an alias for a slice of pointers to RevisionSidecar.
 	// This should almost always be used instead of []RevisionSidecar.
 	RevisionSidecarSlice []*RevisionSidecar
-	// RevisionSidecarHook is the signature for custom RevisionSidecar hook methods
-	RevisionSidecarHook func(context.Context, boil.ContextExecutor, *RevisionSidecar) error
 
-	revisionSidecarQuery struct {
+	RevisionSidecarQuery struct {
 		*queries.Query
 	}
 )
@@ -163,178 +161,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var revisionSidecarBeforeInsertHooks []RevisionSidecarHook
-var revisionSidecarBeforeUpdateHooks []RevisionSidecarHook
-var revisionSidecarBeforeDeleteHooks []RevisionSidecarHook
-var revisionSidecarBeforeUpsertHooks []RevisionSidecarHook
-
-var revisionSidecarAfterInsertHooks []RevisionSidecarHook
-var revisionSidecarAfterSelectHooks []RevisionSidecarHook
-var revisionSidecarAfterUpdateHooks []RevisionSidecarHook
-var revisionSidecarAfterDeleteHooks []RevisionSidecarHook
-var revisionSidecarAfterUpsertHooks []RevisionSidecarHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *RevisionSidecar) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *RevisionSidecar) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *RevisionSidecar) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *RevisionSidecar) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *RevisionSidecar) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *RevisionSidecar) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *RevisionSidecar) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *RevisionSidecar) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *RevisionSidecar) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionSidecarAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddRevisionSidecarHook registers your hook function for all future operations.
-func AddRevisionSidecarHook(hookPoint boil.HookPoint, revisionSidecarHook RevisionSidecarHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		revisionSidecarBeforeInsertHooks = append(revisionSidecarBeforeInsertHooks, revisionSidecarHook)
-	case boil.BeforeUpdateHook:
-		revisionSidecarBeforeUpdateHooks = append(revisionSidecarBeforeUpdateHooks, revisionSidecarHook)
-	case boil.BeforeDeleteHook:
-		revisionSidecarBeforeDeleteHooks = append(revisionSidecarBeforeDeleteHooks, revisionSidecarHook)
-	case boil.BeforeUpsertHook:
-		revisionSidecarBeforeUpsertHooks = append(revisionSidecarBeforeUpsertHooks, revisionSidecarHook)
-	case boil.AfterInsertHook:
-		revisionSidecarAfterInsertHooks = append(revisionSidecarAfterInsertHooks, revisionSidecarHook)
-	case boil.AfterSelectHook:
-		revisionSidecarAfterSelectHooks = append(revisionSidecarAfterSelectHooks, revisionSidecarHook)
-	case boil.AfterUpdateHook:
-		revisionSidecarAfterUpdateHooks = append(revisionSidecarAfterUpdateHooks, revisionSidecarHook)
-	case boil.AfterDeleteHook:
-		revisionSidecarAfterDeleteHooks = append(revisionSidecarAfterDeleteHooks, revisionSidecarHook)
-	case boil.AfterUpsertHook:
-		revisionSidecarAfterUpsertHooks = append(revisionSidecarAfterUpsertHooks, revisionSidecarHook)
-	}
+type RevisionSidecarFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*RevisionSidecar, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (RevisionSidecarSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single revisionSidecar record from the query.
-func (q revisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionSidecar, error) {
+func (q RevisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionSidecar, error) {
 	o := &RevisionSidecar{}
 
 	queries.SetLimit(q.Query, 1)
@@ -347,15 +182,11 @@ func (q revisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for revision_sidecars")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all RevisionSidecar records from the query.
-func (q revisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSidecarSlice, error) {
+func (q RevisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSidecarSlice, error) {
 	var o []*RevisionSidecar
 
 	err := q.Bind(ctx, exec, &o)
@@ -363,19 +194,11 @@ func (q revisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to assign all query results to RevisionSidecar slice")
 	}
 
-	if len(revisionSidecarAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all RevisionSidecar records in the query.
-func (q revisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q RevisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -390,7 +213,7 @@ func (q revisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q revisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q RevisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -406,7 +229,7 @@ func (q revisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Revision pointed to by the foreign key.
-func (o *RevisionSidecar) Revision(mods ...qm.QueryMod) revisionQuery {
+func (q RevisionSidecarQuery) Revision(o *RevisionSidecar, mods ...qm.QueryMod) RevisionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.RevisionGUID),
 	}
@@ -420,7 +243,7 @@ func (o *RevisionSidecar) Revision(mods ...qm.QueryMod) revisionQuery {
 }
 
 // RevisionSidecarProcessTypes retrieves all the revision_sidecar_process_type's RevisionSidecarProcessTypes with an executor.
-func (o *RevisionSidecar) RevisionSidecarProcessTypes(mods ...qm.QueryMod) revisionSidecarProcessTypeQuery {
+func (q RevisionSidecarQuery) RevisionSidecarProcessTypes(o *RevisionSidecar, mods ...qm.QueryMod) RevisionSidecarProcessTypeQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -504,14 +327,6 @@ func (revisionSidecarL) LoadRevision(ctx context.Context, e boil.ContextExecutor
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revisions")
-	}
-
-	if len(revisionSidecarAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -608,13 +423,6 @@ func (revisionSidecarL) LoadRevisionSidecarProcessTypes(ctx context.Context, e b
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revision_sidecar_process_types")
 	}
 
-	if len(revisionSidecarProcessTypeAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RevisionSidecarProcessTypes = resultSlice
 		for _, foreign := range resultSlice {
@@ -645,10 +453,10 @@ func (revisionSidecarL) LoadRevisionSidecarProcessTypes(ctx context.Context, e b
 // SetRevision of the revisionSidecar to the related item.
 // Sets o.R.Revision to related.
 // Adds o to related.R.RevisionSidecars.
-func (o *RevisionSidecar) SetRevision(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
+func (q RevisionSidecarQuery) SetRevision(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Revisions().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -693,12 +501,12 @@ func (o *RevisionSidecar) SetRevision(ctx context.Context, exec boil.ContextExec
 // of the revision_sidecar, optionally inserting them as new records.
 // Appends related to o.R.RevisionSidecarProcessTypes.
 // Sets related.R.RevisionSidecar appropriately.
-func (o *RevisionSidecar) AddRevisionSidecarProcessTypes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecarProcessType) error {
+func (q RevisionSidecarQuery) AddRevisionSidecarProcessTypes(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecarProcessType) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.RevisionSidecarGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RevisionSidecarProcessTypes().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -743,9 +551,13 @@ func (o *RevisionSidecar) AddRevisionSidecarProcessTypes(ctx context.Context, ex
 }
 
 // RevisionSidecars retrieves all the records using an executor.
-func RevisionSidecars(mods ...qm.QueryMod) revisionSidecarQuery {
+func RevisionSidecars(mods ...qm.QueryMod) RevisionSidecarQuery {
 	mods = append(mods, qm.From("`revision_sidecars`"))
-	return revisionSidecarQuery{NewQuery(mods...)}
+	return RevisionSidecarQuery{NewQuery(mods...)}
+}
+
+type RevisionSidecarFinder interface {
+	FindRevisionSidecar(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*RevisionSidecar, error)
 }
 
 // FindRevisionSidecar retrieves a single record by ID with an executor.
@@ -771,16 +583,16 @@ func FindRevisionSidecar(ctx context.Context, exec boil.ContextExecutor, iD int,
 		return nil, errors.Wrap(err, "models: unable to select from revision_sidecars")
 	}
 
-	if err = revisionSidecarObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return revisionSidecarObj, err
-	}
-
 	return revisionSidecarObj, nil
+}
+
+type RevisionSidecarInserter interface {
+	Insert(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *RevisionSidecar) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q RevisionSidecarQuery) Insert(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no revision_sidecars provided for insertion")
 	}
@@ -795,10 +607,6 @@ func (o *RevisionSidecar) Insert(ctx context.Context, exec boil.ContextExecutor,
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(revisionSidecarColumnsWithDefault, o)
@@ -891,13 +699,19 @@ CacheNoHooks:
 		revisionSidecarInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type RevisionSidecarUpdater interface {
+	Update(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the RevisionSidecar.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *RevisionSidecar) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q RevisionSidecarQuery) Update(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -905,9 +719,6 @@ func (o *RevisionSidecar) Update(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	revisionSidecarUpdateCacheMut.RLock()
 	cache, cached := revisionSidecarUpdateCache[key]
@@ -960,11 +771,11 @@ func (o *RevisionSidecar) Update(ctx context.Context, exec boil.ContextExecutor,
 		revisionSidecarUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q revisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RevisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -981,7 +792,7 @@ func (q revisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o RevisionSidecarSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RevisionSidecarQuery) UpdateAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1028,6 +839,160 @@ func (o RevisionSidecarSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 	return rowsAff, nil
 }
 
+type RevisionSidecarDeleter interface {
+	Delete(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single RevisionSidecar record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q RevisionSidecarQuery) Delete(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no RevisionSidecar provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), revisionSidecarPrimaryKeyMapping)
+	sql := "DELETE FROM `revision_sidecars` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from revision_sidecars")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for revision_sidecars")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q RevisionSidecarQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no revisionSidecarQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from revision_sidecars")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revision_sidecars")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q RevisionSidecarQuery) DeleteAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionSidecarPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `revision_sidecars` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, revisionSidecarPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from revisionSidecar slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revision_sidecars")
+	}
+
+	return rowsAff, nil
+}
+
+type RevisionSidecarReloader interface {
+	Reload(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q RevisionSidecarQuery) Reload(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindRevisionSidecar(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q RevisionSidecarQuery) ReloadAll(o *RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := RevisionSidecarSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionSidecarPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `revision_sidecars`.* FROM `revision_sidecars` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, revisionSidecarPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in RevisionSidecarSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// RevisionSidecarExists checks if the RevisionSidecar row exists.
+func RevisionSidecarExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `revision_sidecars` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if revision_sidecars exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLRevisionSidecarUniqueColumns = []string{
 	"id",
 	"guid",
@@ -1046,10 +1011,6 @@ func (o *RevisionSidecar) Upsert(ctx context.Context, exec boil.ContextExecutor,
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(revisionSidecarColumnsWithDefault, o)
@@ -1182,172 +1143,5 @@ CacheNoHooks:
 		revisionSidecarUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single RevisionSidecar record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *RevisionSidecar) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no RevisionSidecar provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), revisionSidecarPrimaryKeyMapping)
-	sql := "DELETE FROM `revision_sidecars` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from revision_sidecars")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for revision_sidecars")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q revisionSidecarQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no revisionSidecarQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from revision_sidecars")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revision_sidecars")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o RevisionSidecarSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(revisionSidecarBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionSidecarPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `revision_sidecars` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, revisionSidecarPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from revisionSidecar slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revision_sidecars")
-	}
-
-	if len(revisionSidecarAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *RevisionSidecar) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRevisionSidecar(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *RevisionSidecarSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := RevisionSidecarSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionSidecarPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `revision_sidecars`.* FROM `revision_sidecars` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, revisionSidecarPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in RevisionSidecarSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// RevisionSidecarExists checks if the RevisionSidecar row exists.
-func RevisionSidecarExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `revision_sidecars` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if revision_sidecars exists")
-	}
-
-	return exists, nil
 }

@@ -120,10 +120,8 @@ type (
 	// OrganizationsBillingManagerSlice is an alias for a slice of pointers to OrganizationsBillingManager.
 	// This should almost always be used instead of []OrganizationsBillingManager.
 	OrganizationsBillingManagerSlice []*OrganizationsBillingManager
-	// OrganizationsBillingManagerHook is the signature for custom OrganizationsBillingManager hook methods
-	OrganizationsBillingManagerHook func(context.Context, boil.ContextExecutor, *OrganizationsBillingManager) error
 
-	organizationsBillingManagerQuery struct {
+	OrganizationsBillingManagerQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var organizationsBillingManagerBeforeInsertHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerBeforeUpdateHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerBeforeDeleteHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerBeforeUpsertHooks []OrganizationsBillingManagerHook
-
-var organizationsBillingManagerAfterInsertHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerAfterSelectHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerAfterUpdateHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerAfterDeleteHooks []OrganizationsBillingManagerHook
-var organizationsBillingManagerAfterUpsertHooks []OrganizationsBillingManagerHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *OrganizationsBillingManager) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *OrganizationsBillingManager) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *OrganizationsBillingManager) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *OrganizationsBillingManager) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *OrganizationsBillingManager) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *OrganizationsBillingManager) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *OrganizationsBillingManager) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *OrganizationsBillingManager) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *OrganizationsBillingManager) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationsBillingManagerAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddOrganizationsBillingManagerHook registers your hook function for all future operations.
-func AddOrganizationsBillingManagerHook(hookPoint boil.HookPoint, organizationsBillingManagerHook OrganizationsBillingManagerHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		organizationsBillingManagerBeforeInsertHooks = append(organizationsBillingManagerBeforeInsertHooks, organizationsBillingManagerHook)
-	case boil.BeforeUpdateHook:
-		organizationsBillingManagerBeforeUpdateHooks = append(organizationsBillingManagerBeforeUpdateHooks, organizationsBillingManagerHook)
-	case boil.BeforeDeleteHook:
-		organizationsBillingManagerBeforeDeleteHooks = append(organizationsBillingManagerBeforeDeleteHooks, organizationsBillingManagerHook)
-	case boil.BeforeUpsertHook:
-		organizationsBillingManagerBeforeUpsertHooks = append(organizationsBillingManagerBeforeUpsertHooks, organizationsBillingManagerHook)
-	case boil.AfterInsertHook:
-		organizationsBillingManagerAfterInsertHooks = append(organizationsBillingManagerAfterInsertHooks, organizationsBillingManagerHook)
-	case boil.AfterSelectHook:
-		organizationsBillingManagerAfterSelectHooks = append(organizationsBillingManagerAfterSelectHooks, organizationsBillingManagerHook)
-	case boil.AfterUpdateHook:
-		organizationsBillingManagerAfterUpdateHooks = append(organizationsBillingManagerAfterUpdateHooks, organizationsBillingManagerHook)
-	case boil.AfterDeleteHook:
-		organizationsBillingManagerAfterDeleteHooks = append(organizationsBillingManagerAfterDeleteHooks, organizationsBillingManagerHook)
-	case boil.AfterUpsertHook:
-		organizationsBillingManagerAfterUpsertHooks = append(organizationsBillingManagerAfterUpsertHooks, organizationsBillingManagerHook)
-	}
+type OrganizationsBillingManagerFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsBillingManager, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsBillingManagerSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single organizationsBillingManager record from the query.
-func (q organizationsBillingManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsBillingManager, error) {
+func (q OrganizationsBillingManagerQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsBillingManager, error) {
 	o := &OrganizationsBillingManager{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q organizationsBillingManagerQuery) One(ctx context.Context, exec boil.Con
 		return nil, errors.Wrap(err, "models: failed to execute a one query for organizations_billing_managers")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all OrganizationsBillingManager records from the query.
-func (q organizationsBillingManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsBillingManagerSlice, error) {
+func (q OrganizationsBillingManagerQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsBillingManagerSlice, error) {
 	var o []*OrganizationsBillingManager
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q organizationsBillingManagerQuery) All(ctx context.Context, exec boil.Con
 		return nil, errors.Wrap(err, "models: failed to assign all query results to OrganizationsBillingManager slice")
 	}
 
-	if len(organizationsBillingManagerAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all OrganizationsBillingManager records in the query.
-func (q organizationsBillingManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q OrganizationsBillingManagerQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q organizationsBillingManagerQuery) Count(ctx context.Context, exec boil.C
 }
 
 // Exists checks if the row exists in the table.
-func (q organizationsBillingManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q OrganizationsBillingManagerQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q organizationsBillingManagerQuery) Exists(ctx context.Context, exec boil.
 }
 
 // Organization pointed to by the foreign key.
-func (o *OrganizationsBillingManager) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q OrganizationsBillingManagerQuery) Organization(o *OrganizationsBillingManager, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OrganizationID),
 	}
@@ -406,7 +229,7 @@ func (o *OrganizationsBillingManager) Organization(mods ...qm.QueryMod) organiza
 }
 
 // User pointed to by the foreign key.
-func (o *OrganizationsBillingManager) User(mods ...qm.QueryMod) userQuery {
+func (q OrganizationsBillingManagerQuery) User(o *OrganizationsBillingManager, mods ...qm.QueryMod) UserQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -483,14 +306,6 @@ func (organizationsBillingManagerL) LoadOrganization(ctx context.Context, e boil
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(organizationsBillingManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (organizationsBillingManagerL) LoadUser(ctx context.Context, e boil.Context
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(organizationsBillingManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (organizationsBillingManagerL) LoadUser(ctx context.Context, e boil.Context
 // SetOrganization of the organizationsBillingManager to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.OrganizationsBillingManagers.
-func (o *OrganizationsBillingManager) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q OrganizationsBillingManagerQuery) SetOrganization(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *OrganizationsBillingManager) SetOrganization(ctx context.Context, exec 
 // SetUser of the organizationsBillingManager to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.OrganizationsBillingManagers.
-func (o *OrganizationsBillingManager) SetUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q OrganizationsBillingManagerQuery) SetUser(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *OrganizationsBillingManager) SetUser(ctx context.Context, exec boil.Con
 }
 
 // OrganizationsBillingManagers retrieves all the records using an executor.
-func OrganizationsBillingManagers(mods ...qm.QueryMod) organizationsBillingManagerQuery {
+func OrganizationsBillingManagers(mods ...qm.QueryMod) OrganizationsBillingManagerQuery {
 	mods = append(mods, qm.From("`organizations_billing_managers`"))
-	return organizationsBillingManagerQuery{NewQuery(mods...)}
+	return OrganizationsBillingManagerQuery{NewQuery(mods...)}
+}
+
+type OrganizationsBillingManagerFinder interface {
+	FindOrganizationsBillingManager(ctx context.Context, exec boil.ContextExecutor, organizationsBillingManagersPK int, selectCols ...string) (*OrganizationsBillingManager, error)
 }
 
 // FindOrganizationsBillingManager retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindOrganizationsBillingManager(ctx context.Context, exec boil.ContextExecu
 		return nil, errors.Wrap(err, "models: unable to select from organizations_billing_managers")
 	}
 
-	if err = organizationsBillingManagerObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return organizationsBillingManagerObj, err
-	}
-
 	return organizationsBillingManagerObj, nil
+}
+
+type OrganizationsBillingManagerInserter interface {
+	Insert(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *OrganizationsBillingManager) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q OrganizationsBillingManagerQuery) Insert(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_billing_managers provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *OrganizationsBillingManager) Insert(ctx context.Context, exec boil.Cont
 		if o.UpdatedAt.IsZero() {
 			o.UpdatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsBillingManagerColumnsWithDefault, o)
@@ -870,13 +677,19 @@ CacheNoHooks:
 		organizationsBillingManagerInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type OrganizationsBillingManagerUpdater interface {
+	Update(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the OrganizationsBillingManager.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *OrganizationsBillingManager) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q OrganizationsBillingManagerQuery) Update(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -884,9 +697,6 @@ func (o *OrganizationsBillingManager) Update(ctx context.Context, exec boil.Cont
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	organizationsBillingManagerUpdateCacheMut.RLock()
 	cache, cached := organizationsBillingManagerUpdateCache[key]
@@ -939,11 +749,11 @@ func (o *OrganizationsBillingManager) Update(ctx context.Context, exec boil.Cont
 		organizationsBillingManagerUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q organizationsBillingManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsBillingManagerQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -960,7 +770,7 @@ func (q organizationsBillingManagerQuery) UpdateAll(ctx context.Context, exec bo
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o OrganizationsBillingManagerSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationsBillingManagerQuery) UpdateAllSlice(o OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1007,6 +817,160 @@ func (o OrganizationsBillingManagerSlice) UpdateAll(ctx context.Context, exec bo
 	return rowsAff, nil
 }
 
+type OrganizationsBillingManagerDeleter interface {
+	Delete(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single OrganizationsBillingManager record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q OrganizationsBillingManagerQuery) Delete(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no OrganizationsBillingManager provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsBillingManagerPrimaryKeyMapping)
+	sql := "DELETE FROM `organizations_billing_managers` WHERE `organizations_billing_managers_pk`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from organizations_billing_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_billing_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q OrganizationsBillingManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no organizationsBillingManagerQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizations_billing_managers")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_billing_managers")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q OrganizationsBillingManagerQuery) DeleteAllSlice(o OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsBillingManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `organizations_billing_managers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsBillingManagerPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizationsBillingManager slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_billing_managers")
+	}
+
+	return rowsAff, nil
+}
+
+type OrganizationsBillingManagerReloader interface {
+	Reload(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q OrganizationsBillingManagerQuery) Reload(o *OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindOrganizationsBillingManager(ctx, exec, o.OrganizationsBillingManagersPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q OrganizationsBillingManagerQuery) ReloadAll(o *OrganizationsBillingManagerSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := OrganizationsBillingManagerSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsBillingManagerPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `organizations_billing_managers`.* FROM `organizations_billing_managers` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsBillingManagerPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in OrganizationsBillingManagerSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// OrganizationsBillingManagerExists checks if the OrganizationsBillingManager row exists.
+func OrganizationsBillingManagerExists(ctx context.Context, exec boil.ContextExecutor, organizationsBillingManagersPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `organizations_billing_managers` where `organizations_billing_managers_pk`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, organizationsBillingManagersPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, organizationsBillingManagersPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if organizations_billing_managers exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLOrganizationsBillingManagerUniqueColumns = []string{
 	"organizations_billing_managers_pk",
 }
@@ -1024,10 +988,6 @@ func (o *OrganizationsBillingManager) Upsert(ctx context.Context, exec boil.Cont
 			o.CreatedAt = currTime
 		}
 		o.UpdatedAt = currTime
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationsBillingManagerColumnsWithDefault, o)
@@ -1160,172 +1120,5 @@ CacheNoHooks:
 		organizationsBillingManagerUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single OrganizationsBillingManager record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *OrganizationsBillingManager) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no OrganizationsBillingManager provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationsBillingManagerPrimaryKeyMapping)
-	sql := "DELETE FROM `organizations_billing_managers` WHERE `organizations_billing_managers_pk`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from organizations_billing_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations_billing_managers")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q organizationsBillingManagerQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no organizationsBillingManagerQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizations_billing_managers")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_billing_managers")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o OrganizationsBillingManagerSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(organizationsBillingManagerBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsBillingManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `organizations_billing_managers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsBillingManagerPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizationsBillingManager slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations_billing_managers")
-	}
-
-	if len(organizationsBillingManagerAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *OrganizationsBillingManager) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindOrganizationsBillingManager(ctx, exec, o.OrganizationsBillingManagersPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *OrganizationsBillingManagerSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := OrganizationsBillingManagerSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationsBillingManagerPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `organizations_billing_managers`.* FROM `organizations_billing_managers` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, organizationsBillingManagerPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in OrganizationsBillingManagerSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// OrganizationsBillingManagerExists checks if the OrganizationsBillingManager row exists.
-func OrganizationsBillingManagerExists(ctx context.Context, exec boil.ContextExecutor, organizationsBillingManagersPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `organizations_billing_managers` where `organizations_billing_managers_pk`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, organizationsBillingManagersPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, organizationsBillingManagersPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if organizations_billing_managers exists")
-	}
-
-	return exists, nil
 }

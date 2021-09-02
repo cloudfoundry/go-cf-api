@@ -120,10 +120,8 @@ type (
 	// StackSlice is an alias for a slice of pointers to Stack.
 	// This should almost always be used instead of []Stack.
 	StackSlice []*Stack
-	// StackHook is the signature for custom Stack hook methods
-	StackHook func(context.Context, boil.ContextExecutor, *Stack) error
 
-	stackQuery struct {
+	StackQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var stackBeforeInsertHooks []StackHook
-var stackBeforeUpdateHooks []StackHook
-var stackBeforeDeleteHooks []StackHook
-var stackBeforeUpsertHooks []StackHook
-
-var stackAfterInsertHooks []StackHook
-var stackAfterSelectHooks []StackHook
-var stackAfterUpdateHooks []StackHook
-var stackAfterDeleteHooks []StackHook
-var stackAfterUpsertHooks []StackHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Stack) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Stack) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Stack) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Stack) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Stack) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Stack) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Stack) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Stack) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Stack) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range stackAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddStackHook registers your hook function for all future operations.
-func AddStackHook(hookPoint boil.HookPoint, stackHook StackHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		stackBeforeInsertHooks = append(stackBeforeInsertHooks, stackHook)
-	case boil.BeforeUpdateHook:
-		stackBeforeUpdateHooks = append(stackBeforeUpdateHooks, stackHook)
-	case boil.BeforeDeleteHook:
-		stackBeforeDeleteHooks = append(stackBeforeDeleteHooks, stackHook)
-	case boil.BeforeUpsertHook:
-		stackBeforeUpsertHooks = append(stackBeforeUpsertHooks, stackHook)
-	case boil.AfterInsertHook:
-		stackAfterInsertHooks = append(stackAfterInsertHooks, stackHook)
-	case boil.AfterSelectHook:
-		stackAfterSelectHooks = append(stackAfterSelectHooks, stackHook)
-	case boil.AfterUpdateHook:
-		stackAfterUpdateHooks = append(stackAfterUpdateHooks, stackHook)
-	case boil.AfterDeleteHook:
-		stackAfterDeleteHooks = append(stackAfterDeleteHooks, stackHook)
-	case boil.AfterUpsertHook:
-		stackAfterUpsertHooks = append(stackAfterUpsertHooks, stackHook)
-	}
+type StackFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Stack, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (StackSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single stack record from the query.
-func (q stackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Stack, error) {
+func (q StackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Stack, error) {
 	o := &Stack{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q stackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Stack,
 		return nil, errors.Wrap(err, "models: failed to execute a one query for stacks")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Stack records from the query.
-func (q stackQuery) All(ctx context.Context, exec boil.ContextExecutor) (StackSlice, error) {
+func (q StackQuery) All(ctx context.Context, exec boil.ContextExecutor) (StackSlice, error) {
 	var o []*Stack
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q stackQuery) All(ctx context.Context, exec boil.ContextExecutor) (StackSl
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Stack slice")
 	}
 
-	if len(stackAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Stack records in the query.
-func (q stackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q StackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q stackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64
 }
 
 // Exists checks if the row exists in the table.
-func (q stackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q StackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q stackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 }
 
 // ResourceStackAnnotations retrieves all the stack_annotation's StackAnnotations with an executor via resource_guid column.
-func (o *Stack) ResourceStackAnnotations(mods ...qm.QueryMod) stackAnnotationQuery {
+func (q StackQuery) ResourceStackAnnotations(o *Stack, mods ...qm.QueryMod) StackAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -413,7 +236,7 @@ func (o *Stack) ResourceStackAnnotations(mods ...qm.QueryMod) stackAnnotationQue
 }
 
 // ResourceStackLabels retrieves all the stack_label's StackLabels with an executor via resource_guid column.
-func (o *Stack) ResourceStackLabels(mods ...qm.QueryMod) stackLabelQuery {
+func (q StackQuery) ResourceStackLabels(o *Stack, mods ...qm.QueryMod) StackLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -497,13 +320,6 @@ func (stackL) LoadResourceStackAnnotations(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for stack_annotations")
 	}
 
-	if len(stackAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceStackAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -595,13 +411,6 @@ func (stackL) LoadResourceStackLabels(ctx context.Context, e boil.ContextExecuto
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for stack_labels")
 	}
 
-	if len(stackLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceStackLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -633,12 +442,12 @@ func (stackL) LoadResourceStackLabels(ctx context.Context, e boil.ContextExecuto
 // of the stack, optionally inserting them as new records.
 // Appends related to o.R.ResourceStackAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Stack) AddResourceStackAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackAnnotation) error {
+func (q StackQuery) AddResourceStackAnnotations(o *Stack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = StackAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -688,7 +497,7 @@ func (o *Stack) AddResourceStackAnnotations(ctx context.Context, exec boil.Conte
 // Sets o.R.Resource's ResourceStackAnnotations accordingly.
 // Replaces o.R.ResourceStackAnnotations with related.
 // Sets related.R.Resource's ResourceStackAnnotations accordingly.
-func (o *Stack) SetResourceStackAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackAnnotation) error {
+func (q StackQuery) SetResourceStackAnnotations(o *Stack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackAnnotation) error {
 	query := "update `stack_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -713,13 +522,13 @@ func (o *Stack) SetResourceStackAnnotations(ctx context.Context, exec boil.Conte
 
 		o.R.ResourceStackAnnotations = nil
 	}
-	return o.AddResourceStackAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceStackAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceStackAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceStackAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Stack) RemoveResourceStackAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*StackAnnotation) error {
+func (q StackQuery) RemoveResourceStackAnnotations(o *Stack, ctx context.Context, exec boil.ContextExecutor, related ...*StackAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -730,7 +539,7 @@ func (o *Stack) RemoveResourceStackAnnotations(ctx context.Context, exec boil.Co
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = StackAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -760,12 +569,12 @@ func (o *Stack) RemoveResourceStackAnnotations(ctx context.Context, exec boil.Co
 // of the stack, optionally inserting them as new records.
 // Appends related to o.R.ResourceStackLabels.
 // Sets related.R.Resource appropriately.
-func (o *Stack) AddResourceStackLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackLabel) error {
+func (q StackQuery) AddResourceStackLabels(o *Stack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = StackLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -815,7 +624,7 @@ func (o *Stack) AddResourceStackLabels(ctx context.Context, exec boil.ContextExe
 // Sets o.R.Resource's ResourceStackLabels accordingly.
 // Replaces o.R.ResourceStackLabels with related.
 // Sets related.R.Resource's ResourceStackLabels accordingly.
-func (o *Stack) SetResourceStackLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackLabel) error {
+func (q StackQuery) SetResourceStackLabels(o *Stack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StackLabel) error {
 	query := "update `stack_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -840,13 +649,13 @@ func (o *Stack) SetResourceStackLabels(ctx context.Context, exec boil.ContextExe
 
 		o.R.ResourceStackLabels = nil
 	}
-	return o.AddResourceStackLabels(ctx, exec, insert, related...)
+	return q.AddResourceStackLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceStackLabels relationships from objects passed in.
 // Removes related items from R.ResourceStackLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Stack) RemoveResourceStackLabels(ctx context.Context, exec boil.ContextExecutor, related ...*StackLabel) error {
+func (q StackQuery) RemoveResourceStackLabels(o *Stack, ctx context.Context, exec boil.ContextExecutor, related ...*StackLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -857,7 +666,7 @@ func (o *Stack) RemoveResourceStackLabels(ctx context.Context, exec boil.Context
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = StackLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -884,9 +693,13 @@ func (o *Stack) RemoveResourceStackLabels(ctx context.Context, exec boil.Context
 }
 
 // Stacks retrieves all the records using an executor.
-func Stacks(mods ...qm.QueryMod) stackQuery {
+func Stacks(mods ...qm.QueryMod) StackQuery {
 	mods = append(mods, qm.From("`stacks`"))
-	return stackQuery{NewQuery(mods...)}
+	return StackQuery{NewQuery(mods...)}
+}
+
+type StackFinder interface {
+	FindStack(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Stack, error)
 }
 
 // FindStack retrieves a single record by ID with an executor.
@@ -912,16 +725,16 @@ func FindStack(ctx context.Context, exec boil.ContextExecutor, iD int, selectCol
 		return nil, errors.Wrap(err, "models: unable to select from stacks")
 	}
 
-	if err = stackObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return stackObj, err
-	}
-
 	return stackObj, nil
+}
+
+type StackInserter interface {
+	Insert(o *Stack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Stack) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q StackQuery) Insert(o *Stack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no stacks provided for insertion")
 	}
@@ -936,10 +749,6 @@ func (o *Stack) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(stackColumnsWithDefault, o)
@@ -1032,13 +841,19 @@ CacheNoHooks:
 		stackInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type StackUpdater interface {
+	Update(o *Stack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o StackSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Stack.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Stack) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q StackQuery) Update(o *Stack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1046,9 +861,6 @@ func (o *Stack) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	stackUpdateCacheMut.RLock()
 	cache, cached := stackUpdateCache[key]
@@ -1101,11 +913,11 @@ func (o *Stack) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 		stackUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q stackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q StackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1122,7 +934,7 @@ func (q stackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o StackSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q StackQuery) UpdateAllSlice(o StackSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1169,6 +981,160 @@ func (o StackSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 	return rowsAff, nil
 }
 
+type StackDeleter interface {
+	Delete(o *Stack, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o StackSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Stack record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q StackQuery) Delete(o *Stack, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Stack provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), stackPrimaryKeyMapping)
+	sql := "DELETE FROM `stacks` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from stacks")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for stacks")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q StackQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no stackQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from stacks")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for stacks")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q StackQuery) DeleteAllSlice(o StackSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), stackPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `stacks` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, stackPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from stack slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for stacks")
+	}
+
+	return rowsAff, nil
+}
+
+type StackReloader interface {
+	Reload(o *Stack, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *StackSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q StackQuery) Reload(o *Stack, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindStack(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q StackQuery) ReloadAll(o *StackSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := StackSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), stackPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `stacks`.* FROM `stacks` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, stackPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in StackSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// StackExists checks if the Stack row exists.
+func StackExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `stacks` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if stacks exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLStackUniqueColumns = []string{
 	"id",
 	"guid",
@@ -1188,10 +1154,6 @@ func (o *Stack) Upsert(ctx context.Context, exec boil.ContextExecutor, updateCol
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(stackColumnsWithDefault, o)
@@ -1324,172 +1286,5 @@ CacheNoHooks:
 		stackUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Stack record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Stack) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Stack provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), stackPrimaryKeyMapping)
-	sql := "DELETE FROM `stacks` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from stacks")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for stacks")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q stackQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no stackQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from stacks")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for stacks")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o StackSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(stackBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), stackPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `stacks` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, stackPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from stack slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for stacks")
-	}
-
-	if len(stackAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Stack) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindStack(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *StackSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := StackSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), stackPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `stacks`.* FROM `stacks` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, stackPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in StackSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// StackExists checks if the Stack row exists.
-func StackExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `stacks` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if stacks exists")
-	}
-
-	return exists, nil
 }

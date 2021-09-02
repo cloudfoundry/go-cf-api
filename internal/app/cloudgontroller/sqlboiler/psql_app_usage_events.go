@@ -262,10 +262,8 @@ type (
 	// AppUsageEventSlice is an alias for a slice of pointers to AppUsageEvent.
 	// This should almost always be used instead of []AppUsageEvent.
 	AppUsageEventSlice []*AppUsageEvent
-	// AppUsageEventHook is the signature for custom AppUsageEvent hook methods
-	AppUsageEventHook func(context.Context, boil.ContextExecutor, *AppUsageEvent) error
 
-	appUsageEventQuery struct {
+	AppUsageEventQuery struct {
 		*queries.Query
 	}
 )
@@ -291,178 +289,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var appUsageEventBeforeInsertHooks []AppUsageEventHook
-var appUsageEventBeforeUpdateHooks []AppUsageEventHook
-var appUsageEventBeforeDeleteHooks []AppUsageEventHook
-var appUsageEventBeforeUpsertHooks []AppUsageEventHook
-
-var appUsageEventAfterInsertHooks []AppUsageEventHook
-var appUsageEventAfterSelectHooks []AppUsageEventHook
-var appUsageEventAfterUpdateHooks []AppUsageEventHook
-var appUsageEventAfterDeleteHooks []AppUsageEventHook
-var appUsageEventAfterUpsertHooks []AppUsageEventHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *AppUsageEvent) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *AppUsageEvent) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *AppUsageEvent) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *AppUsageEvent) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *AppUsageEvent) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *AppUsageEvent) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *AppUsageEvent) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *AppUsageEvent) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *AppUsageEvent) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appUsageEventAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddAppUsageEventHook registers your hook function for all future operations.
-func AddAppUsageEventHook(hookPoint boil.HookPoint, appUsageEventHook AppUsageEventHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		appUsageEventBeforeInsertHooks = append(appUsageEventBeforeInsertHooks, appUsageEventHook)
-	case boil.BeforeUpdateHook:
-		appUsageEventBeforeUpdateHooks = append(appUsageEventBeforeUpdateHooks, appUsageEventHook)
-	case boil.BeforeDeleteHook:
-		appUsageEventBeforeDeleteHooks = append(appUsageEventBeforeDeleteHooks, appUsageEventHook)
-	case boil.BeforeUpsertHook:
-		appUsageEventBeforeUpsertHooks = append(appUsageEventBeforeUpsertHooks, appUsageEventHook)
-	case boil.AfterInsertHook:
-		appUsageEventAfterInsertHooks = append(appUsageEventAfterInsertHooks, appUsageEventHook)
-	case boil.AfterSelectHook:
-		appUsageEventAfterSelectHooks = append(appUsageEventAfterSelectHooks, appUsageEventHook)
-	case boil.AfterUpdateHook:
-		appUsageEventAfterUpdateHooks = append(appUsageEventAfterUpdateHooks, appUsageEventHook)
-	case boil.AfterDeleteHook:
-		appUsageEventAfterDeleteHooks = append(appUsageEventAfterDeleteHooks, appUsageEventHook)
-	case boil.AfterUpsertHook:
-		appUsageEventAfterUpsertHooks = append(appUsageEventAfterUpsertHooks, appUsageEventHook)
-	}
+type AppUsageEventFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*AppUsageEvent, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (AppUsageEventSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single appUsageEvent record from the query.
-func (q appUsageEventQuery) One(ctx context.Context, exec boil.ContextExecutor) (*AppUsageEvent, error) {
+func (q AppUsageEventQuery) One(ctx context.Context, exec boil.ContextExecutor) (*AppUsageEvent, error) {
 	o := &AppUsageEvent{}
 
 	queries.SetLimit(q.Query, 1)
@@ -475,15 +310,11 @@ func (q appUsageEventQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to execute a one query for app_usage_events")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all AppUsageEvent records from the query.
-func (q appUsageEventQuery) All(ctx context.Context, exec boil.ContextExecutor) (AppUsageEventSlice, error) {
+func (q AppUsageEventQuery) All(ctx context.Context, exec boil.ContextExecutor) (AppUsageEventSlice, error) {
 	var o []*AppUsageEvent
 
 	err := q.Bind(ctx, exec, &o)
@@ -491,19 +322,11 @@ func (q appUsageEventQuery) All(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to assign all query results to AppUsageEvent slice")
 	}
 
-	if len(appUsageEventAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all AppUsageEvent records in the query.
-func (q appUsageEventQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q AppUsageEventQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -518,7 +341,7 @@ func (q appUsageEventQuery) Count(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Exists checks if the row exists in the table.
-func (q appUsageEventQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q AppUsageEventQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -534,9 +357,13 @@ func (q appUsageEventQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 }
 
 // AppUsageEvents retrieves all the records using an executor.
-func AppUsageEvents(mods ...qm.QueryMod) appUsageEventQuery {
+func AppUsageEvents(mods ...qm.QueryMod) AppUsageEventQuery {
 	mods = append(mods, qm.From("\"app_usage_events\""))
-	return appUsageEventQuery{NewQuery(mods...)}
+	return AppUsageEventQuery{NewQuery(mods...)}
+}
+
+type AppUsageEventFinder interface {
+	FindAppUsageEvent(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*AppUsageEvent, error)
 }
 
 // FindAppUsageEvent retrieves a single record by ID with an executor.
@@ -562,16 +389,16 @@ func FindAppUsageEvent(ctx context.Context, exec boil.ContextExecutor, iD int, s
 		return nil, errors.Wrap(err, "models: unable to select from app_usage_events")
 	}
 
-	if err = appUsageEventObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return appUsageEventObj, err
-	}
-
 	return appUsageEventObj, nil
+}
+
+type AppUsageEventInserter interface {
+	Insert(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *AppUsageEvent) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q AppUsageEventQuery) Insert(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no app_usage_events provided for insertion")
 	}
@@ -583,10 +410,6 @@ func (o *AppUsageEvent) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(appUsageEventColumnsWithDefault, o)
@@ -652,17 +475,20 @@ func (o *AppUsageEvent) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		appUsageEventInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type AppUsageEventUpdater interface {
+	Update(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the AppUsageEvent.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *AppUsageEvent) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q AppUsageEventQuery) Update(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	appUsageEventUpdateCacheMut.RLock()
 	cache, cached := appUsageEventUpdateCache[key]
@@ -715,11 +541,11 @@ func (o *AppUsageEvent) Update(ctx context.Context, exec boil.ContextExecutor, c
 		appUsageEventUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q appUsageEventQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q AppUsageEventQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -736,7 +562,7 @@ func (q appUsageEventQuery) UpdateAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o AppUsageEventSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q AppUsageEventQuery) UpdateAllSlice(o AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -783,6 +609,160 @@ func (o AppUsageEventSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 	return rowsAff, nil
 }
 
+type AppUsageEventDeleter interface {
+	Delete(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single AppUsageEvent record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q AppUsageEventQuery) Delete(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no AppUsageEvent provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), appUsageEventPrimaryKeyMapping)
+	sql := "DELETE FROM \"app_usage_events\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from app_usage_events")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for app_usage_events")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q AppUsageEventQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no appUsageEventQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from app_usage_events")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for app_usage_events")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q AppUsageEventQuery) DeleteAllSlice(o AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appUsageEventPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"app_usage_events\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, appUsageEventPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from appUsageEvent slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for app_usage_events")
+	}
+
+	return rowsAff, nil
+}
+
+type AppUsageEventReloader interface {
+	Reload(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q AppUsageEventQuery) Reload(o *AppUsageEvent, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindAppUsageEvent(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q AppUsageEventQuery) ReloadAll(o *AppUsageEventSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := AppUsageEventSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appUsageEventPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"app_usage_events\".* FROM \"app_usage_events\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, appUsageEventPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in AppUsageEventSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// AppUsageEventExists checks if the AppUsageEvent row exists.
+func AppUsageEventExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"app_usage_events\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if app_usage_events exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *AppUsageEvent) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -795,10 +775,6 @@ func (o *AppUsageEvent) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 		if o.CreatedAt.IsZero() {
 			o.CreatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(appUsageEventColumnsWithDefault, o)
@@ -902,172 +878,5 @@ func (o *AppUsageEvent) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 		appUsageEventUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single AppUsageEvent record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *AppUsageEvent) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no AppUsageEvent provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), appUsageEventPrimaryKeyMapping)
-	sql := "DELETE FROM \"app_usage_events\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from app_usage_events")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for app_usage_events")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q appUsageEventQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no appUsageEventQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from app_usage_events")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for app_usage_events")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o AppUsageEventSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(appUsageEventBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appUsageEventPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"app_usage_events\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, appUsageEventPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from appUsageEvent slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for app_usage_events")
-	}
-
-	if len(appUsageEventAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *AppUsageEvent) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindAppUsageEvent(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *AppUsageEventSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := AppUsageEventSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appUsageEventPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"app_usage_events\".* FROM \"app_usage_events\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, appUsageEventPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in AppUsageEventSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// AppUsageEventExists checks if the AppUsageEvent row exists.
-func AppUsageEventExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"app_usage_events\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if app_usage_events exists")
-	}
-
-	return exists, nil
 }

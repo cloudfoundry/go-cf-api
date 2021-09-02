@@ -186,10 +186,8 @@ type (
 	// SpaceSlice is an alias for a slice of pointers to Space.
 	// This should almost always be used instead of []Space.
 	SpaceSlice []*Space
-	// SpaceHook is the signature for custom Space hook methods
-	SpaceHook func(context.Context, boil.ContextExecutor, *Space) error
 
-	spaceQuery struct {
+	SpaceQuery struct {
 		*queries.Query
 	}
 )
@@ -215,178 +213,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var spaceBeforeInsertHooks []SpaceHook
-var spaceBeforeUpdateHooks []SpaceHook
-var spaceBeforeDeleteHooks []SpaceHook
-var spaceBeforeUpsertHooks []SpaceHook
-
-var spaceAfterInsertHooks []SpaceHook
-var spaceAfterSelectHooks []SpaceHook
-var spaceAfterUpdateHooks []SpaceHook
-var spaceAfterDeleteHooks []SpaceHook
-var spaceAfterUpsertHooks []SpaceHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Space) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Space) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Space) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Space) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Space) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Space) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Space) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Space) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Space) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spaceAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSpaceHook registers your hook function for all future operations.
-func AddSpaceHook(hookPoint boil.HookPoint, spaceHook SpaceHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		spaceBeforeInsertHooks = append(spaceBeforeInsertHooks, spaceHook)
-	case boil.BeforeUpdateHook:
-		spaceBeforeUpdateHooks = append(spaceBeforeUpdateHooks, spaceHook)
-	case boil.BeforeDeleteHook:
-		spaceBeforeDeleteHooks = append(spaceBeforeDeleteHooks, spaceHook)
-	case boil.BeforeUpsertHook:
-		spaceBeforeUpsertHooks = append(spaceBeforeUpsertHooks, spaceHook)
-	case boil.AfterInsertHook:
-		spaceAfterInsertHooks = append(spaceAfterInsertHooks, spaceHook)
-	case boil.AfterSelectHook:
-		spaceAfterSelectHooks = append(spaceAfterSelectHooks, spaceHook)
-	case boil.AfterUpdateHook:
-		spaceAfterUpdateHooks = append(spaceAfterUpdateHooks, spaceHook)
-	case boil.AfterDeleteHook:
-		spaceAfterDeleteHooks = append(spaceAfterDeleteHooks, spaceHook)
-	case boil.AfterUpsertHook:
-		spaceAfterUpsertHooks = append(spaceAfterUpsertHooks, spaceHook)
-	}
+type SpaceFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Space, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SpaceSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single space record from the query.
-func (q spaceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Space, error) {
+func (q SpaceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Space, error) {
 	o := &Space{}
 
 	queries.SetLimit(q.Query, 1)
@@ -399,15 +234,11 @@ func (q spaceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Space,
 		return nil, errors.Wrap(err, "models: failed to execute a one query for spaces")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Space records from the query.
-func (q spaceQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceSlice, error) {
+func (q SpaceQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceSlice, error) {
 	var o []*Space
 
 	err := q.Bind(ctx, exec, &o)
@@ -415,19 +246,11 @@ func (q spaceQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceSl
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Space slice")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Space records in the query.
-func (q spaceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SpaceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -442,7 +265,7 @@ func (q spaceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64
 }
 
 // Exists checks if the row exists in the table.
-func (q spaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SpaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -458,7 +281,7 @@ func (q spaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 }
 
 // SpaceQuotaDefinition pointed to by the foreign key.
-func (o *Space) SpaceQuotaDefinition(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
+func (q SpaceQuery) SpaceQuotaDefinition(o *Space, mods ...qm.QueryMod) SpaceQuotaDefinitionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.SpaceQuotaDefinitionID),
 	}
@@ -472,7 +295,7 @@ func (o *Space) SpaceQuotaDefinition(mods ...qm.QueryMod) spaceQuotaDefinitionQu
 }
 
 // IsolationSegment pointed to by the foreign key.
-func (o *Space) IsolationSegment(mods ...qm.QueryMod) isolationSegmentQuery {
+func (q SpaceQuery) IsolationSegment(o *Space, mods ...qm.QueryMod) IsolationSegmentQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.IsolationSegmentGUID),
 	}
@@ -486,7 +309,7 @@ func (o *Space) IsolationSegment(mods ...qm.QueryMod) isolationSegmentQuery {
 }
 
 // Organization pointed to by the foreign key.
-func (o *Space) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q SpaceQuery) Organization(o *Space, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.OrganizationID),
 	}
@@ -500,7 +323,7 @@ func (o *Space) Organization(mods ...qm.QueryMod) organizationQuery {
 }
 
 // Apps retrieves all the app's Apps with an executor.
-func (o *Space) Apps(mods ...qm.QueryMod) appQuery {
+func (q SpaceQuery) Apps(o *Space, mods ...qm.QueryMod) AppQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -521,7 +344,7 @@ func (o *Space) Apps(mods ...qm.QueryMod) appQuery {
 }
 
 // Routes retrieves all the route's Routes with an executor.
-func (o *Space) Routes(mods ...qm.QueryMod) routeQuery {
+func (q SpaceQuery) Routes(o *Space, mods ...qm.QueryMod) RouteQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -542,7 +365,7 @@ func (o *Space) Routes(mods ...qm.QueryMod) routeQuery {
 }
 
 // SecurityGroupsSpaces retrieves all the security_groups_space's SecurityGroupsSpaces with an executor.
-func (o *Space) SecurityGroupsSpaces(mods ...qm.QueryMod) securityGroupsSpaceQuery {
+func (q SpaceQuery) SecurityGroupsSpaces(o *Space, mods ...qm.QueryMod) SecurityGroupsSpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -563,7 +386,7 @@ func (o *Space) SecurityGroupsSpaces(mods ...qm.QueryMod) securityGroupsSpaceQue
 }
 
 // ServiceBrokers retrieves all the service_broker's ServiceBrokers with an executor.
-func (o *Space) ServiceBrokers(mods ...qm.QueryMod) serviceBrokerQuery {
+func (q SpaceQuery) ServiceBrokers(o *Space, mods ...qm.QueryMod) ServiceBrokerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -584,7 +407,7 @@ func (o *Space) ServiceBrokers(mods ...qm.QueryMod) serviceBrokerQuery {
 }
 
 // SharedServiceInstances retrieves all the service_instance's ServiceInstances with an executor via guid column.
-func (o *Space) SharedServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery {
+func (q SpaceQuery) SharedServiceInstances(o *Space, mods ...qm.QueryMod) ServiceInstanceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -606,7 +429,7 @@ func (o *Space) SharedServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery
 }
 
 // ServiceInstances retrieves all the service_instance's ServiceInstances with an executor.
-func (o *Space) ServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery {
+func (q SpaceQuery) ServiceInstances(o *Space, mods ...qm.QueryMod) ServiceInstanceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -627,7 +450,7 @@ func (o *Space) ServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery {
 }
 
 // ResourceSpaceAnnotations retrieves all the space_annotation's SpaceAnnotations with an executor via resource_guid column.
-func (o *Space) ResourceSpaceAnnotations(mods ...qm.QueryMod) spaceAnnotationQuery {
+func (q SpaceQuery) ResourceSpaceAnnotations(o *Space, mods ...qm.QueryMod) SpaceAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -648,7 +471,7 @@ func (o *Space) ResourceSpaceAnnotations(mods ...qm.QueryMod) spaceAnnotationQue
 }
 
 // ResourceSpaceLabels retrieves all the space_label's SpaceLabels with an executor via resource_guid column.
-func (o *Space) ResourceSpaceLabels(mods ...qm.QueryMod) spaceLabelQuery {
+func (q SpaceQuery) ResourceSpaceLabels(o *Space, mods ...qm.QueryMod) SpaceLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -669,7 +492,7 @@ func (o *Space) ResourceSpaceLabels(mods ...qm.QueryMod) spaceLabelQuery {
 }
 
 // SpacesApplicationSupporters retrieves all the spaces_application_supporter's SpacesApplicationSupporters with an executor.
-func (o *Space) SpacesApplicationSupporters(mods ...qm.QueryMod) spacesApplicationSupporterQuery {
+func (q SpaceQuery) SpacesApplicationSupporters(o *Space, mods ...qm.QueryMod) SpacesApplicationSupporterQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -690,7 +513,7 @@ func (o *Space) SpacesApplicationSupporters(mods ...qm.QueryMod) spacesApplicati
 }
 
 // SpacesAuditors retrieves all the spaces_auditor's SpacesAuditors with an executor.
-func (o *Space) SpacesAuditors(mods ...qm.QueryMod) spacesAuditorQuery {
+func (q SpaceQuery) SpacesAuditors(o *Space, mods ...qm.QueryMod) SpacesAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -711,7 +534,7 @@ func (o *Space) SpacesAuditors(mods ...qm.QueryMod) spacesAuditorQuery {
 }
 
 // SpacesDevelopers retrieves all the spaces_developer's SpacesDevelopers with an executor.
-func (o *Space) SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
+func (q SpaceQuery) SpacesDevelopers(o *Space, mods ...qm.QueryMod) SpacesDeveloperQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -732,7 +555,7 @@ func (o *Space) SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
 }
 
 // SpacesManagers retrieves all the spaces_manager's SpacesManagers with an executor.
-func (o *Space) SpacesManagers(mods ...qm.QueryMod) spacesManagerQuery {
+func (q SpaceQuery) SpacesManagers(o *Space, mods ...qm.QueryMod) SpacesManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -753,7 +576,7 @@ func (o *Space) SpacesManagers(mods ...qm.QueryMod) spacesManagerQuery {
 }
 
 // StagingSpaceStagingSecurityGroupsSpaces retrieves all the staging_security_groups_space's StagingSecurityGroupsSpaces with an executor via staging_space_id column.
-func (o *Space) StagingSpaceStagingSecurityGroupsSpaces(mods ...qm.QueryMod) stagingSecurityGroupsSpaceQuery {
+func (q SpaceQuery) StagingSpaceStagingSecurityGroupsSpaces(o *Space, mods ...qm.QueryMod) StagingSecurityGroupsSpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -774,7 +597,7 @@ func (o *Space) StagingSpaceStagingSecurityGroupsSpaces(mods ...qm.QueryMod) sta
 }
 
 // DefaultSpaceUsers retrieves all the user's Users with an executor via default_space_id column.
-func (o *Space) DefaultSpaceUsers(mods ...qm.QueryMod) userQuery {
+func (q SpaceQuery) DefaultSpaceUsers(o *Space, mods ...qm.QueryMod) UserQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -862,14 +685,6 @@ func (spaceL) LoadSpaceQuotaDefinition(ctx context.Context, e boil.ContextExecut
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_quota_definitions")
-	}
-
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -972,14 +787,6 @@ func (spaceL) LoadIsolationSegment(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for isolation_segments")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -1076,14 +883,6 @@ func (spaceL) LoadOrganization(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -1178,13 +977,6 @@ func (spaceL) LoadApps(ctx context.Context, e boil.ContextExecutor, singular boo
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for apps")
 	}
 
-	if len(appAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Apps = resultSlice
 		for _, foreign := range resultSlice {
@@ -1276,13 +1068,6 @@ func (spaceL) LoadRoutes(ctx context.Context, e boil.ContextExecutor, singular b
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for routes")
 	}
 
-	if len(routeAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Routes = resultSlice
 		for _, foreign := range resultSlice {
@@ -1374,13 +1159,6 @@ func (spaceL) LoadSecurityGroupsSpaces(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for security_groups_spaces")
 	}
 
-	if len(securityGroupsSpaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SecurityGroupsSpaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -1472,13 +1250,6 @@ func (spaceL) LoadServiceBrokers(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_brokers")
 	}
 
-	if len(serviceBrokerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceBrokers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1586,13 +1357,6 @@ func (spaceL) LoadSharedServiceInstances(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_instances")
 	}
 
-	if len(serviceInstanceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SharedServiceInstances = resultSlice
 		for _, foreign := range resultSlice {
@@ -1685,13 +1449,6 @@ func (spaceL) LoadServiceInstances(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_instances")
 	}
 
-	if len(serviceInstanceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceInstances = resultSlice
 		for _, foreign := range resultSlice {
@@ -1783,13 +1540,6 @@ func (spaceL) LoadResourceSpaceAnnotations(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_annotations")
 	}
 
-	if len(spaceAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceSpaceAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1881,13 +1631,6 @@ func (spaceL) LoadResourceSpaceLabels(ctx context.Context, e boil.ContextExecuto
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_labels")
 	}
 
-	if len(spaceLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceSpaceLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1979,13 +1722,6 @@ func (spaceL) LoadSpacesApplicationSupporters(ctx context.Context, e boil.Contex
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_application_supporters")
 	}
 
-	if len(spacesApplicationSupporterAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesApplicationSupporters = resultSlice
 		for _, foreign := range resultSlice {
@@ -2077,13 +1813,6 @@ func (spaceL) LoadSpacesAuditors(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_auditors")
 	}
 
-	if len(spacesAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesAuditors = resultSlice
 		for _, foreign := range resultSlice {
@@ -2175,13 +1904,6 @@ func (spaceL) LoadSpacesDevelopers(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_developers")
 	}
 
-	if len(spacesDeveloperAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesDevelopers = resultSlice
 		for _, foreign := range resultSlice {
@@ -2273,13 +1995,6 @@ func (spaceL) LoadSpacesManagers(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_managers")
 	}
 
-	if len(spacesManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -2371,13 +2086,6 @@ func (spaceL) LoadStagingSpaceStagingSecurityGroupsSpaces(ctx context.Context, e
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for staging_security_groups_spaces")
 	}
 
-	if len(stagingSecurityGroupsSpaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.StagingSpaceStagingSecurityGroupsSpaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -2469,13 +2177,6 @@ func (spaceL) LoadDefaultSpaceUsers(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(userAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.DefaultSpaceUsers = resultSlice
 		for _, foreign := range resultSlice {
@@ -2506,10 +2207,10 @@ func (spaceL) LoadDefaultSpaceUsers(ctx context.Context, e boil.ContextExecutor,
 // SetSpaceQuotaDefinition of the space to the related item.
 // Sets o.R.SpaceQuotaDefinition to related.
 // Adds o to related.R.Spaces.
-func (o *Space) SetSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, insert bool, related *SpaceQuotaDefinition) error {
+func (q SpaceQuery) SetSpaceQuotaDefinition(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related *SpaceQuotaDefinition) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = SpaceQuotaDefinitions().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -2553,11 +2254,11 @@ func (o *Space) SetSpaceQuotaDefinition(ctx context.Context, exec boil.ContextEx
 // RemoveSpaceQuotaDefinition relationship.
 // Sets o.R.SpaceQuotaDefinition to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Space) RemoveSpaceQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, related *SpaceQuotaDefinition) error {
+func (q SpaceQuery) RemoveSpaceQuotaDefinition(o *Space, ctx context.Context, exec boil.ContextExecutor, related *SpaceQuotaDefinition) error {
 	var err error
 
 	queries.SetScanner(&o.SpaceQuotaDefinitionID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("space_quota_definition_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -2586,10 +2287,10 @@ func (o *Space) RemoveSpaceQuotaDefinition(ctx context.Context, exec boil.Contex
 // SetIsolationSegment of the space to the related item.
 // Sets o.R.IsolationSegment to related.
 // Adds o to related.R.Spaces.
-func (o *Space) SetIsolationSegment(ctx context.Context, exec boil.ContextExecutor, insert bool, related *IsolationSegment) error {
+func (q SpaceQuery) SetIsolationSegment(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related *IsolationSegment) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = IsolationSegments().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -2633,11 +2334,11 @@ func (o *Space) SetIsolationSegment(ctx context.Context, exec boil.ContextExecut
 // RemoveIsolationSegment relationship.
 // Sets o.R.IsolationSegment to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Space) RemoveIsolationSegment(ctx context.Context, exec boil.ContextExecutor, related *IsolationSegment) error {
+func (q SpaceQuery) RemoveIsolationSegment(o *Space, ctx context.Context, exec boil.ContextExecutor, related *IsolationSegment) error {
 	var err error
 
 	queries.SetScanner(&o.IsolationSegmentGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("isolation_segment_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("isolation_segment_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -2666,10 +2367,10 @@ func (o *Space) RemoveIsolationSegment(ctx context.Context, exec boil.ContextExe
 // SetOrganization of the space to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.Spaces.
-func (o *Space) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q SpaceQuery) SetOrganization(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -2714,12 +2415,12 @@ func (o *Space) SetOrganization(ctx context.Context, exec boil.ContextExecutor, 
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.Apps.
 // Sets related.R.Space appropriately.
-func (o *Space) AddApps(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*App) error {
+func (q SpaceQuery) AddApps(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*App) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.SpaceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Apps().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2769,7 +2470,7 @@ func (o *Space) AddApps(ctx context.Context, exec boil.ContextExecutor, insert b
 // Sets o.R.Space's Apps accordingly.
 // Replaces o.R.Apps with related.
 // Sets related.R.Space's Apps accordingly.
-func (o *Space) SetApps(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*App) error {
+func (q SpaceQuery) SetApps(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*App) error {
 	query := "update \"apps\" set \"space_guid\" = null where \"space_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2794,13 +2495,13 @@ func (o *Space) SetApps(ctx context.Context, exec boil.ContextExecutor, insert b
 
 		o.R.Apps = nil
 	}
-	return o.AddApps(ctx, exec, insert, related...)
+	return q.AddApps(o, ctx, exec, insert, related...)
 }
 
 // RemoveApps relationships from objects passed in.
 // Removes related items from R.Apps (uses pointer comparison, removal does not keep order)
 // Sets related.R.Space.
-func (o *Space) RemoveApps(ctx context.Context, exec boil.ContextExecutor, related ...*App) error {
+func (q SpaceQuery) RemoveApps(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*App) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2811,7 +2512,7 @@ func (o *Space) RemoveApps(ctx context.Context, exec boil.ContextExecutor, relat
 		if rel.R != nil {
 			rel.R.Space = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("space_guid")); err != nil {
+		if _, err = Apps().Update(rel, ctx, exec, boil.Whitelist("space_guid")); err != nil {
 			return err
 		}
 	}
@@ -2841,12 +2542,12 @@ func (o *Space) RemoveApps(ctx context.Context, exec boil.ContextExecutor, relat
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.Routes.
 // Sets related.R.Space appropriately.
-func (o *Space) AddRoutes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
+func (q SpaceQuery) AddRoutes(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Routes().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2894,12 +2595,12 @@ func (o *Space) AddRoutes(ctx context.Context, exec boil.ContextExecutor, insert
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SecurityGroupsSpaces.
 // Sets related.R.Space appropriately.
-func (o *Space) AddSecurityGroupsSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SecurityGroupsSpace) error {
+func (q SpaceQuery) AddSecurityGroupsSpaces(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SecurityGroupsSpace) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SecurityGroupsSpaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2947,12 +2648,12 @@ func (o *Space) AddSecurityGroupsSpaces(ctx context.Context, exec boil.ContextEx
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.ServiceBrokers.
 // Sets related.R.Space appropriately.
-func (o *Space) AddServiceBrokers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBroker) error {
+func (q SpaceQuery) AddServiceBrokers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBroker) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.SpaceID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceBrokers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3002,7 +2703,7 @@ func (o *Space) AddServiceBrokers(ctx context.Context, exec boil.ContextExecutor
 // Sets o.R.Space's ServiceBrokers accordingly.
 // Replaces o.R.ServiceBrokers with related.
 // Sets related.R.Space's ServiceBrokers accordingly.
-func (o *Space) SetServiceBrokers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBroker) error {
+func (q SpaceQuery) SetServiceBrokers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBroker) error {
 	query := "update \"service_brokers\" set \"space_id\" = null where \"space_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -3027,13 +2728,13 @@ func (o *Space) SetServiceBrokers(ctx context.Context, exec boil.ContextExecutor
 
 		o.R.ServiceBrokers = nil
 	}
-	return o.AddServiceBrokers(ctx, exec, insert, related...)
+	return q.AddServiceBrokers(o, ctx, exec, insert, related...)
 }
 
 // RemoveServiceBrokers relationships from objects passed in.
 // Removes related items from R.ServiceBrokers (uses pointer comparison, removal does not keep order)
 // Sets related.R.Space.
-func (o *Space) RemoveServiceBrokers(ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBroker) error {
+func (q SpaceQuery) RemoveServiceBrokers(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBroker) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3044,7 +2745,7 @@ func (o *Space) RemoveServiceBrokers(ctx context.Context, exec boil.ContextExecu
 		if rel.R != nil {
 			rel.R.Space = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("space_id")); err != nil {
+		if _, err = ServiceBrokers().Update(rel, ctx, exec, boil.Whitelist("space_id")); err != nil {
 			return err
 		}
 	}
@@ -3074,11 +2775,11 @@ func (o *Space) RemoveServiceBrokers(ctx context.Context, exec boil.ContextExecu
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SharedServiceInstances.
 // Sets related.R.Spaces appropriately.
-func (o *Space) AddSharedServiceInstances(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
+func (q SpaceQuery) AddSharedServiceInstances(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceInstances().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		}
@@ -3124,7 +2825,7 @@ func (o *Space) AddSharedServiceInstances(ctx context.Context, exec boil.Context
 // Sets o.R.Spaces's SharedServiceInstances accordingly.
 // Replaces o.R.SharedServiceInstances with related.
 // Sets related.R.Spaces's SharedServiceInstances accordingly.
-func (o *Space) SetSharedServiceInstances(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
+func (q SpaceQuery) SetSharedServiceInstances(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
 	query := "delete from \"service_instance_shares\" where \"target_space_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3141,13 +2842,13 @@ func (o *Space) SetSharedServiceInstances(ctx context.Context, exec boil.Context
 	if o.R != nil {
 		o.R.SharedServiceInstances = nil
 	}
-	return o.AddSharedServiceInstances(ctx, exec, insert, related...)
+	return q.AddSharedServiceInstances(o, ctx, exec, insert, related...)
 }
 
 // RemoveSharedServiceInstances relationships from objects passed in.
 // Removes related items from R.SharedServiceInstances (uses pointer comparison, removal does not keep order)
 // Sets related.R.Spaces.
-func (o *Space) RemoveSharedServiceInstances(ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstance) error {
+func (q SpaceQuery) RemoveSharedServiceInstances(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstance) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3218,12 +2919,12 @@ func removeSharedServiceInstancesFromSpacesSlice(o *Space, related []*ServiceIns
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.ServiceInstances.
 // Sets related.R.Space appropriately.
-func (o *Space) AddServiceInstances(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
+func (q SpaceQuery) AddServiceInstances(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceInstances().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3271,12 +2972,12 @@ func (o *Space) AddServiceInstances(ctx context.Context, exec boil.ContextExecut
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.ResourceSpaceAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Space) AddResourceSpaceAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceAnnotation) error {
+func (q SpaceQuery) AddResourceSpaceAnnotations(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpaceAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3326,7 +3027,7 @@ func (o *Space) AddResourceSpaceAnnotations(ctx context.Context, exec boil.Conte
 // Sets o.R.Resource's ResourceSpaceAnnotations accordingly.
 // Replaces o.R.ResourceSpaceAnnotations with related.
 // Sets related.R.Resource's ResourceSpaceAnnotations accordingly.
-func (o *Space) SetResourceSpaceAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceAnnotation) error {
+func (q SpaceQuery) SetResourceSpaceAnnotations(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceAnnotation) error {
 	query := "update \"space_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3351,13 +3052,13 @@ func (o *Space) SetResourceSpaceAnnotations(ctx context.Context, exec boil.Conte
 
 		o.R.ResourceSpaceAnnotations = nil
 	}
-	return o.AddResourceSpaceAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceSpaceAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceSpaceAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceSpaceAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Space) RemoveResourceSpaceAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*SpaceAnnotation) error {
+func (q SpaceQuery) RemoveResourceSpaceAnnotations(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*SpaceAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3368,7 +3069,7 @@ func (o *Space) RemoveResourceSpaceAnnotations(ctx context.Context, exec boil.Co
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = SpaceAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -3398,12 +3099,12 @@ func (o *Space) RemoveResourceSpaceAnnotations(ctx context.Context, exec boil.Co
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.ResourceSpaceLabels.
 // Sets related.R.Resource appropriately.
-func (o *Space) AddResourceSpaceLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceLabel) error {
+func (q SpaceQuery) AddResourceSpaceLabels(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpaceLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3453,7 +3154,7 @@ func (o *Space) AddResourceSpaceLabels(ctx context.Context, exec boil.ContextExe
 // Sets o.R.Resource's ResourceSpaceLabels accordingly.
 // Replaces o.R.ResourceSpaceLabels with related.
 // Sets related.R.Resource's ResourceSpaceLabels accordingly.
-func (o *Space) SetResourceSpaceLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceLabel) error {
+func (q SpaceQuery) SetResourceSpaceLabels(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceLabel) error {
 	query := "update \"space_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3478,13 +3179,13 @@ func (o *Space) SetResourceSpaceLabels(ctx context.Context, exec boil.ContextExe
 
 		o.R.ResourceSpaceLabels = nil
 	}
-	return o.AddResourceSpaceLabels(ctx, exec, insert, related...)
+	return q.AddResourceSpaceLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceSpaceLabels relationships from objects passed in.
 // Removes related items from R.ResourceSpaceLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Space) RemoveResourceSpaceLabels(ctx context.Context, exec boil.ContextExecutor, related ...*SpaceLabel) error {
+func (q SpaceQuery) RemoveResourceSpaceLabels(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*SpaceLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3495,7 +3196,7 @@ func (o *Space) RemoveResourceSpaceLabels(ctx context.Context, exec boil.Context
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = SpaceLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -3525,12 +3226,12 @@ func (o *Space) RemoveResourceSpaceLabels(ctx context.Context, exec boil.Context
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SpacesApplicationSupporters.
 // Sets related.R.Space appropriately.
-func (o *Space) AddSpacesApplicationSupporters(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
+func (q SpaceQuery) AddSpacesApplicationSupporters(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesApplicationSupporters().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3578,12 +3279,12 @@ func (o *Space) AddSpacesApplicationSupporters(ctx context.Context, exec boil.Co
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SpacesAuditors.
 // Sets related.R.Space appropriately.
-func (o *Space) AddSpacesAuditors(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
+func (q SpaceQuery) AddSpacesAuditors(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesAuditors().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3631,12 +3332,12 @@ func (o *Space) AddSpacesAuditors(ctx context.Context, exec boil.ContextExecutor
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SpacesDevelopers.
 // Sets related.R.Space appropriately.
-func (o *Space) AddSpacesDevelopers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
+func (q SpaceQuery) AddSpacesDevelopers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesDevelopers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3684,12 +3385,12 @@ func (o *Space) AddSpacesDevelopers(ctx context.Context, exec boil.ContextExecut
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.SpacesManagers.
 // Sets related.R.Space appropriately.
-func (o *Space) AddSpacesManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
+func (q SpaceQuery) AddSpacesManagers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.SpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3737,12 +3438,12 @@ func (o *Space) AddSpacesManagers(ctx context.Context, exec boil.ContextExecutor
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.StagingSpaceStagingSecurityGroupsSpaces.
 // Sets related.R.StagingSpace appropriately.
-func (o *Space) AddStagingSpaceStagingSecurityGroupsSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StagingSecurityGroupsSpace) error {
+func (q SpaceQuery) AddStagingSpaceStagingSecurityGroupsSpaces(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*StagingSecurityGroupsSpace) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.StagingSpaceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = StagingSecurityGroupsSpaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3790,12 +3491,12 @@ func (o *Space) AddStagingSpaceStagingSecurityGroupsSpaces(ctx context.Context, 
 // of the space, optionally inserting them as new records.
 // Appends related to o.R.DefaultSpaceUsers.
 // Sets related.R.DefaultSpace appropriately.
-func (o *Space) AddDefaultSpaceUsers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*User) error {
+func (q SpaceQuery) AddDefaultSpaceUsers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*User) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.DefaultSpaceID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Users().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3845,7 +3546,7 @@ func (o *Space) AddDefaultSpaceUsers(ctx context.Context, exec boil.ContextExecu
 // Sets o.R.DefaultSpace's DefaultSpaceUsers accordingly.
 // Replaces o.R.DefaultSpaceUsers with related.
 // Sets related.R.DefaultSpace's DefaultSpaceUsers accordingly.
-func (o *Space) SetDefaultSpaceUsers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*User) error {
+func (q SpaceQuery) SetDefaultSpaceUsers(o *Space, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*User) error {
 	query := "update \"users\" set \"default_space_id\" = null where \"default_space_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -3870,13 +3571,13 @@ func (o *Space) SetDefaultSpaceUsers(ctx context.Context, exec boil.ContextExecu
 
 		o.R.DefaultSpaceUsers = nil
 	}
-	return o.AddDefaultSpaceUsers(ctx, exec, insert, related...)
+	return q.AddDefaultSpaceUsers(o, ctx, exec, insert, related...)
 }
 
 // RemoveDefaultSpaceUsers relationships from objects passed in.
 // Removes related items from R.DefaultSpaceUsers (uses pointer comparison, removal does not keep order)
 // Sets related.R.DefaultSpace.
-func (o *Space) RemoveDefaultSpaceUsers(ctx context.Context, exec boil.ContextExecutor, related ...*User) error {
+func (q SpaceQuery) RemoveDefaultSpaceUsers(o *Space, ctx context.Context, exec boil.ContextExecutor, related ...*User) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3887,7 +3588,7 @@ func (o *Space) RemoveDefaultSpaceUsers(ctx context.Context, exec boil.ContextEx
 		if rel.R != nil {
 			rel.R.DefaultSpace = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("default_space_id")); err != nil {
+		if _, err = Users().Update(rel, ctx, exec, boil.Whitelist("default_space_id")); err != nil {
 			return err
 		}
 	}
@@ -3914,9 +3615,13 @@ func (o *Space) RemoveDefaultSpaceUsers(ctx context.Context, exec boil.ContextEx
 }
 
 // Spaces retrieves all the records using an executor.
-func Spaces(mods ...qm.QueryMod) spaceQuery {
+func Spaces(mods ...qm.QueryMod) SpaceQuery {
 	mods = append(mods, qm.From("\"spaces\""))
-	return spaceQuery{NewQuery(mods...)}
+	return SpaceQuery{NewQuery(mods...)}
+}
+
+type SpaceFinder interface {
+	FindSpace(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Space, error)
 }
 
 // FindSpace retrieves a single record by ID with an executor.
@@ -3942,16 +3647,16 @@ func FindSpace(ctx context.Context, exec boil.ContextExecutor, iD int, selectCol
 		return nil, errors.Wrap(err, "models: unable to select from spaces")
 	}
 
-	if err = spaceObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return spaceObj, err
-	}
-
 	return spaceObj, nil
+}
+
+type SpaceInserter interface {
+	Insert(o *Space, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Space) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SpaceQuery) Insert(o *Space, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces provided for insertion")
 	}
@@ -3966,10 +3671,6 @@ func (o *Space) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spaceColumnsWithDefault, o)
@@ -4035,13 +3736,19 @@ func (o *Space) Insert(ctx context.Context, exec boil.ContextExecutor, columns b
 		spaceInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SpaceUpdater interface {
+	Update(o *Space, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SpaceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Space.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Space) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SpaceQuery) Update(o *Space, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -4049,9 +3756,6 @@ func (o *Space) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	spaceUpdateCacheMut.RLock()
 	cache, cached := spaceUpdateCache[key]
@@ -4104,11 +3808,11 @@ func (o *Space) Update(ctx context.Context, exec boil.ContextExecutor, columns b
 		spaceUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q spaceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpaceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -4125,7 +3829,7 @@ func (q spaceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SpaceSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpaceQuery) UpdateAllSlice(o SpaceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -4172,6 +3876,160 @@ func (o SpaceSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 	return rowsAff, nil
 }
 
+type SpaceDeleter interface {
+	Delete(o *Space, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SpaceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Space record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SpaceQuery) Delete(o *Space, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Space provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacePrimaryKeyMapping)
+	sql := "DELETE FROM \"spaces\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from spaces")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SpaceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no spaceQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spaces")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SpaceQuery) DeleteAllSlice(o SpaceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"spaces\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacePrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from space slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces")
+	}
+
+	return rowsAff, nil
+}
+
+type SpaceReloader interface {
+	Reload(o *Space, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SpaceSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SpaceQuery) Reload(o *Space, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSpace(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SpaceQuery) ReloadAll(o *SpaceSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SpaceSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"spaces\".* FROM \"spaces\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacePrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SpaceSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SpaceExists checks if the Space row exists.
+func SpaceExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"spaces\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if spaces exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Space) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -4185,10 +4043,6 @@ func (o *Space) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spaceColumnsWithDefault, o)
@@ -4292,172 +4146,5 @@ func (o *Space) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnC
 		spaceUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Space record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Space) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Space provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacePrimaryKeyMapping)
-	sql := "DELETE FROM \"spaces\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from spaces")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q spaceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no spaceQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spaces")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SpaceSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(spaceBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"spaces\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacePrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from space slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces")
-	}
-
-	if len(spaceAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Space) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSpace(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SpaceSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SpaceSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"spaces\".* FROM \"spaces\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, spacePrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SpaceSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SpaceExists checks if the Space row exists.
-func SpaceExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"spaces\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if spaces exists")
-	}
-
-	return exists, nil
 }

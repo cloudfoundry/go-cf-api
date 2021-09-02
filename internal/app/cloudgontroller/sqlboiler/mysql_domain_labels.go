@@ -131,10 +131,8 @@ type (
 	// DomainLabelSlice is an alias for a slice of pointers to DomainLabel.
 	// This should almost always be used instead of []DomainLabel.
 	DomainLabelSlice []*DomainLabel
-	// DomainLabelHook is the signature for custom DomainLabel hook methods
-	DomainLabelHook func(context.Context, boil.ContextExecutor, *DomainLabel) error
 
-	domainLabelQuery struct {
+	DomainLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var domainLabelBeforeInsertHooks []DomainLabelHook
-var domainLabelBeforeUpdateHooks []DomainLabelHook
-var domainLabelBeforeDeleteHooks []DomainLabelHook
-var domainLabelBeforeUpsertHooks []DomainLabelHook
-
-var domainLabelAfterInsertHooks []DomainLabelHook
-var domainLabelAfterSelectHooks []DomainLabelHook
-var domainLabelAfterUpdateHooks []DomainLabelHook
-var domainLabelAfterDeleteHooks []DomainLabelHook
-var domainLabelAfterUpsertHooks []DomainLabelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DomainLabel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DomainLabel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DomainLabel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DomainLabel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DomainLabel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DomainLabel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DomainLabel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DomainLabel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DomainLabel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainLabelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDomainLabelHook registers your hook function for all future operations.
-func AddDomainLabelHook(hookPoint boil.HookPoint, domainLabelHook DomainLabelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		domainLabelBeforeInsertHooks = append(domainLabelBeforeInsertHooks, domainLabelHook)
-	case boil.BeforeUpdateHook:
-		domainLabelBeforeUpdateHooks = append(domainLabelBeforeUpdateHooks, domainLabelHook)
-	case boil.BeforeDeleteHook:
-		domainLabelBeforeDeleteHooks = append(domainLabelBeforeDeleteHooks, domainLabelHook)
-	case boil.BeforeUpsertHook:
-		domainLabelBeforeUpsertHooks = append(domainLabelBeforeUpsertHooks, domainLabelHook)
-	case boil.AfterInsertHook:
-		domainLabelAfterInsertHooks = append(domainLabelAfterInsertHooks, domainLabelHook)
-	case boil.AfterSelectHook:
-		domainLabelAfterSelectHooks = append(domainLabelAfterSelectHooks, domainLabelHook)
-	case boil.AfterUpdateHook:
-		domainLabelAfterUpdateHooks = append(domainLabelAfterUpdateHooks, domainLabelHook)
-	case boil.AfterDeleteHook:
-		domainLabelAfterDeleteHooks = append(domainLabelAfterDeleteHooks, domainLabelHook)
-	case boil.AfterUpsertHook:
-		domainLabelAfterUpsertHooks = append(domainLabelAfterUpsertHooks, domainLabelHook)
-	}
+type DomainLabelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DomainLabel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DomainLabelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single domainLabel record from the query.
-func (q domainLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DomainLabel, error) {
+func (q DomainLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DomainLabel, error) {
 	o := &DomainLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q domainLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*
 		return nil, errors.Wrap(err, "models: failed to execute a one query for domain_labels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DomainLabel records from the query.
-func (q domainLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainLabelSlice, error) {
+func (q DomainLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainLabelSlice, error) {
 	var o []*DomainLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q domainLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (D
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DomainLabel slice")
 	}
 
-	if len(domainLabelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DomainLabel records in the query.
-func (q domainLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DomainLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q domainLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // Exists checks if the row exists in the table.
-func (q domainLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DomainLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q domainLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Resource pointed to by the foreign key.
-func (o *DomainLabel) Resource(mods ...qm.QueryMod) domainQuery {
+func (q DomainLabelQuery) Resource(o *DomainLabel, mods ...qm.QueryMod) DomainQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (domainLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, si
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for domains")
 	}
 
-	if len(domainLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (domainLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, si
 // SetResource of the domainLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceDomainLabels.
-func (o *DomainLabel) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
+func (q DomainLabelQuery) SetResource(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Domains().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *DomainLabel) SetResource(ctx context.Context, exec boil.ContextExecutor
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *DomainLabel) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Domain) error {
+func (q DomainLabelQuery) RemoveResource(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, related *Domain) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *DomainLabel) RemoveResource(ctx context.Context, exec boil.ContextExecu
 }
 
 // DomainLabels retrieves all the records using an executor.
-func DomainLabels(mods ...qm.QueryMod) domainLabelQuery {
+func DomainLabels(mods ...qm.QueryMod) DomainLabelQuery {
 	mods = append(mods, qm.From("`domain_labels`"))
-	return domainLabelQuery{NewQuery(mods...)}
+	return DomainLabelQuery{NewQuery(mods...)}
+}
+
+type DomainLabelFinder interface {
+	FindDomainLabel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DomainLabel, error)
 }
 
 // FindDomainLabel retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindDomainLabel(ctx context.Context, exec boil.ContextExecutor, iD int, sel
 		return nil, errors.Wrap(err, "models: unable to select from domain_labels")
 	}
 
-	if err = domainLabelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return domainLabelObj, err
-	}
-
 	return domainLabelObj, nil
+}
+
+type DomainLabelInserter interface {
+	Insert(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DomainLabel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DomainLabelQuery) Insert(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no domain_labels provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *DomainLabel) Insert(ctx context.Context, exec boil.ContextExecutor, col
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(domainLabelColumnsWithDefault, o)
@@ -753,13 +568,19 @@ CacheNoHooks:
 		domainLabelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DomainLabelUpdater interface {
+	Update(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DomainLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DomainLabel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DomainLabelQuery) Update(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -767,9 +588,6 @@ func (o *DomainLabel) Update(ctx context.Context, exec boil.ContextExecutor, col
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	domainLabelUpdateCacheMut.RLock()
 	cache, cached := domainLabelUpdateCache[key]
@@ -822,11 +640,11 @@ func (o *DomainLabel) Update(ctx context.Context, exec boil.ContextExecutor, col
 		domainLabelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q domainLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DomainLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -843,7 +661,7 @@ func (q domainLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecut
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DomainLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DomainLabelQuery) UpdateAllSlice(o DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -890,6 +708,160 @@ func (o DomainLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecut
 	return rowsAff, nil
 }
 
+type DomainLabelDeleter interface {
+	Delete(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DomainLabel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DomainLabelQuery) Delete(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DomainLabel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), domainLabelPrimaryKeyMapping)
+	sql := "DELETE FROM `domain_labels` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from domain_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for domain_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DomainLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no domainLabelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from domain_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domain_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DomainLabelQuery) DeleteAllSlice(o DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `domain_labels` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, domainLabelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from domainLabel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domain_labels")
+	}
+
+	return rowsAff, nil
+}
+
+type DomainLabelReloader interface {
+	Reload(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DomainLabelQuery) Reload(o *DomainLabel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDomainLabel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DomainLabelQuery) ReloadAll(o *DomainLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DomainLabelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `domain_labels`.* FROM `domain_labels` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, domainLabelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DomainLabelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DomainLabelExists checks if the DomainLabel row exists.
+func DomainLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `domain_labels` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if domain_labels exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLDomainLabelUniqueColumns = []string{
 	"id",
 	"guid",
@@ -908,10 +880,6 @@ func (o *DomainLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, upd
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(domainLabelColumnsWithDefault, o)
@@ -1044,172 +1012,5 @@ CacheNoHooks:
 		domainLabelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DomainLabel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DomainLabel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DomainLabel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), domainLabelPrimaryKeyMapping)
-	sql := "DELETE FROM `domain_labels` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from domain_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for domain_labels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q domainLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no domainLabelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from domain_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domain_labels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DomainLabelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(domainLabelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `domain_labels` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, domainLabelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from domainLabel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domain_labels")
-	}
-
-	if len(domainLabelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DomainLabel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDomainLabel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DomainLabelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DomainLabelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `domain_labels`.* FROM `domain_labels` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, domainLabelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DomainLabelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DomainLabelExists checks if the DomainLabel row exists.
-func DomainLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `domain_labels` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if domain_labels exists")
-	}
-
-	return exists, nil
 }

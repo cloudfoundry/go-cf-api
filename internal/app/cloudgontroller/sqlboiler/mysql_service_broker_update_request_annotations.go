@@ -131,10 +131,8 @@ type (
 	// ServiceBrokerUpdateRequestAnnotationSlice is an alias for a slice of pointers to ServiceBrokerUpdateRequestAnnotation.
 	// This should almost always be used instead of []ServiceBrokerUpdateRequestAnnotation.
 	ServiceBrokerUpdateRequestAnnotationSlice []*ServiceBrokerUpdateRequestAnnotation
-	// ServiceBrokerUpdateRequestAnnotationHook is the signature for custom ServiceBrokerUpdateRequestAnnotation hook methods
-	ServiceBrokerUpdateRequestAnnotationHook func(context.Context, boil.ContextExecutor, *ServiceBrokerUpdateRequestAnnotation) error
 
-	serviceBrokerUpdateRequestAnnotationQuery struct {
+	ServiceBrokerUpdateRequestAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceBrokerUpdateRequestAnnotationBeforeInsertHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationBeforeUpdateHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationBeforeDeleteHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationBeforeUpsertHooks []ServiceBrokerUpdateRequestAnnotationHook
-
-var serviceBrokerUpdateRequestAnnotationAfterInsertHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationAfterSelectHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationAfterUpdateHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationAfterDeleteHooks []ServiceBrokerUpdateRequestAnnotationHook
-var serviceBrokerUpdateRequestAnnotationAfterUpsertHooks []ServiceBrokerUpdateRequestAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceBrokerUpdateRequestAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceBrokerUpdateRequestAnnotationHook registers your hook function for all future operations.
-func AddServiceBrokerUpdateRequestAnnotationHook(hookPoint boil.HookPoint, serviceBrokerUpdateRequestAnnotationHook ServiceBrokerUpdateRequestAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceBrokerUpdateRequestAnnotationBeforeInsertHooks = append(serviceBrokerUpdateRequestAnnotationBeforeInsertHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.BeforeUpdateHook:
-		serviceBrokerUpdateRequestAnnotationBeforeUpdateHooks = append(serviceBrokerUpdateRequestAnnotationBeforeUpdateHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.BeforeDeleteHook:
-		serviceBrokerUpdateRequestAnnotationBeforeDeleteHooks = append(serviceBrokerUpdateRequestAnnotationBeforeDeleteHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.BeforeUpsertHook:
-		serviceBrokerUpdateRequestAnnotationBeforeUpsertHooks = append(serviceBrokerUpdateRequestAnnotationBeforeUpsertHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.AfterInsertHook:
-		serviceBrokerUpdateRequestAnnotationAfterInsertHooks = append(serviceBrokerUpdateRequestAnnotationAfterInsertHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.AfterSelectHook:
-		serviceBrokerUpdateRequestAnnotationAfterSelectHooks = append(serviceBrokerUpdateRequestAnnotationAfterSelectHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.AfterUpdateHook:
-		serviceBrokerUpdateRequestAnnotationAfterUpdateHooks = append(serviceBrokerUpdateRequestAnnotationAfterUpdateHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.AfterDeleteHook:
-		serviceBrokerUpdateRequestAnnotationAfterDeleteHooks = append(serviceBrokerUpdateRequestAnnotationAfterDeleteHooks, serviceBrokerUpdateRequestAnnotationHook)
-	case boil.AfterUpsertHook:
-		serviceBrokerUpdateRequestAnnotationAfterUpsertHooks = append(serviceBrokerUpdateRequestAnnotationAfterUpsertHooks, serviceBrokerUpdateRequestAnnotationHook)
-	}
+type ServiceBrokerUpdateRequestAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceBrokerUpdateRequestAnnotation record from the query.
-func (q serviceBrokerUpdateRequestAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestAnnotation, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestAnnotation, error) {
 	o := &ServiceBrokerUpdateRequestAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q serviceBrokerUpdateRequestAnnotationQuery) One(ctx context.Context, exec
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_broker_update_request_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceBrokerUpdateRequestAnnotation records from the query.
-func (q serviceBrokerUpdateRequestAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestAnnotationSlice, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestAnnotationSlice, error) {
 	var o []*ServiceBrokerUpdateRequestAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q serviceBrokerUpdateRequestAnnotationQuery) All(ctx context.Context, exec
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceBrokerUpdateRequestAnnotation slice")
 	}
 
-	if len(serviceBrokerUpdateRequestAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceBrokerUpdateRequestAnnotation records in the query.
-func (q serviceBrokerUpdateRequestAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q serviceBrokerUpdateRequestAnnotationQuery) Count(ctx context.Context, ex
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceBrokerUpdateRequestAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q serviceBrokerUpdateRequestAnnotationQuery) Exists(ctx context.Context, e
 }
 
 // Resource pointed to by the foreign key.
-func (o *ServiceBrokerUpdateRequestAnnotation) Resource(mods ...qm.QueryMod) serviceBrokerUpdateRequestQuery {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Resource(o *ServiceBrokerUpdateRequestAnnotation, mods ...qm.QueryMod) ServiceBrokerUpdateRequestQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (serviceBrokerUpdateRequestAnnotationL) LoadResource(ctx context.Context, e
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_broker_update_requests")
 	}
 
-	if len(serviceBrokerUpdateRequestAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (serviceBrokerUpdateRequestAnnotationL) LoadResource(ctx context.Context, e
 // SetResource of the serviceBrokerUpdateRequestAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceBrokerUpdateRequestAnnotations.
-func (o *ServiceBrokerUpdateRequestAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBrokerUpdateRequest) error {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) SetResource(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBrokerUpdateRequest) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = ServiceBrokerUpdateRequests().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *ServiceBrokerUpdateRequestAnnotation) SetResource(ctx context.Context, 
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *ServiceBrokerUpdateRequestAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *ServiceBrokerUpdateRequest) error {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) RemoveResource(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, related *ServiceBrokerUpdateRequest) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *ServiceBrokerUpdateRequestAnnotation) RemoveResource(ctx context.Contex
 }
 
 // ServiceBrokerUpdateRequestAnnotations retrieves all the records using an executor.
-func ServiceBrokerUpdateRequestAnnotations(mods ...qm.QueryMod) serviceBrokerUpdateRequestAnnotationQuery {
+func ServiceBrokerUpdateRequestAnnotations(mods ...qm.QueryMod) ServiceBrokerUpdateRequestAnnotationQuery {
 	mods = append(mods, qm.From("`service_broker_update_request_annotations`"))
-	return serviceBrokerUpdateRequestAnnotationQuery{NewQuery(mods...)}
+	return ServiceBrokerUpdateRequestAnnotationQuery{NewQuery(mods...)}
+}
+
+type ServiceBrokerUpdateRequestAnnotationFinder interface {
+	FindServiceBrokerUpdateRequestAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceBrokerUpdateRequestAnnotation, error)
 }
 
 // FindServiceBrokerUpdateRequestAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindServiceBrokerUpdateRequestAnnotation(ctx context.Context, exec boil.Con
 		return nil, errors.Wrap(err, "models: unable to select from service_broker_update_request_annotations")
 	}
 
-	if err = serviceBrokerUpdateRequestAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceBrokerUpdateRequestAnnotationObj, err
-	}
-
 	return serviceBrokerUpdateRequestAnnotationObj, nil
+}
+
+type ServiceBrokerUpdateRequestAnnotationInserter interface {
+	Insert(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceBrokerUpdateRequestAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Insert(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_broker_update_request_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *ServiceBrokerUpdateRequestAnnotation) Insert(ctx context.Context, exec 
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBrokerUpdateRequestAnnotationColumnsWithDefault, o)
@@ -753,13 +568,19 @@ CacheNoHooks:
 		serviceBrokerUpdateRequestAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceBrokerUpdateRequestAnnotationUpdater interface {
+	Update(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceBrokerUpdateRequestAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceBrokerUpdateRequestAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Update(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -767,9 +588,6 @@ func (o *ServiceBrokerUpdateRequestAnnotation) Update(ctx context.Context, exec 
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceBrokerUpdateRequestAnnotationUpdateCacheMut.RLock()
 	cache, cached := serviceBrokerUpdateRequestAnnotationUpdateCache[key]
@@ -822,11 +640,11 @@ func (o *ServiceBrokerUpdateRequestAnnotation) Update(ctx context.Context, exec 
 		serviceBrokerUpdateRequestAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceBrokerUpdateRequestAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -843,7 +661,7 @@ func (q serviceBrokerUpdateRequestAnnotationQuery) UpdateAll(ctx context.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceBrokerUpdateRequestAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBrokerUpdateRequestAnnotationQuery) UpdateAllSlice(o ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -890,6 +708,160 @@ func (o ServiceBrokerUpdateRequestAnnotationSlice) UpdateAll(ctx context.Context
 	return rowsAff, nil
 }
 
+type ServiceBrokerUpdateRequestAnnotationDeleter interface {
+	Delete(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceBrokerUpdateRequestAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Delete(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceBrokerUpdateRequestAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM `service_broker_update_request_annotations` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_broker_update_request_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_broker_update_request_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceBrokerUpdateRequestAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceBrokerUpdateRequestAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_broker_update_request_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceBrokerUpdateRequestAnnotationQuery) DeleteAllSlice(o ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `service_broker_update_request_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceBrokerUpdateRequestAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceBrokerUpdateRequestAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceBrokerUpdateRequestAnnotationReloader interface {
+	Reload(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceBrokerUpdateRequestAnnotationQuery) Reload(o *ServiceBrokerUpdateRequestAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceBrokerUpdateRequestAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceBrokerUpdateRequestAnnotationQuery) ReloadAll(o *ServiceBrokerUpdateRequestAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceBrokerUpdateRequestAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `service_broker_update_request_annotations`.* FROM `service_broker_update_request_annotations` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceBrokerUpdateRequestAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceBrokerUpdateRequestAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceBrokerUpdateRequestAnnotationExists checks if the ServiceBrokerUpdateRequestAnnotation row exists.
+func ServiceBrokerUpdateRequestAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `service_broker_update_request_annotations` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_broker_update_request_annotations exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLServiceBrokerUpdateRequestAnnotationUniqueColumns = []string{
 	"id",
 	"guid",
@@ -908,10 +880,6 @@ func (o *ServiceBrokerUpdateRequestAnnotation) Upsert(ctx context.Context, exec 
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBrokerUpdateRequestAnnotationColumnsWithDefault, o)
@@ -1044,172 +1012,5 @@ CacheNoHooks:
 		serviceBrokerUpdateRequestAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceBrokerUpdateRequestAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceBrokerUpdateRequestAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceBrokerUpdateRequestAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM `service_broker_update_request_annotations` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_broker_update_request_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_broker_update_request_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceBrokerUpdateRequestAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceBrokerUpdateRequestAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_broker_update_request_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceBrokerUpdateRequestAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceBrokerUpdateRequestAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `service_broker_update_request_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceBrokerUpdateRequestAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceBrokerUpdateRequestAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_annotations")
-	}
-
-	if len(serviceBrokerUpdateRequestAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceBrokerUpdateRequestAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceBrokerUpdateRequestAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceBrokerUpdateRequestAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceBrokerUpdateRequestAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `service_broker_update_request_annotations`.* FROM `service_broker_update_request_annotations` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceBrokerUpdateRequestAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceBrokerUpdateRequestAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceBrokerUpdateRequestAnnotationExists checks if the ServiceBrokerUpdateRequestAnnotation row exists.
-func ServiceBrokerUpdateRequestAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `service_broker_update_request_annotations` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_broker_update_request_annotations exists")
-	}
-
-	return exists, nil
 }

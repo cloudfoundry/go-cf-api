@@ -161,10 +161,8 @@ type (
 	// UserSlice is an alias for a slice of pointers to User.
 	// This should almost always be used instead of []User.
 	UserSlice []*User
-	// UserHook is the signature for custom User hook methods
-	UserHook func(context.Context, boil.ContextExecutor, *User) error
 
-	userQuery struct {
+	UserQuery struct {
 		*queries.Query
 	}
 )
@@ -190,178 +188,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var userBeforeInsertHooks []UserHook
-var userBeforeUpdateHooks []UserHook
-var userBeforeDeleteHooks []UserHook
-var userBeforeUpsertHooks []UserHook
-
-var userAfterInsertHooks []UserHook
-var userAfterSelectHooks []UserHook
-var userAfterUpdateHooks []UserHook
-var userAfterDeleteHooks []UserHook
-var userAfterUpsertHooks []UserHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *User) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *User) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *User) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *User) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *User) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *User) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *User) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *User) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *User) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range userAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddUserHook registers your hook function for all future operations.
-func AddUserHook(hookPoint boil.HookPoint, userHook UserHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		userBeforeInsertHooks = append(userBeforeInsertHooks, userHook)
-	case boil.BeforeUpdateHook:
-		userBeforeUpdateHooks = append(userBeforeUpdateHooks, userHook)
-	case boil.BeforeDeleteHook:
-		userBeforeDeleteHooks = append(userBeforeDeleteHooks, userHook)
-	case boil.BeforeUpsertHook:
-		userBeforeUpsertHooks = append(userBeforeUpsertHooks, userHook)
-	case boil.AfterInsertHook:
-		userAfterInsertHooks = append(userAfterInsertHooks, userHook)
-	case boil.AfterSelectHook:
-		userAfterSelectHooks = append(userAfterSelectHooks, userHook)
-	case boil.AfterUpdateHook:
-		userAfterUpdateHooks = append(userAfterUpdateHooks, userHook)
-	case boil.AfterDeleteHook:
-		userAfterDeleteHooks = append(userAfterDeleteHooks, userHook)
-	case boil.AfterUpsertHook:
-		userAfterUpsertHooks = append(userAfterUpsertHooks, userHook)
-	}
+type UserFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*User, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single user record from the query.
-func (q userQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, error) {
+func (q UserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, error) {
 	o := &User{}
 
 	queries.SetLimit(q.Query, 1)
@@ -374,15 +209,11 @@ func (q userQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, e
 		return nil, errors.Wrap(err, "models: failed to execute a one query for users")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all User records from the query.
-func (q userQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error) {
+func (q UserQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error) {
 	var o []*User
 
 	err := q.Bind(ctx, exec, &o)
@@ -390,19 +221,11 @@ func (q userQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlic
 		return nil, errors.Wrap(err, "models: failed to assign all query results to User slice")
 	}
 
-	if len(userAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all User records in the query.
-func (q userQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q UserQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -417,7 +240,7 @@ func (q userQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64,
 }
 
 // Exists checks if the row exists in the table.
-func (q userQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q UserQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -433,7 +256,7 @@ func (q userQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool,
 }
 
 // DefaultSpace pointed to by the foreign key.
-func (o *User) DefaultSpace(mods ...qm.QueryMod) spaceQuery {
+func (q UserQuery) DefaultSpace(o *User, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.DefaultSpaceID),
 	}
@@ -447,7 +270,7 @@ func (o *User) DefaultSpace(mods ...qm.QueryMod) spaceQuery {
 }
 
 // OrganizationsAuditors retrieves all the organizations_auditor's OrganizationsAuditors with an executor.
-func (o *User) OrganizationsAuditors(mods ...qm.QueryMod) organizationsAuditorQuery {
+func (q UserQuery) OrganizationsAuditors(o *User, mods ...qm.QueryMod) OrganizationsAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -468,7 +291,7 @@ func (o *User) OrganizationsAuditors(mods ...qm.QueryMod) organizationsAuditorQu
 }
 
 // OrganizationsBillingManagers retrieves all the organizations_billing_manager's OrganizationsBillingManagers with an executor.
-func (o *User) OrganizationsBillingManagers(mods ...qm.QueryMod) organizationsBillingManagerQuery {
+func (q UserQuery) OrganizationsBillingManagers(o *User, mods ...qm.QueryMod) OrganizationsBillingManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -489,7 +312,7 @@ func (o *User) OrganizationsBillingManagers(mods ...qm.QueryMod) organizationsBi
 }
 
 // OrganizationsManagers retrieves all the organizations_manager's OrganizationsManagers with an executor.
-func (o *User) OrganizationsManagers(mods ...qm.QueryMod) organizationsManagerQuery {
+func (q UserQuery) OrganizationsManagers(o *User, mods ...qm.QueryMod) OrganizationsManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -510,7 +333,7 @@ func (o *User) OrganizationsManagers(mods ...qm.QueryMod) organizationsManagerQu
 }
 
 // OrganizationsUsers retrieves all the organizations_user's OrganizationsUsers with an executor.
-func (o *User) OrganizationsUsers(mods ...qm.QueryMod) organizationsUserQuery {
+func (q UserQuery) OrganizationsUsers(o *User, mods ...qm.QueryMod) OrganizationsUserQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -531,7 +354,7 @@ func (o *User) OrganizationsUsers(mods ...qm.QueryMod) organizationsUserQuery {
 }
 
 // SpacesApplicationSupporters retrieves all the spaces_application_supporter's SpacesApplicationSupporters with an executor.
-func (o *User) SpacesApplicationSupporters(mods ...qm.QueryMod) spacesApplicationSupporterQuery {
+func (q UserQuery) SpacesApplicationSupporters(o *User, mods ...qm.QueryMod) SpacesApplicationSupporterQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -552,7 +375,7 @@ func (o *User) SpacesApplicationSupporters(mods ...qm.QueryMod) spacesApplicatio
 }
 
 // SpacesAuditors retrieves all the spaces_auditor's SpacesAuditors with an executor.
-func (o *User) SpacesAuditors(mods ...qm.QueryMod) spacesAuditorQuery {
+func (q UserQuery) SpacesAuditors(o *User, mods ...qm.QueryMod) SpacesAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -573,7 +396,7 @@ func (o *User) SpacesAuditors(mods ...qm.QueryMod) spacesAuditorQuery {
 }
 
 // SpacesDevelopers retrieves all the spaces_developer's SpacesDevelopers with an executor.
-func (o *User) SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
+func (q UserQuery) SpacesDevelopers(o *User, mods ...qm.QueryMod) SpacesDeveloperQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -594,7 +417,7 @@ func (o *User) SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
 }
 
 // SpacesManagers retrieves all the spaces_manager's SpacesManagers with an executor.
-func (o *User) SpacesManagers(mods ...qm.QueryMod) spacesManagerQuery {
+func (q UserQuery) SpacesManagers(o *User, mods ...qm.QueryMod) SpacesManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -615,7 +438,7 @@ func (o *User) SpacesManagers(mods ...qm.QueryMod) spacesManagerQuery {
 }
 
 // ResourceUserAnnotations retrieves all the user_annotation's UserAnnotations with an executor via resource_guid column.
-func (o *User) ResourceUserAnnotations(mods ...qm.QueryMod) userAnnotationQuery {
+func (q UserQuery) ResourceUserAnnotations(o *User, mods ...qm.QueryMod) UserAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -636,7 +459,7 @@ func (o *User) ResourceUserAnnotations(mods ...qm.QueryMod) userAnnotationQuery 
 }
 
 // ResourceUserLabels retrieves all the user_label's UserLabels with an executor via resource_guid column.
-func (o *User) ResourceUserLabels(mods ...qm.QueryMod) userLabelQuery {
+func (q UserQuery) ResourceUserLabels(o *User, mods ...qm.QueryMod) UserLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -724,14 +547,6 @@ func (userL) LoadDefaultSpace(ctx context.Context, e boil.ContextExecutor, singu
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(userAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -828,13 +643,6 @@ func (userL) LoadOrganizationsAuditors(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_auditors")
 	}
 
-	if len(organizationsAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsAuditors = resultSlice
 		for _, foreign := range resultSlice {
@@ -926,13 +734,6 @@ func (userL) LoadOrganizationsBillingManagers(ctx context.Context, e boil.Contex
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_billing_managers")
 	}
 
-	if len(organizationsBillingManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsBillingManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1024,13 +825,6 @@ func (userL) LoadOrganizationsManagers(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_managers")
 	}
 
-	if len(organizationsManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1122,13 +916,6 @@ func (userL) LoadOrganizationsUsers(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_users")
 	}
 
-	if len(organizationsUserAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsUsers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1220,13 +1007,6 @@ func (userL) LoadSpacesApplicationSupporters(ctx context.Context, e boil.Context
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_application_supporters")
 	}
 
-	if len(spacesApplicationSupporterAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesApplicationSupporters = resultSlice
 		for _, foreign := range resultSlice {
@@ -1318,13 +1098,6 @@ func (userL) LoadSpacesAuditors(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_auditors")
 	}
 
-	if len(spacesAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesAuditors = resultSlice
 		for _, foreign := range resultSlice {
@@ -1416,13 +1189,6 @@ func (userL) LoadSpacesDevelopers(ctx context.Context, e boil.ContextExecutor, s
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_developers")
 	}
 
-	if len(spacesDeveloperAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesDevelopers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1514,13 +1280,6 @@ func (userL) LoadSpacesManagers(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces_managers")
 	}
 
-	if len(spacesManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpacesManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1612,13 +1371,6 @@ func (userL) LoadResourceUserAnnotations(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_annotations")
 	}
 
-	if len(userAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceUserAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1710,13 +1462,6 @@ func (userL) LoadResourceUserLabels(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for user_labels")
 	}
 
-	if len(userLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceUserLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1747,10 +1492,10 @@ func (userL) LoadResourceUserLabels(ctx context.Context, e boil.ContextExecutor,
 // SetDefaultSpace of the user to the related item.
 // Sets o.R.DefaultSpace to related.
 // Adds o to related.R.DefaultSpaceUsers.
-func (o *User) SetDefaultSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q UserQuery) SetDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1794,11 +1539,11 @@ func (o *User) SetDefaultSpace(ctx context.Context, exec boil.ContextExecutor, i
 // RemoveDefaultSpace relationship.
 // Sets o.R.DefaultSpace to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *User) RemoveDefaultSpace(ctx context.Context, exec boil.ContextExecutor, related *Space) error {
+func (q UserQuery) RemoveDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
 	var err error
 
 	queries.SetScanner(&o.DefaultSpaceID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("default_space_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("default_space_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -1828,12 +1573,12 @@ func (o *User) RemoveDefaultSpace(ctx context.Context, exec boil.ContextExecutor
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsAuditors.
 // Sets related.R.User appropriately.
-func (o *User) AddOrganizationsAuditors(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
+func (q UserQuery) AddOrganizationsAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsAuditors().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1881,12 +1626,12 @@ func (o *User) AddOrganizationsAuditors(ctx context.Context, exec boil.ContextEx
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsBillingManagers.
 // Sets related.R.User appropriately.
-func (o *User) AddOrganizationsBillingManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
+func (q UserQuery) AddOrganizationsBillingManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsBillingManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1934,12 +1679,12 @@ func (o *User) AddOrganizationsBillingManagers(ctx context.Context, exec boil.Co
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsManagers.
 // Sets related.R.User appropriately.
-func (o *User) AddOrganizationsManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
+func (q UserQuery) AddOrganizationsManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1987,12 +1732,12 @@ func (o *User) AddOrganizationsManagers(ctx context.Context, exec boil.ContextEx
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsUsers.
 // Sets related.R.User appropriately.
-func (o *User) AddOrganizationsUsers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
+func (q UserQuery) AddOrganizationsUsers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsUsers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2040,12 +1785,12 @@ func (o *User) AddOrganizationsUsers(ctx context.Context, exec boil.ContextExecu
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesApplicationSupporters.
 // Sets related.R.User appropriately.
-func (o *User) AddSpacesApplicationSupporters(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
+func (q UserQuery) AddSpacesApplicationSupporters(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesApplicationSupporters().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2093,12 +1838,12 @@ func (o *User) AddSpacesApplicationSupporters(ctx context.Context, exec boil.Con
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesAuditors.
 // Sets related.R.User appropriately.
-func (o *User) AddSpacesAuditors(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
+func (q UserQuery) AddSpacesAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesAuditors().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2146,12 +1891,12 @@ func (o *User) AddSpacesAuditors(ctx context.Context, exec boil.ContextExecutor,
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesDevelopers.
 // Sets related.R.User appropriately.
-func (o *User) AddSpacesDevelopers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
+func (q UserQuery) AddSpacesDevelopers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesDevelopers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2199,12 +1944,12 @@ func (o *User) AddSpacesDevelopers(ctx context.Context, exec boil.ContextExecuto
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesManagers.
 // Sets related.R.User appropriately.
-func (o *User) AddSpacesManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
+func (q UserQuery) AddSpacesManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.UserID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpacesManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2252,12 +1997,12 @@ func (o *User) AddSpacesManagers(ctx context.Context, exec boil.ContextExecutor,
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.ResourceUserAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *User) AddResourceUserAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
+func (q UserQuery) AddResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = UserAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2307,7 +2052,7 @@ func (o *User) AddResourceUserAnnotations(ctx context.Context, exec boil.Context
 // Sets o.R.Resource's ResourceUserAnnotations accordingly.
 // Replaces o.R.ResourceUserAnnotations with related.
 // Sets related.R.Resource's ResourceUserAnnotations accordingly.
-func (o *User) SetResourceUserAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
+func (q UserQuery) SetResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
 	query := "update `user_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2332,13 +2077,13 @@ func (o *User) SetResourceUserAnnotations(ctx context.Context, exec boil.Context
 
 		o.R.ResourceUserAnnotations = nil
 	}
-	return o.AddResourceUserAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceUserAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceUserAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceUserAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *User) RemoveResourceUserAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*UserAnnotation) error {
+func (q UserQuery) RemoveResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2349,7 +2094,7 @@ func (o *User) RemoveResourceUserAnnotations(ctx context.Context, exec boil.Cont
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = UserAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2379,12 +2124,12 @@ func (o *User) RemoveResourceUserAnnotations(ctx context.Context, exec boil.Cont
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.ResourceUserLabels.
 // Sets related.R.Resource appropriately.
-func (o *User) AddResourceUserLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
+func (q UserQuery) AddResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = UserLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2434,7 +2179,7 @@ func (o *User) AddResourceUserLabels(ctx context.Context, exec boil.ContextExecu
 // Sets o.R.Resource's ResourceUserLabels accordingly.
 // Replaces o.R.ResourceUserLabels with related.
 // Sets related.R.Resource's ResourceUserLabels accordingly.
-func (o *User) SetResourceUserLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
+func (q UserQuery) SetResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
 	query := "update `user_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2459,13 +2204,13 @@ func (o *User) SetResourceUserLabels(ctx context.Context, exec boil.ContextExecu
 
 		o.R.ResourceUserLabels = nil
 	}
-	return o.AddResourceUserLabels(ctx, exec, insert, related...)
+	return q.AddResourceUserLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceUserLabels relationships from objects passed in.
 // Removes related items from R.ResourceUserLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *User) RemoveResourceUserLabels(ctx context.Context, exec boil.ContextExecutor, related ...*UserLabel) error {
+func (q UserQuery) RemoveResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2476,7 +2221,7 @@ func (o *User) RemoveResourceUserLabels(ctx context.Context, exec boil.ContextEx
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = UserLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2503,9 +2248,13 @@ func (o *User) RemoveResourceUserLabels(ctx context.Context, exec boil.ContextEx
 }
 
 // Users retrieves all the records using an executor.
-func Users(mods ...qm.QueryMod) userQuery {
+func Users(mods ...qm.QueryMod) UserQuery {
 	mods = append(mods, qm.From("`users`"))
-	return userQuery{NewQuery(mods...)}
+	return UserQuery{NewQuery(mods...)}
+}
+
+type UserFinder interface {
+	FindUser(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*User, error)
 }
 
 // FindUser retrieves a single record by ID with an executor.
@@ -2531,16 +2280,16 @@ func FindUser(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols
 		return nil, errors.Wrap(err, "models: unable to select from users")
 	}
 
-	if err = userObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return userObj, err
-	}
-
 	return userObj, nil
+}
+
+type UserInserter interface {
+	Insert(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q UserQuery) Insert(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no users provided for insertion")
 	}
@@ -2555,10 +2304,6 @@ func (o *User) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(userColumnsWithDefault, o)
@@ -2651,13 +2396,19 @@ CacheNoHooks:
 		userInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type UserUpdater interface {
+	Update(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the User.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q UserQuery) Update(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -2665,9 +2416,6 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	userUpdateCacheMut.RLock()
 	cache, cached := userUpdateCache[key]
@@ -2720,11 +2468,11 @@ func (o *User) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 		userUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q userQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q UserQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -2741,7 +2489,7 @@ func (q userQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o UserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q UserQuery) UpdateAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -2788,6 +2536,160 @@ func (o UserSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 	return rowsAff, nil
 }
 
+type UserDeleter interface {
+	Delete(o *User, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single User record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q UserQuery) Delete(o *User, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no User provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userPrimaryKeyMapping)
+	sql := "DELETE FROM `users` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from users")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for users")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q UserQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no userQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from users")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q UserQuery) DeleteAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `users` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from user slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
+	}
+
+	return rowsAff, nil
+}
+
+type UserReloader interface {
+	Reload(o *User, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *UserSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q UserQuery) Reload(o *User, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindUser(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q UserQuery) ReloadAll(o *UserSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := UserSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `users`.* FROM `users` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in UserSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// UserExists checks if the User row exists.
+func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `users` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if users exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLUserUniqueColumns = []string{
 	"id",
 	"guid",
@@ -2806,10 +2708,6 @@ func (o *User) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColu
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(userColumnsWithDefault, o)
@@ -2942,172 +2840,5 @@ CacheNoHooks:
 		userUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single User record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *User) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no User provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), userPrimaryKeyMapping)
-	sql := "DELETE FROM `users` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from users")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for users")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q userQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no userQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from users")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o UserSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(userBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `users` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from user slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for users")
-	}
-
-	if len(userAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *User) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindUser(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *UserSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := UserSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), userPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `users`.* FROM `users` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, userPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in UserSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// UserExists checks if the User row exists.
-func UserExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `users` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if users exists")
-	}
-
-	return exists, nil
 }

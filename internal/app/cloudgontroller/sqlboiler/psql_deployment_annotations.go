@@ -131,10 +131,8 @@ type (
 	// DeploymentAnnotationSlice is an alias for a slice of pointers to DeploymentAnnotation.
 	// This should almost always be used instead of []DeploymentAnnotation.
 	DeploymentAnnotationSlice []*DeploymentAnnotation
-	// DeploymentAnnotationHook is the signature for custom DeploymentAnnotation hook methods
-	DeploymentAnnotationHook func(context.Context, boil.ContextExecutor, *DeploymentAnnotation) error
 
-	deploymentAnnotationQuery struct {
+	DeploymentAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var deploymentAnnotationBeforeInsertHooks []DeploymentAnnotationHook
-var deploymentAnnotationBeforeUpdateHooks []DeploymentAnnotationHook
-var deploymentAnnotationBeforeDeleteHooks []DeploymentAnnotationHook
-var deploymentAnnotationBeforeUpsertHooks []DeploymentAnnotationHook
-
-var deploymentAnnotationAfterInsertHooks []DeploymentAnnotationHook
-var deploymentAnnotationAfterSelectHooks []DeploymentAnnotationHook
-var deploymentAnnotationAfterUpdateHooks []DeploymentAnnotationHook
-var deploymentAnnotationAfterDeleteHooks []DeploymentAnnotationHook
-var deploymentAnnotationAfterUpsertHooks []DeploymentAnnotationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DeploymentAnnotation) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DeploymentAnnotation) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DeploymentAnnotation) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DeploymentAnnotation) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DeploymentAnnotation) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DeploymentAnnotation) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DeploymentAnnotation) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DeploymentAnnotation) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DeploymentAnnotation) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range deploymentAnnotationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDeploymentAnnotationHook registers your hook function for all future operations.
-func AddDeploymentAnnotationHook(hookPoint boil.HookPoint, deploymentAnnotationHook DeploymentAnnotationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		deploymentAnnotationBeforeInsertHooks = append(deploymentAnnotationBeforeInsertHooks, deploymentAnnotationHook)
-	case boil.BeforeUpdateHook:
-		deploymentAnnotationBeforeUpdateHooks = append(deploymentAnnotationBeforeUpdateHooks, deploymentAnnotationHook)
-	case boil.BeforeDeleteHook:
-		deploymentAnnotationBeforeDeleteHooks = append(deploymentAnnotationBeforeDeleteHooks, deploymentAnnotationHook)
-	case boil.BeforeUpsertHook:
-		deploymentAnnotationBeforeUpsertHooks = append(deploymentAnnotationBeforeUpsertHooks, deploymentAnnotationHook)
-	case boil.AfterInsertHook:
-		deploymentAnnotationAfterInsertHooks = append(deploymentAnnotationAfterInsertHooks, deploymentAnnotationHook)
-	case boil.AfterSelectHook:
-		deploymentAnnotationAfterSelectHooks = append(deploymentAnnotationAfterSelectHooks, deploymentAnnotationHook)
-	case boil.AfterUpdateHook:
-		deploymentAnnotationAfterUpdateHooks = append(deploymentAnnotationAfterUpdateHooks, deploymentAnnotationHook)
-	case boil.AfterDeleteHook:
-		deploymentAnnotationAfterDeleteHooks = append(deploymentAnnotationAfterDeleteHooks, deploymentAnnotationHook)
-	case boil.AfterUpsertHook:
-		deploymentAnnotationAfterUpsertHooks = append(deploymentAnnotationAfterUpsertHooks, deploymentAnnotationHook)
-	}
+type DeploymentAnnotationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentAnnotation, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DeploymentAnnotationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single deploymentAnnotation record from the query.
-func (q deploymentAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentAnnotation, error) {
+func (q DeploymentAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DeploymentAnnotation, error) {
 	o := &DeploymentAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q deploymentAnnotationQuery) One(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to execute a one query for deployment_annotations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DeploymentAnnotation records from the query.
-func (q deploymentAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentAnnotationSlice, error) {
+func (q DeploymentAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentAnnotationSlice, error) {
 	var o []*DeploymentAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q deploymentAnnotationQuery) All(ctx context.Context, exec boil.ContextExe
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DeploymentAnnotation slice")
 	}
 
-	if len(deploymentAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DeploymentAnnotation records in the query.
-func (q deploymentAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DeploymentAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q deploymentAnnotationQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q deploymentAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DeploymentAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q deploymentAnnotationQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Resource pointed to by the foreign key.
-func (o *DeploymentAnnotation) Resource(mods ...qm.QueryMod) deploymentQuery {
+func (q DeploymentAnnotationQuery) Resource(o *DeploymentAnnotation, mods ...qm.QueryMod) DeploymentQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (deploymentAnnotationL) LoadResource(ctx context.Context, e boil.ContextExe
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for deployments")
 	}
 
-	if len(deploymentAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (deploymentAnnotationL) LoadResource(ctx context.Context, e boil.ContextExe
 // SetResource of the deploymentAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceDeploymentAnnotations.
-func (o *DeploymentAnnotation) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Deployment) error {
+func (q DeploymentAnnotationQuery) SetResource(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Deployment) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Deployments().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *DeploymentAnnotation) SetResource(ctx context.Context, exec boil.Contex
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *DeploymentAnnotation) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Deployment) error {
+func (q DeploymentAnnotationQuery) RemoveResource(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Deployment) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *DeploymentAnnotation) RemoveResource(ctx context.Context, exec boil.Con
 }
 
 // DeploymentAnnotations retrieves all the records using an executor.
-func DeploymentAnnotations(mods ...qm.QueryMod) deploymentAnnotationQuery {
+func DeploymentAnnotations(mods ...qm.QueryMod) DeploymentAnnotationQuery {
 	mods = append(mods, qm.From("\"deployment_annotations\""))
-	return deploymentAnnotationQuery{NewQuery(mods...)}
+	return DeploymentAnnotationQuery{NewQuery(mods...)}
+}
+
+type DeploymentAnnotationFinder interface {
+	FindDeploymentAnnotation(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DeploymentAnnotation, error)
 }
 
 // FindDeploymentAnnotation retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindDeploymentAnnotation(ctx context.Context, exec boil.ContextExecutor, iD
 		return nil, errors.Wrap(err, "models: unable to select from deployment_annotations")
 	}
 
-	if err = deploymentAnnotationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return deploymentAnnotationObj, err
-	}
-
 	return deploymentAnnotationObj, nil
+}
+
+type DeploymentAnnotationInserter interface {
+	Insert(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DeploymentAnnotation) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DeploymentAnnotationQuery) Insert(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no deployment_annotations provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *DeploymentAnnotation) Insert(ctx context.Context, exec boil.ContextExec
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(deploymentAnnotationColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *DeploymentAnnotation) Insert(ctx context.Context, exec boil.ContextExec
 		deploymentAnnotationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DeploymentAnnotationUpdater interface {
+	Update(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DeploymentAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DeploymentAnnotation) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DeploymentAnnotationQuery) Update(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *DeploymentAnnotation) Update(ctx context.Context, exec boil.ContextExec
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	deploymentAnnotationUpdateCacheMut.RLock()
 	cache, cached := deploymentAnnotationUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *DeploymentAnnotation) Update(ctx context.Context, exec boil.ContextExec
 		deploymentAnnotationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q deploymentAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DeploymentAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q deploymentAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DeploymentAnnotationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DeploymentAnnotationQuery) UpdateAllSlice(o DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o DeploymentAnnotationSlice) UpdateAll(ctx context.Context, exec boil.Cont
 	return rowsAff, nil
 }
 
+type DeploymentAnnotationDeleter interface {
+	Delete(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DeploymentAnnotation record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DeploymentAnnotationQuery) Delete(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DeploymentAnnotation provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), deploymentAnnotationPrimaryKeyMapping)
+	sql := "DELETE FROM \"deployment_annotations\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from deployment_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for deployment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DeploymentAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no deploymentAnnotationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from deployment_annotations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DeploymentAnnotationQuery) DeleteAllSlice(o DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"deployment_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, deploymentAnnotationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from deploymentAnnotation slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_annotations")
+	}
+
+	return rowsAff, nil
+}
+
+type DeploymentAnnotationReloader interface {
+	Reload(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DeploymentAnnotationQuery) Reload(o *DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDeploymentAnnotation(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DeploymentAnnotationQuery) ReloadAll(o *DeploymentAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DeploymentAnnotationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentAnnotationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"deployment_annotations\".* FROM \"deployment_annotations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, deploymentAnnotationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DeploymentAnnotationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DeploymentAnnotationExists checks if the DeploymentAnnotation row exists.
+func DeploymentAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"deployment_annotations\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if deployment_annotations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *DeploymentAnnotation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *DeploymentAnnotation) Upsert(ctx context.Context, exec boil.ContextExec
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(deploymentAnnotationColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *DeploymentAnnotation) Upsert(ctx context.Context, exec boil.ContextExec
 		deploymentAnnotationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DeploymentAnnotation record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DeploymentAnnotation) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DeploymentAnnotation provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), deploymentAnnotationPrimaryKeyMapping)
-	sql := "DELETE FROM \"deployment_annotations\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from deployment_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for deployment_annotations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q deploymentAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no deploymentAnnotationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from deployment_annotations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_annotations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DeploymentAnnotationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(deploymentAnnotationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"deployment_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, deploymentAnnotationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from deploymentAnnotation slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for deployment_annotations")
-	}
-
-	if len(deploymentAnnotationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DeploymentAnnotation) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDeploymentAnnotation(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DeploymentAnnotationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DeploymentAnnotationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), deploymentAnnotationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"deployment_annotations\".* FROM \"deployment_annotations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, deploymentAnnotationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DeploymentAnnotationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DeploymentAnnotationExists checks if the DeploymentAnnotation row exists.
-func DeploymentAnnotationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"deployment_annotations\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if deployment_annotations exists")
-	}
-
-	return exists, nil
 }

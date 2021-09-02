@@ -171,10 +171,8 @@ type (
 	// RevisionSlice is an alias for a slice of pointers to Revision.
 	// This should almost always be used instead of []Revision.
 	RevisionSlice []*Revision
-	// RevisionHook is the signature for custom Revision hook methods
-	RevisionHook func(context.Context, boil.ContextExecutor, *Revision) error
 
-	revisionQuery struct {
+	RevisionQuery struct {
 		*queries.Query
 	}
 )
@@ -200,178 +198,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var revisionBeforeInsertHooks []RevisionHook
-var revisionBeforeUpdateHooks []RevisionHook
-var revisionBeforeDeleteHooks []RevisionHook
-var revisionBeforeUpsertHooks []RevisionHook
-
-var revisionAfterInsertHooks []RevisionHook
-var revisionAfterSelectHooks []RevisionHook
-var revisionAfterUpdateHooks []RevisionHook
-var revisionAfterDeleteHooks []RevisionHook
-var revisionAfterUpsertHooks []RevisionHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Revision) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Revision) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Revision) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Revision) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Revision) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Revision) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Revision) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Revision) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Revision) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range revisionAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddRevisionHook registers your hook function for all future operations.
-func AddRevisionHook(hookPoint boil.HookPoint, revisionHook RevisionHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		revisionBeforeInsertHooks = append(revisionBeforeInsertHooks, revisionHook)
-	case boil.BeforeUpdateHook:
-		revisionBeforeUpdateHooks = append(revisionBeforeUpdateHooks, revisionHook)
-	case boil.BeforeDeleteHook:
-		revisionBeforeDeleteHooks = append(revisionBeforeDeleteHooks, revisionHook)
-	case boil.BeforeUpsertHook:
-		revisionBeforeUpsertHooks = append(revisionBeforeUpsertHooks, revisionHook)
-	case boil.AfterInsertHook:
-		revisionAfterInsertHooks = append(revisionAfterInsertHooks, revisionHook)
-	case boil.AfterSelectHook:
-		revisionAfterSelectHooks = append(revisionAfterSelectHooks, revisionHook)
-	case boil.AfterUpdateHook:
-		revisionAfterUpdateHooks = append(revisionAfterUpdateHooks, revisionHook)
-	case boil.AfterDeleteHook:
-		revisionAfterDeleteHooks = append(revisionAfterDeleteHooks, revisionHook)
-	case boil.AfterUpsertHook:
-		revisionAfterUpsertHooks = append(revisionAfterUpsertHooks, revisionHook)
-	}
+type RevisionFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Revision, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (RevisionSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single revision record from the query.
-func (q revisionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Revision, error) {
+func (q RevisionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Revision, error) {
 	o := &Revision{}
 
 	queries.SetLimit(q.Query, 1)
@@ -384,15 +219,11 @@ func (q revisionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Rev
 		return nil, errors.Wrap(err, "models: failed to execute a one query for revisions")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Revision records from the query.
-func (q revisionQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSlice, error) {
+func (q RevisionQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSlice, error) {
 	var o []*Revision
 
 	err := q.Bind(ctx, exec, &o)
@@ -400,19 +231,11 @@ func (q revisionQuery) All(ctx context.Context, exec boil.ContextExecutor) (Revi
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Revision slice")
 	}
 
-	if len(revisionAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Revision records in the query.
-func (q revisionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q RevisionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -427,7 +250,7 @@ func (q revisionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (in
 }
 
 // Exists checks if the row exists in the table.
-func (q revisionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q RevisionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -443,7 +266,7 @@ func (q revisionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 }
 
 // App pointed to by the foreign key.
-func (o *Revision) App(mods ...qm.QueryMod) appQuery {
+func (q RevisionQuery) App(o *Revision, mods ...qm.QueryMod) AppQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.AppGUID),
 	}
@@ -457,7 +280,7 @@ func (o *Revision) App(mods ...qm.QueryMod) appQuery {
 }
 
 // ResourceRevisionAnnotations retrieves all the revision_annotation's RevisionAnnotations with an executor via resource_guid column.
-func (o *Revision) ResourceRevisionAnnotations(mods ...qm.QueryMod) revisionAnnotationQuery {
+func (q RevisionQuery) ResourceRevisionAnnotations(o *Revision, mods ...qm.QueryMod) RevisionAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -478,7 +301,7 @@ func (o *Revision) ResourceRevisionAnnotations(mods ...qm.QueryMod) revisionAnno
 }
 
 // ResourceRevisionLabels retrieves all the revision_label's RevisionLabels with an executor via resource_guid column.
-func (o *Revision) ResourceRevisionLabels(mods ...qm.QueryMod) revisionLabelQuery {
+func (q RevisionQuery) ResourceRevisionLabels(o *Revision, mods ...qm.QueryMod) RevisionLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -499,7 +322,7 @@ func (o *Revision) ResourceRevisionLabels(mods ...qm.QueryMod) revisionLabelQuer
 }
 
 // RevisionProcessCommands retrieves all the revision_process_command's RevisionProcessCommands with an executor.
-func (o *Revision) RevisionProcessCommands(mods ...qm.QueryMod) revisionProcessCommandQuery {
+func (q RevisionQuery) RevisionProcessCommands(o *Revision, mods ...qm.QueryMod) RevisionProcessCommandQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -520,7 +343,7 @@ func (o *Revision) RevisionProcessCommands(mods ...qm.QueryMod) revisionProcessC
 }
 
 // RevisionSidecars retrieves all the revision_sidecar's RevisionSidecars with an executor.
-func (o *Revision) RevisionSidecars(mods ...qm.QueryMod) revisionSidecarQuery {
+func (q RevisionQuery) RevisionSidecars(o *Revision, mods ...qm.QueryMod) RevisionSidecarQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -608,14 +431,6 @@ func (revisionL) LoadApp(ctx context.Context, e boil.ContextExecutor, singular b
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for apps")
-	}
-
-	if len(revisionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -712,13 +527,6 @@ func (revisionL) LoadResourceRevisionAnnotations(ctx context.Context, e boil.Con
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revision_annotations")
 	}
 
-	if len(revisionAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceRevisionAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -810,13 +618,6 @@ func (revisionL) LoadResourceRevisionLabels(ctx context.Context, e boil.ContextE
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revision_labels")
 	}
 
-	if len(revisionLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceRevisionLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -908,13 +709,6 @@ func (revisionL) LoadRevisionProcessCommands(ctx context.Context, e boil.Context
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revision_process_commands")
 	}
 
-	if len(revisionProcessCommandAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RevisionProcessCommands = resultSlice
 		for _, foreign := range resultSlice {
@@ -1006,13 +800,6 @@ func (revisionL) LoadRevisionSidecars(ctx context.Context, e boil.ContextExecuto
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revision_sidecars")
 	}
 
-	if len(revisionSidecarAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RevisionSidecars = resultSlice
 		for _, foreign := range resultSlice {
@@ -1043,10 +830,10 @@ func (revisionL) LoadRevisionSidecars(ctx context.Context, e boil.ContextExecuto
 // SetApp of the revision to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Revisions.
-func (o *Revision) SetApp(ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q RevisionQuery) SetApp(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1090,11 +877,11 @@ func (o *Revision) SetApp(ctx context.Context, exec boil.ContextExecutor, insert
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Revision) RemoveApp(ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q RevisionQuery) RemoveApp(o *Revision, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -1124,12 +911,12 @@ func (o *Revision) RemoveApp(ctx context.Context, exec boil.ContextExecutor, rel
 // of the revision, optionally inserting them as new records.
 // Appends related to o.R.ResourceRevisionAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Revision) AddResourceRevisionAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionAnnotation) error {
+func (q RevisionQuery) AddResourceRevisionAnnotations(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RevisionAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1179,7 +966,7 @@ func (o *Revision) AddResourceRevisionAnnotations(ctx context.Context, exec boil
 // Sets o.R.Resource's ResourceRevisionAnnotations accordingly.
 // Replaces o.R.ResourceRevisionAnnotations with related.
 // Sets related.R.Resource's ResourceRevisionAnnotations accordingly.
-func (o *Revision) SetResourceRevisionAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionAnnotation) error {
+func (q RevisionQuery) SetResourceRevisionAnnotations(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionAnnotation) error {
 	query := "update \"revision_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1204,13 +991,13 @@ func (o *Revision) SetResourceRevisionAnnotations(ctx context.Context, exec boil
 
 		o.R.ResourceRevisionAnnotations = nil
 	}
-	return o.AddResourceRevisionAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceRevisionAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceRevisionAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceRevisionAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Revision) RemoveResourceRevisionAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*RevisionAnnotation) error {
+func (q RevisionQuery) RemoveResourceRevisionAnnotations(o *Revision, ctx context.Context, exec boil.ContextExecutor, related ...*RevisionAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1221,7 +1008,7 @@ func (o *Revision) RemoveResourceRevisionAnnotations(ctx context.Context, exec b
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = RevisionAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1251,12 +1038,12 @@ func (o *Revision) RemoveResourceRevisionAnnotations(ctx context.Context, exec b
 // of the revision, optionally inserting them as new records.
 // Appends related to o.R.ResourceRevisionLabels.
 // Sets related.R.Resource appropriately.
-func (o *Revision) AddResourceRevisionLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionLabel) error {
+func (q RevisionQuery) AddResourceRevisionLabels(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RevisionLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1306,7 +1093,7 @@ func (o *Revision) AddResourceRevisionLabels(ctx context.Context, exec boil.Cont
 // Sets o.R.Resource's ResourceRevisionLabels accordingly.
 // Replaces o.R.ResourceRevisionLabels with related.
 // Sets related.R.Resource's ResourceRevisionLabels accordingly.
-func (o *Revision) SetResourceRevisionLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionLabel) error {
+func (q RevisionQuery) SetResourceRevisionLabels(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionLabel) error {
 	query := "update \"revision_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1331,13 +1118,13 @@ func (o *Revision) SetResourceRevisionLabels(ctx context.Context, exec boil.Cont
 
 		o.R.ResourceRevisionLabels = nil
 	}
-	return o.AddResourceRevisionLabels(ctx, exec, insert, related...)
+	return q.AddResourceRevisionLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceRevisionLabels relationships from objects passed in.
 // Removes related items from R.ResourceRevisionLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Revision) RemoveResourceRevisionLabels(ctx context.Context, exec boil.ContextExecutor, related ...*RevisionLabel) error {
+func (q RevisionQuery) RemoveResourceRevisionLabels(o *Revision, ctx context.Context, exec boil.ContextExecutor, related ...*RevisionLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1348,7 +1135,7 @@ func (o *Revision) RemoveResourceRevisionLabels(ctx context.Context, exec boil.C
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = RevisionLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1378,12 +1165,12 @@ func (o *Revision) RemoveResourceRevisionLabels(ctx context.Context, exec boil.C
 // of the revision, optionally inserting them as new records.
 // Appends related to o.R.RevisionProcessCommands.
 // Sets related.R.Revision appropriately.
-func (o *Revision) AddRevisionProcessCommands(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionProcessCommand) error {
+func (q RevisionQuery) AddRevisionProcessCommands(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionProcessCommand) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.RevisionGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RevisionProcessCommands().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1431,12 +1218,12 @@ func (o *Revision) AddRevisionProcessCommands(ctx context.Context, exec boil.Con
 // of the revision, optionally inserting them as new records.
 // Appends related to o.R.RevisionSidecars.
 // Sets related.R.Revision appropriately.
-func (o *Revision) AddRevisionSidecars(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecar) error {
+func (q RevisionQuery) AddRevisionSidecars(o *Revision, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecar) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.RevisionGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RevisionSidecars().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1481,9 +1268,13 @@ func (o *Revision) AddRevisionSidecars(ctx context.Context, exec boil.ContextExe
 }
 
 // Revisions retrieves all the records using an executor.
-func Revisions(mods ...qm.QueryMod) revisionQuery {
+func Revisions(mods ...qm.QueryMod) RevisionQuery {
 	mods = append(mods, qm.From("\"revisions\""))
-	return revisionQuery{NewQuery(mods...)}
+	return RevisionQuery{NewQuery(mods...)}
+}
+
+type RevisionFinder interface {
+	FindRevision(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Revision, error)
 }
 
 // FindRevision retrieves a single record by ID with an executor.
@@ -1509,16 +1300,16 @@ func FindRevision(ctx context.Context, exec boil.ContextExecutor, iD int, select
 		return nil, errors.Wrap(err, "models: unable to select from revisions")
 	}
 
-	if err = revisionObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return revisionObj, err
-	}
-
 	return revisionObj, nil
+}
+
+type RevisionInserter interface {
+	Insert(o *Revision, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Revision) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q RevisionQuery) Insert(o *Revision, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no revisions provided for insertion")
 	}
@@ -1533,10 +1324,6 @@ func (o *Revision) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(revisionColumnsWithDefault, o)
@@ -1602,13 +1389,19 @@ func (o *Revision) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		revisionInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type RevisionUpdater interface {
+	Update(o *Revision, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o RevisionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Revision.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Revision) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q RevisionQuery) Update(o *Revision, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1616,9 +1409,6 @@ func (o *Revision) Update(ctx context.Context, exec boil.ContextExecutor, column
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	revisionUpdateCacheMut.RLock()
 	cache, cached := revisionUpdateCache[key]
@@ -1671,11 +1461,11 @@ func (o *Revision) Update(ctx context.Context, exec boil.ContextExecutor, column
 		revisionUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q revisionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RevisionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1692,7 +1482,7 @@ func (q revisionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o RevisionSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RevisionQuery) UpdateAllSlice(o RevisionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1739,6 +1529,160 @@ func (o RevisionSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 	return rowsAff, nil
 }
 
+type RevisionDeleter interface {
+	Delete(o *Revision, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o RevisionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Revision record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q RevisionQuery) Delete(o *Revision, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Revision provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), revisionPrimaryKeyMapping)
+	sql := "DELETE FROM \"revisions\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from revisions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for revisions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q RevisionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no revisionQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from revisions")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revisions")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q RevisionQuery) DeleteAllSlice(o RevisionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"revisions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, revisionPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from revision slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revisions")
+	}
+
+	return rowsAff, nil
+}
+
+type RevisionReloader interface {
+	Reload(o *Revision, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *RevisionSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q RevisionQuery) Reload(o *Revision, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindRevision(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q RevisionQuery) ReloadAll(o *RevisionSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := RevisionSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"revisions\".* FROM \"revisions\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, revisionPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in RevisionSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// RevisionExists checks if the Revision row exists.
+func RevisionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"revisions\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if revisions exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Revision) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1752,10 +1696,6 @@ func (o *Revision) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(revisionColumnsWithDefault, o)
@@ -1859,172 +1799,5 @@ func (o *Revision) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 		revisionUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Revision record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Revision) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Revision provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), revisionPrimaryKeyMapping)
-	sql := "DELETE FROM \"revisions\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from revisions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for revisions")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q revisionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no revisionQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from revisions")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revisions")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o RevisionSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(revisionBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"revisions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, revisionPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from revision slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for revisions")
-	}
-
-	if len(revisionAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Revision) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRevision(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *RevisionSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := RevisionSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), revisionPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"revisions\".* FROM \"revisions\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, revisionPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in RevisionSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// RevisionExists checks if the Revision row exists.
-func RevisionExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"revisions\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if revisions exists")
-	}
-
-	return exists, nil
 }

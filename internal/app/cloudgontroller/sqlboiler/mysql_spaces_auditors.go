@@ -120,10 +120,8 @@ type (
 	// SpacesAuditorSlice is an alias for a slice of pointers to SpacesAuditor.
 	// This should almost always be used instead of []SpacesAuditor.
 	SpacesAuditorSlice []*SpacesAuditor
-	// SpacesAuditorHook is the signature for custom SpacesAuditor hook methods
-	SpacesAuditorHook func(context.Context, boil.ContextExecutor, *SpacesAuditor) error
 
-	spacesAuditorQuery struct {
+	SpacesAuditorQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var spacesAuditorBeforeInsertHooks []SpacesAuditorHook
-var spacesAuditorBeforeUpdateHooks []SpacesAuditorHook
-var spacesAuditorBeforeDeleteHooks []SpacesAuditorHook
-var spacesAuditorBeforeUpsertHooks []SpacesAuditorHook
-
-var spacesAuditorAfterInsertHooks []SpacesAuditorHook
-var spacesAuditorAfterSelectHooks []SpacesAuditorHook
-var spacesAuditorAfterUpdateHooks []SpacesAuditorHook
-var spacesAuditorAfterDeleteHooks []SpacesAuditorHook
-var spacesAuditorAfterUpsertHooks []SpacesAuditorHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *SpacesAuditor) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *SpacesAuditor) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *SpacesAuditor) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *SpacesAuditor) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *SpacesAuditor) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *SpacesAuditor) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *SpacesAuditor) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *SpacesAuditor) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *SpacesAuditor) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range spacesAuditorAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddSpacesAuditorHook registers your hook function for all future operations.
-func AddSpacesAuditorHook(hookPoint boil.HookPoint, spacesAuditorHook SpacesAuditorHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		spacesAuditorBeforeInsertHooks = append(spacesAuditorBeforeInsertHooks, spacesAuditorHook)
-	case boil.BeforeUpdateHook:
-		spacesAuditorBeforeUpdateHooks = append(spacesAuditorBeforeUpdateHooks, spacesAuditorHook)
-	case boil.BeforeDeleteHook:
-		spacesAuditorBeforeDeleteHooks = append(spacesAuditorBeforeDeleteHooks, spacesAuditorHook)
-	case boil.BeforeUpsertHook:
-		spacesAuditorBeforeUpsertHooks = append(spacesAuditorBeforeUpsertHooks, spacesAuditorHook)
-	case boil.AfterInsertHook:
-		spacesAuditorAfterInsertHooks = append(spacesAuditorAfterInsertHooks, spacesAuditorHook)
-	case boil.AfterSelectHook:
-		spacesAuditorAfterSelectHooks = append(spacesAuditorAfterSelectHooks, spacesAuditorHook)
-	case boil.AfterUpdateHook:
-		spacesAuditorAfterUpdateHooks = append(spacesAuditorAfterUpdateHooks, spacesAuditorHook)
-	case boil.AfterDeleteHook:
-		spacesAuditorAfterDeleteHooks = append(spacesAuditorAfterDeleteHooks, spacesAuditorHook)
-	case boil.AfterUpsertHook:
-		spacesAuditorAfterUpsertHooks = append(spacesAuditorAfterUpsertHooks, spacesAuditorHook)
-	}
+type SpacesAuditorFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*SpacesAuditor, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (SpacesAuditorSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single spacesAuditor record from the query.
-func (q spacesAuditorQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesAuditor, error) {
+func (q SpacesAuditorQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesAuditor, error) {
 	o := &SpacesAuditor{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q spacesAuditorQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to execute a one query for spaces_auditors")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all SpacesAuditor records from the query.
-func (q spacesAuditorQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesAuditorSlice, error) {
+func (q SpacesAuditorQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesAuditorSlice, error) {
 	var o []*SpacesAuditor
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q spacesAuditorQuery) All(ctx context.Context, exec boil.ContextExecutor) 
 		return nil, errors.Wrap(err, "models: failed to assign all query results to SpacesAuditor slice")
 	}
 
-	if len(spacesAuditorAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all SpacesAuditor records in the query.
-func (q spacesAuditorQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q SpacesAuditorQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q spacesAuditorQuery) Count(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Exists checks if the row exists in the table.
-func (q spacesAuditorQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q SpacesAuditorQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q spacesAuditorQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Space pointed to by the foreign key.
-func (o *SpacesAuditor) Space(mods ...qm.QueryMod) spaceQuery {
+func (q SpacesAuditorQuery) Space(o *SpacesAuditor, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -406,7 +229,7 @@ func (o *SpacesAuditor) Space(mods ...qm.QueryMod) spaceQuery {
 }
 
 // User pointed to by the foreign key.
-func (o *SpacesAuditor) User(mods ...qm.QueryMod) userQuery {
+func (q SpacesAuditorQuery) User(o *SpacesAuditor, mods ...qm.QueryMod) UserQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -483,14 +306,6 @@ func (spacesAuditorL) LoadSpace(ctx context.Context, e boil.ContextExecutor, sin
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(spacesAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (spacesAuditorL) LoadUser(ctx context.Context, e boil.ContextExecutor, sing
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for users")
 	}
 
-	if len(spacesAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (spacesAuditorL) LoadUser(ctx context.Context, e boil.ContextExecutor, sing
 // SetSpace of the spacesAuditor to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.SpacesAuditors.
-func (o *SpacesAuditor) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q SpacesAuditorQuery) SetSpace(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *SpacesAuditor) SetSpace(ctx context.Context, exec boil.ContextExecutor,
 // SetUser of the spacesAuditor to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.SpacesAuditors.
-func (o *SpacesAuditor) SetUser(ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q SpacesAuditorQuery) SetUser(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *SpacesAuditor) SetUser(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // SpacesAuditors retrieves all the records using an executor.
-func SpacesAuditors(mods ...qm.QueryMod) spacesAuditorQuery {
+func SpacesAuditors(mods ...qm.QueryMod) SpacesAuditorQuery {
 	mods = append(mods, qm.From("`spaces_auditors`"))
-	return spacesAuditorQuery{NewQuery(mods...)}
+	return SpacesAuditorQuery{NewQuery(mods...)}
+}
+
+type SpacesAuditorFinder interface {
+	FindSpacesAuditor(ctx context.Context, exec boil.ContextExecutor, spacesAuditorsPK int, selectCols ...string) (*SpacesAuditor, error)
 }
 
 // FindSpacesAuditor retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindSpacesAuditor(ctx context.Context, exec boil.ContextExecutor, spacesAud
 		return nil, errors.Wrap(err, "models: unable to select from spaces_auditors")
 	}
 
-	if err = spacesAuditorObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return spacesAuditorObj, err
-	}
-
 	return spacesAuditorObj, nil
+}
+
+type SpacesAuditorInserter interface {
+	Insert(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *SpacesAuditor) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q SpacesAuditorQuery) Insert(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces_auditors provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *SpacesAuditor) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		if o.UpdatedAt.IsZero() {
 			o.UpdatedAt = currTime
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesAuditorColumnsWithDefault, o)
@@ -870,13 +677,19 @@ CacheNoHooks:
 		spacesAuditorInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type SpacesAuditorUpdater interface {
+	Update(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the SpacesAuditor.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *SpacesAuditor) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q SpacesAuditorQuery) Update(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -884,9 +697,6 @@ func (o *SpacesAuditor) Update(ctx context.Context, exec boil.ContextExecutor, c
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	spacesAuditorUpdateCacheMut.RLock()
 	cache, cached := spacesAuditorUpdateCache[key]
@@ -939,11 +749,11 @@ func (o *SpacesAuditor) Update(ctx context.Context, exec boil.ContextExecutor, c
 		spacesAuditorUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q spacesAuditorQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesAuditorQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -960,7 +770,7 @@ func (q spacesAuditorQuery) UpdateAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o SpacesAuditorSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q SpacesAuditorQuery) UpdateAllSlice(o SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1007,6 +817,160 @@ func (o SpacesAuditorSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 	return rowsAff, nil
 }
 
+type SpacesAuditorDeleter interface {
+	Delete(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single SpacesAuditor record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q SpacesAuditorQuery) Delete(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no SpacesAuditor provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesAuditorPrimaryKeyMapping)
+	sql := "DELETE FROM `spaces_auditors` WHERE `spaces_auditors_pk`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from spaces_auditors")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_auditors")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q SpacesAuditorQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no spacesAuditorQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spaces_auditors")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_auditors")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q SpacesAuditorQuery) DeleteAllSlice(o SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesAuditorPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `spaces_auditors` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesAuditorPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from spacesAuditor slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_auditors")
+	}
+
+	return rowsAff, nil
+}
+
+type SpacesAuditorReloader interface {
+	Reload(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q SpacesAuditorQuery) Reload(o *SpacesAuditor, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindSpacesAuditor(ctx, exec, o.SpacesAuditorsPK)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q SpacesAuditorQuery) ReloadAll(o *SpacesAuditorSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := SpacesAuditorSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesAuditorPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `spaces_auditors`.* FROM `spaces_auditors` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesAuditorPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in SpacesAuditorSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// SpacesAuditorExists checks if the SpacesAuditor row exists.
+func SpacesAuditorExists(ctx context.Context, exec boil.ContextExecutor, spacesAuditorsPK int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `spaces_auditors` where `spaces_auditors_pk`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, spacesAuditorsPK)
+	}
+	row := exec.QueryRowContext(ctx, sql, spacesAuditorsPK)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if spaces_auditors exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLSpacesAuditorUniqueColumns = []string{
 	"spaces_auditors_pk",
 }
@@ -1024,10 +988,6 @@ func (o *SpacesAuditor) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 			o.CreatedAt = currTime
 		}
 		o.UpdatedAt = currTime
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(spacesAuditorColumnsWithDefault, o)
@@ -1160,172 +1120,5 @@ CacheNoHooks:
 		spacesAuditorUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single SpacesAuditor record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *SpacesAuditor) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no SpacesAuditor provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), spacesAuditorPrimaryKeyMapping)
-	sql := "DELETE FROM `spaces_auditors` WHERE `spaces_auditors_pk`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from spaces_auditors")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for spaces_auditors")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q spacesAuditorQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no spacesAuditorQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spaces_auditors")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_auditors")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o SpacesAuditorSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(spacesAuditorBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesAuditorPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `spaces_auditors` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesAuditorPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from spacesAuditor slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for spaces_auditors")
-	}
-
-	if len(spacesAuditorAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *SpacesAuditor) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindSpacesAuditor(ctx, exec, o.SpacesAuditorsPK)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *SpacesAuditorSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := SpacesAuditorSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), spacesAuditorPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `spaces_auditors`.* FROM `spaces_auditors` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, spacesAuditorPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in SpacesAuditorSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// SpacesAuditorExists checks if the SpacesAuditor row exists.
-func SpacesAuditorExists(ctx context.Context, exec boil.ContextExecutor, spacesAuditorsPK int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `spaces_auditors` where `spaces_auditors_pk`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, spacesAuditorsPK)
-	}
-	row := exec.QueryRowContext(ctx, sql, spacesAuditorsPK)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if spaces_auditors exists")
-	}
-
-	return exists, nil
 }

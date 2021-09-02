@@ -249,10 +249,8 @@ type (
 	// AppSlice is an alias for a slice of pointers to App.
 	// This should almost always be used instead of []App.
 	AppSlice []*App
-	// AppHook is the signature for custom App hook methods
-	AppHook func(context.Context, boil.ContextExecutor, *App) error
 
-	appQuery struct {
+	AppQuery struct {
 		*queries.Query
 	}
 )
@@ -278,178 +276,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var appBeforeInsertHooks []AppHook
-var appBeforeUpdateHooks []AppHook
-var appBeforeDeleteHooks []AppHook
-var appBeforeUpsertHooks []AppHook
-
-var appAfterInsertHooks []AppHook
-var appAfterSelectHooks []AppHook
-var appAfterUpdateHooks []AppHook
-var appAfterDeleteHooks []AppHook
-var appAfterUpsertHooks []AppHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *App) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *App) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *App) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *App) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *App) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *App) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *App) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *App) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *App) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range appAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddAppHook registers your hook function for all future operations.
-func AddAppHook(hookPoint boil.HookPoint, appHook AppHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		appBeforeInsertHooks = append(appBeforeInsertHooks, appHook)
-	case boil.BeforeUpdateHook:
-		appBeforeUpdateHooks = append(appBeforeUpdateHooks, appHook)
-	case boil.BeforeDeleteHook:
-		appBeforeDeleteHooks = append(appBeforeDeleteHooks, appHook)
-	case boil.BeforeUpsertHook:
-		appBeforeUpsertHooks = append(appBeforeUpsertHooks, appHook)
-	case boil.AfterInsertHook:
-		appAfterInsertHooks = append(appAfterInsertHooks, appHook)
-	case boil.AfterSelectHook:
-		appAfterSelectHooks = append(appAfterSelectHooks, appHook)
-	case boil.AfterUpdateHook:
-		appAfterUpdateHooks = append(appAfterUpdateHooks, appHook)
-	case boil.AfterDeleteHook:
-		appAfterDeleteHooks = append(appAfterDeleteHooks, appHook)
-	case boil.AfterUpsertHook:
-		appAfterUpsertHooks = append(appAfterUpsertHooks, appHook)
-	}
+type AppFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*App, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (AppSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single app record from the query.
-func (q appQuery) One(ctx context.Context, exec boil.ContextExecutor) (*App, error) {
+func (q AppQuery) One(ctx context.Context, exec boil.ContextExecutor) (*App, error) {
 	o := &App{}
 
 	queries.SetLimit(q.Query, 1)
@@ -462,15 +297,11 @@ func (q appQuery) One(ctx context.Context, exec boil.ContextExecutor) (*App, err
 		return nil, errors.Wrap(err, "models: failed to execute a one query for apps")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all App records from the query.
-func (q appQuery) All(ctx context.Context, exec boil.ContextExecutor) (AppSlice, error) {
+func (q AppQuery) All(ctx context.Context, exec boil.ContextExecutor) (AppSlice, error) {
 	var o []*App
 
 	err := q.Bind(ctx, exec, &o)
@@ -478,19 +309,11 @@ func (q appQuery) All(ctx context.Context, exec boil.ContextExecutor) (AppSlice,
 		return nil, errors.Wrap(err, "models: failed to assign all query results to App slice")
 	}
 
-	if len(appAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all App records in the query.
-func (q appQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q AppQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -505,7 +328,7 @@ func (q appQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, 
 }
 
 // Exists checks if the row exists in the table.
-func (q appQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q AppQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -521,7 +344,7 @@ func (q appQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, 
 }
 
 // Space pointed to by the foreign key.
-func (o *App) Space(mods ...qm.QueryMod) spaceQuery {
+func (q AppQuery) Space(o *App, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.SpaceGUID),
 	}
@@ -535,7 +358,7 @@ func (o *App) Space(mods ...qm.QueryMod) spaceQuery {
 }
 
 // ResourceAppAnnotations retrieves all the app_annotation's AppAnnotations with an executor via resource_guid column.
-func (o *App) ResourceAppAnnotations(mods ...qm.QueryMod) appAnnotationQuery {
+func (q AppQuery) ResourceAppAnnotations(o *App, mods ...qm.QueryMod) AppAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -556,7 +379,7 @@ func (o *App) ResourceAppAnnotations(mods ...qm.QueryMod) appAnnotationQuery {
 }
 
 // ResourceAppLabels retrieves all the app_label's AppLabels with an executor via resource_guid column.
-func (o *App) ResourceAppLabels(mods ...qm.QueryMod) appLabelQuery {
+func (q AppQuery) ResourceAppLabels(o *App, mods ...qm.QueryMod) AppLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -577,7 +400,7 @@ func (o *App) ResourceAppLabels(mods ...qm.QueryMod) appLabelQuery {
 }
 
 // Builds retrieves all the build's Builds with an executor.
-func (o *App) Builds(mods ...qm.QueryMod) buildQuery {
+func (q AppQuery) Builds(o *App, mods ...qm.QueryMod) BuildQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -598,7 +421,7 @@ func (o *App) Builds(mods ...qm.QueryMod) buildQuery {
 }
 
 // Deployments retrieves all the deployment's Deployments with an executor.
-func (o *App) Deployments(mods ...qm.QueryMod) deploymentQuery {
+func (q AppQuery) Deployments(o *App, mods ...qm.QueryMod) DeploymentQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -619,7 +442,7 @@ func (o *App) Deployments(mods ...qm.QueryMod) deploymentQuery {
 }
 
 // Droplets retrieves all the droplet's Droplets with an executor.
-func (o *App) Droplets(mods ...qm.QueryMod) dropletQuery {
+func (q AppQuery) Droplets(o *App, mods ...qm.QueryMod) DropletQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -640,7 +463,7 @@ func (o *App) Droplets(mods ...qm.QueryMod) dropletQuery {
 }
 
 // KpackLifecycleData retrieves all the kpack_lifecycle_datum's KpackLifecycleData with an executor.
-func (o *App) KpackLifecycleData(mods ...qm.QueryMod) kpackLifecycleDatumQuery {
+func (q AppQuery) KpackLifecycleData(o *App, mods ...qm.QueryMod) KpackLifecycleDatumQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -661,7 +484,7 @@ func (o *App) KpackLifecycleData(mods ...qm.QueryMod) kpackLifecycleDatumQuery {
 }
 
 // Packages retrieves all the package's Packages with an executor.
-func (o *App) Packages(mods ...qm.QueryMod) packageQuery {
+func (q AppQuery) Packages(o *App, mods ...qm.QueryMod) PackageQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -682,7 +505,7 @@ func (o *App) Packages(mods ...qm.QueryMod) packageQuery {
 }
 
 // Processes retrieves all the process's Processes with an executor.
-func (o *App) Processes(mods ...qm.QueryMod) processQuery {
+func (q AppQuery) Processes(o *App, mods ...qm.QueryMod) ProcessQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -703,7 +526,7 @@ func (o *App) Processes(mods ...qm.QueryMod) processQuery {
 }
 
 // Revisions retrieves all the revision's Revisions with an executor.
-func (o *App) Revisions(mods ...qm.QueryMod) revisionQuery {
+func (q AppQuery) Revisions(o *App, mods ...qm.QueryMod) RevisionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -724,7 +547,7 @@ func (o *App) Revisions(mods ...qm.QueryMod) revisionQuery {
 }
 
 // RouteMappings retrieves all the route_mapping's RouteMappings with an executor.
-func (o *App) RouteMappings(mods ...qm.QueryMod) routeMappingQuery {
+func (q AppQuery) RouteMappings(o *App, mods ...qm.QueryMod) RouteMappingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -745,7 +568,7 @@ func (o *App) RouteMappings(mods ...qm.QueryMod) routeMappingQuery {
 }
 
 // ServiceBindings retrieves all the service_binding's ServiceBindings with an executor.
-func (o *App) ServiceBindings(mods ...qm.QueryMod) serviceBindingQuery {
+func (q AppQuery) ServiceBindings(o *App, mods ...qm.QueryMod) ServiceBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -766,7 +589,7 @@ func (o *App) ServiceBindings(mods ...qm.QueryMod) serviceBindingQuery {
 }
 
 // Sidecars retrieves all the sidecar's Sidecars with an executor.
-func (o *App) Sidecars(mods ...qm.QueryMod) sidecarQuery {
+func (q AppQuery) Sidecars(o *App, mods ...qm.QueryMod) SidecarQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -787,7 +610,7 @@ func (o *App) Sidecars(mods ...qm.QueryMod) sidecarQuery {
 }
 
 // Tasks retrieves all the task's Tasks with an executor.
-func (o *App) Tasks(mods ...qm.QueryMod) taskQuery {
+func (q AppQuery) Tasks(o *App, mods ...qm.QueryMod) TaskQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -875,14 +698,6 @@ func (appL) LoadSpace(ctx context.Context, e boil.ContextExecutor, singular bool
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(appAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -979,13 +794,6 @@ func (appL) LoadResourceAppAnnotations(ctx context.Context, e boil.ContextExecut
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for app_annotations")
 	}
 
-	if len(appAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceAppAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1077,13 +885,6 @@ func (appL) LoadResourceAppLabels(ctx context.Context, e boil.ContextExecutor, s
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for app_labels")
 	}
 
-	if len(appLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceAppLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1175,13 +976,6 @@ func (appL) LoadBuilds(ctx context.Context, e boil.ContextExecutor, singular boo
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for builds")
 	}
 
-	if len(buildAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Builds = resultSlice
 		for _, foreign := range resultSlice {
@@ -1273,13 +1067,6 @@ func (appL) LoadDeployments(ctx context.Context, e boil.ContextExecutor, singula
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for deployments")
 	}
 
-	if len(deploymentAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Deployments = resultSlice
 		for _, foreign := range resultSlice {
@@ -1371,13 +1158,6 @@ func (appL) LoadDroplets(ctx context.Context, e boil.ContextExecutor, singular b
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for droplets")
 	}
 
-	if len(dropletAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Droplets = resultSlice
 		for _, foreign := range resultSlice {
@@ -1469,13 +1249,6 @@ func (appL) LoadKpackLifecycleData(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for kpack_lifecycle_data")
 	}
 
-	if len(kpackLifecycleDatumAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.KpackLifecycleData = resultSlice
 		for _, foreign := range resultSlice {
@@ -1567,13 +1340,6 @@ func (appL) LoadPackages(ctx context.Context, e boil.ContextExecutor, singular b
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for packages")
 	}
 
-	if len(packageAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Packages = resultSlice
 		for _, foreign := range resultSlice {
@@ -1665,13 +1431,6 @@ func (appL) LoadProcesses(ctx context.Context, e boil.ContextExecutor, singular 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for processes")
 	}
 
-	if len(processAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Processes = resultSlice
 		for _, foreign := range resultSlice {
@@ -1763,13 +1522,6 @@ func (appL) LoadRevisions(ctx context.Context, e boil.ContextExecutor, singular 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for revisions")
 	}
 
-	if len(revisionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Revisions = resultSlice
 		for _, foreign := range resultSlice {
@@ -1861,13 +1613,6 @@ func (appL) LoadRouteMappings(ctx context.Context, e boil.ContextExecutor, singu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for route_mappings")
 	}
 
-	if len(routeMappingAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteMappings = resultSlice
 		for _, foreign := range resultSlice {
@@ -1959,13 +1704,6 @@ func (appL) LoadServiceBindings(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_bindings")
 	}
 
-	if len(serviceBindingAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceBindings = resultSlice
 		for _, foreign := range resultSlice {
@@ -2057,13 +1795,6 @@ func (appL) LoadSidecars(ctx context.Context, e boil.ContextExecutor, singular b
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for sidecars")
 	}
 
-	if len(sidecarAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Sidecars = resultSlice
 		for _, foreign := range resultSlice {
@@ -2155,13 +1886,6 @@ func (appL) LoadTasks(ctx context.Context, e boil.ContextExecutor, singular bool
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for tasks")
 	}
 
-	if len(taskAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Tasks = resultSlice
 		for _, foreign := range resultSlice {
@@ -2192,10 +1916,10 @@ func (appL) LoadTasks(ctx context.Context, e boil.ContextExecutor, singular bool
 // SetSpace of the app to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.Apps.
-func (o *App) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q AppQuery) SetSpace(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -2239,11 +1963,11 @@ func (o *App) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bo
 // RemoveSpace relationship.
 // Sets o.R.Space to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *App) RemoveSpace(ctx context.Context, exec boil.ContextExecutor, related *Space) error {
+func (q AppQuery) RemoveSpace(o *App, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
 	var err error
 
 	queries.SetScanner(&o.SpaceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("space_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("space_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -2273,12 +1997,12 @@ func (o *App) RemoveSpace(ctx context.Context, exec boil.ContextExecutor, relate
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.ResourceAppAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *App) AddResourceAppAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppAnnotation) error {
+func (q AppQuery) AddResourceAppAnnotations(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = AppAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2328,7 +2052,7 @@ func (o *App) AddResourceAppAnnotations(ctx context.Context, exec boil.ContextEx
 // Sets o.R.Resource's ResourceAppAnnotations accordingly.
 // Replaces o.R.ResourceAppAnnotations with related.
 // Sets related.R.Resource's ResourceAppAnnotations accordingly.
-func (o *App) SetResourceAppAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppAnnotation) error {
+func (q AppQuery) SetResourceAppAnnotations(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppAnnotation) error {
 	query := "update `app_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2353,13 +2077,13 @@ func (o *App) SetResourceAppAnnotations(ctx context.Context, exec boil.ContextEx
 
 		o.R.ResourceAppAnnotations = nil
 	}
-	return o.AddResourceAppAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceAppAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceAppAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceAppAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *App) RemoveResourceAppAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*AppAnnotation) error {
+func (q AppQuery) RemoveResourceAppAnnotations(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*AppAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2370,7 +2094,7 @@ func (o *App) RemoveResourceAppAnnotations(ctx context.Context, exec boil.Contex
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = AppAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2400,12 +2124,12 @@ func (o *App) RemoveResourceAppAnnotations(ctx context.Context, exec boil.Contex
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.ResourceAppLabels.
 // Sets related.R.Resource appropriately.
-func (o *App) AddResourceAppLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppLabel) error {
+func (q AppQuery) AddResourceAppLabels(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = AppLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2455,7 +2179,7 @@ func (o *App) AddResourceAppLabels(ctx context.Context, exec boil.ContextExecuto
 // Sets o.R.Resource's ResourceAppLabels accordingly.
 // Replaces o.R.ResourceAppLabels with related.
 // Sets related.R.Resource's ResourceAppLabels accordingly.
-func (o *App) SetResourceAppLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppLabel) error {
+func (q AppQuery) SetResourceAppLabels(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppLabel) error {
 	query := "update `app_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2480,13 +2204,13 @@ func (o *App) SetResourceAppLabels(ctx context.Context, exec boil.ContextExecuto
 
 		o.R.ResourceAppLabels = nil
 	}
-	return o.AddResourceAppLabels(ctx, exec, insert, related...)
+	return q.AddResourceAppLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceAppLabels relationships from objects passed in.
 // Removes related items from R.ResourceAppLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *App) RemoveResourceAppLabels(ctx context.Context, exec boil.ContextExecutor, related ...*AppLabel) error {
+func (q AppQuery) RemoveResourceAppLabels(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*AppLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2497,7 +2221,7 @@ func (o *App) RemoveResourceAppLabels(ctx context.Context, exec boil.ContextExec
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = AppLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2527,12 +2251,12 @@ func (o *App) RemoveResourceAppLabels(ctx context.Context, exec boil.ContextExec
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Builds.
 // Sets related.R.App appropriately.
-func (o *App) AddBuilds(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Build) error {
+func (q AppQuery) AddBuilds(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Build) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Builds().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2582,7 +2306,7 @@ func (o *App) AddBuilds(ctx context.Context, exec boil.ContextExecutor, insert b
 // Sets o.R.App's Builds accordingly.
 // Replaces o.R.Builds with related.
 // Sets related.R.App's Builds accordingly.
-func (o *App) SetBuilds(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Build) error {
+func (q AppQuery) SetBuilds(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Build) error {
 	query := "update `builds` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2607,13 +2331,13 @@ func (o *App) SetBuilds(ctx context.Context, exec boil.ContextExecutor, insert b
 
 		o.R.Builds = nil
 	}
-	return o.AddBuilds(ctx, exec, insert, related...)
+	return q.AddBuilds(o, ctx, exec, insert, related...)
 }
 
 // RemoveBuilds relationships from objects passed in.
 // Removes related items from R.Builds (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveBuilds(ctx context.Context, exec boil.ContextExecutor, related ...*Build) error {
+func (q AppQuery) RemoveBuilds(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Build) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2624,7 +2348,7 @@ func (o *App) RemoveBuilds(ctx context.Context, exec boil.ContextExecutor, relat
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Builds().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -2654,12 +2378,12 @@ func (o *App) RemoveBuilds(ctx context.Context, exec boil.ContextExecutor, relat
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Deployments.
 // Sets related.R.App appropriately.
-func (o *App) AddDeployments(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Deployment) error {
+func (q AppQuery) AddDeployments(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Deployment) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Deployments().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2709,7 +2433,7 @@ func (o *App) AddDeployments(ctx context.Context, exec boil.ContextExecutor, ins
 // Sets o.R.App's Deployments accordingly.
 // Replaces o.R.Deployments with related.
 // Sets related.R.App's Deployments accordingly.
-func (o *App) SetDeployments(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Deployment) error {
+func (q AppQuery) SetDeployments(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Deployment) error {
 	query := "update `deployments` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2734,13 +2458,13 @@ func (o *App) SetDeployments(ctx context.Context, exec boil.ContextExecutor, ins
 
 		o.R.Deployments = nil
 	}
-	return o.AddDeployments(ctx, exec, insert, related...)
+	return q.AddDeployments(o, ctx, exec, insert, related...)
 }
 
 // RemoveDeployments relationships from objects passed in.
 // Removes related items from R.Deployments (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveDeployments(ctx context.Context, exec boil.ContextExecutor, related ...*Deployment) error {
+func (q AppQuery) RemoveDeployments(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Deployment) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2751,7 +2475,7 @@ func (o *App) RemoveDeployments(ctx context.Context, exec boil.ContextExecutor, 
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Deployments().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -2781,12 +2505,12 @@ func (o *App) RemoveDeployments(ctx context.Context, exec boil.ContextExecutor, 
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Droplets.
 // Sets related.R.App appropriately.
-func (o *App) AddDroplets(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Droplet) error {
+func (q AppQuery) AddDroplets(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Droplet) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Droplets().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2836,7 +2560,7 @@ func (o *App) AddDroplets(ctx context.Context, exec boil.ContextExecutor, insert
 // Sets o.R.App's Droplets accordingly.
 // Replaces o.R.Droplets with related.
 // Sets related.R.App's Droplets accordingly.
-func (o *App) SetDroplets(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Droplet) error {
+func (q AppQuery) SetDroplets(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Droplet) error {
 	query := "update `droplets` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2861,13 +2585,13 @@ func (o *App) SetDroplets(ctx context.Context, exec boil.ContextExecutor, insert
 
 		o.R.Droplets = nil
 	}
-	return o.AddDroplets(ctx, exec, insert, related...)
+	return q.AddDroplets(o, ctx, exec, insert, related...)
 }
 
 // RemoveDroplets relationships from objects passed in.
 // Removes related items from R.Droplets (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveDroplets(ctx context.Context, exec boil.ContextExecutor, related ...*Droplet) error {
+func (q AppQuery) RemoveDroplets(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Droplet) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2878,7 +2602,7 @@ func (o *App) RemoveDroplets(ctx context.Context, exec boil.ContextExecutor, rel
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Droplets().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -2908,12 +2632,12 @@ func (o *App) RemoveDroplets(ctx context.Context, exec boil.ContextExecutor, rel
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.KpackLifecycleData.
 // Sets related.R.App appropriately.
-func (o *App) AddKpackLifecycleData(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
+func (q AppQuery) AddKpackLifecycleData(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = KpackLifecycleData().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2963,7 +2687,7 @@ func (o *App) AddKpackLifecycleData(ctx context.Context, exec boil.ContextExecut
 // Sets o.R.App's KpackLifecycleData accordingly.
 // Replaces o.R.KpackLifecycleData with related.
 // Sets related.R.App's KpackLifecycleData accordingly.
-func (o *App) SetKpackLifecycleData(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
+func (q AppQuery) SetKpackLifecycleData(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
 	query := "update `kpack_lifecycle_data` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2988,13 +2712,13 @@ func (o *App) SetKpackLifecycleData(ctx context.Context, exec boil.ContextExecut
 
 		o.R.KpackLifecycleData = nil
 	}
-	return o.AddKpackLifecycleData(ctx, exec, insert, related...)
+	return q.AddKpackLifecycleData(o, ctx, exec, insert, related...)
 }
 
 // RemoveKpackLifecycleData relationships from objects passed in.
 // Removes related items from R.KpackLifecycleData (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveKpackLifecycleData(ctx context.Context, exec boil.ContextExecutor, related ...*KpackLifecycleDatum) error {
+func (q AppQuery) RemoveKpackLifecycleData(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*KpackLifecycleDatum) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3005,7 +2729,7 @@ func (o *App) RemoveKpackLifecycleData(ctx context.Context, exec boil.ContextExe
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = KpackLifecycleData().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -3035,12 +2759,12 @@ func (o *App) RemoveKpackLifecycleData(ctx context.Context, exec boil.ContextExe
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Packages.
 // Sets related.R.App appropriately.
-func (o *App) AddPackages(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Package) error {
+func (q AppQuery) AddPackages(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Package) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Packages().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3090,7 +2814,7 @@ func (o *App) AddPackages(ctx context.Context, exec boil.ContextExecutor, insert
 // Sets o.R.App's Packages accordingly.
 // Replaces o.R.Packages with related.
 // Sets related.R.App's Packages accordingly.
-func (o *App) SetPackages(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Package) error {
+func (q AppQuery) SetPackages(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Package) error {
 	query := "update `packages` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3115,13 +2839,13 @@ func (o *App) SetPackages(ctx context.Context, exec boil.ContextExecutor, insert
 
 		o.R.Packages = nil
 	}
-	return o.AddPackages(ctx, exec, insert, related...)
+	return q.AddPackages(o, ctx, exec, insert, related...)
 }
 
 // RemovePackages relationships from objects passed in.
 // Removes related items from R.Packages (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemovePackages(ctx context.Context, exec boil.ContextExecutor, related ...*Package) error {
+func (q AppQuery) RemovePackages(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Package) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3132,7 +2856,7 @@ func (o *App) RemovePackages(ctx context.Context, exec boil.ContextExecutor, rel
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Packages().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -3162,12 +2886,12 @@ func (o *App) RemovePackages(ctx context.Context, exec boil.ContextExecutor, rel
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Processes.
 // Sets related.R.App appropriately.
-func (o *App) AddProcesses(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Process) error {
+func (q AppQuery) AddProcesses(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Process) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Processes().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3217,7 +2941,7 @@ func (o *App) AddProcesses(ctx context.Context, exec boil.ContextExecutor, inser
 // Sets o.R.App's Processes accordingly.
 // Replaces o.R.Processes with related.
 // Sets related.R.App's Processes accordingly.
-func (o *App) SetProcesses(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Process) error {
+func (q AppQuery) SetProcesses(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Process) error {
 	query := "update `processes` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3242,13 +2966,13 @@ func (o *App) SetProcesses(ctx context.Context, exec boil.ContextExecutor, inser
 
 		o.R.Processes = nil
 	}
-	return o.AddProcesses(ctx, exec, insert, related...)
+	return q.AddProcesses(o, ctx, exec, insert, related...)
 }
 
 // RemoveProcesses relationships from objects passed in.
 // Removes related items from R.Processes (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveProcesses(ctx context.Context, exec boil.ContextExecutor, related ...*Process) error {
+func (q AppQuery) RemoveProcesses(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Process) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3259,7 +2983,7 @@ func (o *App) RemoveProcesses(ctx context.Context, exec boil.ContextExecutor, re
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Processes().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -3289,12 +3013,12 @@ func (o *App) RemoveProcesses(ctx context.Context, exec boil.ContextExecutor, re
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Revisions.
 // Sets related.R.App appropriately.
-func (o *App) AddRevisions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Revision) error {
+func (q AppQuery) AddRevisions(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Revision) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.AppGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Revisions().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3344,7 +3068,7 @@ func (o *App) AddRevisions(ctx context.Context, exec boil.ContextExecutor, inser
 // Sets o.R.App's Revisions accordingly.
 // Replaces o.R.Revisions with related.
 // Sets related.R.App's Revisions accordingly.
-func (o *App) SetRevisions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Revision) error {
+func (q AppQuery) SetRevisions(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Revision) error {
 	query := "update `revisions` set `app_guid` = null where `app_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -3369,13 +3093,13 @@ func (o *App) SetRevisions(ctx context.Context, exec boil.ContextExecutor, inser
 
 		o.R.Revisions = nil
 	}
-	return o.AddRevisions(ctx, exec, insert, related...)
+	return q.AddRevisions(o, ctx, exec, insert, related...)
 }
 
 // RemoveRevisions relationships from objects passed in.
 // Removes related items from R.Revisions (uses pointer comparison, removal does not keep order)
 // Sets related.R.App.
-func (o *App) RemoveRevisions(ctx context.Context, exec boil.ContextExecutor, related ...*Revision) error {
+func (q AppQuery) RemoveRevisions(o *App, ctx context.Context, exec boil.ContextExecutor, related ...*Revision) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -3386,7 +3110,7 @@ func (o *App) RemoveRevisions(ctx context.Context, exec boil.ContextExecutor, re
 		if rel.R != nil {
 			rel.R.App = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+		if _, err = Revisions().Update(rel, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 			return err
 		}
 	}
@@ -3416,12 +3140,12 @@ func (o *App) RemoveRevisions(ctx context.Context, exec boil.ContextExecutor, re
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.RouteMappings.
 // Sets related.R.App appropriately.
-func (o *App) AddRouteMappings(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteMapping) error {
+func (q AppQuery) AddRouteMappings(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteMapping) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.AppGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RouteMappings().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3469,12 +3193,12 @@ func (o *App) AddRouteMappings(ctx context.Context, exec boil.ContextExecutor, i
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.ServiceBindings.
 // Sets related.R.App appropriately.
-func (o *App) AddServiceBindings(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
+func (q AppQuery) AddServiceBindings(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.AppGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceBindings().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3522,12 +3246,12 @@ func (o *App) AddServiceBindings(ctx context.Context, exec boil.ContextExecutor,
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Sidecars.
 // Sets related.R.App appropriately.
-func (o *App) AddSidecars(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Sidecar) error {
+func (q AppQuery) AddSidecars(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Sidecar) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.AppGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Sidecars().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3575,12 +3299,12 @@ func (o *App) AddSidecars(ctx context.Context, exec boil.ContextExecutor, insert
 // of the app, optionally inserting them as new records.
 // Appends related to o.R.Tasks.
 // Sets related.R.App appropriately.
-func (o *App) AddTasks(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Task) error {
+func (q AppQuery) AddTasks(o *App, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Task) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.AppGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Tasks().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3625,9 +3349,13 @@ func (o *App) AddTasks(ctx context.Context, exec boil.ContextExecutor, insert bo
 }
 
 // Apps retrieves all the records using an executor.
-func Apps(mods ...qm.QueryMod) appQuery {
+func Apps(mods ...qm.QueryMod) AppQuery {
 	mods = append(mods, qm.From("`apps`"))
-	return appQuery{NewQuery(mods...)}
+	return AppQuery{NewQuery(mods...)}
+}
+
+type AppFinder interface {
+	FindApp(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*App, error)
 }
 
 // FindApp retrieves a single record by ID with an executor.
@@ -3653,16 +3381,16 @@ func FindApp(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols 
 		return nil, errors.Wrap(err, "models: unable to select from apps")
 	}
 
-	if err = appObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return appObj, err
-	}
-
 	return appObj, nil
+}
+
+type AppInserter interface {
+	Insert(o *App, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *App) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q AppQuery) Insert(o *App, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no apps provided for insertion")
 	}
@@ -3677,10 +3405,6 @@ func (o *App) Insert(ctx context.Context, exec boil.ContextExecutor, columns boi
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(appColumnsWithDefault, o)
@@ -3773,13 +3497,19 @@ CacheNoHooks:
 		appInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type AppUpdater interface {
+	Update(o *App, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o AppSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the App.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *App) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q AppQuery) Update(o *App, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -3787,9 +3517,6 @@ func (o *App) Update(ctx context.Context, exec boil.ContextExecutor, columns boi
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	appUpdateCacheMut.RLock()
 	cache, cached := appUpdateCache[key]
@@ -3842,11 +3569,11 @@ func (o *App) Update(ctx context.Context, exec boil.ContextExecutor, columns boi
 		appUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q appQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q AppQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -3863,7 +3590,7 @@ func (q appQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o AppSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q AppQuery) UpdateAllSlice(o AppSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -3910,6 +3637,160 @@ func (o AppSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols
 	return rowsAff, nil
 }
 
+type AppDeleter interface {
+	Delete(o *App, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o AppSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single App record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q AppQuery) Delete(o *App, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no App provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), appPrimaryKeyMapping)
+	sql := "DELETE FROM `apps` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from apps")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for apps")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q AppQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no appQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from apps")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for apps")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q AppQuery) DeleteAllSlice(o AppSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `apps` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, appPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from app slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for apps")
+	}
+
+	return rowsAff, nil
+}
+
+type AppReloader interface {
+	Reload(o *App, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *AppSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q AppQuery) Reload(o *App, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindApp(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q AppQuery) ReloadAll(o *AppSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := AppSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `apps`.* FROM `apps` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, appPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in AppSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// AppExists checks if the App row exists.
+func AppExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `apps` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if apps exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLAppUniqueColumns = []string{
 	"id",
 	"guid",
@@ -3928,10 +3809,6 @@ func (o *App) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColum
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(appColumnsWithDefault, o)
@@ -4064,172 +3941,5 @@ CacheNoHooks:
 		appUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single App record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *App) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no App provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), appPrimaryKeyMapping)
-	sql := "DELETE FROM `apps` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from apps")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for apps")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q appQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no appQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from apps")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for apps")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o AppSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(appBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `apps` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, appPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from app slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for apps")
-	}
-
-	if len(appAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *App) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindApp(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *AppSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := AppSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), appPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `apps`.* FROM `apps` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, appPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in AppSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// AppExists checks if the App row exists.
-func AppExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `apps` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if apps exists")
-	}
-
-	return exists, nil
 }

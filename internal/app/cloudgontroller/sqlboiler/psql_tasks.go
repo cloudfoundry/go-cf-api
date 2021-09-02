@@ -200,10 +200,8 @@ type (
 	// TaskSlice is an alias for a slice of pointers to Task.
 	// This should almost always be used instead of []Task.
 	TaskSlice []*Task
-	// TaskHook is the signature for custom Task hook methods
-	TaskHook func(context.Context, boil.ContextExecutor, *Task) error
 
-	taskQuery struct {
+	TaskQuery struct {
 		*queries.Query
 	}
 )
@@ -229,178 +227,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var taskBeforeInsertHooks []TaskHook
-var taskBeforeUpdateHooks []TaskHook
-var taskBeforeDeleteHooks []TaskHook
-var taskBeforeUpsertHooks []TaskHook
-
-var taskAfterInsertHooks []TaskHook
-var taskAfterSelectHooks []TaskHook
-var taskAfterUpdateHooks []TaskHook
-var taskAfterDeleteHooks []TaskHook
-var taskAfterUpsertHooks []TaskHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Task) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Task) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Task) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Task) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Task) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Task) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Task) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Task) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Task) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range taskAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddTaskHook registers your hook function for all future operations.
-func AddTaskHook(hookPoint boil.HookPoint, taskHook TaskHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		taskBeforeInsertHooks = append(taskBeforeInsertHooks, taskHook)
-	case boil.BeforeUpdateHook:
-		taskBeforeUpdateHooks = append(taskBeforeUpdateHooks, taskHook)
-	case boil.BeforeDeleteHook:
-		taskBeforeDeleteHooks = append(taskBeforeDeleteHooks, taskHook)
-	case boil.BeforeUpsertHook:
-		taskBeforeUpsertHooks = append(taskBeforeUpsertHooks, taskHook)
-	case boil.AfterInsertHook:
-		taskAfterInsertHooks = append(taskAfterInsertHooks, taskHook)
-	case boil.AfterSelectHook:
-		taskAfterSelectHooks = append(taskAfterSelectHooks, taskHook)
-	case boil.AfterUpdateHook:
-		taskAfterUpdateHooks = append(taskAfterUpdateHooks, taskHook)
-	case boil.AfterDeleteHook:
-		taskAfterDeleteHooks = append(taskAfterDeleteHooks, taskHook)
-	case boil.AfterUpsertHook:
-		taskAfterUpsertHooks = append(taskAfterUpsertHooks, taskHook)
-	}
+type TaskFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Task, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (TaskSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single task record from the query.
-func (q taskQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Task, error) {
+func (q TaskQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Task, error) {
 	o := &Task{}
 
 	queries.SetLimit(q.Query, 1)
@@ -413,15 +248,11 @@ func (q taskQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Task, e
 		return nil, errors.Wrap(err, "models: failed to execute a one query for tasks")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Task records from the query.
-func (q taskQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskSlice, error) {
+func (q TaskQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskSlice, error) {
 	var o []*Task
 
 	err := q.Bind(ctx, exec, &o)
@@ -429,19 +260,11 @@ func (q taskQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskSlic
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Task slice")
 	}
 
-	if len(taskAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Task records in the query.
-func (q taskQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q TaskQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -456,7 +279,7 @@ func (q taskQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64,
 }
 
 // Exists checks if the row exists in the table.
-func (q taskQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q TaskQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -472,7 +295,7 @@ func (q taskQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool,
 }
 
 // App pointed to by the foreign key.
-func (o *Task) App(mods ...qm.QueryMod) appQuery {
+func (q TaskQuery) App(o *Task, mods ...qm.QueryMod) AppQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.AppGUID),
 	}
@@ -486,7 +309,7 @@ func (o *Task) App(mods ...qm.QueryMod) appQuery {
 }
 
 // ResourceTaskAnnotations retrieves all the task_annotation's TaskAnnotations with an executor via resource_guid column.
-func (o *Task) ResourceTaskAnnotations(mods ...qm.QueryMod) taskAnnotationQuery {
+func (q TaskQuery) ResourceTaskAnnotations(o *Task, mods ...qm.QueryMod) TaskAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -507,7 +330,7 @@ func (o *Task) ResourceTaskAnnotations(mods ...qm.QueryMod) taskAnnotationQuery 
 }
 
 // ResourceTaskLabels retrieves all the task_label's TaskLabels with an executor via resource_guid column.
-func (o *Task) ResourceTaskLabels(mods ...qm.QueryMod) taskLabelQuery {
+func (q TaskQuery) ResourceTaskLabels(o *Task, mods ...qm.QueryMod) TaskLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -591,14 +414,6 @@ func (taskL) LoadApp(ctx context.Context, e boil.ContextExecutor, singular bool,
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for apps")
-	}
-
-	if len(taskAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -695,13 +510,6 @@ func (taskL) LoadResourceTaskAnnotations(ctx context.Context, e boil.ContextExec
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for task_annotations")
 	}
 
-	if len(taskAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceTaskAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -793,13 +601,6 @@ func (taskL) LoadResourceTaskLabels(ctx context.Context, e boil.ContextExecutor,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for task_labels")
 	}
 
-	if len(taskLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceTaskLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -830,10 +631,10 @@ func (taskL) LoadResourceTaskLabels(ctx context.Context, e boil.ContextExecutor,
 // SetApp of the task to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Tasks.
-func (o *Task) SetApp(ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q TaskQuery) SetApp(o *Task, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -878,12 +679,12 @@ func (o *Task) SetApp(ctx context.Context, exec boil.ContextExecutor, insert boo
 // of the task, optionally inserting them as new records.
 // Appends related to o.R.ResourceTaskAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Task) AddResourceTaskAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskAnnotation) error {
+func (q TaskQuery) AddResourceTaskAnnotations(o *Task, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = TaskAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -933,7 +734,7 @@ func (o *Task) AddResourceTaskAnnotations(ctx context.Context, exec boil.Context
 // Sets o.R.Resource's ResourceTaskAnnotations accordingly.
 // Replaces o.R.ResourceTaskAnnotations with related.
 // Sets related.R.Resource's ResourceTaskAnnotations accordingly.
-func (o *Task) SetResourceTaskAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskAnnotation) error {
+func (q TaskQuery) SetResourceTaskAnnotations(o *Task, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskAnnotation) error {
 	query := "update \"task_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -958,13 +759,13 @@ func (o *Task) SetResourceTaskAnnotations(ctx context.Context, exec boil.Context
 
 		o.R.ResourceTaskAnnotations = nil
 	}
-	return o.AddResourceTaskAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceTaskAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceTaskAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceTaskAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Task) RemoveResourceTaskAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*TaskAnnotation) error {
+func (q TaskQuery) RemoveResourceTaskAnnotations(o *Task, ctx context.Context, exec boil.ContextExecutor, related ...*TaskAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -975,7 +776,7 @@ func (o *Task) RemoveResourceTaskAnnotations(ctx context.Context, exec boil.Cont
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = TaskAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1005,12 +806,12 @@ func (o *Task) RemoveResourceTaskAnnotations(ctx context.Context, exec boil.Cont
 // of the task, optionally inserting them as new records.
 // Appends related to o.R.ResourceTaskLabels.
 // Sets related.R.Resource appropriately.
-func (o *Task) AddResourceTaskLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskLabel) error {
+func (q TaskQuery) AddResourceTaskLabels(o *Task, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = TaskLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1060,7 +861,7 @@ func (o *Task) AddResourceTaskLabels(ctx context.Context, exec boil.ContextExecu
 // Sets o.R.Resource's ResourceTaskLabels accordingly.
 // Replaces o.R.ResourceTaskLabels with related.
 // Sets related.R.Resource's ResourceTaskLabels accordingly.
-func (o *Task) SetResourceTaskLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskLabel) error {
+func (q TaskQuery) SetResourceTaskLabels(o *Task, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TaskLabel) error {
 	query := "update \"task_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1085,13 +886,13 @@ func (o *Task) SetResourceTaskLabels(ctx context.Context, exec boil.ContextExecu
 
 		o.R.ResourceTaskLabels = nil
 	}
-	return o.AddResourceTaskLabels(ctx, exec, insert, related...)
+	return q.AddResourceTaskLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceTaskLabels relationships from objects passed in.
 // Removes related items from R.ResourceTaskLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Task) RemoveResourceTaskLabels(ctx context.Context, exec boil.ContextExecutor, related ...*TaskLabel) error {
+func (q TaskQuery) RemoveResourceTaskLabels(o *Task, ctx context.Context, exec boil.ContextExecutor, related ...*TaskLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1102,7 +903,7 @@ func (o *Task) RemoveResourceTaskLabels(ctx context.Context, exec boil.ContextEx
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = TaskLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1129,9 +930,13 @@ func (o *Task) RemoveResourceTaskLabels(ctx context.Context, exec boil.ContextEx
 }
 
 // Tasks retrieves all the records using an executor.
-func Tasks(mods ...qm.QueryMod) taskQuery {
+func Tasks(mods ...qm.QueryMod) TaskQuery {
 	mods = append(mods, qm.From("\"tasks\""))
-	return taskQuery{NewQuery(mods...)}
+	return TaskQuery{NewQuery(mods...)}
+}
+
+type TaskFinder interface {
+	FindTask(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Task, error)
 }
 
 // FindTask retrieves a single record by ID with an executor.
@@ -1157,16 +962,16 @@ func FindTask(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols
 		return nil, errors.Wrap(err, "models: unable to select from tasks")
 	}
 
-	if err = taskObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return taskObj, err
-	}
-
 	return taskObj, nil
+}
+
+type TaskInserter interface {
+	Insert(o *Task, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Task) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q TaskQuery) Insert(o *Task, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no tasks provided for insertion")
 	}
@@ -1181,10 +986,6 @@ func (o *Task) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(taskColumnsWithDefault, o)
@@ -1250,13 +1051,19 @@ func (o *Task) Insert(ctx context.Context, exec boil.ContextExecutor, columns bo
 		taskInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type TaskUpdater interface {
+	Update(o *Task, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o TaskSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Task.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Task) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q TaskQuery) Update(o *Task, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1264,9 +1071,6 @@ func (o *Task) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	taskUpdateCacheMut.RLock()
 	cache, cached := taskUpdateCache[key]
@@ -1319,11 +1123,11 @@ func (o *Task) Update(ctx context.Context, exec boil.ContextExecutor, columns bo
 		taskUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q taskQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q TaskQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1340,7 +1144,7 @@ func (q taskQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o TaskSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q TaskQuery) UpdateAllSlice(o TaskSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1387,6 +1191,160 @@ func (o TaskSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 	return rowsAff, nil
 }
 
+type TaskDeleter interface {
+	Delete(o *Task, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o TaskSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Task record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q TaskQuery) Delete(o *Task, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Task provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), taskPrimaryKeyMapping)
+	sql := "DELETE FROM \"tasks\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from tasks")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for tasks")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q TaskQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no taskQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from tasks")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for tasks")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q TaskQuery) DeleteAllSlice(o TaskSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), taskPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"tasks\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, taskPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from task slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for tasks")
+	}
+
+	return rowsAff, nil
+}
+
+type TaskReloader interface {
+	Reload(o *Task, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *TaskSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q TaskQuery) Reload(o *Task, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindTask(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q TaskQuery) ReloadAll(o *TaskSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := TaskSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), taskPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"tasks\".* FROM \"tasks\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, taskPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in TaskSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// TaskExists checks if the Task row exists.
+func TaskExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"tasks\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if tasks exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Task) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1400,10 +1358,6 @@ func (o *Task) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(taskColumnsWithDefault, o)
@@ -1507,172 +1461,5 @@ func (o *Task) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnCo
 		taskUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Task record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Task) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Task provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), taskPrimaryKeyMapping)
-	sql := "DELETE FROM \"tasks\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from tasks")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for tasks")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q taskQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no taskQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from tasks")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for tasks")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o TaskSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(taskBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), taskPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"tasks\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, taskPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from task slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for tasks")
-	}
-
-	if len(taskAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Task) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindTask(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *TaskSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := TaskSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), taskPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"tasks\".* FROM \"tasks\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, taskPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in TaskSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// TaskExists checks if the Task row exists.
-func TaskExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"tasks\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if tasks exists")
-	}
-
-	return exists, nil
 }

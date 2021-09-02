@@ -174,10 +174,8 @@ type (
 	// OrganizationSlice is an alias for a slice of pointers to Organization.
 	// This should almost always be used instead of []Organization.
 	OrganizationSlice []*Organization
-	// OrganizationHook is the signature for custom Organization hook methods
-	OrganizationHook func(context.Context, boil.ContextExecutor, *Organization) error
 
-	organizationQuery struct {
+	OrganizationQuery struct {
 		*queries.Query
 	}
 )
@@ -203,178 +201,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var organizationBeforeInsertHooks []OrganizationHook
-var organizationBeforeUpdateHooks []OrganizationHook
-var organizationBeforeDeleteHooks []OrganizationHook
-var organizationBeforeUpsertHooks []OrganizationHook
-
-var organizationAfterInsertHooks []OrganizationHook
-var organizationAfterSelectHooks []OrganizationHook
-var organizationAfterUpdateHooks []OrganizationHook
-var organizationAfterDeleteHooks []OrganizationHook
-var organizationAfterUpsertHooks []OrganizationHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Organization) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Organization) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Organization) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Organization) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Organization) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Organization) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Organization) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Organization) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Organization) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range organizationAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddOrganizationHook registers your hook function for all future operations.
-func AddOrganizationHook(hookPoint boil.HookPoint, organizationHook OrganizationHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		organizationBeforeInsertHooks = append(organizationBeforeInsertHooks, organizationHook)
-	case boil.BeforeUpdateHook:
-		organizationBeforeUpdateHooks = append(organizationBeforeUpdateHooks, organizationHook)
-	case boil.BeforeDeleteHook:
-		organizationBeforeDeleteHooks = append(organizationBeforeDeleteHooks, organizationHook)
-	case boil.BeforeUpsertHook:
-		organizationBeforeUpsertHooks = append(organizationBeforeUpsertHooks, organizationHook)
-	case boil.AfterInsertHook:
-		organizationAfterInsertHooks = append(organizationAfterInsertHooks, organizationHook)
-	case boil.AfterSelectHook:
-		organizationAfterSelectHooks = append(organizationAfterSelectHooks, organizationHook)
-	case boil.AfterUpdateHook:
-		organizationAfterUpdateHooks = append(organizationAfterUpdateHooks, organizationHook)
-	case boil.AfterDeleteHook:
-		organizationAfterDeleteHooks = append(organizationAfterDeleteHooks, organizationHook)
-	case boil.AfterUpsertHook:
-		organizationAfterUpsertHooks = append(organizationAfterUpsertHooks, organizationHook)
-	}
+type OrganizationFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Organization, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (OrganizationSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single organization record from the query.
-func (q organizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Organization, error) {
+func (q OrganizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Organization, error) {
 	o := &Organization{}
 
 	queries.SetLimit(q.Query, 1)
@@ -387,15 +222,11 @@ func (q organizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to execute a one query for organizations")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Organization records from the query.
-func (q organizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationSlice, error) {
+func (q OrganizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationSlice, error) {
 	var o []*Organization
 
 	err := q.Bind(ctx, exec, &o)
@@ -403,19 +234,11 @@ func (q organizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Organization slice")
 	}
 
-	if len(organizationAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Organization records in the query.
-func (q organizationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q OrganizationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -430,7 +253,7 @@ func (q organizationQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q organizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q OrganizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -446,7 +269,7 @@ func (q organizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // QuotaDefinition pointed to by the foreign key.
-func (o *Organization) QuotaDefinition(mods ...qm.QueryMod) quotaDefinitionQuery {
+func (q OrganizationQuery) QuotaDefinition(o *Organization, mods ...qm.QueryMod) QuotaDefinitionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.QuotaDefinitionID),
 	}
@@ -460,7 +283,7 @@ func (o *Organization) QuotaDefinition(mods ...qm.QueryMod) quotaDefinitionQuery
 }
 
 // OwningOrganizationDomains retrieves all the domain's Domains with an executor via owning_organization_id column.
-func (o *Organization) OwningOrganizationDomains(mods ...qm.QueryMod) domainQuery {
+func (q OrganizationQuery) OwningOrganizationDomains(o *Organization, mods ...qm.QueryMod) DomainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -481,7 +304,7 @@ func (o *Organization) OwningOrganizationDomains(mods ...qm.QueryMod) domainQuer
 }
 
 // ResourceOrganizationAnnotations retrieves all the organization_annotation's OrganizationAnnotations with an executor via resource_guid column.
-func (o *Organization) ResourceOrganizationAnnotations(mods ...qm.QueryMod) organizationAnnotationQuery {
+func (q OrganizationQuery) ResourceOrganizationAnnotations(o *Organization, mods ...qm.QueryMod) OrganizationAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -502,7 +325,7 @@ func (o *Organization) ResourceOrganizationAnnotations(mods ...qm.QueryMod) orga
 }
 
 // ResourceOrganizationLabels retrieves all the organization_label's OrganizationLabels with an executor via resource_guid column.
-func (o *Organization) ResourceOrganizationLabels(mods ...qm.QueryMod) organizationLabelQuery {
+func (q OrganizationQuery) ResourceOrganizationLabels(o *Organization, mods ...qm.QueryMod) OrganizationLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -523,7 +346,7 @@ func (o *Organization) ResourceOrganizationLabels(mods ...qm.QueryMod) organizat
 }
 
 // OrganizationsAuditors retrieves all the organizations_auditor's OrganizationsAuditors with an executor.
-func (o *Organization) OrganizationsAuditors(mods ...qm.QueryMod) organizationsAuditorQuery {
+func (q OrganizationQuery) OrganizationsAuditors(o *Organization, mods ...qm.QueryMod) OrganizationsAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -544,7 +367,7 @@ func (o *Organization) OrganizationsAuditors(mods ...qm.QueryMod) organizationsA
 }
 
 // OrganizationsBillingManagers retrieves all the organizations_billing_manager's OrganizationsBillingManagers with an executor.
-func (o *Organization) OrganizationsBillingManagers(mods ...qm.QueryMod) organizationsBillingManagerQuery {
+func (q OrganizationQuery) OrganizationsBillingManagers(o *Organization, mods ...qm.QueryMod) OrganizationsBillingManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -565,7 +388,7 @@ func (o *Organization) OrganizationsBillingManagers(mods ...qm.QueryMod) organiz
 }
 
 // IsolationSegments retrieves all the isolation_segment's IsolationSegments with an executor.
-func (o *Organization) IsolationSegments(mods ...qm.QueryMod) isolationSegmentQuery {
+func (q OrganizationQuery) IsolationSegments(o *Organization, mods ...qm.QueryMod) IsolationSegmentQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -587,7 +410,7 @@ func (o *Organization) IsolationSegments(mods ...qm.QueryMod) isolationSegmentQu
 }
 
 // OrganizationsManagers retrieves all the organizations_manager's OrganizationsManagers with an executor.
-func (o *Organization) OrganizationsManagers(mods ...qm.QueryMod) organizationsManagerQuery {
+func (q OrganizationQuery) OrganizationsManagers(o *Organization, mods ...qm.QueryMod) OrganizationsManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -608,7 +431,7 @@ func (o *Organization) OrganizationsManagers(mods ...qm.QueryMod) organizationsM
 }
 
 // OrganizationsPrivateDomains retrieves all the organizations_private_domain's OrganizationsPrivateDomains with an executor.
-func (o *Organization) OrganizationsPrivateDomains(mods ...qm.QueryMod) organizationsPrivateDomainQuery {
+func (q OrganizationQuery) OrganizationsPrivateDomains(o *Organization, mods ...qm.QueryMod) OrganizationsPrivateDomainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -629,7 +452,7 @@ func (o *Organization) OrganizationsPrivateDomains(mods ...qm.QueryMod) organiza
 }
 
 // OrganizationsUsers retrieves all the organizations_user's OrganizationsUsers with an executor.
-func (o *Organization) OrganizationsUsers(mods ...qm.QueryMod) organizationsUserQuery {
+func (q OrganizationQuery) OrganizationsUsers(o *Organization, mods ...qm.QueryMod) OrganizationsUserQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -650,7 +473,7 @@ func (o *Organization) OrganizationsUsers(mods ...qm.QueryMod) organizationsUser
 }
 
 // ServicePlanVisibilities retrieves all the service_plan_visibility's ServicePlanVisibilities with an executor.
-func (o *Organization) ServicePlanVisibilities(mods ...qm.QueryMod) servicePlanVisibilityQuery {
+func (q OrganizationQuery) ServicePlanVisibilities(o *Organization, mods ...qm.QueryMod) ServicePlanVisibilityQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -671,7 +494,7 @@ func (o *Organization) ServicePlanVisibilities(mods ...qm.QueryMod) servicePlanV
 }
 
 // SpaceQuotaDefinitions retrieves all the space_quota_definition's SpaceQuotaDefinitions with an executor.
-func (o *Organization) SpaceQuotaDefinitions(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
+func (q OrganizationQuery) SpaceQuotaDefinitions(o *Organization, mods ...qm.QueryMod) SpaceQuotaDefinitionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -692,7 +515,7 @@ func (o *Organization) SpaceQuotaDefinitions(mods ...qm.QueryMod) spaceQuotaDefi
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (o *Organization) Spaces(mods ...qm.QueryMod) spaceQuery {
+func (q OrganizationQuery) Spaces(o *Organization, mods ...qm.QueryMod) SpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -776,14 +599,6 @@ func (organizationL) LoadQuotaDefinition(ctx context.Context, e boil.ContextExec
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for quota_definitions")
-	}
-
-	if len(organizationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -880,13 +695,6 @@ func (organizationL) LoadOwningOrganizationDomains(ctx context.Context, e boil.C
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for domains")
 	}
 
-	if len(domainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OwningOrganizationDomains = resultSlice
 		for _, foreign := range resultSlice {
@@ -978,13 +786,6 @@ func (organizationL) LoadResourceOrganizationAnnotations(ctx context.Context, e 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organization_annotations")
 	}
 
-	if len(organizationAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceOrganizationAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1076,13 +877,6 @@ func (organizationL) LoadResourceOrganizationLabels(ctx context.Context, e boil.
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organization_labels")
 	}
 
-	if len(organizationLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceOrganizationLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1174,13 +968,6 @@ func (organizationL) LoadOrganizationsAuditors(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_auditors")
 	}
 
-	if len(organizationsAuditorAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsAuditors = resultSlice
 		for _, foreign := range resultSlice {
@@ -1272,13 +1059,6 @@ func (organizationL) LoadOrganizationsBillingManagers(ctx context.Context, e boi
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_billing_managers")
 	}
 
-	if len(organizationsBillingManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsBillingManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1386,13 +1166,6 @@ func (organizationL) LoadIsolationSegments(ctx context.Context, e boil.ContextEx
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for isolation_segments")
 	}
 
-	if len(isolationSegmentAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.IsolationSegments = resultSlice
 		for _, foreign := range resultSlice {
@@ -1485,13 +1258,6 @@ func (organizationL) LoadOrganizationsManagers(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_managers")
 	}
 
-	if len(organizationsManagerAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsManagers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1583,13 +1349,6 @@ func (organizationL) LoadOrganizationsPrivateDomains(ctx context.Context, e boil
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_private_domains")
 	}
 
-	if len(organizationsPrivateDomainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsPrivateDomains = resultSlice
 		for _, foreign := range resultSlice {
@@ -1681,13 +1440,6 @@ func (organizationL) LoadOrganizationsUsers(ctx context.Context, e boil.ContextE
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_users")
 	}
 
-	if len(organizationsUserAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.OrganizationsUsers = resultSlice
 		for _, foreign := range resultSlice {
@@ -1779,13 +1531,6 @@ func (organizationL) LoadServicePlanVisibilities(ctx context.Context, e boil.Con
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_plan_visibilities")
 	}
 
-	if len(servicePlanVisibilityAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServicePlanVisibilities = resultSlice
 		for _, foreign := range resultSlice {
@@ -1877,13 +1622,6 @@ func (organizationL) LoadSpaceQuotaDefinitions(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for space_quota_definitions")
 	}
 
-	if len(spaceQuotaDefinitionAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.SpaceQuotaDefinitions = resultSlice
 		for _, foreign := range resultSlice {
@@ -1975,13 +1713,6 @@ func (organizationL) LoadSpaces(ctx context.Context, e boil.ContextExecutor, sin
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Spaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -2012,10 +1743,10 @@ func (organizationL) LoadSpaces(ctx context.Context, e boil.ContextExecutor, sin
 // SetQuotaDefinition of the organization to the related item.
 // Sets o.R.QuotaDefinition to related.
 // Adds o to related.R.Organizations.
-func (o *Organization) SetQuotaDefinition(ctx context.Context, exec boil.ContextExecutor, insert bool, related *QuotaDefinition) error {
+func (q OrganizationQuery) SetQuotaDefinition(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related *QuotaDefinition) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = QuotaDefinitions().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -2060,12 +1791,12 @@ func (o *Organization) SetQuotaDefinition(ctx context.Context, exec boil.Context
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OwningOrganizationDomains.
 // Sets related.R.OwningOrganization appropriately.
-func (o *Organization) AddOwningOrganizationDomains(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
+func (q OrganizationQuery) AddOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.OwningOrganizationID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Domains().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2115,7 +1846,7 @@ func (o *Organization) AddOwningOrganizationDomains(ctx context.Context, exec bo
 // Sets o.R.OwningOrganization's OwningOrganizationDomains accordingly.
 // Replaces o.R.OwningOrganizationDomains with related.
 // Sets related.R.OwningOrganization's OwningOrganizationDomains accordingly.
-func (o *Organization) SetOwningOrganizationDomains(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
+func (q OrganizationQuery) SetOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
 	query := "update \"domains\" set \"owning_organization_id\" = null where \"owning_organization_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -2140,13 +1871,13 @@ func (o *Organization) SetOwningOrganizationDomains(ctx context.Context, exec bo
 
 		o.R.OwningOrganizationDomains = nil
 	}
-	return o.AddOwningOrganizationDomains(ctx, exec, insert, related...)
+	return q.AddOwningOrganizationDomains(o, ctx, exec, insert, related...)
 }
 
 // RemoveOwningOrganizationDomains relationships from objects passed in.
 // Removes related items from R.OwningOrganizationDomains (uses pointer comparison, removal does not keep order)
 // Sets related.R.OwningOrganization.
-func (o *Organization) RemoveOwningOrganizationDomains(ctx context.Context, exec boil.ContextExecutor, related ...*Domain) error {
+func (q OrganizationQuery) RemoveOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*Domain) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2157,7 +1888,7 @@ func (o *Organization) RemoveOwningOrganizationDomains(ctx context.Context, exec
 		if rel.R != nil {
 			rel.R.OwningOrganization = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("owning_organization_id")); err != nil {
+		if _, err = Domains().Update(rel, ctx, exec, boil.Whitelist("owning_organization_id")); err != nil {
 			return err
 		}
 	}
@@ -2187,12 +1918,12 @@ func (o *Organization) RemoveOwningOrganizationDomains(ctx context.Context, exec
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ResourceOrganizationAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Organization) AddResourceOrganizationAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
+func (q OrganizationQuery) AddResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2242,7 +1973,7 @@ func (o *Organization) AddResourceOrganizationAnnotations(ctx context.Context, e
 // Sets o.R.Resource's ResourceOrganizationAnnotations accordingly.
 // Replaces o.R.ResourceOrganizationAnnotations with related.
 // Sets related.R.Resource's ResourceOrganizationAnnotations accordingly.
-func (o *Organization) SetResourceOrganizationAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
+func (q OrganizationQuery) SetResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
 	query := "update \"organization_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2267,13 +1998,13 @@ func (o *Organization) SetResourceOrganizationAnnotations(ctx context.Context, e
 
 		o.R.ResourceOrganizationAnnotations = nil
 	}
-	return o.AddResourceOrganizationAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceOrganizationAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceOrganizationAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceOrganizationAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Organization) RemoveResourceOrganizationAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationAnnotation) error {
+func (q OrganizationQuery) RemoveResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2284,7 +2015,7 @@ func (o *Organization) RemoveResourceOrganizationAnnotations(ctx context.Context
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = OrganizationAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2314,12 +2045,12 @@ func (o *Organization) RemoveResourceOrganizationAnnotations(ctx context.Context
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ResourceOrganizationLabels.
 // Sets related.R.Resource appropriately.
-func (o *Organization) AddResourceOrganizationLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
+func (q OrganizationQuery) AddResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2369,7 +2100,7 @@ func (o *Organization) AddResourceOrganizationLabels(ctx context.Context, exec b
 // Sets o.R.Resource's ResourceOrganizationLabels accordingly.
 // Replaces o.R.ResourceOrganizationLabels with related.
 // Sets related.R.Resource's ResourceOrganizationLabels accordingly.
-func (o *Organization) SetResourceOrganizationLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
+func (q OrganizationQuery) SetResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
 	query := "update \"organization_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2394,13 +2125,13 @@ func (o *Organization) SetResourceOrganizationLabels(ctx context.Context, exec b
 
 		o.R.ResourceOrganizationLabels = nil
 	}
-	return o.AddResourceOrganizationLabels(ctx, exec, insert, related...)
+	return q.AddResourceOrganizationLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceOrganizationLabels relationships from objects passed in.
 // Removes related items from R.ResourceOrganizationLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Organization) RemoveResourceOrganizationLabels(ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationLabel) error {
+func (q OrganizationQuery) RemoveResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2411,7 +2142,7 @@ func (o *Organization) RemoveResourceOrganizationLabels(ctx context.Context, exe
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = OrganizationLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2441,12 +2172,12 @@ func (o *Organization) RemoveResourceOrganizationLabels(ctx context.Context, exe
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsAuditors.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddOrganizationsAuditors(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
+func (q OrganizationQuery) AddOrganizationsAuditors(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsAuditors().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2494,12 +2225,12 @@ func (o *Organization) AddOrganizationsAuditors(ctx context.Context, exec boil.C
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsBillingManagers.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddOrganizationsBillingManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
+func (q OrganizationQuery) AddOrganizationsBillingManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsBillingManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2547,11 +2278,11 @@ func (o *Organization) AddOrganizationsBillingManagers(ctx context.Context, exec
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.IsolationSegments.
 // Sets related.R.Organizations appropriately.
-func (o *Organization) AddIsolationSegments(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
+func (q OrganizationQuery) AddIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = IsolationSegments().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		}
@@ -2597,7 +2328,7 @@ func (o *Organization) AddIsolationSegments(ctx context.Context, exec boil.Conte
 // Sets o.R.Organizations's IsolationSegments accordingly.
 // Replaces o.R.IsolationSegments with related.
 // Sets related.R.Organizations's IsolationSegments accordingly.
-func (o *Organization) SetIsolationSegments(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
+func (q OrganizationQuery) SetIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
 	query := "delete from \"organizations_isolation_segments\" where \"organization_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2614,13 +2345,13 @@ func (o *Organization) SetIsolationSegments(ctx context.Context, exec boil.Conte
 	if o.R != nil {
 		o.R.IsolationSegments = nil
 	}
-	return o.AddIsolationSegments(ctx, exec, insert, related...)
+	return q.AddIsolationSegments(o, ctx, exec, insert, related...)
 }
 
 // RemoveIsolationSegments relationships from objects passed in.
 // Removes related items from R.IsolationSegments (uses pointer comparison, removal does not keep order)
 // Sets related.R.Organizations.
-func (o *Organization) RemoveIsolationSegments(ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegment) error {
+func (q OrganizationQuery) RemoveIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegment) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2691,12 +2422,12 @@ func removeIsolationSegmentsFromOrganizationsSlice(o *Organization, related []*I
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsManagers.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddOrganizationsManagers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
+func (q OrganizationQuery) AddOrganizationsManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsManagers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2744,12 +2475,12 @@ func (o *Organization) AddOrganizationsManagers(ctx context.Context, exec boil.C
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsPrivateDomains.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddOrganizationsPrivateDomains(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
+func (q OrganizationQuery) AddOrganizationsPrivateDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsPrivateDomains().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2797,12 +2528,12 @@ func (o *Organization) AddOrganizationsPrivateDomains(ctx context.Context, exec 
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsUsers.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddOrganizationsUsers(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
+func (q OrganizationQuery) AddOrganizationsUsers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsUsers().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2850,12 +2581,12 @@ func (o *Organization) AddOrganizationsUsers(ctx context.Context, exec boil.Cont
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ServicePlanVisibilities.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddServicePlanVisibilities(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
+func (q OrganizationQuery) AddServicePlanVisibilities(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServicePlanVisibilities().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2903,12 +2634,12 @@ func (o *Organization) AddServicePlanVisibilities(ctx context.Context, exec boil
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.SpaceQuotaDefinitions.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddSpaceQuotaDefinitions(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceQuotaDefinition) error {
+func (q OrganizationQuery) AddSpaceQuotaDefinitions(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceQuotaDefinition) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = SpaceQuotaDefinitions().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2956,12 +2687,12 @@ func (o *Organization) AddSpaceQuotaDefinitions(ctx context.Context, exec boil.C
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.Organization appropriately.
-func (o *Organization) AddSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q OrganizationQuery) AddSpaces(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.OrganizationID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Spaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -3006,9 +2737,13 @@ func (o *Organization) AddSpaces(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // Organizations retrieves all the records using an executor.
-func Organizations(mods ...qm.QueryMod) organizationQuery {
+func Organizations(mods ...qm.QueryMod) OrganizationQuery {
 	mods = append(mods, qm.From("\"organizations\""))
-	return organizationQuery{NewQuery(mods...)}
+	return OrganizationQuery{NewQuery(mods...)}
+}
+
+type OrganizationFinder interface {
+	FindOrganization(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Organization, error)
 }
 
 // FindOrganization retrieves a single record by ID with an executor.
@@ -3034,16 +2769,16 @@ func FindOrganization(ctx context.Context, exec boil.ContextExecutor, iD int, se
 		return nil, errors.Wrap(err, "models: unable to select from organizations")
 	}
 
-	if err = organizationObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return organizationObj, err
-	}
-
 	return organizationObj, nil
+}
+
+type OrganizationInserter interface {
+	Insert(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Organization) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q OrganizationQuery) Insert(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations provided for insertion")
 	}
@@ -3058,10 +2793,6 @@ func (o *Organization) Insert(ctx context.Context, exec boil.ContextExecutor, co
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationColumnsWithDefault, o)
@@ -3127,13 +2858,19 @@ func (o *Organization) Insert(ctx context.Context, exec boil.ContextExecutor, co
 		organizationInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type OrganizationUpdater interface {
+	Update(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Organization.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Organization) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q OrganizationQuery) Update(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -3141,9 +2878,6 @@ func (o *Organization) Update(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	organizationUpdateCacheMut.RLock()
 	cache, cached := organizationUpdateCache[key]
@@ -3196,11 +2930,11 @@ func (o *Organization) Update(ctx context.Context, exec boil.ContextExecutor, co
 		organizationUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q organizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -3217,7 +2951,7 @@ func (q organizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o OrganizationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q OrganizationQuery) UpdateAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -3264,6 +2998,160 @@ func (o OrganizationSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 	return rowsAff, nil
 }
 
+type OrganizationDeleter interface {
+	Delete(o *Organization, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Organization record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q OrganizationQuery) Delete(o *Organization, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Organization provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationPrimaryKeyMapping)
+	sql := "DELETE FROM \"organizations\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from organizations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q OrganizationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no organizationQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organizations")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q OrganizationQuery) DeleteAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"organizations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from organization slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations")
+	}
+
+	return rowsAff, nil
+}
+
+type OrganizationReloader interface {
+	Reload(o *Organization, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q OrganizationQuery) Reload(o *Organization, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindOrganization(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q OrganizationQuery) ReloadAll(o *OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := OrganizationSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"organizations\".* FROM \"organizations\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in OrganizationSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// OrganizationExists checks if the Organization row exists.
+func OrganizationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"organizations\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if organizations exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -3277,10 +3165,6 @@ func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(organizationColumnsWithDefault, o)
@@ -3384,172 +3268,5 @@ func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 		organizationUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Organization record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Organization) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Organization provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), organizationPrimaryKeyMapping)
-	sql := "DELETE FROM \"organizations\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from organizations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for organizations")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q organizationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no organizationQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organizations")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o OrganizationSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(organizationBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"organizations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from organization slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for organizations")
-	}
-
-	if len(organizationAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Organization) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindOrganization(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *OrganizationSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := OrganizationSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), organizationPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"organizations\".* FROM \"organizations\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, organizationPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in OrganizationSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// OrganizationExists checks if the Organization row exists.
-func OrganizationExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"organizations\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if organizations exists")
-	}
-
-	return exists, nil
 }

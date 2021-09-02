@@ -232,10 +232,8 @@ type (
 	// ServiceInstanceSlice is an alias for a slice of pointers to ServiceInstance.
 	// This should almost always be used instead of []ServiceInstance.
 	ServiceInstanceSlice []*ServiceInstance
-	// ServiceInstanceHook is the signature for custom ServiceInstance hook methods
-	ServiceInstanceHook func(context.Context, boil.ContextExecutor, *ServiceInstance) error
 
-	serviceInstanceQuery struct {
+	ServiceInstanceQuery struct {
 		*queries.Query
 	}
 )
@@ -261,178 +259,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceInstanceBeforeInsertHooks []ServiceInstanceHook
-var serviceInstanceBeforeUpdateHooks []ServiceInstanceHook
-var serviceInstanceBeforeDeleteHooks []ServiceInstanceHook
-var serviceInstanceBeforeUpsertHooks []ServiceInstanceHook
-
-var serviceInstanceAfterInsertHooks []ServiceInstanceHook
-var serviceInstanceAfterSelectHooks []ServiceInstanceHook
-var serviceInstanceAfterUpdateHooks []ServiceInstanceHook
-var serviceInstanceAfterDeleteHooks []ServiceInstanceHook
-var serviceInstanceAfterUpsertHooks []ServiceInstanceHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceInstance) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceInstance) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceInstance) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceInstance) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceInstance) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceInstance) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceInstance) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceInstance) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceInstance) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceInstanceAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceInstanceHook registers your hook function for all future operations.
-func AddServiceInstanceHook(hookPoint boil.HookPoint, serviceInstanceHook ServiceInstanceHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceInstanceBeforeInsertHooks = append(serviceInstanceBeforeInsertHooks, serviceInstanceHook)
-	case boil.BeforeUpdateHook:
-		serviceInstanceBeforeUpdateHooks = append(serviceInstanceBeforeUpdateHooks, serviceInstanceHook)
-	case boil.BeforeDeleteHook:
-		serviceInstanceBeforeDeleteHooks = append(serviceInstanceBeforeDeleteHooks, serviceInstanceHook)
-	case boil.BeforeUpsertHook:
-		serviceInstanceBeforeUpsertHooks = append(serviceInstanceBeforeUpsertHooks, serviceInstanceHook)
-	case boil.AfterInsertHook:
-		serviceInstanceAfterInsertHooks = append(serviceInstanceAfterInsertHooks, serviceInstanceHook)
-	case boil.AfterSelectHook:
-		serviceInstanceAfterSelectHooks = append(serviceInstanceAfterSelectHooks, serviceInstanceHook)
-	case boil.AfterUpdateHook:
-		serviceInstanceAfterUpdateHooks = append(serviceInstanceAfterUpdateHooks, serviceInstanceHook)
-	case boil.AfterDeleteHook:
-		serviceInstanceAfterDeleteHooks = append(serviceInstanceAfterDeleteHooks, serviceInstanceHook)
-	case boil.AfterUpsertHook:
-		serviceInstanceAfterUpsertHooks = append(serviceInstanceAfterUpsertHooks, serviceInstanceHook)
-	}
+type ServiceInstanceFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstance, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceInstance record from the query.
-func (q serviceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstance, error) {
+func (q ServiceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstance, error) {
 	o := &ServiceInstance{}
 
 	queries.SetLimit(q.Query, 1)
@@ -445,15 +280,11 @@ func (q serviceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_instances")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceInstance records from the query.
-func (q serviceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceSlice, error) {
+func (q ServiceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceSlice, error) {
 	var o []*ServiceInstance
 
 	err := q.Bind(ctx, exec, &o)
@@ -461,19 +292,11 @@ func (q serviceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceInstance slice")
 	}
 
-	if len(serviceInstanceAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceInstance records in the query.
-func (q serviceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -488,7 +311,7 @@ func (q serviceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -504,7 +327,7 @@ func (q serviceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Space pointed to by the foreign key.
-func (o *ServiceInstance) Space(mods ...qm.QueryMod) spaceQuery {
+func (q ServiceInstanceQuery) Space(o *ServiceInstance, mods ...qm.QueryMod) SpaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -518,7 +341,7 @@ func (o *ServiceInstance) Space(mods ...qm.QueryMod) spaceQuery {
 }
 
 // ServicePlan pointed to by the foreign key.
-func (o *ServiceInstance) ServicePlan(mods ...qm.QueryMod) servicePlanQuery {
+func (q ServiceInstanceQuery) ServicePlan(o *ServiceInstance, mods ...qm.QueryMod) ServicePlanQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.ServicePlanID),
 	}
@@ -532,7 +355,7 @@ func (o *ServiceInstance) ServicePlan(mods ...qm.QueryMod) servicePlanQuery {
 }
 
 // RouteBindings retrieves all the route_binding's RouteBindings with an executor.
-func (o *ServiceInstance) RouteBindings(mods ...qm.QueryMod) routeBindingQuery {
+func (q ServiceInstanceQuery) RouteBindings(o *ServiceInstance, mods ...qm.QueryMod) RouteBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -553,7 +376,7 @@ func (o *ServiceInstance) RouteBindings(mods ...qm.QueryMod) routeBindingQuery {
 }
 
 // ServiceBindings retrieves all the service_binding's ServiceBindings with an executor.
-func (o *ServiceInstance) ServiceBindings(mods ...qm.QueryMod) serviceBindingQuery {
+func (q ServiceInstanceQuery) ServiceBindings(o *ServiceInstance, mods ...qm.QueryMod) ServiceBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -574,7 +397,7 @@ func (o *ServiceInstance) ServiceBindings(mods ...qm.QueryMod) serviceBindingQue
 }
 
 // ResourceServiceInstanceAnnotations retrieves all the service_instance_annotation's ServiceInstanceAnnotations with an executor via resource_guid column.
-func (o *ServiceInstance) ResourceServiceInstanceAnnotations(mods ...qm.QueryMod) serviceInstanceAnnotationQuery {
+func (q ServiceInstanceQuery) ResourceServiceInstanceAnnotations(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -595,7 +418,7 @@ func (o *ServiceInstance) ResourceServiceInstanceAnnotations(mods ...qm.QueryMod
 }
 
 // ResourceServiceInstanceLabels retrieves all the service_instance_label's ServiceInstanceLabels with an executor via resource_guid column.
-func (o *ServiceInstance) ResourceServiceInstanceLabels(mods ...qm.QueryMod) serviceInstanceLabelQuery {
+func (q ServiceInstanceQuery) ResourceServiceInstanceLabels(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -616,7 +439,7 @@ func (o *ServiceInstance) ResourceServiceInstanceLabels(mods ...qm.QueryMod) ser
 }
 
 // ServiceInstanceOperations retrieves all the service_instance_operation's ServiceInstanceOperations with an executor.
-func (o *ServiceInstance) ServiceInstanceOperations(mods ...qm.QueryMod) serviceInstanceOperationQuery {
+func (q ServiceInstanceQuery) ServiceInstanceOperations(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceOperationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -637,7 +460,7 @@ func (o *ServiceInstance) ServiceInstanceOperations(mods ...qm.QueryMod) service
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (o *ServiceInstance) Spaces(mods ...qm.QueryMod) spaceQuery {
+func (q ServiceInstanceQuery) Spaces(o *ServiceInstance, mods ...qm.QueryMod) SpaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -659,7 +482,7 @@ func (o *ServiceInstance) Spaces(mods ...qm.QueryMod) spaceQuery {
 }
 
 // ServiceKeys retrieves all the service_key's ServiceKeys with an executor.
-func (o *ServiceInstance) ServiceKeys(mods ...qm.QueryMod) serviceKeyQuery {
+func (q ServiceInstanceQuery) ServiceKeys(o *ServiceInstance, mods ...qm.QueryMod) ServiceKeyQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -743,14 +566,6 @@ func (serviceInstanceL) LoadSpace(ctx context.Context, e boil.ContextExecutor, s
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
-	}
-
-	if len(serviceInstanceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -853,14 +668,6 @@ func (serviceInstanceL) LoadServicePlan(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_plans")
 	}
 
-	if len(serviceInstanceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -955,13 +762,6 @@ func (serviceInstanceL) LoadRouteBindings(ctx context.Context, e boil.ContextExe
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for route_bindings")
 	}
 
-	if len(routeBindingAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.RouteBindings = resultSlice
 		for _, foreign := range resultSlice {
@@ -1053,13 +853,6 @@ func (serviceInstanceL) LoadServiceBindings(ctx context.Context, e boil.ContextE
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_bindings")
 	}
 
-	if len(serviceBindingAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceBindings = resultSlice
 		for _, foreign := range resultSlice {
@@ -1151,13 +944,6 @@ func (serviceInstanceL) LoadResourceServiceInstanceAnnotations(ctx context.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_instance_annotations")
 	}
 
-	if len(serviceInstanceAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceServiceInstanceAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1249,13 +1035,6 @@ func (serviceInstanceL) LoadResourceServiceInstanceLabels(ctx context.Context, e
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_instance_labels")
 	}
 
-	if len(serviceInstanceLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceServiceInstanceLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -1347,13 +1126,6 @@ func (serviceInstanceL) LoadServiceInstanceOperations(ctx context.Context, e boi
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_instance_operations")
 	}
 
-	if len(serviceInstanceOperationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceInstanceOperations = resultSlice
 		for _, foreign := range resultSlice {
@@ -1461,13 +1233,6 @@ func (serviceInstanceL) LoadSpaces(ctx context.Context, e boil.ContextExecutor, 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for spaces")
 	}
 
-	if len(spaceAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Spaces = resultSlice
 		for _, foreign := range resultSlice {
@@ -1560,13 +1325,6 @@ func (serviceInstanceL) LoadServiceKeys(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_keys")
 	}
 
-	if len(serviceKeyAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ServiceKeys = resultSlice
 		for _, foreign := range resultSlice {
@@ -1597,10 +1355,10 @@ func (serviceInstanceL) LoadServiceKeys(ctx context.Context, e boil.ContextExecu
 // SetSpace of the serviceInstance to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.ServiceInstances.
-func (o *ServiceInstance) SetSpace(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q ServiceInstanceQuery) SetSpace(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1644,10 +1402,10 @@ func (o *ServiceInstance) SetSpace(ctx context.Context, exec boil.ContextExecuto
 // SetServicePlan of the serviceInstance to the related item.
 // Sets o.R.ServicePlan to related.
 // Adds o to related.R.ServiceInstances.
-func (o *ServiceInstance) SetServicePlan(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
+func (q ServiceInstanceQuery) SetServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = ServicePlans().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1691,11 +1449,11 @@ func (o *ServiceInstance) SetServicePlan(ctx context.Context, exec boil.ContextE
 // RemoveServicePlan relationship.
 // Sets o.R.ServicePlan to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *ServiceInstance) RemoveServicePlan(ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
+func (q ServiceInstanceQuery) RemoveServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
 	var err error
 
 	queries.SetScanner(&o.ServicePlanID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("service_plan_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("service_plan_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -1725,12 +1483,12 @@ func (o *ServiceInstance) RemoveServicePlan(ctx context.Context, exec boil.Conte
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.RouteBindings.
 // Sets related.R.ServiceInstance appropriately.
-func (o *ServiceInstance) AddRouteBindings(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q ServiceInstanceQuery) AddRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ServiceInstanceID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = RouteBindings().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1780,7 +1538,7 @@ func (o *ServiceInstance) AddRouteBindings(ctx context.Context, exec boil.Contex
 // Sets o.R.ServiceInstance's RouteBindings accordingly.
 // Replaces o.R.RouteBindings with related.
 // Sets related.R.ServiceInstance's RouteBindings accordingly.
-func (o *ServiceInstance) SetRouteBindings(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q ServiceInstanceQuery) SetRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	query := "update `route_bindings` set `service_instance_id` = null where `service_instance_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -1805,13 +1563,13 @@ func (o *ServiceInstance) SetRouteBindings(ctx context.Context, exec boil.Contex
 
 		o.R.RouteBindings = nil
 	}
-	return o.AddRouteBindings(ctx, exec, insert, related...)
+	return q.AddRouteBindings(o, ctx, exec, insert, related...)
 }
 
 // RemoveRouteBindings relationships from objects passed in.
 // Removes related items from R.RouteBindings (uses pointer comparison, removal does not keep order)
 // Sets related.R.ServiceInstance.
-func (o *ServiceInstance) RemoveRouteBindings(ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
+func (q ServiceInstanceQuery) RemoveRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1822,7 +1580,7 @@ func (o *ServiceInstance) RemoveRouteBindings(ctx context.Context, exec boil.Con
 		if rel.R != nil {
 			rel.R.ServiceInstance = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("service_instance_id")); err != nil {
+		if _, err = RouteBindings().Update(rel, ctx, exec, boil.Whitelist("service_instance_id")); err != nil {
 			return err
 		}
 	}
@@ -1852,12 +1610,12 @@ func (o *ServiceInstance) RemoveRouteBindings(ctx context.Context, exec boil.Con
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceBindings.
 // Sets related.R.ServiceInstance appropriately.
-func (o *ServiceInstance) AddServiceBindings(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
+func (q ServiceInstanceQuery) AddServiceBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.ServiceInstanceGUID = o.GUID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceBindings().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1905,12 +1663,12 @@ func (o *ServiceInstance) AddServiceBindings(ctx context.Context, exec boil.Cont
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceInstanceAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *ServiceInstance) AddResourceServiceInstanceAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
+func (q ServiceInstanceQuery) AddResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceInstanceAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1960,7 +1718,7 @@ func (o *ServiceInstance) AddResourceServiceInstanceAnnotations(ctx context.Cont
 // Sets o.R.Resource's ResourceServiceInstanceAnnotations accordingly.
 // Replaces o.R.ResourceServiceInstanceAnnotations with related.
 // Sets related.R.Resource's ResourceServiceInstanceAnnotations accordingly.
-func (o *ServiceInstance) SetResourceServiceInstanceAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
+func (q ServiceInstanceQuery) SetResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
 	query := "update `service_instance_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1985,13 +1743,13 @@ func (o *ServiceInstance) SetResourceServiceInstanceAnnotations(ctx context.Cont
 
 		o.R.ResourceServiceInstanceAnnotations = nil
 	}
-	return o.AddResourceServiceInstanceAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceServiceInstanceAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceServiceInstanceAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceServiceInstanceAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *ServiceInstance) RemoveResourceServiceInstanceAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceAnnotation) error {
+func (q ServiceInstanceQuery) RemoveResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2002,7 +1760,7 @@ func (o *ServiceInstance) RemoveResourceServiceInstanceAnnotations(ctx context.C
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = ServiceInstanceAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2032,12 +1790,12 @@ func (o *ServiceInstance) RemoveResourceServiceInstanceAnnotations(ctx context.C
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceInstanceLabels.
 // Sets related.R.Resource appropriately.
-func (o *ServiceInstance) AddResourceServiceInstanceLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
+func (q ServiceInstanceQuery) AddResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceInstanceLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2087,7 +1845,7 @@ func (o *ServiceInstance) AddResourceServiceInstanceLabels(ctx context.Context, 
 // Sets o.R.Resource's ResourceServiceInstanceLabels accordingly.
 // Replaces o.R.ResourceServiceInstanceLabels with related.
 // Sets related.R.Resource's ResourceServiceInstanceLabels accordingly.
-func (o *ServiceInstance) SetResourceServiceInstanceLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
+func (q ServiceInstanceQuery) SetResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
 	query := "update `service_instance_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2112,13 +1870,13 @@ func (o *ServiceInstance) SetResourceServiceInstanceLabels(ctx context.Context, 
 
 		o.R.ResourceServiceInstanceLabels = nil
 	}
-	return o.AddResourceServiceInstanceLabels(ctx, exec, insert, related...)
+	return q.AddResourceServiceInstanceLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceServiceInstanceLabels relationships from objects passed in.
 // Removes related items from R.ResourceServiceInstanceLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *ServiceInstance) RemoveResourceServiceInstanceLabels(ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceLabel) error {
+func (q ServiceInstanceQuery) RemoveResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2129,7 +1887,7 @@ func (o *ServiceInstance) RemoveResourceServiceInstanceLabels(ctx context.Contex
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = ServiceInstanceLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -2159,12 +1917,12 @@ func (o *ServiceInstance) RemoveResourceServiceInstanceLabels(ctx context.Contex
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceInstanceOperations.
 // Sets related.R.ServiceInstance appropriately.
-func (o *ServiceInstance) AddServiceInstanceOperations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
+func (q ServiceInstanceQuery) AddServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ServiceInstanceID, o.ID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceInstanceOperations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2214,7 +1972,7 @@ func (o *ServiceInstance) AddServiceInstanceOperations(ctx context.Context, exec
 // Sets o.R.ServiceInstance's ServiceInstanceOperations accordingly.
 // Replaces o.R.ServiceInstanceOperations with related.
 // Sets related.R.ServiceInstance's ServiceInstanceOperations accordingly.
-func (o *ServiceInstance) SetServiceInstanceOperations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
+func (q ServiceInstanceQuery) SetServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
 	query := "update `service_instance_operations` set `service_instance_id` = null where `service_instance_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -2239,13 +1997,13 @@ func (o *ServiceInstance) SetServiceInstanceOperations(ctx context.Context, exec
 
 		o.R.ServiceInstanceOperations = nil
 	}
-	return o.AddServiceInstanceOperations(ctx, exec, insert, related...)
+	return q.AddServiceInstanceOperations(o, ctx, exec, insert, related...)
 }
 
 // RemoveServiceInstanceOperations relationships from objects passed in.
 // Removes related items from R.ServiceInstanceOperations (uses pointer comparison, removal does not keep order)
 // Sets related.R.ServiceInstance.
-func (o *ServiceInstance) RemoveServiceInstanceOperations(ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceOperation) error {
+func (q ServiceInstanceQuery) RemoveServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceOperation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2256,7 +2014,7 @@ func (o *ServiceInstance) RemoveServiceInstanceOperations(ctx context.Context, e
 		if rel.R != nil {
 			rel.R.ServiceInstance = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("service_instance_id")); err != nil {
+		if _, err = ServiceInstanceOperations().Update(rel, ctx, exec, boil.Whitelist("service_instance_id")); err != nil {
 			return err
 		}
 	}
@@ -2286,11 +2044,11 @@ func (o *ServiceInstance) RemoveServiceInstanceOperations(ctx context.Context, e
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.SharedServiceInstances appropriately.
-func (o *ServiceInstance) AddSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q ServiceInstanceQuery) AddSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Spaces().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		}
@@ -2336,7 +2094,7 @@ func (o *ServiceInstance) AddSpaces(ctx context.Context, exec boil.ContextExecut
 // Sets o.R.SharedServiceInstances's Spaces accordingly.
 // Replaces o.R.Spaces with related.
 // Sets related.R.SharedServiceInstances's Spaces accordingly.
-func (o *ServiceInstance) SetSpaces(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q ServiceInstanceQuery) SetSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	query := "delete from `service_instance_shares` where `service_instance_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2353,13 +2111,13 @@ func (o *ServiceInstance) SetSpaces(ctx context.Context, exec boil.ContextExecut
 	if o.R != nil {
 		o.R.Spaces = nil
 	}
-	return o.AddSpaces(ctx, exec, insert, related...)
+	return q.AddSpaces(o, ctx, exec, insert, related...)
 }
 
 // RemoveSpaces relationships from objects passed in.
 // Removes related items from R.Spaces (uses pointer comparison, removal does not keep order)
 // Sets related.R.SharedServiceInstances.
-func (o *ServiceInstance) RemoveSpaces(ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
+func (q ServiceInstanceQuery) RemoveSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2430,12 +2188,12 @@ func removeSpacesFromSharedServiceInstancesSlice(o *ServiceInstance, related []*
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceKeys.
 // Sets related.R.ServiceInstance appropriately.
-func (o *ServiceInstance) AddServiceKeys(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceKey) error {
+func (q ServiceInstanceQuery) AddServiceKeys(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceKey) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.ServiceInstanceID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = ServiceKeys().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -2480,9 +2238,13 @@ func (o *ServiceInstance) AddServiceKeys(ctx context.Context, exec boil.ContextE
 }
 
 // ServiceInstances retrieves all the records using an executor.
-func ServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery {
+func ServiceInstances(mods ...qm.QueryMod) ServiceInstanceQuery {
 	mods = append(mods, qm.From("`service_instances`"))
-	return serviceInstanceQuery{NewQuery(mods...)}
+	return ServiceInstanceQuery{NewQuery(mods...)}
+}
+
+type ServiceInstanceFinder interface {
+	FindServiceInstance(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceInstance, error)
 }
 
 // FindServiceInstance retrieves a single record by ID with an executor.
@@ -2508,16 +2270,16 @@ func FindServiceInstance(ctx context.Context, exec boil.ContextExecutor, iD int,
 		return nil, errors.Wrap(err, "models: unable to select from service_instances")
 	}
 
-	if err = serviceInstanceObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceInstanceObj, err
-	}
-
 	return serviceInstanceObj, nil
+}
+
+type ServiceInstanceInserter interface {
+	Insert(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceInstance) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceInstanceQuery) Insert(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_instances provided for insertion")
 	}
@@ -2532,10 +2294,6 @@ func (o *ServiceInstance) Insert(ctx context.Context, exec boil.ContextExecutor,
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceInstanceColumnsWithDefault, o)
@@ -2628,13 +2386,19 @@ CacheNoHooks:
 		serviceInstanceInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceInstanceUpdater interface {
+	Update(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceInstance.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceInstance) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceInstanceQuery) Update(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -2642,9 +2406,6 @@ func (o *ServiceInstance) Update(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceInstanceUpdateCacheMut.RLock()
 	cache, cached := serviceInstanceUpdateCache[key]
@@ -2697,11 +2458,11 @@ func (o *ServiceInstance) Update(ctx context.Context, exec boil.ContextExecutor,
 		serviceInstanceUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -2718,7 +2479,7 @@ func (q serviceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceInstanceSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceInstanceQuery) UpdateAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -2765,6 +2526,160 @@ func (o ServiceInstanceSlice) UpdateAll(ctx context.Context, exec boil.ContextEx
 	return rowsAff, nil
 }
 
+type ServiceInstanceDeleter interface {
+	Delete(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceInstance record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceInstanceQuery) Delete(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceInstance provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceInstancePrimaryKeyMapping)
+	sql := "DELETE FROM `service_instances` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_instances")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_instances")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceInstanceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceInstanceQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_instances")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_instances")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceInstanceQuery) DeleteAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceInstancePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `service_instances` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceInstancePrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceInstance slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_instances")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceInstanceReloader interface {
+	Reload(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceInstanceQuery) Reload(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceInstance(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceInstanceQuery) ReloadAll(o *ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceInstanceSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceInstancePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `service_instances`.* FROM `service_instances` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceInstancePrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceInstanceSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceInstanceExists checks if the ServiceInstance row exists.
+func ServiceInstanceExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `service_instances` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_instances exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLServiceInstanceUniqueColumns = []string{
 	"id",
 	"guid",
@@ -2783,10 +2698,6 @@ func (o *ServiceInstance) Upsert(ctx context.Context, exec boil.ContextExecutor,
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceInstanceColumnsWithDefault, o)
@@ -2919,172 +2830,5 @@ CacheNoHooks:
 		serviceInstanceUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceInstance record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceInstance) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceInstance provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceInstancePrimaryKeyMapping)
-	sql := "DELETE FROM `service_instances` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_instances")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_instances")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceInstanceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceInstanceQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_instances")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_instances")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceInstanceSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceInstanceBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceInstancePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `service_instances` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceInstancePrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceInstance slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_instances")
-	}
-
-	if len(serviceInstanceAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceInstance) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceInstance(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceInstanceSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceInstanceSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceInstancePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `service_instances`.* FROM `service_instances` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, serviceInstancePrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceInstanceSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceInstanceExists checks if the ServiceInstance row exists.
-func ServiceInstanceExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `service_instances` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_instances exists")
-	}
-
-	return exists, nil
 }

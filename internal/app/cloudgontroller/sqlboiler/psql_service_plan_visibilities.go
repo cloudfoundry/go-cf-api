@@ -120,10 +120,8 @@ type (
 	// ServicePlanVisibilitySlice is an alias for a slice of pointers to ServicePlanVisibility.
 	// This should almost always be used instead of []ServicePlanVisibility.
 	ServicePlanVisibilitySlice []*ServicePlanVisibility
-	// ServicePlanVisibilityHook is the signature for custom ServicePlanVisibility hook methods
-	ServicePlanVisibilityHook func(context.Context, boil.ContextExecutor, *ServicePlanVisibility) error
 
-	servicePlanVisibilityQuery struct {
+	ServicePlanVisibilityQuery struct {
 		*queries.Query
 	}
 )
@@ -149,178 +147,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var servicePlanVisibilityBeforeInsertHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityBeforeUpdateHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityBeforeDeleteHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityBeforeUpsertHooks []ServicePlanVisibilityHook
-
-var servicePlanVisibilityAfterInsertHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityAfterSelectHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityAfterUpdateHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityAfterDeleteHooks []ServicePlanVisibilityHook
-var servicePlanVisibilityAfterUpsertHooks []ServicePlanVisibilityHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServicePlanVisibility) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServicePlanVisibility) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServicePlanVisibility) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServicePlanVisibility) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServicePlanVisibility) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServicePlanVisibility) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServicePlanVisibility) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServicePlanVisibility) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServicePlanVisibility) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range servicePlanVisibilityAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServicePlanVisibilityHook registers your hook function for all future operations.
-func AddServicePlanVisibilityHook(hookPoint boil.HookPoint, servicePlanVisibilityHook ServicePlanVisibilityHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		servicePlanVisibilityBeforeInsertHooks = append(servicePlanVisibilityBeforeInsertHooks, servicePlanVisibilityHook)
-	case boil.BeforeUpdateHook:
-		servicePlanVisibilityBeforeUpdateHooks = append(servicePlanVisibilityBeforeUpdateHooks, servicePlanVisibilityHook)
-	case boil.BeforeDeleteHook:
-		servicePlanVisibilityBeforeDeleteHooks = append(servicePlanVisibilityBeforeDeleteHooks, servicePlanVisibilityHook)
-	case boil.BeforeUpsertHook:
-		servicePlanVisibilityBeforeUpsertHooks = append(servicePlanVisibilityBeforeUpsertHooks, servicePlanVisibilityHook)
-	case boil.AfterInsertHook:
-		servicePlanVisibilityAfterInsertHooks = append(servicePlanVisibilityAfterInsertHooks, servicePlanVisibilityHook)
-	case boil.AfterSelectHook:
-		servicePlanVisibilityAfterSelectHooks = append(servicePlanVisibilityAfterSelectHooks, servicePlanVisibilityHook)
-	case boil.AfterUpdateHook:
-		servicePlanVisibilityAfterUpdateHooks = append(servicePlanVisibilityAfterUpdateHooks, servicePlanVisibilityHook)
-	case boil.AfterDeleteHook:
-		servicePlanVisibilityAfterDeleteHooks = append(servicePlanVisibilityAfterDeleteHooks, servicePlanVisibilityHook)
-	case boil.AfterUpsertHook:
-		servicePlanVisibilityAfterUpsertHooks = append(servicePlanVisibilityAfterUpsertHooks, servicePlanVisibilityHook)
-	}
+type ServicePlanVisibilityFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlanVisibility, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanVisibilitySlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single servicePlanVisibility record from the query.
-func (q servicePlanVisibilityQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlanVisibility, error) {
+func (q ServicePlanVisibilityQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlanVisibility, error) {
 	o := &ServicePlanVisibility{}
 
 	queries.SetLimit(q.Query, 1)
@@ -333,15 +168,11 @@ func (q servicePlanVisibilityQuery) One(ctx context.Context, exec boil.ContextEx
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_plan_visibilities")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServicePlanVisibility records from the query.
-func (q servicePlanVisibilityQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanVisibilitySlice, error) {
+func (q ServicePlanVisibilityQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanVisibilitySlice, error) {
 	var o []*ServicePlanVisibility
 
 	err := q.Bind(ctx, exec, &o)
@@ -349,19 +180,11 @@ func (q servicePlanVisibilityQuery) All(ctx context.Context, exec boil.ContextEx
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServicePlanVisibility slice")
 	}
 
-	if len(servicePlanVisibilityAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServicePlanVisibility records in the query.
-func (q servicePlanVisibilityQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServicePlanVisibilityQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -376,7 +199,7 @@ func (q servicePlanVisibilityQuery) Count(ctx context.Context, exec boil.Context
 }
 
 // Exists checks if the row exists in the table.
-func (q servicePlanVisibilityQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServicePlanVisibilityQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -392,7 +215,7 @@ func (q servicePlanVisibilityQuery) Exists(ctx context.Context, exec boil.Contex
 }
 
 // Organization pointed to by the foreign key.
-func (o *ServicePlanVisibility) Organization(mods ...qm.QueryMod) organizationQuery {
+func (q ServicePlanVisibilityQuery) Organization(o *ServicePlanVisibility, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.OrganizationID),
 	}
@@ -406,7 +229,7 @@ func (o *ServicePlanVisibility) Organization(mods ...qm.QueryMod) organizationQu
 }
 
 // ServicePlan pointed to by the foreign key.
-func (o *ServicePlanVisibility) ServicePlan(mods ...qm.QueryMod) servicePlanQuery {
+func (q ServicePlanVisibilityQuery) ServicePlan(o *ServicePlanVisibility, mods ...qm.QueryMod) ServicePlanQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.ServicePlanID),
 	}
@@ -483,14 +306,6 @@ func (servicePlanVisibilityL) LoadOrganization(ctx context.Context, e boil.Conte
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(servicePlanVisibilityAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -589,14 +404,6 @@ func (servicePlanVisibilityL) LoadServicePlan(ctx context.Context, e boil.Contex
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_plans")
 	}
 
-	if len(servicePlanVisibilityAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -630,10 +437,10 @@ func (servicePlanVisibilityL) LoadServicePlan(ctx context.Context, e boil.Contex
 // SetOrganization of the servicePlanVisibility to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.ServicePlanVisibilities.
-func (o *ServicePlanVisibility) SetOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q ServicePlanVisibilityQuery) SetOrganization(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -677,10 +484,10 @@ func (o *ServicePlanVisibility) SetOrganization(ctx context.Context, exec boil.C
 // SetServicePlan of the servicePlanVisibility to the related item.
 // Sets o.R.ServicePlan to related.
 // Adds o to related.R.ServicePlanVisibilities.
-func (o *ServicePlanVisibility) SetServicePlan(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
+func (q ServicePlanVisibilityQuery) SetServicePlan(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = ServicePlans().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -722,9 +529,13 @@ func (o *ServicePlanVisibility) SetServicePlan(ctx context.Context, exec boil.Co
 }
 
 // ServicePlanVisibilities retrieves all the records using an executor.
-func ServicePlanVisibilities(mods ...qm.QueryMod) servicePlanVisibilityQuery {
+func ServicePlanVisibilities(mods ...qm.QueryMod) ServicePlanVisibilityQuery {
 	mods = append(mods, qm.From("\"service_plan_visibilities\""))
-	return servicePlanVisibilityQuery{NewQuery(mods...)}
+	return ServicePlanVisibilityQuery{NewQuery(mods...)}
+}
+
+type ServicePlanVisibilityFinder interface {
+	FindServicePlanVisibility(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServicePlanVisibility, error)
 }
 
 // FindServicePlanVisibility retrieves a single record by ID with an executor.
@@ -750,16 +561,16 @@ func FindServicePlanVisibility(ctx context.Context, exec boil.ContextExecutor, i
 		return nil, errors.Wrap(err, "models: unable to select from service_plan_visibilities")
 	}
 
-	if err = servicePlanVisibilityObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return servicePlanVisibilityObj, err
-	}
-
 	return servicePlanVisibilityObj, nil
+}
+
+type ServicePlanVisibilityInserter interface {
+	Insert(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServicePlanVisibility) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServicePlanVisibilityQuery) Insert(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_plan_visibilities provided for insertion")
 	}
@@ -774,10 +585,6 @@ func (o *ServicePlanVisibility) Insert(ctx context.Context, exec boil.ContextExe
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(servicePlanVisibilityColumnsWithDefault, o)
@@ -843,13 +650,19 @@ func (o *ServicePlanVisibility) Insert(ctx context.Context, exec boil.ContextExe
 		servicePlanVisibilityInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServicePlanVisibilityUpdater interface {
+	Update(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServicePlanVisibility.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServicePlanVisibility) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServicePlanVisibilityQuery) Update(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -857,9 +670,6 @@ func (o *ServicePlanVisibility) Update(ctx context.Context, exec boil.ContextExe
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	servicePlanVisibilityUpdateCacheMut.RLock()
 	cache, cached := servicePlanVisibilityUpdateCache[key]
@@ -912,11 +722,11 @@ func (o *ServicePlanVisibility) Update(ctx context.Context, exec boil.ContextExe
 		servicePlanVisibilityUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q servicePlanVisibilityQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServicePlanVisibilityQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -933,7 +743,7 @@ func (q servicePlanVisibilityQuery) UpdateAll(ctx context.Context, exec boil.Con
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServicePlanVisibilitySlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServicePlanVisibilityQuery) UpdateAllSlice(o ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -980,6 +790,160 @@ func (o ServicePlanVisibilitySlice) UpdateAll(ctx context.Context, exec boil.Con
 	return rowsAff, nil
 }
 
+type ServicePlanVisibilityDeleter interface {
+	Delete(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServicePlanVisibility record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServicePlanVisibilityQuery) Delete(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServicePlanVisibility provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), servicePlanVisibilityPrimaryKeyMapping)
+	sql := "DELETE FROM \"service_plan_visibilities\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_plan_visibilities")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_plan_visibilities")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServicePlanVisibilityQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no servicePlanVisibilityQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_plan_visibilities")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_plan_visibilities")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServicePlanVisibilityQuery) DeleteAllSlice(o ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), servicePlanVisibilityPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"service_plan_visibilities\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, servicePlanVisibilityPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from servicePlanVisibility slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_plan_visibilities")
+	}
+
+	return rowsAff, nil
+}
+
+type ServicePlanVisibilityReloader interface {
+	Reload(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServicePlanVisibilityQuery) Reload(o *ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServicePlanVisibility(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServicePlanVisibilityQuery) ReloadAll(o *ServicePlanVisibilitySlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServicePlanVisibilitySlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), servicePlanVisibilityPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"service_plan_visibilities\".* FROM \"service_plan_visibilities\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, servicePlanVisibilityPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServicePlanVisibilitySlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServicePlanVisibilityExists checks if the ServicePlanVisibility row exists.
+func ServicePlanVisibilityExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"service_plan_visibilities\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_plan_visibilities exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *ServicePlanVisibility) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -993,10 +957,6 @@ func (o *ServicePlanVisibility) Upsert(ctx context.Context, exec boil.ContextExe
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(servicePlanVisibilityColumnsWithDefault, o)
@@ -1100,172 +1060,5 @@ func (o *ServicePlanVisibility) Upsert(ctx context.Context, exec boil.ContextExe
 		servicePlanVisibilityUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServicePlanVisibility record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServicePlanVisibility) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServicePlanVisibility provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), servicePlanVisibilityPrimaryKeyMapping)
-	sql := "DELETE FROM \"service_plan_visibilities\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_plan_visibilities")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_plan_visibilities")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q servicePlanVisibilityQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no servicePlanVisibilityQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_plan_visibilities")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_plan_visibilities")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServicePlanVisibilitySlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(servicePlanVisibilityBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), servicePlanVisibilityPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"service_plan_visibilities\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, servicePlanVisibilityPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from servicePlanVisibility slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_plan_visibilities")
-	}
-
-	if len(servicePlanVisibilityAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServicePlanVisibility) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServicePlanVisibility(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServicePlanVisibilitySlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServicePlanVisibilitySlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), servicePlanVisibilityPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"service_plan_visibilities\".* FROM \"service_plan_visibilities\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, servicePlanVisibilityPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServicePlanVisibilitySlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServicePlanVisibilityExists checks if the ServicePlanVisibility row exists.
-func ServicePlanVisibilityExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"service_plan_visibilities\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_plan_visibilities exists")
-	}
-
-	return exists, nil
 }

@@ -134,10 +134,8 @@ type (
 	// EnvGroupSlice is an alias for a slice of pointers to EnvGroup.
 	// This should almost always be used instead of []EnvGroup.
 	EnvGroupSlice []*EnvGroup
-	// EnvGroupHook is the signature for custom EnvGroup hook methods
-	EnvGroupHook func(context.Context, boil.ContextExecutor, *EnvGroup) error
 
-	envGroupQuery struct {
+	EnvGroupQuery struct {
 		*queries.Query
 	}
 )
@@ -163,178 +161,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var envGroupBeforeInsertHooks []EnvGroupHook
-var envGroupBeforeUpdateHooks []EnvGroupHook
-var envGroupBeforeDeleteHooks []EnvGroupHook
-var envGroupBeforeUpsertHooks []EnvGroupHook
-
-var envGroupAfterInsertHooks []EnvGroupHook
-var envGroupAfterSelectHooks []EnvGroupHook
-var envGroupAfterUpdateHooks []EnvGroupHook
-var envGroupAfterDeleteHooks []EnvGroupHook
-var envGroupAfterUpsertHooks []EnvGroupHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *EnvGroup) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *EnvGroup) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *EnvGroup) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *EnvGroup) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *EnvGroup) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *EnvGroup) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *EnvGroup) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *EnvGroup) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *EnvGroup) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range envGroupAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddEnvGroupHook registers your hook function for all future operations.
-func AddEnvGroupHook(hookPoint boil.HookPoint, envGroupHook EnvGroupHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		envGroupBeforeInsertHooks = append(envGroupBeforeInsertHooks, envGroupHook)
-	case boil.BeforeUpdateHook:
-		envGroupBeforeUpdateHooks = append(envGroupBeforeUpdateHooks, envGroupHook)
-	case boil.BeforeDeleteHook:
-		envGroupBeforeDeleteHooks = append(envGroupBeforeDeleteHooks, envGroupHook)
-	case boil.BeforeUpsertHook:
-		envGroupBeforeUpsertHooks = append(envGroupBeforeUpsertHooks, envGroupHook)
-	case boil.AfterInsertHook:
-		envGroupAfterInsertHooks = append(envGroupAfterInsertHooks, envGroupHook)
-	case boil.AfterSelectHook:
-		envGroupAfterSelectHooks = append(envGroupAfterSelectHooks, envGroupHook)
-	case boil.AfterUpdateHook:
-		envGroupAfterUpdateHooks = append(envGroupAfterUpdateHooks, envGroupHook)
-	case boil.AfterDeleteHook:
-		envGroupAfterDeleteHooks = append(envGroupAfterDeleteHooks, envGroupHook)
-	case boil.AfterUpsertHook:
-		envGroupAfterUpsertHooks = append(envGroupAfterUpsertHooks, envGroupHook)
-	}
+type EnvGroupFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*EnvGroup, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (EnvGroupSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single envGroup record from the query.
-func (q envGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EnvGroup, error) {
+func (q EnvGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EnvGroup, error) {
 	o := &EnvGroup{}
 
 	queries.SetLimit(q.Query, 1)
@@ -347,15 +182,11 @@ func (q envGroupQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Env
 		return nil, errors.Wrap(err, "models: failed to execute a one query for env_groups")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all EnvGroup records from the query.
-func (q envGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) (EnvGroupSlice, error) {
+func (q EnvGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) (EnvGroupSlice, error) {
 	var o []*EnvGroup
 
 	err := q.Bind(ctx, exec, &o)
@@ -363,19 +194,11 @@ func (q envGroupQuery) All(ctx context.Context, exec boil.ContextExecutor) (EnvG
 		return nil, errors.Wrap(err, "models: failed to assign all query results to EnvGroup slice")
 	}
 
-	if len(envGroupAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all EnvGroup records in the query.
-func (q envGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q EnvGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -390,7 +213,7 @@ func (q envGroupQuery) Count(ctx context.Context, exec boil.ContextExecutor) (in
 }
 
 // Exists checks if the row exists in the table.
-func (q envGroupQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q EnvGroupQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -406,9 +229,13 @@ func (q envGroupQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 }
 
 // EnvGroups retrieves all the records using an executor.
-func EnvGroups(mods ...qm.QueryMod) envGroupQuery {
+func EnvGroups(mods ...qm.QueryMod) EnvGroupQuery {
 	mods = append(mods, qm.From("`env_groups`"))
-	return envGroupQuery{NewQuery(mods...)}
+	return EnvGroupQuery{NewQuery(mods...)}
+}
+
+type EnvGroupFinder interface {
+	FindEnvGroup(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*EnvGroup, error)
 }
 
 // FindEnvGroup retrieves a single record by ID with an executor.
@@ -434,16 +261,16 @@ func FindEnvGroup(ctx context.Context, exec boil.ContextExecutor, iD int, select
 		return nil, errors.Wrap(err, "models: unable to select from env_groups")
 	}
 
-	if err = envGroupObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return envGroupObj, err
-	}
-
 	return envGroupObj, nil
+}
+
+type EnvGroupInserter interface {
+	Insert(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *EnvGroup) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q EnvGroupQuery) Insert(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no env_groups provided for insertion")
 	}
@@ -458,10 +285,6 @@ func (o *EnvGroup) Insert(ctx context.Context, exec boil.ContextExecutor, column
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(envGroupColumnsWithDefault, o)
@@ -554,13 +377,19 @@ CacheNoHooks:
 		envGroupInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type EnvGroupUpdater interface {
+	Update(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the EnvGroup.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *EnvGroup) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q EnvGroupQuery) Update(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -568,9 +397,6 @@ func (o *EnvGroup) Update(ctx context.Context, exec boil.ContextExecutor, column
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	envGroupUpdateCacheMut.RLock()
 	cache, cached := envGroupUpdateCache[key]
@@ -623,11 +449,11 @@ func (o *EnvGroup) Update(ctx context.Context, exec boil.ContextExecutor, column
 		envGroupUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q envGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q EnvGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -644,7 +470,7 @@ func (q envGroupQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o EnvGroupSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q EnvGroupQuery) UpdateAllSlice(o EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -691,6 +517,160 @@ func (o EnvGroupSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 	return rowsAff, nil
 }
 
+type EnvGroupDeleter interface {
+	Delete(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single EnvGroup record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q EnvGroupQuery) Delete(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no EnvGroup provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), envGroupPrimaryKeyMapping)
+	sql := "DELETE FROM `env_groups` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from env_groups")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for env_groups")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q EnvGroupQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no envGroupQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from env_groups")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for env_groups")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q EnvGroupQuery) DeleteAllSlice(o EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), envGroupPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `env_groups` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, envGroupPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from envGroup slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for env_groups")
+	}
+
+	return rowsAff, nil
+}
+
+type EnvGroupReloader interface {
+	Reload(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q EnvGroupQuery) Reload(o *EnvGroup, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindEnvGroup(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q EnvGroupQuery) ReloadAll(o *EnvGroupSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := EnvGroupSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), envGroupPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `env_groups`.* FROM `env_groups` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, envGroupPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in EnvGroupSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// EnvGroupExists checks if the EnvGroup row exists.
+func EnvGroupExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `env_groups` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if env_groups exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLEnvGroupUniqueColumns = []string{
 	"id",
 	"guid",
@@ -710,10 +690,6 @@ func (o *EnvGroup) Upsert(ctx context.Context, exec boil.ContextExecutor, update
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(envGroupColumnsWithDefault, o)
@@ -846,172 +822,5 @@ CacheNoHooks:
 		envGroupUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single EnvGroup record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *EnvGroup) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no EnvGroup provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), envGroupPrimaryKeyMapping)
-	sql := "DELETE FROM `env_groups` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from env_groups")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for env_groups")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q envGroupQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no envGroupQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from env_groups")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for env_groups")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o EnvGroupSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(envGroupBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), envGroupPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `env_groups` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, envGroupPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from envGroup slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for env_groups")
-	}
-
-	if len(envGroupAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *EnvGroup) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindEnvGroup(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *EnvGroupSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := EnvGroupSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), envGroupPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `env_groups`.* FROM `env_groups` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, envGroupPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in EnvGroupSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// EnvGroupExists checks if the EnvGroup row exists.
-func EnvGroupExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `env_groups` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if env_groups exists")
-	}
-
-	return exists, nil
 }

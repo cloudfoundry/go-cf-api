@@ -131,10 +131,8 @@ type (
 	// ServiceBrokerUpdateRequestLabelSlice is an alias for a slice of pointers to ServiceBrokerUpdateRequestLabel.
 	// This should almost always be used instead of []ServiceBrokerUpdateRequestLabel.
 	ServiceBrokerUpdateRequestLabelSlice []*ServiceBrokerUpdateRequestLabel
-	// ServiceBrokerUpdateRequestLabelHook is the signature for custom ServiceBrokerUpdateRequestLabel hook methods
-	ServiceBrokerUpdateRequestLabelHook func(context.Context, boil.ContextExecutor, *ServiceBrokerUpdateRequestLabel) error
 
-	serviceBrokerUpdateRequestLabelQuery struct {
+	ServiceBrokerUpdateRequestLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var serviceBrokerUpdateRequestLabelBeforeInsertHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelBeforeUpdateHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelBeforeDeleteHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelBeforeUpsertHooks []ServiceBrokerUpdateRequestLabelHook
-
-var serviceBrokerUpdateRequestLabelAfterInsertHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelAfterSelectHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelAfterUpdateHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelAfterDeleteHooks []ServiceBrokerUpdateRequestLabelHook
-var serviceBrokerUpdateRequestLabelAfterUpsertHooks []ServiceBrokerUpdateRequestLabelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *ServiceBrokerUpdateRequestLabel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range serviceBrokerUpdateRequestLabelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddServiceBrokerUpdateRequestLabelHook registers your hook function for all future operations.
-func AddServiceBrokerUpdateRequestLabelHook(hookPoint boil.HookPoint, serviceBrokerUpdateRequestLabelHook ServiceBrokerUpdateRequestLabelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		serviceBrokerUpdateRequestLabelBeforeInsertHooks = append(serviceBrokerUpdateRequestLabelBeforeInsertHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.BeforeUpdateHook:
-		serviceBrokerUpdateRequestLabelBeforeUpdateHooks = append(serviceBrokerUpdateRequestLabelBeforeUpdateHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.BeforeDeleteHook:
-		serviceBrokerUpdateRequestLabelBeforeDeleteHooks = append(serviceBrokerUpdateRequestLabelBeforeDeleteHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.BeforeUpsertHook:
-		serviceBrokerUpdateRequestLabelBeforeUpsertHooks = append(serviceBrokerUpdateRequestLabelBeforeUpsertHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.AfterInsertHook:
-		serviceBrokerUpdateRequestLabelAfterInsertHooks = append(serviceBrokerUpdateRequestLabelAfterInsertHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.AfterSelectHook:
-		serviceBrokerUpdateRequestLabelAfterSelectHooks = append(serviceBrokerUpdateRequestLabelAfterSelectHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.AfterUpdateHook:
-		serviceBrokerUpdateRequestLabelAfterUpdateHooks = append(serviceBrokerUpdateRequestLabelAfterUpdateHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.AfterDeleteHook:
-		serviceBrokerUpdateRequestLabelAfterDeleteHooks = append(serviceBrokerUpdateRequestLabelAfterDeleteHooks, serviceBrokerUpdateRequestLabelHook)
-	case boil.AfterUpsertHook:
-		serviceBrokerUpdateRequestLabelAfterUpsertHooks = append(serviceBrokerUpdateRequestLabelAfterUpsertHooks, serviceBrokerUpdateRequestLabelHook)
-	}
+type ServiceBrokerUpdateRequestLabelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestLabel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestLabelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single serviceBrokerUpdateRequestLabel record from the query.
-func (q serviceBrokerUpdateRequestLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestLabel, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequestLabel, error) {
 	o := &ServiceBrokerUpdateRequestLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q serviceBrokerUpdateRequestLabelQuery) One(ctx context.Context, exec boil
 		return nil, errors.Wrap(err, "models: failed to execute a one query for service_broker_update_request_labels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all ServiceBrokerUpdateRequestLabel records from the query.
-func (q serviceBrokerUpdateRequestLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestLabelSlice, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestLabelSlice, error) {
 	var o []*ServiceBrokerUpdateRequestLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q serviceBrokerUpdateRequestLabelQuery) All(ctx context.Context, exec boil
 		return nil, errors.Wrap(err, "models: failed to assign all query results to ServiceBrokerUpdateRequestLabel slice")
 	}
 
-	if len(serviceBrokerUpdateRequestLabelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all ServiceBrokerUpdateRequestLabel records in the query.
-func (q serviceBrokerUpdateRequestLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q serviceBrokerUpdateRequestLabelQuery) Count(ctx context.Context, exec bo
 }
 
 // Exists checks if the row exists in the table.
-func (q serviceBrokerUpdateRequestLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q serviceBrokerUpdateRequestLabelQuery) Exists(ctx context.Context, exec b
 }
 
 // Resource pointed to by the foreign key.
-func (o *ServiceBrokerUpdateRequestLabel) Resource(mods ...qm.QueryMod) serviceBrokerUpdateRequestQuery {
+func (q ServiceBrokerUpdateRequestLabelQuery) Resource(o *ServiceBrokerUpdateRequestLabel, mods ...qm.QueryMod) ServiceBrokerUpdateRequestQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (serviceBrokerUpdateRequestLabelL) LoadResource(ctx context.Context, e boil
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for service_broker_update_requests")
 	}
 
-	if len(serviceBrokerUpdateRequestLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (serviceBrokerUpdateRequestLabelL) LoadResource(ctx context.Context, e boil
 // SetResource of the serviceBrokerUpdateRequestLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceBrokerUpdateRequestLabels.
-func (o *ServiceBrokerUpdateRequestLabel) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBrokerUpdateRequest) error {
+func (q ServiceBrokerUpdateRequestLabelQuery) SetResource(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBrokerUpdateRequest) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = ServiceBrokerUpdateRequests().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *ServiceBrokerUpdateRequestLabel) SetResource(ctx context.Context, exec 
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *ServiceBrokerUpdateRequestLabel) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *ServiceBrokerUpdateRequest) error {
+func (q ServiceBrokerUpdateRequestLabelQuery) RemoveResource(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, related *ServiceBrokerUpdateRequest) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *ServiceBrokerUpdateRequestLabel) RemoveResource(ctx context.Context, ex
 }
 
 // ServiceBrokerUpdateRequestLabels retrieves all the records using an executor.
-func ServiceBrokerUpdateRequestLabels(mods ...qm.QueryMod) serviceBrokerUpdateRequestLabelQuery {
+func ServiceBrokerUpdateRequestLabels(mods ...qm.QueryMod) ServiceBrokerUpdateRequestLabelQuery {
 	mods = append(mods, qm.From("\"service_broker_update_request_labels\""))
-	return serviceBrokerUpdateRequestLabelQuery{NewQuery(mods...)}
+	return ServiceBrokerUpdateRequestLabelQuery{NewQuery(mods...)}
+}
+
+type ServiceBrokerUpdateRequestLabelFinder interface {
+	FindServiceBrokerUpdateRequestLabel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*ServiceBrokerUpdateRequestLabel, error)
 }
 
 // FindServiceBrokerUpdateRequestLabel retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindServiceBrokerUpdateRequestLabel(ctx context.Context, exec boil.ContextE
 		return nil, errors.Wrap(err, "models: unable to select from service_broker_update_request_labels")
 	}
 
-	if err = serviceBrokerUpdateRequestLabelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return serviceBrokerUpdateRequestLabelObj, err
-	}
-
 	return serviceBrokerUpdateRequestLabelObj, nil
+}
+
+type ServiceBrokerUpdateRequestLabelInserter interface {
+	Insert(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *ServiceBrokerUpdateRequestLabel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q ServiceBrokerUpdateRequestLabelQuery) Insert(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_broker_update_request_labels provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *ServiceBrokerUpdateRequestLabel) Insert(ctx context.Context, exec boil.
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBrokerUpdateRequestLabelColumnsWithDefault, o)
@@ -726,13 +541,19 @@ func (o *ServiceBrokerUpdateRequestLabel) Insert(ctx context.Context, exec boil.
 		serviceBrokerUpdateRequestLabelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type ServiceBrokerUpdateRequestLabelUpdater interface {
+	Update(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the ServiceBrokerUpdateRequestLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *ServiceBrokerUpdateRequestLabel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) Update(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -740,9 +561,6 @@ func (o *ServiceBrokerUpdateRequestLabel) Update(ctx context.Context, exec boil.
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	serviceBrokerUpdateRequestLabelUpdateCacheMut.RLock()
 	cache, cached := serviceBrokerUpdateRequestLabelUpdateCache[key]
@@ -795,11 +613,11 @@ func (o *ServiceBrokerUpdateRequestLabel) Update(ctx context.Context, exec boil.
 		serviceBrokerUpdateRequestLabelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q serviceBrokerUpdateRequestLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -816,7 +634,7 @@ func (q serviceBrokerUpdateRequestLabelQuery) UpdateAll(ctx context.Context, exe
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o ServiceBrokerUpdateRequestLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q ServiceBrokerUpdateRequestLabelQuery) UpdateAllSlice(o ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -863,6 +681,160 @@ func (o ServiceBrokerUpdateRequestLabelSlice) UpdateAll(ctx context.Context, exe
 	return rowsAff, nil
 }
 
+type ServiceBrokerUpdateRequestLabelDeleter interface {
+	Delete(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single ServiceBrokerUpdateRequestLabel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q ServiceBrokerUpdateRequestLabelQuery) Delete(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no ServiceBrokerUpdateRequestLabel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
+	sql := "DELETE FROM \"service_broker_update_request_labels\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from service_broker_update_request_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_broker_update_request_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q ServiceBrokerUpdateRequestLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no serviceBrokerUpdateRequestLabelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from service_broker_update_request_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q ServiceBrokerUpdateRequestLabelQuery) DeleteAllSlice(o ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"service_broker_update_request_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBrokerUpdateRequestLabelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from serviceBrokerUpdateRequestLabel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_labels")
+	}
+
+	return rowsAff, nil
+}
+
+type ServiceBrokerUpdateRequestLabelReloader interface {
+	Reload(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q ServiceBrokerUpdateRequestLabelQuery) Reload(o *ServiceBrokerUpdateRequestLabel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindServiceBrokerUpdateRequestLabel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q ServiceBrokerUpdateRequestLabelQuery) ReloadAll(o *ServiceBrokerUpdateRequestLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := ServiceBrokerUpdateRequestLabelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"service_broker_update_request_labels\".* FROM \"service_broker_update_request_labels\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBrokerUpdateRequestLabelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in ServiceBrokerUpdateRequestLabelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// ServiceBrokerUpdateRequestLabelExists checks if the ServiceBrokerUpdateRequestLabel row exists.
+func ServiceBrokerUpdateRequestLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"service_broker_update_request_labels\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if service_broker_update_request_labels exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *ServiceBrokerUpdateRequestLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -876,10 +848,6 @@ func (o *ServiceBrokerUpdateRequestLabel) Upsert(ctx context.Context, exec boil.
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(serviceBrokerUpdateRequestLabelColumnsWithDefault, o)
@@ -983,172 +951,5 @@ func (o *ServiceBrokerUpdateRequestLabel) Upsert(ctx context.Context, exec boil.
 		serviceBrokerUpdateRequestLabelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single ServiceBrokerUpdateRequestLabel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *ServiceBrokerUpdateRequestLabel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no ServiceBrokerUpdateRequestLabel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
-	sql := "DELETE FROM \"service_broker_update_request_labels\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from service_broker_update_request_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for service_broker_update_request_labels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q serviceBrokerUpdateRequestLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no serviceBrokerUpdateRequestLabelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from service_broker_update_request_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_labels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o ServiceBrokerUpdateRequestLabelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(serviceBrokerUpdateRequestLabelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"service_broker_update_request_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBrokerUpdateRequestLabelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from serviceBrokerUpdateRequestLabel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for service_broker_update_request_labels")
-	}
-
-	if len(serviceBrokerUpdateRequestLabelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *ServiceBrokerUpdateRequestLabel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindServiceBrokerUpdateRequestLabel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *ServiceBrokerUpdateRequestLabelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := ServiceBrokerUpdateRequestLabelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), serviceBrokerUpdateRequestLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"service_broker_update_request_labels\".* FROM \"service_broker_update_request_labels\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, serviceBrokerUpdateRequestLabelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in ServiceBrokerUpdateRequestLabelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// ServiceBrokerUpdateRequestLabelExists checks if the ServiceBrokerUpdateRequestLabel row exists.
-func ServiceBrokerUpdateRequestLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"service_broker_update_request_labels\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if service_broker_update_request_labels exists")
-	}
-
-	return exists, nil
 }

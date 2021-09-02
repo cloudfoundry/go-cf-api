@@ -193,10 +193,8 @@ type (
 	// PackageSlice is an alias for a slice of pointers to Package.
 	// This should almost always be used instead of []Package.
 	PackageSlice []*Package
-	// PackageHook is the signature for custom Package hook methods
-	PackageHook func(context.Context, boil.ContextExecutor, *Package) error
 
-	packageQuery struct {
+	PackageQuery struct {
 		*queries.Query
 	}
 )
@@ -222,178 +220,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var packageBeforeInsertHooks []PackageHook
-var packageBeforeUpdateHooks []PackageHook
-var packageBeforeDeleteHooks []PackageHook
-var packageBeforeUpsertHooks []PackageHook
-
-var packageAfterInsertHooks []PackageHook
-var packageAfterSelectHooks []PackageHook
-var packageAfterUpdateHooks []PackageHook
-var packageAfterDeleteHooks []PackageHook
-var packageAfterUpsertHooks []PackageHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Package) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Package) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Package) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Package) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Package) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Package) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Package) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Package) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Package) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range packageAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddPackageHook registers your hook function for all future operations.
-func AddPackageHook(hookPoint boil.HookPoint, packageHook PackageHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		packageBeforeInsertHooks = append(packageBeforeInsertHooks, packageHook)
-	case boil.BeforeUpdateHook:
-		packageBeforeUpdateHooks = append(packageBeforeUpdateHooks, packageHook)
-	case boil.BeforeDeleteHook:
-		packageBeforeDeleteHooks = append(packageBeforeDeleteHooks, packageHook)
-	case boil.BeforeUpsertHook:
-		packageBeforeUpsertHooks = append(packageBeforeUpsertHooks, packageHook)
-	case boil.AfterInsertHook:
-		packageAfterInsertHooks = append(packageAfterInsertHooks, packageHook)
-	case boil.AfterSelectHook:
-		packageAfterSelectHooks = append(packageAfterSelectHooks, packageHook)
-	case boil.AfterUpdateHook:
-		packageAfterUpdateHooks = append(packageAfterUpdateHooks, packageHook)
-	case boil.AfterDeleteHook:
-		packageAfterDeleteHooks = append(packageAfterDeleteHooks, packageHook)
-	case boil.AfterUpsertHook:
-		packageAfterUpsertHooks = append(packageAfterUpsertHooks, packageHook)
-	}
+type PackageFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Package, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (PackageSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single package record from the query.
-func (q packageQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Package, error) {
+func (q PackageQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Package, error) {
 	o := &Package{}
 
 	queries.SetLimit(q.Query, 1)
@@ -406,15 +241,11 @@ func (q packageQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Pack
 		return nil, errors.Wrap(err, "models: failed to execute a one query for packages")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Package records from the query.
-func (q packageQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageSlice, error) {
+func (q PackageQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageSlice, error) {
 	var o []*Package
 
 	err := q.Bind(ctx, exec, &o)
@@ -422,19 +253,11 @@ func (q packageQuery) All(ctx context.Context, exec boil.ContextExecutor) (Packa
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Package slice")
 	}
 
-	if len(packageAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Package records in the query.
-func (q packageQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q PackageQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -449,7 +272,7 @@ func (q packageQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q packageQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q PackageQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -465,7 +288,7 @@ func (q packageQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // App pointed to by the foreign key.
-func (o *Package) App(mods ...qm.QueryMod) appQuery {
+func (q PackageQuery) App(o *Package, mods ...qm.QueryMod) AppQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.AppGUID),
 	}
@@ -479,7 +302,7 @@ func (o *Package) App(mods ...qm.QueryMod) appQuery {
 }
 
 // ResourcePackageAnnotations retrieves all the package_annotation's PackageAnnotations with an executor via resource_guid column.
-func (o *Package) ResourcePackageAnnotations(mods ...qm.QueryMod) packageAnnotationQuery {
+func (q PackageQuery) ResourcePackageAnnotations(o *Package, mods ...qm.QueryMod) PackageAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -500,7 +323,7 @@ func (o *Package) ResourcePackageAnnotations(mods ...qm.QueryMod) packageAnnotat
 }
 
 // ResourcePackageLabels retrieves all the package_label's PackageLabels with an executor via resource_guid column.
-func (o *Package) ResourcePackageLabels(mods ...qm.QueryMod) packageLabelQuery {
+func (q PackageQuery) ResourcePackageLabels(o *Package, mods ...qm.QueryMod) PackageLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -588,14 +411,6 @@ func (packageL) LoadApp(ctx context.Context, e boil.ContextExecutor, singular bo
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for apps")
-	}
-
-	if len(packageAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -692,13 +507,6 @@ func (packageL) LoadResourcePackageAnnotations(ctx context.Context, e boil.Conte
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for package_annotations")
 	}
 
-	if len(packageAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourcePackageAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -790,13 +598,6 @@ func (packageL) LoadResourcePackageLabels(ctx context.Context, e boil.ContextExe
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for package_labels")
 	}
 
-	if len(packageLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourcePackageLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -827,10 +628,10 @@ func (packageL) LoadResourcePackageLabels(ctx context.Context, e boil.ContextExe
 // SetApp of the package to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Packages.
-func (o *Package) SetApp(ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q PackageQuery) SetApp(o *Package, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -874,11 +675,11 @@ func (o *Package) SetApp(ctx context.Context, exec boil.ContextExecutor, insert 
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Package) RemoveApp(ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q PackageQuery) RemoveApp(o *Package, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("app_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("app_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -908,12 +709,12 @@ func (o *Package) RemoveApp(ctx context.Context, exec boil.ContextExecutor, rela
 // of the package, optionally inserting them as new records.
 // Appends related to o.R.ResourcePackageAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Package) AddResourcePackageAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageAnnotation) error {
+func (q PackageQuery) AddResourcePackageAnnotations(o *Package, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = PackageAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -963,7 +764,7 @@ func (o *Package) AddResourcePackageAnnotations(ctx context.Context, exec boil.C
 // Sets o.R.Resource's ResourcePackageAnnotations accordingly.
 // Replaces o.R.ResourcePackageAnnotations with related.
 // Sets related.R.Resource's ResourcePackageAnnotations accordingly.
-func (o *Package) SetResourcePackageAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageAnnotation) error {
+func (q PackageQuery) SetResourcePackageAnnotations(o *Package, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageAnnotation) error {
 	query := "update \"package_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -988,13 +789,13 @@ func (o *Package) SetResourcePackageAnnotations(ctx context.Context, exec boil.C
 
 		o.R.ResourcePackageAnnotations = nil
 	}
-	return o.AddResourcePackageAnnotations(ctx, exec, insert, related...)
+	return q.AddResourcePackageAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourcePackageAnnotations relationships from objects passed in.
 // Removes related items from R.ResourcePackageAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Package) RemoveResourcePackageAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*PackageAnnotation) error {
+func (q PackageQuery) RemoveResourcePackageAnnotations(o *Package, ctx context.Context, exec boil.ContextExecutor, related ...*PackageAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1005,7 +806,7 @@ func (o *Package) RemoveResourcePackageAnnotations(ctx context.Context, exec boi
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = PackageAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1035,12 +836,12 @@ func (o *Package) RemoveResourcePackageAnnotations(ctx context.Context, exec boi
 // of the package, optionally inserting them as new records.
 // Appends related to o.R.ResourcePackageLabels.
 // Sets related.R.Resource appropriately.
-func (o *Package) AddResourcePackageLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageLabel) error {
+func (q PackageQuery) AddResourcePackageLabels(o *Package, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = PackageLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1090,7 +891,7 @@ func (o *Package) AddResourcePackageLabels(ctx context.Context, exec boil.Contex
 // Sets o.R.Resource's ResourcePackageLabels accordingly.
 // Replaces o.R.ResourcePackageLabels with related.
 // Sets related.R.Resource's ResourcePackageLabels accordingly.
-func (o *Package) SetResourcePackageLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageLabel) error {
+func (q PackageQuery) SetResourcePackageLabels(o *Package, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*PackageLabel) error {
 	query := "update \"package_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1115,13 +916,13 @@ func (o *Package) SetResourcePackageLabels(ctx context.Context, exec boil.Contex
 
 		o.R.ResourcePackageLabels = nil
 	}
-	return o.AddResourcePackageLabels(ctx, exec, insert, related...)
+	return q.AddResourcePackageLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourcePackageLabels relationships from objects passed in.
 // Removes related items from R.ResourcePackageLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Package) RemoveResourcePackageLabels(ctx context.Context, exec boil.ContextExecutor, related ...*PackageLabel) error {
+func (q PackageQuery) RemoveResourcePackageLabels(o *Package, ctx context.Context, exec boil.ContextExecutor, related ...*PackageLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1132,7 +933,7 @@ func (o *Package) RemoveResourcePackageLabels(ctx context.Context, exec boil.Con
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = PackageLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1159,9 +960,13 @@ func (o *Package) RemoveResourcePackageLabels(ctx context.Context, exec boil.Con
 }
 
 // Packages retrieves all the records using an executor.
-func Packages(mods ...qm.QueryMod) packageQuery {
+func Packages(mods ...qm.QueryMod) PackageQuery {
 	mods = append(mods, qm.From("\"packages\""))
-	return packageQuery{NewQuery(mods...)}
+	return PackageQuery{NewQuery(mods...)}
+}
+
+type PackageFinder interface {
+	FindPackage(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Package, error)
 }
 
 // FindPackage retrieves a single record by ID with an executor.
@@ -1187,16 +992,16 @@ func FindPackage(ctx context.Context, exec boil.ContextExecutor, iD int, selectC
 		return nil, errors.Wrap(err, "models: unable to select from packages")
 	}
 
-	if err = packageObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return packageObj, err
-	}
-
 	return packageObj, nil
+}
+
+type PackageInserter interface {
+	Insert(o *Package, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Package) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q PackageQuery) Insert(o *Package, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no packages provided for insertion")
 	}
@@ -1211,10 +1016,6 @@ func (o *Package) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(packageColumnsWithDefault, o)
@@ -1280,13 +1081,19 @@ func (o *Package) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 		packageInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type PackageUpdater interface {
+	Update(o *Package, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o PackageSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Package.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Package) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q PackageQuery) Update(o *Package, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1294,9 +1101,6 @@ func (o *Package) Update(ctx context.Context, exec boil.ContextExecutor, columns
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	packageUpdateCacheMut.RLock()
 	cache, cached := packageUpdateCache[key]
@@ -1349,11 +1153,11 @@ func (o *Package) Update(ctx context.Context, exec boil.ContextExecutor, columns
 		packageUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q packageQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q PackageQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1370,7 +1174,7 @@ func (q packageQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o PackageSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q PackageQuery) UpdateAllSlice(o PackageSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1417,6 +1221,160 @@ func (o PackageSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 	return rowsAff, nil
 }
 
+type PackageDeleter interface {
+	Delete(o *Package, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o PackageSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Package record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q PackageQuery) Delete(o *Package, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Package provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), packagePrimaryKeyMapping)
+	sql := "DELETE FROM \"packages\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from packages")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for packages")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q PackageQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no packageQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from packages")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for packages")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q PackageQuery) DeleteAllSlice(o PackageSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), packagePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"packages\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, packagePrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from package slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for packages")
+	}
+
+	return rowsAff, nil
+}
+
+type PackageReloader interface {
+	Reload(o *Package, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *PackageSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q PackageQuery) Reload(o *Package, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindPackage(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q PackageQuery) ReloadAll(o *PackageSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := PackageSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), packagePrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"packages\".* FROM \"packages\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, packagePrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in PackageSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// PackageExists checks if the Package row exists.
+func PackageExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"packages\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if packages exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Package) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1430,10 +1388,6 @@ func (o *Package) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(packageColumnsWithDefault, o)
@@ -1537,172 +1491,5 @@ func (o *Package) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 		packageUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Package record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Package) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Package provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), packagePrimaryKeyMapping)
-	sql := "DELETE FROM \"packages\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from packages")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for packages")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q packageQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no packageQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from packages")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for packages")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o PackageSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(packageBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), packagePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"packages\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, packagePrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from package slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for packages")
-	}
-
-	if len(packageAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Package) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindPackage(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *PackageSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := PackageSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), packagePrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"packages\".* FROM \"packages\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, packagePrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in PackageSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// PackageExists checks if the Package row exists.
-func PackageExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"packages\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if packages exists")
-	}
-
-	return exists, nil
 }

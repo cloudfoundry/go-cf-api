@@ -159,10 +159,8 @@ type (
 	// DomainSlice is an alias for a slice of pointers to Domain.
 	// This should almost always be used instead of []Domain.
 	DomainSlice []*Domain
-	// DomainHook is the signature for custom Domain hook methods
-	DomainHook func(context.Context, boil.ContextExecutor, *Domain) error
 
-	domainQuery struct {
+	DomainQuery struct {
 		*queries.Query
 	}
 )
@@ -188,178 +186,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var domainBeforeInsertHooks []DomainHook
-var domainBeforeUpdateHooks []DomainHook
-var domainBeforeDeleteHooks []DomainHook
-var domainBeforeUpsertHooks []DomainHook
-
-var domainAfterInsertHooks []DomainHook
-var domainAfterSelectHooks []DomainHook
-var domainAfterUpdateHooks []DomainHook
-var domainAfterDeleteHooks []DomainHook
-var domainAfterUpsertHooks []DomainHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *Domain) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *Domain) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *Domain) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *Domain) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *Domain) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *Domain) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *Domain) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *Domain) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *Domain) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range domainAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDomainHook registers your hook function for all future operations.
-func AddDomainHook(hookPoint boil.HookPoint, domainHook DomainHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		domainBeforeInsertHooks = append(domainBeforeInsertHooks, domainHook)
-	case boil.BeforeUpdateHook:
-		domainBeforeUpdateHooks = append(domainBeforeUpdateHooks, domainHook)
-	case boil.BeforeDeleteHook:
-		domainBeforeDeleteHooks = append(domainBeforeDeleteHooks, domainHook)
-	case boil.BeforeUpsertHook:
-		domainBeforeUpsertHooks = append(domainBeforeUpsertHooks, domainHook)
-	case boil.AfterInsertHook:
-		domainAfterInsertHooks = append(domainAfterInsertHooks, domainHook)
-	case boil.AfterSelectHook:
-		domainAfterSelectHooks = append(domainAfterSelectHooks, domainHook)
-	case boil.AfterUpdateHook:
-		domainAfterUpdateHooks = append(domainAfterUpdateHooks, domainHook)
-	case boil.AfterDeleteHook:
-		domainAfterDeleteHooks = append(domainAfterDeleteHooks, domainHook)
-	case boil.AfterUpsertHook:
-		domainAfterUpsertHooks = append(domainAfterUpsertHooks, domainHook)
-	}
+type DomainFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*Domain, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DomainSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single domain record from the query.
-func (q domainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domain, error) {
+func (q DomainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domain, error) {
 	o := &Domain{}
 
 	queries.SetLimit(q.Query, 1)
@@ -372,15 +207,11 @@ func (q domainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domai
 		return nil, errors.Wrap(err, "models: failed to execute a one query for domains")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all Domain records from the query.
-func (q domainQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainSlice, error) {
+func (q DomainQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainSlice, error) {
 	var o []*Domain
 
 	err := q.Bind(ctx, exec, &o)
@@ -388,19 +219,11 @@ func (q domainQuery) All(ctx context.Context, exec boil.ContextExecutor) (Domain
 		return nil, errors.Wrap(err, "models: failed to assign all query results to Domain slice")
 	}
 
-	if len(domainAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all Domain records in the query.
-func (q domainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DomainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -415,7 +238,7 @@ func (q domainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int6
 }
 
 // Exists checks if the row exists in the table.
-func (q domainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DomainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -431,7 +254,7 @@ func (q domainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (boo
 }
 
 // OwningOrganization pointed to by the foreign key.
-func (o *Domain) OwningOrganization(mods ...qm.QueryMod) organizationQuery {
+func (q DomainQuery) OwningOrganization(o *Domain, mods ...qm.QueryMod) OrganizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.OwningOrganizationID),
 	}
@@ -445,7 +268,7 @@ func (o *Domain) OwningOrganization(mods ...qm.QueryMod) organizationQuery {
 }
 
 // ResourceDomainAnnotations retrieves all the domain_annotation's DomainAnnotations with an executor via resource_guid column.
-func (o *Domain) ResourceDomainAnnotations(mods ...qm.QueryMod) domainAnnotationQuery {
+func (q DomainQuery) ResourceDomainAnnotations(o *Domain, mods ...qm.QueryMod) DomainAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -466,7 +289,7 @@ func (o *Domain) ResourceDomainAnnotations(mods ...qm.QueryMod) domainAnnotation
 }
 
 // ResourceDomainLabels retrieves all the domain_label's DomainLabels with an executor via resource_guid column.
-func (o *Domain) ResourceDomainLabels(mods ...qm.QueryMod) domainLabelQuery {
+func (q DomainQuery) ResourceDomainLabels(o *Domain, mods ...qm.QueryMod) DomainLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -487,7 +310,7 @@ func (o *Domain) ResourceDomainLabels(mods ...qm.QueryMod) domainLabelQuery {
 }
 
 // PrivateDomainOrganizationsPrivateDomains retrieves all the organizations_private_domain's OrganizationsPrivateDomains with an executor via private_domain_id column.
-func (o *Domain) PrivateDomainOrganizationsPrivateDomains(mods ...qm.QueryMod) organizationsPrivateDomainQuery {
+func (q DomainQuery) PrivateDomainOrganizationsPrivateDomains(o *Domain, mods ...qm.QueryMod) OrganizationsPrivateDomainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -508,7 +331,7 @@ func (o *Domain) PrivateDomainOrganizationsPrivateDomains(mods ...qm.QueryMod) o
 }
 
 // Routes retrieves all the route's Routes with an executor.
-func (o *Domain) Routes(mods ...qm.QueryMod) routeQuery {
+func (q DomainQuery) Routes(o *Domain, mods ...qm.QueryMod) RouteQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -596,14 +419,6 @@ func (domainL) LoadOwningOrganization(ctx context.Context, e boil.ContextExecuto
 	}
 	if err = results.Err(); err != nil {
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations")
-	}
-
-	if len(domainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
 	}
 
 	if len(resultSlice) == 0 {
@@ -700,13 +515,6 @@ func (domainL) LoadResourceDomainAnnotations(ctx context.Context, e boil.Context
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for domain_annotations")
 	}
 
-	if len(domainAnnotationAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceDomainAnnotations = resultSlice
 		for _, foreign := range resultSlice {
@@ -798,13 +606,6 @@ func (domainL) LoadResourceDomainLabels(ctx context.Context, e boil.ContextExecu
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for domain_labels")
 	}
 
-	if len(domainLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.ResourceDomainLabels = resultSlice
 		for _, foreign := range resultSlice {
@@ -896,13 +697,6 @@ func (domainL) LoadPrivateDomainOrganizationsPrivateDomains(ctx context.Context,
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for organizations_private_domains")
 	}
 
-	if len(organizationsPrivateDomainAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.PrivateDomainOrganizationsPrivateDomains = resultSlice
 		for _, foreign := range resultSlice {
@@ -994,13 +788,6 @@ func (domainL) LoadRoutes(ctx context.Context, e boil.ContextExecutor, singular 
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for routes")
 	}
 
-	if len(routeAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
 	if singular {
 		object.R.Routes = resultSlice
 		for _, foreign := range resultSlice {
@@ -1031,10 +818,10 @@ func (domainL) LoadRoutes(ctx context.Context, e boil.ContextExecutor, singular 
 // SetOwningOrganization of the domain to the related item.
 // Sets o.R.OwningOrganization to related.
 // Adds o to related.R.OwningOrganizationDomains.
-func (o *Domain) SetOwningOrganization(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q DomainQuery) SetOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -1078,11 +865,11 @@ func (o *Domain) SetOwningOrganization(ctx context.Context, exec boil.ContextExe
 // RemoveOwningOrganization relationship.
 // Sets o.R.OwningOrganization to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *Domain) RemoveOwningOrganization(ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
+func (q DomainQuery) RemoveOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
 	var err error
 
 	queries.SetScanner(&o.OwningOrganizationID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("owning_organization_id")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("owning_organization_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -1112,12 +899,12 @@ func (o *Domain) RemoveOwningOrganization(ctx context.Context, exec boil.Context
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.ResourceDomainAnnotations.
 // Sets related.R.Resource appropriately.
-func (o *Domain) AddResourceDomainAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
+func (q DomainQuery) AddResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = DomainAnnotations().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1167,7 +954,7 @@ func (o *Domain) AddResourceDomainAnnotations(ctx context.Context, exec boil.Con
 // Sets o.R.Resource's ResourceDomainAnnotations accordingly.
 // Replaces o.R.ResourceDomainAnnotations with related.
 // Sets related.R.Resource's ResourceDomainAnnotations accordingly.
-func (o *Domain) SetResourceDomainAnnotations(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
+func (q DomainQuery) SetResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
 	query := "update \"domain_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1192,13 +979,13 @@ func (o *Domain) SetResourceDomainAnnotations(ctx context.Context, exec boil.Con
 
 		o.R.ResourceDomainAnnotations = nil
 	}
-	return o.AddResourceDomainAnnotations(ctx, exec, insert, related...)
+	return q.AddResourceDomainAnnotations(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceDomainAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceDomainAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Domain) RemoveResourceDomainAnnotations(ctx context.Context, exec boil.ContextExecutor, related ...*DomainAnnotation) error {
+func (q DomainQuery) RemoveResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1209,7 +996,7 @@ func (o *Domain) RemoveResourceDomainAnnotations(ctx context.Context, exec boil.
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = DomainAnnotations().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1239,12 +1026,12 @@ func (o *Domain) RemoveResourceDomainAnnotations(ctx context.Context, exec boil.
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.ResourceDomainLabels.
 // Sets related.R.Resource appropriately.
-func (o *Domain) AddResourceDomainLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
+func (q DomainQuery) AddResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			queries.Assign(&rel.ResourceGUID, o.GUID)
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = DomainLabels().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1294,7 +1081,7 @@ func (o *Domain) AddResourceDomainLabels(ctx context.Context, exec boil.ContextE
 // Sets o.R.Resource's ResourceDomainLabels accordingly.
 // Replaces o.R.ResourceDomainLabels with related.
 // Sets related.R.Resource's ResourceDomainLabels accordingly.
-func (o *Domain) SetResourceDomainLabels(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
+func (q DomainQuery) SetResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
 	query := "update \"domain_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1319,13 +1106,13 @@ func (o *Domain) SetResourceDomainLabels(ctx context.Context, exec boil.ContextE
 
 		o.R.ResourceDomainLabels = nil
 	}
-	return o.AddResourceDomainLabels(ctx, exec, insert, related...)
+	return q.AddResourceDomainLabels(o, ctx, exec, insert, related...)
 }
 
 // RemoveResourceDomainLabels relationships from objects passed in.
 // Removes related items from R.ResourceDomainLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (o *Domain) RemoveResourceDomainLabels(ctx context.Context, exec boil.ContextExecutor, related ...*DomainLabel) error {
+func (q DomainQuery) RemoveResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1336,7 +1123,7 @@ func (o *Domain) RemoveResourceDomainLabels(ctx context.Context, exec boil.Conte
 		if rel.R != nil {
 			rel.R.Resource = nil
 		}
-		if _, err = rel.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+		if _, err = DomainLabels().Update(rel, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 			return err
 		}
 	}
@@ -1366,12 +1153,12 @@ func (o *Domain) RemoveResourceDomainLabels(ctx context.Context, exec boil.Conte
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.PrivateDomainOrganizationsPrivateDomains.
 // Sets related.R.PrivateDomain appropriately.
-func (o *Domain) AddPrivateDomainOrganizationsPrivateDomains(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
+func (q DomainQuery) AddPrivateDomainOrganizationsPrivateDomains(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.PrivateDomainID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = OrganizationsPrivateDomains().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1419,12 +1206,12 @@ func (o *Domain) AddPrivateDomainOrganizationsPrivateDomains(ctx context.Context
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.Routes.
 // Sets related.R.Domain appropriately.
-func (o *Domain) AddRoutes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
+func (q DomainQuery) AddRoutes(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
 	var err error
 	for _, rel := range related {
 		if insert {
 			rel.DomainID = o.ID
-			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+			if err = Routes().Insert(rel, ctx, exec, boil.Infer()); err != nil {
 				return errors.Wrap(err, "failed to insert into foreign table")
 			}
 		} else {
@@ -1469,9 +1256,13 @@ func (o *Domain) AddRoutes(ctx context.Context, exec boil.ContextExecutor, inser
 }
 
 // Domains retrieves all the records using an executor.
-func Domains(mods ...qm.QueryMod) domainQuery {
+func Domains(mods ...qm.QueryMod) DomainQuery {
 	mods = append(mods, qm.From("\"domains\""))
-	return domainQuery{NewQuery(mods...)}
+	return DomainQuery{NewQuery(mods...)}
+}
+
+type DomainFinder interface {
+	FindDomain(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*Domain, error)
 }
 
 // FindDomain retrieves a single record by ID with an executor.
@@ -1497,16 +1288,16 @@ func FindDomain(ctx context.Context, exec boil.ContextExecutor, iD int, selectCo
 		return nil, errors.Wrap(err, "models: unable to select from domains")
 	}
 
-	if err = domainObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return domainObj, err
-	}
-
 	return domainObj, nil
+}
+
+type DomainInserter interface {
+	Insert(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *Domain) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DomainQuery) Insert(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no domains provided for insertion")
 	}
@@ -1521,10 +1312,6 @@ func (o *Domain) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(domainColumnsWithDefault, o)
@@ -1590,13 +1377,19 @@ func (o *Domain) Insert(ctx context.Context, exec boil.ContextExecutor, columns 
 		domainInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DomainUpdater interface {
+	Update(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the Domain.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *Domain) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DomainQuery) Update(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1604,9 +1397,6 @@ func (o *Domain) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	domainUpdateCacheMut.RLock()
 	cache, cached := domainUpdateCache[key]
@@ -1659,11 +1449,11 @@ func (o *Domain) Update(ctx context.Context, exec boil.ContextExecutor, columns 
 		domainUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q domainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DomainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1680,7 +1470,7 @@ func (q domainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DomainSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DomainQuery) UpdateAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1727,6 +1517,160 @@ func (o DomainSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 	return rowsAff, nil
 }
 
+type DomainDeleter interface {
+	Delete(o *Domain, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single Domain record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DomainQuery) Delete(o *Domain, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no Domain provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), domainPrimaryKeyMapping)
+	sql := "DELETE FROM \"domains\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from domains")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for domains")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DomainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no domainQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from domains")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domains")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DomainQuery) DeleteAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"domains\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, domainPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from domain slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domains")
+	}
+
+	return rowsAff, nil
+}
+
+type DomainReloader interface {
+	Reload(o *Domain, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DomainSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DomainQuery) Reload(o *Domain, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDomain(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DomainQuery) ReloadAll(o *DomainSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DomainSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"domains\".* FROM \"domains\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, domainPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DomainSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DomainExists checks if the Domain row exists.
+func DomainExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"domains\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if domains exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *Domain) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -1740,10 +1684,6 @@ func (o *Domain) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(domainColumnsWithDefault, o)
@@ -1847,172 +1787,5 @@ func (o *Domain) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOn
 		domainUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single Domain record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *Domain) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no Domain provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), domainPrimaryKeyMapping)
-	sql := "DELETE FROM \"domains\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from domains")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for domains")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q domainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no domainQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from domains")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domains")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DomainSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(domainBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"domains\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, domainPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from domain slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for domains")
-	}
-
-	if len(domainAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *Domain) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDomain(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DomainSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DomainSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), domainPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"domains\".* FROM \"domains\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, domainPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DomainSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DomainExists checks if the Domain row exists.
-func DomainExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"domains\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if domains exists")
-	}
-
-	return exists, nil
 }

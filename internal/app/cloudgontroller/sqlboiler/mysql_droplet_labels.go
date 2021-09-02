@@ -131,10 +131,8 @@ type (
 	// DropletLabelSlice is an alias for a slice of pointers to DropletLabel.
 	// This should almost always be used instead of []DropletLabel.
 	DropletLabelSlice []*DropletLabel
-	// DropletLabelHook is the signature for custom DropletLabel hook methods
-	DropletLabelHook func(context.Context, boil.ContextExecutor, *DropletLabel) error
 
-	dropletLabelQuery struct {
+	DropletLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -160,178 +158,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var dropletLabelBeforeInsertHooks []DropletLabelHook
-var dropletLabelBeforeUpdateHooks []DropletLabelHook
-var dropletLabelBeforeDeleteHooks []DropletLabelHook
-var dropletLabelBeforeUpsertHooks []DropletLabelHook
-
-var dropletLabelAfterInsertHooks []DropletLabelHook
-var dropletLabelAfterSelectHooks []DropletLabelHook
-var dropletLabelAfterUpdateHooks []DropletLabelHook
-var dropletLabelAfterDeleteHooks []DropletLabelHook
-var dropletLabelAfterUpsertHooks []DropletLabelHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DropletLabel) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DropletLabel) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DropletLabel) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DropletLabel) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DropletLabel) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DropletLabel) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DropletLabel) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DropletLabel) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DropletLabel) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range dropletLabelAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDropletLabelHook registers your hook function for all future operations.
-func AddDropletLabelHook(hookPoint boil.HookPoint, dropletLabelHook DropletLabelHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		dropletLabelBeforeInsertHooks = append(dropletLabelBeforeInsertHooks, dropletLabelHook)
-	case boil.BeforeUpdateHook:
-		dropletLabelBeforeUpdateHooks = append(dropletLabelBeforeUpdateHooks, dropletLabelHook)
-	case boil.BeforeDeleteHook:
-		dropletLabelBeforeDeleteHooks = append(dropletLabelBeforeDeleteHooks, dropletLabelHook)
-	case boil.BeforeUpsertHook:
-		dropletLabelBeforeUpsertHooks = append(dropletLabelBeforeUpsertHooks, dropletLabelHook)
-	case boil.AfterInsertHook:
-		dropletLabelAfterInsertHooks = append(dropletLabelAfterInsertHooks, dropletLabelHook)
-	case boil.AfterSelectHook:
-		dropletLabelAfterSelectHooks = append(dropletLabelAfterSelectHooks, dropletLabelHook)
-	case boil.AfterUpdateHook:
-		dropletLabelAfterUpdateHooks = append(dropletLabelAfterUpdateHooks, dropletLabelHook)
-	case boil.AfterDeleteHook:
-		dropletLabelAfterDeleteHooks = append(dropletLabelAfterDeleteHooks, dropletLabelHook)
-	case boil.AfterUpsertHook:
-		dropletLabelAfterUpsertHooks = append(dropletLabelAfterUpsertHooks, dropletLabelHook)
-	}
+type DropletLabelFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DropletLabel, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DropletLabelSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single dropletLabel record from the query.
-func (q dropletLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DropletLabel, error) {
+func (q DropletLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DropletLabel, error) {
 	o := &DropletLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -344,15 +179,11 @@ func (q dropletLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to execute a one query for droplet_labels")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DropletLabel records from the query.
-func (q dropletLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletLabelSlice, error) {
+func (q DropletLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletLabelSlice, error) {
 	var o []*DropletLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -360,19 +191,11 @@ func (q dropletLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DropletLabel slice")
 	}
 
-	if len(dropletLabelAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DropletLabel records in the query.
-func (q dropletLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DropletLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -387,7 +210,7 @@ func (q dropletLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q dropletLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DropletLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -403,7 +226,7 @@ func (q dropletLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Resource pointed to by the foreign key.
-func (o *DropletLabel) Resource(mods ...qm.QueryMod) dropletQuery {
+func (q DropletLabelQuery) Resource(o *DropletLabel, mods ...qm.QueryMod) DropletQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -486,14 +309,6 @@ func (dropletLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, s
 		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for droplets")
 	}
 
-	if len(dropletLabelAfterSelectHooks) != 0 {
-		for _, obj := range resultSlice {
-			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
-				return err
-			}
-		}
-	}
-
 	if len(resultSlice) == 0 {
 		return nil
 	}
@@ -527,10 +342,10 @@ func (dropletLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, s
 // SetResource of the dropletLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceDropletLabels.
-func (o *DropletLabel) SetResource(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Droplet) error {
+func (q DropletLabelQuery) SetResource(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Droplet) error {
 	var err error
 	if insert {
-		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+		if err = Droplets().Insert(related, ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
 		}
 	}
@@ -574,11 +389,11 @@ func (o *DropletLabel) SetResource(ctx context.Context, exec boil.ContextExecuto
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *DropletLabel) RemoveResource(ctx context.Context, exec boil.ContextExecutor, related *Droplet) error {
+func (q DropletLabelQuery) RemoveResource(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, related *Droplet) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
-	if _, err = o.Update(ctx, exec, boil.Whitelist("resource_guid")); err != nil {
+	if _, err = q.Update(o, ctx, exec, boil.Whitelist("resource_guid")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -605,9 +420,13 @@ func (o *DropletLabel) RemoveResource(ctx context.Context, exec boil.ContextExec
 }
 
 // DropletLabels retrieves all the records using an executor.
-func DropletLabels(mods ...qm.QueryMod) dropletLabelQuery {
+func DropletLabels(mods ...qm.QueryMod) DropletLabelQuery {
 	mods = append(mods, qm.From("`droplet_labels`"))
-	return dropletLabelQuery{NewQuery(mods...)}
+	return DropletLabelQuery{NewQuery(mods...)}
+}
+
+type DropletLabelFinder interface {
+	FindDropletLabel(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DropletLabel, error)
 }
 
 // FindDropletLabel retrieves a single record by ID with an executor.
@@ -633,16 +452,16 @@ func FindDropletLabel(ctx context.Context, exec boil.ContextExecutor, iD int, se
 		return nil, errors.Wrap(err, "models: unable to select from droplet_labels")
 	}
 
-	if err = dropletLabelObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return dropletLabelObj, err
-	}
-
 	return dropletLabelObj, nil
+}
+
+type DropletLabelInserter interface {
+	Insert(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DropletLabel) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DropletLabelQuery) Insert(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no droplet_labels provided for insertion")
 	}
@@ -657,10 +476,6 @@ func (o *DropletLabel) Insert(ctx context.Context, exec boil.ContextExecutor, co
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(dropletLabelColumnsWithDefault, o)
@@ -753,13 +568,19 @@ CacheNoHooks:
 		dropletLabelInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DropletLabelUpdater interface {
+	Update(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DropletLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DropletLabel) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DropletLabelQuery) Update(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -767,9 +588,6 @@ func (o *DropletLabel) Update(ctx context.Context, exec boil.ContextExecutor, co
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	dropletLabelUpdateCacheMut.RLock()
 	cache, cached := dropletLabelUpdateCache[key]
@@ -822,11 +640,11 @@ func (o *DropletLabel) Update(ctx context.Context, exec boil.ContextExecutor, co
 		dropletLabelUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q dropletLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DropletLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -843,7 +661,7 @@ func (q dropletLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DropletLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DropletLabelQuery) UpdateAllSlice(o DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -890,6 +708,160 @@ func (o DropletLabelSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 	return rowsAff, nil
 }
 
+type DropletLabelDeleter interface {
+	Delete(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DropletLabel record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DropletLabelQuery) Delete(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DropletLabel provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), dropletLabelPrimaryKeyMapping)
+	sql := "DELETE FROM `droplet_labels` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from droplet_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for droplet_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DropletLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no dropletLabelQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from droplet_labels")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_labels")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DropletLabelQuery) DeleteAllSlice(o DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `droplet_labels` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, dropletLabelPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from dropletLabel slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_labels")
+	}
+
+	return rowsAff, nil
+}
+
+type DropletLabelReloader interface {
+	Reload(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DropletLabelQuery) Reload(o *DropletLabel, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDropletLabel(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DropletLabelQuery) ReloadAll(o *DropletLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DropletLabelSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletLabelPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `droplet_labels`.* FROM `droplet_labels` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, dropletLabelPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DropletLabelSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DropletLabelExists checks if the DropletLabel row exists.
+func DropletLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `droplet_labels` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if droplet_labels exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLDropletLabelUniqueColumns = []string{
 	"id",
 	"guid",
@@ -908,10 +880,6 @@ func (o *DropletLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, up
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(dropletLabelColumnsWithDefault, o)
@@ -1044,172 +1012,5 @@ CacheNoHooks:
 		dropletLabelUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DropletLabel record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DropletLabel) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DropletLabel provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), dropletLabelPrimaryKeyMapping)
-	sql := "DELETE FROM `droplet_labels` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from droplet_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for droplet_labels")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q dropletLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no dropletLabelQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from droplet_labels")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_labels")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DropletLabelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(dropletLabelBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `droplet_labels` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, dropletLabelPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from dropletLabel slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for droplet_labels")
-	}
-
-	if len(dropletLabelAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DropletLabel) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDropletLabel(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DropletLabelSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DropletLabelSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), dropletLabelPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `droplet_labels`.* FROM `droplet_labels` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, dropletLabelPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DropletLabelSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DropletLabelExists checks if the DropletLabel row exists.
-func DropletLabelExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `droplet_labels` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if droplet_labels exists")
-	}
-
-	return exists, nil
 }

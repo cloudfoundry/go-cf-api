@@ -99,10 +99,8 @@ type (
 	// RequestCountSlice is an alias for a slice of pointers to RequestCount.
 	// This should almost always be used instead of []RequestCount.
 	RequestCountSlice []*RequestCount
-	// RequestCountHook is the signature for custom RequestCount hook methods
-	RequestCountHook func(context.Context, boil.ContextExecutor, *RequestCount) error
 
-	requestCountQuery struct {
+	RequestCountQuery struct {
 		*queries.Query
 	}
 )
@@ -128,178 +126,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var requestCountBeforeInsertHooks []RequestCountHook
-var requestCountBeforeUpdateHooks []RequestCountHook
-var requestCountBeforeDeleteHooks []RequestCountHook
-var requestCountBeforeUpsertHooks []RequestCountHook
-
-var requestCountAfterInsertHooks []RequestCountHook
-var requestCountAfterSelectHooks []RequestCountHook
-var requestCountAfterUpdateHooks []RequestCountHook
-var requestCountAfterDeleteHooks []RequestCountHook
-var requestCountAfterUpsertHooks []RequestCountHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *RequestCount) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *RequestCount) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *RequestCount) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *RequestCount) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *RequestCount) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *RequestCount) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *RequestCount) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *RequestCount) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *RequestCount) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range requestCountAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddRequestCountHook registers your hook function for all future operations.
-func AddRequestCountHook(hookPoint boil.HookPoint, requestCountHook RequestCountHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		requestCountBeforeInsertHooks = append(requestCountBeforeInsertHooks, requestCountHook)
-	case boil.BeforeUpdateHook:
-		requestCountBeforeUpdateHooks = append(requestCountBeforeUpdateHooks, requestCountHook)
-	case boil.BeforeDeleteHook:
-		requestCountBeforeDeleteHooks = append(requestCountBeforeDeleteHooks, requestCountHook)
-	case boil.BeforeUpsertHook:
-		requestCountBeforeUpsertHooks = append(requestCountBeforeUpsertHooks, requestCountHook)
-	case boil.AfterInsertHook:
-		requestCountAfterInsertHooks = append(requestCountAfterInsertHooks, requestCountHook)
-	case boil.AfterSelectHook:
-		requestCountAfterSelectHooks = append(requestCountAfterSelectHooks, requestCountHook)
-	case boil.AfterUpdateHook:
-		requestCountAfterUpdateHooks = append(requestCountAfterUpdateHooks, requestCountHook)
-	case boil.AfterDeleteHook:
-		requestCountAfterDeleteHooks = append(requestCountAfterDeleteHooks, requestCountHook)
-	case boil.AfterUpsertHook:
-		requestCountAfterUpsertHooks = append(requestCountAfterUpsertHooks, requestCountHook)
-	}
+type RequestCountFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*RequestCount, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (RequestCountSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single requestCount record from the query.
-func (q requestCountQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RequestCount, error) {
+func (q RequestCountQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RequestCount, error) {
 	o := &RequestCount{}
 
 	queries.SetLimit(q.Query, 1)
@@ -312,15 +147,11 @@ func (q requestCountQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to execute a one query for request_counts")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all RequestCount records from the query.
-func (q requestCountQuery) All(ctx context.Context, exec boil.ContextExecutor) (RequestCountSlice, error) {
+func (q RequestCountQuery) All(ctx context.Context, exec boil.ContextExecutor) (RequestCountSlice, error) {
 	var o []*RequestCount
 
 	err := q.Bind(ctx, exec, &o)
@@ -328,19 +159,11 @@ func (q requestCountQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 		return nil, errors.Wrap(err, "models: failed to assign all query results to RequestCount slice")
 	}
 
-	if len(requestCountAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all RequestCount records in the query.
-func (q requestCountQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q RequestCountQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -355,7 +178,7 @@ func (q requestCountQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q requestCountQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q RequestCountQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -371,9 +194,13 @@ func (q requestCountQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // RequestCounts retrieves all the records using an executor.
-func RequestCounts(mods ...qm.QueryMod) requestCountQuery {
+func RequestCounts(mods ...qm.QueryMod) RequestCountQuery {
 	mods = append(mods, qm.From("`request_counts`"))
-	return requestCountQuery{NewQuery(mods...)}
+	return RequestCountQuery{NewQuery(mods...)}
+}
+
+type RequestCountFinder interface {
+	FindRequestCount(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*RequestCount, error)
 }
 
 // FindRequestCount retrieves a single record by ID with an executor.
@@ -399,25 +226,21 @@ func FindRequestCount(ctx context.Context, exec boil.ContextExecutor, iD int, se
 		return nil, errors.Wrap(err, "models: unable to select from request_counts")
 	}
 
-	if err = requestCountObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return requestCountObj, err
-	}
-
 	return requestCountObj, nil
+}
+
+type RequestCountInserter interface {
+	Insert(o *RequestCount, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *RequestCount) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q RequestCountQuery) Insert(o *RequestCount, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no request_counts provided for insertion")
 	}
 
 	var err error
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
-	}
 
 	nzDefaults := queries.NonZeroDefaultSet(requestCountColumnsWithDefault, o)
 
@@ -509,17 +332,20 @@ CacheNoHooks:
 		requestCountInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type RequestCountUpdater interface {
+	Update(o *RequestCount, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o RequestCountSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the RequestCount.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *RequestCount) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q RequestCountQuery) Update(o *RequestCount, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	requestCountUpdateCacheMut.RLock()
 	cache, cached := requestCountUpdateCache[key]
@@ -572,11 +398,11 @@ func (o *RequestCount) Update(ctx context.Context, exec boil.ContextExecutor, co
 		requestCountUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q requestCountQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RequestCountQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -593,7 +419,7 @@ func (q requestCountQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o RequestCountSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q RequestCountQuery) UpdateAllSlice(o RequestCountSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -640,6 +466,160 @@ func (o RequestCountSlice) UpdateAll(ctx context.Context, exec boil.ContextExecu
 	return rowsAff, nil
 }
 
+type RequestCountDeleter interface {
+	Delete(o *RequestCount, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o RequestCountSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single RequestCount record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q RequestCountQuery) Delete(o *RequestCount, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no RequestCount provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), requestCountPrimaryKeyMapping)
+	sql := "DELETE FROM `request_counts` WHERE `id`=?"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from request_counts")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for request_counts")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q RequestCountQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no requestCountQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from request_counts")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for request_counts")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q RequestCountQuery) DeleteAllSlice(o RequestCountSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), requestCountPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM `request_counts` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, requestCountPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from requestCount slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for request_counts")
+	}
+
+	return rowsAff, nil
+}
+
+type RequestCountReloader interface {
+	Reload(o *RequestCount, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *RequestCountSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q RequestCountQuery) Reload(o *RequestCount, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindRequestCount(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q RequestCountQuery) ReloadAll(o *RequestCountSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := RequestCountSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), requestCountPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT `request_counts`.* FROM `request_counts` WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, requestCountPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in RequestCountSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// RequestCountExists checks if the RequestCount row exists.
+func RequestCountExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from `request_counts` where `id`=? limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if request_counts exists")
+	}
+
+	return exists, nil
+}
+
 var mySQLRequestCountUniqueColumns = []string{
 	"id",
 }
@@ -649,10 +629,6 @@ var mySQLRequestCountUniqueColumns = []string{
 func (o *RequestCount) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no request_counts provided for upsert")
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(requestCountColumnsWithDefault, o)
@@ -785,172 +761,5 @@ CacheNoHooks:
 		requestCountUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single RequestCount record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *RequestCount) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no RequestCount provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), requestCountPrimaryKeyMapping)
-	sql := "DELETE FROM `request_counts` WHERE `id`=?"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from request_counts")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for request_counts")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q requestCountQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no requestCountQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from request_counts")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for request_counts")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o RequestCountSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(requestCountBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), requestCountPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM `request_counts` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, requestCountPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from requestCount slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for request_counts")
-	}
-
-	if len(requestCountAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *RequestCount) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindRequestCount(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *RequestCountSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := RequestCountSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), requestCountPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT `request_counts`.* FROM `request_counts` WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 0, requestCountPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in RequestCountSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// RequestCountExists checks if the RequestCount row exists.
-func RequestCountExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from `request_counts` where `id`=? limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if request_counts exists")
-	}
-
-	return exists, nil
 }

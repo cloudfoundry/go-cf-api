@@ -169,10 +169,8 @@ type (
 	// DelayedJobSlice is an alias for a slice of pointers to DelayedJob.
 	// This should almost always be used instead of []DelayedJob.
 	DelayedJobSlice []*DelayedJob
-	// DelayedJobHook is the signature for custom DelayedJob hook methods
-	DelayedJobHook func(context.Context, boil.ContextExecutor, *DelayedJob) error
 
-	delayedJobQuery struct {
+	DelayedJobQuery struct {
 		*queries.Query
 	}
 )
@@ -198,178 +196,15 @@ var (
 	_ = qmhelper.Where
 )
 
-var delayedJobBeforeInsertHooks []DelayedJobHook
-var delayedJobBeforeUpdateHooks []DelayedJobHook
-var delayedJobBeforeDeleteHooks []DelayedJobHook
-var delayedJobBeforeUpsertHooks []DelayedJobHook
-
-var delayedJobAfterInsertHooks []DelayedJobHook
-var delayedJobAfterSelectHooks []DelayedJobHook
-var delayedJobAfterUpdateHooks []DelayedJobHook
-var delayedJobAfterDeleteHooks []DelayedJobHook
-var delayedJobAfterUpsertHooks []DelayedJobHook
-
-// doBeforeInsertHooks executes all "before insert" hooks.
-func (o *DelayedJob) doBeforeInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobBeforeInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpdateHooks executes all "before Update" hooks.
-func (o *DelayedJob) doBeforeUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobBeforeUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeDeleteHooks executes all "before Delete" hooks.
-func (o *DelayedJob) doBeforeDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobBeforeDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doBeforeUpsertHooks executes all "before Upsert" hooks.
-func (o *DelayedJob) doBeforeUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobBeforeUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterInsertHooks executes all "after Insert" hooks.
-func (o *DelayedJob) doAfterInsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobAfterInsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterSelectHooks executes all "after Select" hooks.
-func (o *DelayedJob) doAfterSelectHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobAfterSelectHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpdateHooks executes all "after Update" hooks.
-func (o *DelayedJob) doAfterUpdateHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobAfterUpdateHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterDeleteHooks executes all "after Delete" hooks.
-func (o *DelayedJob) doAfterDeleteHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobAfterDeleteHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// doAfterUpsertHooks executes all "after Upsert" hooks.
-func (o *DelayedJob) doAfterUpsertHooks(ctx context.Context, exec boil.ContextExecutor) (err error) {
-	if boil.HooksAreSkipped(ctx) {
-		return nil
-	}
-
-	for _, hook := range delayedJobAfterUpsertHooks {
-		if err := hook(ctx, exec, o); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// AddDelayedJobHook registers your hook function for all future operations.
-func AddDelayedJobHook(hookPoint boil.HookPoint, delayedJobHook DelayedJobHook) {
-	switch hookPoint {
-	case boil.BeforeInsertHook:
-		delayedJobBeforeInsertHooks = append(delayedJobBeforeInsertHooks, delayedJobHook)
-	case boil.BeforeUpdateHook:
-		delayedJobBeforeUpdateHooks = append(delayedJobBeforeUpdateHooks, delayedJobHook)
-	case boil.BeforeDeleteHook:
-		delayedJobBeforeDeleteHooks = append(delayedJobBeforeDeleteHooks, delayedJobHook)
-	case boil.BeforeUpsertHook:
-		delayedJobBeforeUpsertHooks = append(delayedJobBeforeUpsertHooks, delayedJobHook)
-	case boil.AfterInsertHook:
-		delayedJobAfterInsertHooks = append(delayedJobAfterInsertHooks, delayedJobHook)
-	case boil.AfterSelectHook:
-		delayedJobAfterSelectHooks = append(delayedJobAfterSelectHooks, delayedJobHook)
-	case boil.AfterUpdateHook:
-		delayedJobAfterUpdateHooks = append(delayedJobAfterUpdateHooks, delayedJobHook)
-	case boil.AfterDeleteHook:
-		delayedJobAfterDeleteHooks = append(delayedJobAfterDeleteHooks, delayedJobHook)
-	case boil.AfterUpsertHook:
-		delayedJobAfterUpsertHooks = append(delayedJobAfterUpsertHooks, delayedJobHook)
-	}
+type DelayedJobFinisher interface {
+	One(ctx context.Context, exec boil.ContextExecutor) (*DelayedJob, error)
+	Count(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	All(ctx context.Context, exec boil.ContextExecutor) (DelayedJobSlice, error)
+	Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error)
 }
 
 // One returns a single delayedJob record from the query.
-func (q delayedJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DelayedJob, error) {
+func (q DelayedJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*DelayedJob, error) {
 	o := &DelayedJob{}
 
 	queries.SetLimit(q.Query, 1)
@@ -382,15 +217,11 @@ func (q delayedJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*D
 		return nil, errors.Wrap(err, "models: failed to execute a one query for delayed_jobs")
 	}
 
-	if err := o.doAfterSelectHooks(ctx, exec); err != nil {
-		return o, err
-	}
-
 	return o, nil
 }
 
 // All returns all DelayedJob records from the query.
-func (q delayedJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (DelayedJobSlice, error) {
+func (q DelayedJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (DelayedJobSlice, error) {
 	var o []*DelayedJob
 
 	err := q.Bind(ctx, exec, &o)
@@ -398,19 +229,11 @@ func (q delayedJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (De
 		return nil, errors.Wrap(err, "models: failed to assign all query results to DelayedJob slice")
 	}
 
-	if len(delayedJobAfterSelectHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterSelectHooks(ctx, exec); err != nil {
-				return o, err
-			}
-		}
-	}
-
 	return o, nil
 }
 
 // Count returns the count of all DelayedJob records in the query.
-func (q delayedJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q DelayedJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -425,7 +248,7 @@ func (q delayedJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q delayedJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q DelayedJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -441,9 +264,13 @@ func (q delayedJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // DelayedJobs retrieves all the records using an executor.
-func DelayedJobs(mods ...qm.QueryMod) delayedJobQuery {
+func DelayedJobs(mods ...qm.QueryMod) DelayedJobQuery {
 	mods = append(mods, qm.From("\"delayed_jobs\""))
-	return delayedJobQuery{NewQuery(mods...)}
+	return DelayedJobQuery{NewQuery(mods...)}
+}
+
+type DelayedJobFinder interface {
+	FindDelayedJob(ctx context.Context, exec boil.ContextExecutor, iD int, selectCols ...string) (*DelayedJob, error)
 }
 
 // FindDelayedJob retrieves a single record by ID with an executor.
@@ -469,16 +296,16 @@ func FindDelayedJob(ctx context.Context, exec boil.ContextExecutor, iD int, sele
 		return nil, errors.Wrap(err, "models: unable to select from delayed_jobs")
 	}
 
-	if err = delayedJobObj.doAfterSelectHooks(ctx, exec); err != nil {
-		return delayedJobObj, err
-	}
-
 	return delayedJobObj, nil
+}
+
+type DelayedJobInserter interface {
+	Insert(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *DelayedJob) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q DelayedJobQuery) Insert(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no delayed_jobs provided for insertion")
 	}
@@ -493,10 +320,6 @@ func (o *DelayedJob) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		if queries.MustTime(o.UpdatedAt).IsZero() {
 			queries.SetScanner(&o.UpdatedAt, currTime)
 		}
-	}
-
-	if err := o.doBeforeInsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(delayedJobColumnsWithDefault, o)
@@ -562,13 +385,19 @@ func (o *DelayedJob) Insert(ctx context.Context, exec boil.ContextExecutor, colu
 		delayedJobInsertCacheMut.Unlock()
 	}
 
-	return o.doAfterInsertHooks(ctx, exec)
+	return nil
+}
+
+type DelayedJobUpdater interface {
+	Update(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error)
+	UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
+	UpdateAllSlice(o DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error)
 }
 
 // Update uses an executor to update the DelayedJob.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *DelayedJob) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q DelayedJobQuery) Update(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -576,9 +405,6 @@ func (o *DelayedJob) Update(ctx context.Context, exec boil.ContextExecutor, colu
 	}
 
 	var err error
-	if err = o.doBeforeUpdateHooks(ctx, exec); err != nil {
-		return 0, err
-	}
 	key := makeCacheKey(columns, nil)
 	delayedJobUpdateCacheMut.RLock()
 	cache, cached := delayedJobUpdateCache[key]
@@ -631,11 +457,11 @@ func (o *DelayedJob) Update(ctx context.Context, exec boil.ContextExecutor, colu
 		delayedJobUpdateCacheMut.Unlock()
 	}
 
-	return rowsAff, o.doAfterUpdateHooks(ctx, exec)
+	return rowsAff, nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q delayedJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DelayedJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -652,7 +478,7 @@ func (q delayedJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o DelayedJobSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q DelayedJobQuery) UpdateAllSlice(o DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -699,6 +525,160 @@ func (o DelayedJobSlice) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 	return rowsAff, nil
 }
 
+type DelayedJobDeleter interface {
+	Delete(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
+	DeleteAllSlice(o DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error)
+}
+
+// Delete deletes a single DelayedJob record with an executor.
+// Delete will match against the primary key column to find the record to delete.
+func (q DelayedJobQuery) Delete(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if o == nil {
+		return 0, errors.New("models: no DelayedJob provided for delete")
+	}
+
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), delayedJobPrimaryKeyMapping)
+	sql := "DELETE FROM \"delayed_jobs\" WHERE \"id\"=$1"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args...)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete from delayed_jobs")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for delayed_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all matching rows.
+func (q DelayedJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if q.Query == nil {
+		return 0, errors.New("models: no delayedJobQuery provided for delete all")
+	}
+
+	queries.SetDelete(q.Query)
+
+	result, err := q.Query.ExecContext(ctx, exec)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from delayed_jobs")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for delayed_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+// DeleteAll deletes all rows in the slice, using an executor.
+func (q DelayedJobQuery) DeleteAllSlice(o DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+	if len(o) == 0 {
+		return 0, nil
+	}
+
+	var args []interface{}
+	for _, obj := range o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), delayedJobPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "DELETE FROM \"delayed_jobs\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, delayedJobPrimaryKeyColumns, len(o))
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, args)
+	}
+	result, err := exec.ExecContext(ctx, sql, args...)
+	if err != nil {
+		return 0, errors.Wrap(err, "models: unable to delete all from delayedJob slice")
+	}
+
+	rowsAff, err := result.RowsAffected()
+	if err != nil {
+		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for delayed_jobs")
+	}
+
+	return rowsAff, nil
+}
+
+type DelayedJobReloader interface {
+	Reload(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor) error
+	ReloadAll(o *DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor) error
+}
+
+// Reload refetches the object from the database
+// using the primary keys with an executor.
+func (q DelayedJobQuery) Reload(o *DelayedJob, ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindDelayedJob(ctx, exec, o.ID)
+	if err != nil {
+		return err
+	}
+
+	*o = *ret
+	return nil
+}
+
+// ReloadAll refetches every row with matching primary key column values
+// and overwrites the original object slice with the newly updated slice.
+func (q DelayedJobQuery) ReloadAll(o *DelayedJobSlice, ctx context.Context, exec boil.ContextExecutor) error {
+	if o == nil || len(*o) == 0 {
+		return nil
+	}
+
+	slice := DelayedJobSlice{}
+	var args []interface{}
+	for _, obj := range *o {
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), delayedJobPrimaryKeyMapping)
+		args = append(args, pkeyArgs...)
+	}
+
+	sql := "SELECT \"delayed_jobs\".* FROM \"delayed_jobs\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, delayedJobPrimaryKeyColumns, len(*o))
+
+	query := queries.Raw(sql, args...)
+
+	err := query.Bind(ctx, exec, &slice)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to reload all in DelayedJobSlice")
+	}
+
+	*o = slice
+
+	return nil
+}
+
+// DelayedJobExists checks if the DelayedJob row exists.
+func DelayedJobExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
+	var exists bool
+	sql := "select exists(select 1 from \"delayed_jobs\" where \"id\"=$1 limit 1)"
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, sql)
+		fmt.Fprintln(writer, iD)
+	}
+	row := exec.QueryRowContext(ctx, sql, iD)
+
+	err := row.Scan(&exists)
+	if err != nil {
+		return false, errors.Wrap(err, "models: unable to check if delayed_jobs exists")
+	}
+
+	return exists, nil
+}
+
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
 func (o *DelayedJob) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
@@ -712,10 +692,6 @@ func (o *DelayedJob) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 			o.CreatedAt = currTime
 		}
 		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	if err := o.doBeforeUpsertHooks(ctx, exec); err != nil {
-		return err
 	}
 
 	nzDefaults := queries.NonZeroDefaultSet(delayedJobColumnsWithDefault, o)
@@ -819,172 +795,5 @@ func (o *DelayedJob) Upsert(ctx context.Context, exec boil.ContextExecutor, upda
 		delayedJobUpsertCacheMut.Unlock()
 	}
 
-	return o.doAfterUpsertHooks(ctx, exec)
-}
-
-// Delete deletes a single DelayedJob record with an executor.
-// Delete will match against the primary key column to find the record to delete.
-func (o *DelayedJob) Delete(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if o == nil {
-		return 0, errors.New("models: no DelayedJob provided for delete")
-	}
-
-	if err := o.doBeforeDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), delayedJobPrimaryKeyMapping)
-	sql := "DELETE FROM \"delayed_jobs\" WHERE \"id\"=$1"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args...)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete from delayed_jobs")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by delete for delayed_jobs")
-	}
-
-	if err := o.doAfterDeleteHooks(ctx, exec); err != nil {
-		return 0, err
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all matching rows.
-func (q delayedJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if q.Query == nil {
-		return 0, errors.New("models: no delayedJobQuery provided for delete all")
-	}
-
-	queries.SetDelete(q.Query)
-
-	result, err := q.Query.ExecContext(ctx, exec)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from delayed_jobs")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for delayed_jobs")
-	}
-
-	return rowsAff, nil
-}
-
-// DeleteAll deletes all rows in the slice, using an executor.
-func (o DelayedJobSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
-	if len(o) == 0 {
-		return 0, nil
-	}
-
-	if len(delayedJobBeforeDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doBeforeDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	var args []interface{}
-	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), delayedJobPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "DELETE FROM \"delayed_jobs\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, delayedJobPrimaryKeyColumns, len(o))
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, args)
-	}
-	result, err := exec.ExecContext(ctx, sql, args...)
-	if err != nil {
-		return 0, errors.Wrap(err, "models: unable to delete all from delayedJob slice")
-	}
-
-	rowsAff, err := result.RowsAffected()
-	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to get rows affected by deleteall for delayed_jobs")
-	}
-
-	if len(delayedJobAfterDeleteHooks) != 0 {
-		for _, obj := range o {
-			if err := obj.doAfterDeleteHooks(ctx, exec); err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	return rowsAff, nil
-}
-
-// Reload refetches the object from the database
-// using the primary keys with an executor.
-func (o *DelayedJob) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindDelayedJob(ctx, exec, o.ID)
-	if err != nil {
-		return err
-	}
-
-	*o = *ret
 	return nil
-}
-
-// ReloadAll refetches every row with matching primary key column values
-// and overwrites the original object slice with the newly updated slice.
-func (o *DelayedJobSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil || len(*o) == 0 {
-		return nil
-	}
-
-	slice := DelayedJobSlice{}
-	var args []interface{}
-	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), delayedJobPrimaryKeyMapping)
-		args = append(args, pkeyArgs...)
-	}
-
-	sql := "SELECT \"delayed_jobs\".* FROM \"delayed_jobs\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, delayedJobPrimaryKeyColumns, len(*o))
-
-	q := queries.Raw(sql, args...)
-
-	err := q.Bind(ctx, exec, &slice)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in DelayedJobSlice")
-	}
-
-	*o = slice
-
-	return nil
-}
-
-// DelayedJobExists checks if the DelayedJob row exists.
-func DelayedJobExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool, error) {
-	var exists bool
-	sql := "select exists(select 1 from \"delayed_jobs\" where \"id\"=$1 limit 1)"
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, sql)
-		fmt.Fprintln(writer, iD)
-	}
-	row := exec.QueryRowContext(ctx, sql, iD)
-
-	err := row.Scan(&exists)
-	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if delayed_jobs exists")
-	}
-
-	return exists, nil
 }
