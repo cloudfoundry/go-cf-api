@@ -24,6 +24,9 @@ import (
 
 const GUIDParam = "guid"
 
+var buildpackQuerier func(...qm.QueryMod) models.BuildpackFinisher = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
+var buildpackInserter models.BuildpackInserter = models.Buildpacks()
+
 type BuildpackController struct {
 	DB *sql.DB
 }
@@ -68,7 +71,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	_, err = models.Buildpacks().Count(ctx, cont.DB)
+	_, err = buildpackQuerier().Count(ctx, cont.DB)
 	if err != nil {
 		return UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
@@ -79,7 +82,7 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 	// Append Filters to the query
 	mods = append(mods, buildFilters(filters, createdAts, updatedAts)...)
 
-	buildpacks, err := models.Buildpacks(
+	buildpacks, err := buildpackQuerier(
 		mods...,
 	).All(ctx, cont.DB)
 	if err != nil {
@@ -107,7 +110,7 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := models.Buildpacks(qm.Where("guid=?", guid)).One(ctx, cont.DB)
+	buildpack, err := buildpackQuerier(qm.Where("guid=?", guid)).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 		if errors.Cause(err) != sql.ErrNoRows {
@@ -143,7 +146,7 @@ func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 		return UnprocessableEntity("Could not parse JSON provided in the body", err)
 	}
 
-	buildpacksInDB, errDB := models.Buildpacks().All(ctx, cont.DB)
+	buildpacksInDB, errDB := buildpackQuerier().All(ctx, cont.DB)
 	if errDB != nil {
 		return UnknownError(fmt.Errorf("could not Select: %w", errDB))
 	}
@@ -167,7 +170,7 @@ func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 
 	// Add guid to Buildpack
 	buildpackToInsert.GUID = uuid.New().String()
-	err := buildpackToInsert.Insert(ctx, cont.DB, boil.Infer())
+	err := buildpackInserter.Insert(buildpackToInsert, ctx, cont.DB, boil.Infer())
 	if err != nil {
 		logger.Error("There is no buildpack to insert")
 		return UnprocessableEntity("There is no buildpack to insert", err)

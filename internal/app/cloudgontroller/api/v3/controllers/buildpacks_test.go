@@ -1,33 +1,41 @@
 // +build unit
 
-package controllers_test
+package controllers
 
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
+	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
 )
 
+var cols = models.BuildpackColumns
+
 type GetMultipleBuildpacksTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
-	SQLMock             sqlmock.Sqlmock
 	buildpackController BuildpackController
+	queryMods           []qm.QueryMod
+	querier             *mock_models.MockBuildpackFinisher
 	logger              *zap.Logger
 	ObservedLogs        *observer.ObservedLogs
 }
@@ -37,8 +45,7 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	db, mock, _ := sqlmock.New()
-	buildpackController := BuildpackController{DB: db}
+	buildpackController := BuildpackController{DB: nil}
 
 	core, recorded := observer.New(zapcore.InfoLevel)
 	suite.logger = zap.New(core)
@@ -46,64 +53,62 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	suite.ObservedLogs = recorded
 
 	suite.Ctx = c
-	suite.SQLMock = mock
 	suite.Rec = *rec
 	suite.buildpackController = buildpackController
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow("first-guid").AddRow("second-guid"))
-	if suite.NoError(suite.buildpackController.GetBuildpacks(suite.Ctx)) {
-		suite.Contains(suite.Rec.Body.String(), "first-guid")
-		suite.Contains(suite.Rec.Body.String(), "second-guid")
-		suite.Equal(http.StatusOK, suite.Ctx.Response().Status)
+	ctrl := gomock.NewController(suite.T())
+	suite.querier = mock_models.NewMockBuildpackFinisher(ctrl)
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+		suite.queryMods = qm
+		return suite.querier
 	}
 }
 
+func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{GUID: "first-guid"}, {GUID: "second-guid"},
+	}, nil)
+	if assert.NoError(suite.T(), suite.buildpackController.GetBuildpacks(suite.Ctx)) {
+		assert.Contains(suite.T(), suite.Rec.Body.String(), "first-guid")
+		assert.Contains(suite.T(), suite.Rec.Body.String(), "second-guid")
+		assert.Equal(suite.T(), http.StatusOK, suite.Ctx.Response().Status)
+	}
+	suite.Contains(suite.queryMods, qm.Limit(50))
+	suite.Contains(suite.queryMods, qm.Offset(0))
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", cols.Position)))
+}
+
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(nil, nil)
 
 	suite.NoError(suite.buildpackController.GetBuildpacks(suite.Ctx))
 	suite.Equal(http.StatusNotFound, suite.Ctx.Response().Status)
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" LIMIT 50;`)).
-		WillReturnError(errors.New("bommel"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("something went wrong"))
 
 	suite.Error(UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
-	// Mock Call
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks?per_page=2&page=3", nil)
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	// Mock SQL Queries
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 2 OFFSET 4;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow("first-guid").AddRow("second-guid").AddRow("third-guid"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{GUID: "first-guid"}, {GUID: "second-guid"}, {GUID: "third-guid"},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `"total_pages":2`)
-		suite.Contains(rec.Body.String(), `"total_results":3`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Limit(2))
+	suite.Contains(suite.queryMods, qm.Offset(4))
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `"total_pages":2`)
+		assert.Contains(suite.T(), rec.Body.String(), `"total_results":3`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -117,6 +122,8 @@ type GetBuildpackTestSuite struct {
 	Rec                 httptest.ResponseRecorder
 	SQLMock             sqlmock.Sqlmock
 	buildpackController BuildpackController
+	queryMods           []qm.QueryMod
+	querier             *mock_models.MockBuildpackFinisher
 }
 
 func (suite *GetBuildpackTestSuite) SetupTest() {
@@ -131,6 +138,12 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 	suite.Rec = *rec
 	suite.SQLMock = mock
 	suite.buildpackController = buildpackController
+	ctrl := gomock.NewController(suite.T())
+	suite.querier = mock_models.NewMockBuildpackFinisher(ctrl)
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+		suite.queryMods = qm
+		return suite.querier
+	}
 }
 
 func (suite *GetBuildpackTestSuite) TestStatusOk() {
@@ -138,10 +151,7 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (guid=$1) LIMIT 1;`)).
-		WithArgs(expectedGUID).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow(expectedGUID))
+	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: expectedGUID}, nil)
 
 	if suite.NoError(suite.buildpackController.GetBuildpack(suite.Ctx)) {
 		suite.Contains(suite.Rec.Body.String(), expectedGUID)
@@ -154,10 +164,7 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (guid=$1) LIMIT 1;`)).
-		WithArgs(expectedGUID).
-		WillReturnRows(sqlmock.NewRows([]string{"guid"}))
+	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
 
 	var err *CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
@@ -169,10 +176,7 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (guid=$1) LIMIT 1;`)).
-		WithArgs(expectedGUID).
-		WillReturnError(errors.New("bommel"))
+	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
 
 	var err *CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
@@ -189,22 +193,22 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1,$2)) AND ("stack" IN ($3)) AND
-(created_at > $4) AND (updated_at <= $5) ORDER BY position DESC LIMIT 50;`)).
-		WithArgs("java_buildpack", "go_buildpack", "cflinuxfs3", timeNow, timeNow).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "stack", "created_at", "updated_at"}).
-			AddRow("java_buildpack", "cflinuxfs3", timeAsTime, timeAsTime).
-			AddRow("go_buildpack", "cflinuxfs3", timeAsTime, timeAsTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", Stack: null.StringFrom("cflinuxfs3"), CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+		{Name: "go_buildpack", Stack: null.StringFrom("cflinuxfs3"), CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Contains(rec.Body.String(), `go_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", cols.Position)))
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Name), "java_buildpack", "go_buildpack"))
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Stack), "cflinuxfs3"))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s > ?", cols.CreatedAt), timeNow))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", cols.UpdatedAt), timeNow))
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -215,22 +219,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1,$2,$3)) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs("java_buildpack", "go_buildpack", "php_buildpack").
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).
-			AddRow("java_buildpack").
-			AddRow("go_buildpack").
-			AddRow("php_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack"}, {Name: "go_buildpack"}, {Name: "php_buildpack"},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Contains(rec.Body.String(), `go_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
+		assert.Contains(suite.T(), rec.Body.String(), `php_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -241,18 +242,15 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() { //nolint:d
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("name" IN ($1)) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs("java_buildpack").
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Name), "java_buildpack"))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -263,12 +261,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyNames() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack").AddRow("go_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack"}, {Name: "go_buildpack"},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
@@ -280,50 +276,44 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyNames() {
 
 func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflixnuxfs3,testStack,testStack2",
+		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflinuxfs3,testStack,testStack2",
 		nil)
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("stack" IN ($1,$2,$3)) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs("cflixnuxfs3", "testStack", "testStack2").
-		WillReturnRows(sqlmock.NewRows([]string{"stack"}).
-			AddRow("cflixnuxfs3").
-			AddRow("testStack").
-			AddRow("testStack2"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Stack: null.StringFrom("cflinuxfs3")},
+		{Stack: null.StringFrom("testStack")},
+		{Stack: null.StringFrom("testStack2")},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
-		suite.Contains(rec.Body.String(), `testStack`)
-		suite.Contains(rec.Body.String(), `testStack2`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Stack), "cflinuxfs3", "testStack", "testStack2"))
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
+		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
+		assert.Contains(suite.T(), rec.Body.String(), `testStack2`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() { //nolint:dupl // mistakenly gets taken as duplicate
 	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflixnuxfs3",
+		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflinuxfs3",
 		nil)
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE ("stack" IN ($1)) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs("cflixnuxfs3").
-		WillReturnRows(sqlmock.NewRows([]string{"stack"}).AddRow("cflixnuxfs3"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Stack: null.StringFrom("cflinuxfs3")}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", cols.Stack), "cflinuxfs3"))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -333,18 +323,17 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyStacks() {
 		nil)
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"stack"}).AddRow("cflixnuxfs3").AddRow("testStack"))
+
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Stack: null.StringFrom("cflinuxfs3")}, {Stack: null.StringFrom("testStack")},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
-		suite.Contains(rec.Body.String(), `testStack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
+		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -355,14 +344,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", cols.Position)))
+
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(rec.Body.String(), `java_buildpack`)
 		suite.Equal(http.StatusOK, context.Response().Status)
@@ -376,17 +363,15 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position DESC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", cols.Position)))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -397,17 +382,15 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY created_at ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", cols.CreatedAt)))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -418,17 +401,15 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY updated_at ASC LIMIT 50;`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow("java_buildpack"))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", cols.UpdatedAt)))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -455,19 +436,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl 
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at = $1) AND (updated_at = $2) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs(timeNow, timeNow).
-		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
-			AddRow(timeAsTime, timeAsTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), timeNow)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", cols.CreatedAt), timeNow))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", cols.UpdatedAt), timeNow))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), timeNow)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -482,19 +462,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //no
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at < $1) AND (updated_at > $2) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs(timeNow, timeNow).
-		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
-			AddRow(timeAsTime, timeAsTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), timeNow)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", cols.CreatedAt), timeNow))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s > ?", cols.UpdatedAt), timeNow))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), timeNow)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -509,19 +488,17 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithOtherSuffix() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at >= $1) AND (updated_at < $2) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs(timeNow, timeNow).
-		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
-			AddRow(timeAsTime, timeAsTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), timeNow)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", cols.CreatedAt), timeNow))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", cols.UpdatedAt), timeNow))
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), timeNow)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -536,19 +513,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at <= $1) AND (updated_at >= $2) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs(timeNow, timeNow).
-		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
-			AddRow(timeAsTime, timeAsTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), timeNow)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", cols.CreatedAt), timeNow))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", cols.UpdatedAt), timeNow))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), timeNow)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -565,19 +541,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps()
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" WHERE (created_at >= $1) AND (created_at <= $2) ORDER BY position ASC LIMIT 50;`)).
-		WithArgs(startTimeFormatted, endTimeFormatted).
-		WillReturnRows(sqlmock.NewRows([]string{"created_at", "updated_at"}).
-			AddRow(startTime, endTime))
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "java_buildpack", CreatedAt: startTime, UpdatedAt: null.TimeFrom(startTime)},
+	}, nil)
 
 	err := suite.buildpackController.GetBuildpacks(context)
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), startTimeFormatted)
-		suite.Equal(http.StatusOK, context.Response().Status)
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", cols.CreatedAt), startTimeFormatted))
+	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", cols.CreatedAt), endTimeFormatted))
+
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
 
@@ -611,10 +586,12 @@ func TestGetBuildpackTestSuite(t *testing.T) {
 
 type PostBuildpackTestSuite struct {
 	suite.Suite
-	Ctx                 echo.Context
-	Rec                 httptest.ResponseRecorder
-	SQLMock             sqlmock.Sqlmock
+	ctx                 echo.Context
+	req                 *http.Request
+	rec                 *httptest.ResponseRecorder
 	buildpackController BuildpackController
+	finisher            *mock_models.MockBuildpackFinisher
+	inserter            *mock_models.MockBuildpackInserter
 }
 
 func (suite *PostBuildpackTestSuite) SetupTest() {
@@ -622,203 +599,127 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	db, mock, _ := sqlmock.New()
-	buildpackController := BuildpackController{db}
+	buildpackController := BuildpackController{DB: nil}
 
-	suite.Ctx = c
-	suite.Rec = *rec
-	suite.SQLMock = mock
+	suite.ctx = c
+	suite.req = req
+	suite.rec = rec
 	suite.buildpackController = buildpackController
+	ctrl := gomock.NewController(suite.T())
+	suite.finisher = mock_models.NewMockBuildpackFinisher(ctrl)
+	suite.inserter = mock_models.NewMockBuildpackInserter(ctrl)
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+		return suite.finisher
+	}
+	buildpackInserter = suite.inserter
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	buildpackName := "test_buildpack" //nolint:goconst // mistakenly gets taken as duplicate
 	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
-	req := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
+	suite.req.Body = ioutil.NopCloser(reader)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
+	suite.finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: buildpackName}}, nil)
+	var got *models.Buildpack
+	suite.inserter.
+		EXPECT().
+		Insert(gomock.AssignableToTypeOf(&models.Buildpack{}), gomock.Any(), gomock.Any(), boil.Infer()).
+		DoAndReturn(func(o *models.Buildpack, _, _, _ interface{}) error {
+			got = o
+			return nil
+		})
 
-	err := suite.buildpackController.PostBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	err := suite.buildpackController.PostBuildpacks(suite.ctx)
+
+	suite.Equal(buildpackName, got.Name)
+	suite.Equal(1, got.Position)
+	suite.Equal(null.String{}, got.Filename)
+	suite.Equal(null.String{}, got.Sha256Checksum)
+
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }
 
-func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithRequiredParams() {
-	buildpackName := "test_buildpack"
-	position := 1
-	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
-	req := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), position, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
-
-	err := suite.buildpackController.PostBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-//nolint: lll
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 	buildpackName := "test_buildpack"
-	stack := "stacks"
-	enabled := "true"
-	locked := "false"
-	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "enabled" : %s, "locked" : %s, "stack" : "%s"}`, buildpackName, enabled, locked, stack))
-	req := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
+	stack, enabled, locked := "stack", true, false
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "enabled" : %t, "locked" : %t, "stack" : "%s"}`, buildpackName, enabled, locked, stack))
+	suite.req.Body = ioutil.NopCloser(reader)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","enabled","locked","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).
-			AddRow(1))
+	suite.finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: buildpackName}}, nil)
+	var got *models.Buildpack
+	suite.inserter.
+		EXPECT().
+		Insert(gomock.AssignableToTypeOf(&models.Buildpack{}), gomock.Any(), gomock.Any(), boil.Infer()).
+		DoAndReturn(func(o *models.Buildpack, _, _, _ interface{}) error {
+			got = o
+			return nil
+		})
 
-	err := suite.buildpackController.PostBuildpacks(context)
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	err := suite.buildpackController.PostBuildpacks(suite.ctx)
+
+	suite.Equal(buildpackName, got.Name)
+	suite.Equal(null.StringFrom("stack"), got.Stack)
+	suite.True(got.Enabled.Bool)
+	suite.False(got.Locked.Bool)
+
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
-	buildpackName := "test_buildpack"
-	stack := "stacks"
-	enabled := "true"
-	locked := "false"
-	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "enabled" : %s, "locked" : %s, "stack" : "%s"}`, buildpackName, enabled, locked, stack))
-	req := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
+	reader := strings.NewReader(`{"name" : "}`)
+	suite.req.Body = ioutil.NopCloser(reader)
 
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
-"enabled","locked","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).
-			AddRow(1))
-
-	err := suite.buildpackController.PostBuildpacks(context)
-	assert.Error(suite.T(), UnprocessableEntity("Could not parse JSON provided in the body", err), suite.buildpackController.PostBuildpacks(suite.Ctx))
+	var err *CloudControllerError
+	suite.ErrorAs(suite.buildpackController.PostBuildpacks(suite.ctx), &err)
+	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
-	buildpackName1, position1 := "test_buildpack1", 1
-	buildpackName2, position2 := "test_buildpack2", 1
-	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
-	req1 := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
-	rec1 := httptest.NewRecorder()
-	context1 := echo.New().NewContext(req1, rec1)
-	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
-	req2 := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
-	rec2 := httptest.NewRecorder()
-	context2 := echo.New().NewContext(req2, rec2)
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName1, sqlmock.AnyArg(), position1, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), position2, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
+	buildpackName, position := "test_buildpack", 1
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %d}`, buildpackName, position))
+	suite.req.Body = ioutil.NopCloser(reader)
 
-	_ = suite.buildpackController.PostBuildpacks(context1)
-	err2 := suite.buildpackController.PostBuildpacks(context2)
+	suite.finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "existing_buildpack", Position: 1},
+	}, nil)
 
-	assert.Error(suite.T(), UnprocessableEntity("Position already exists", err2), suite.buildpackController.PostBuildpacks(suite.Ctx))
+	var err *CloudControllerError
+	suite.ErrorAs(suite.buildpackController.PostBuildpacks(suite.ctx), &err)
+	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
+	suite.Contains(err.Detail, "Position already exists")
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition() {
-	buildpackName1, position1 := "test_buildpack1", 1
-	buildpackName2, position2 := "test_buildpack2", 0
-	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
-	req1 := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
-	rec1 := httptest.NewRecorder()
-	context1 := echo.New().NewContext(req1, rec1)
-	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
-	req2 := httptest.NewRequest(
-		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
-	rec2 := httptest.NewRecorder()
-	context2 := echo.New().NewContext(req2, rec2)
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
-		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
-	suite.SQLMock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
-		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
-		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
-			AddRow(1, true, false))
+	buildpackName, position := "test_buildpack", 2
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %d}`, buildpackName, position))
+	suite.req.Body = ioutil.NopCloser(reader)
 
-	_ = suite.buildpackController.PostBuildpacks(context1)
-	err2 := suite.buildpackController.PostBuildpacks(context2)
+	suite.finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "existing_buildpack", Position: 1},
+	}, nil)
+	var got *models.Buildpack
+	suite.inserter.
+		EXPECT().
+		Insert(gomock.AssignableToTypeOf(&models.Buildpack{}), gomock.Any(), gomock.Any(), boil.Infer()).
+		DoAndReturn(func(o *models.Buildpack, _, _, _ interface{}) error {
+			got = o
+			return nil
+		})
 
-	if assert.NoError(suite.T(), err2, fmt.Errorf("%w", errors.Unwrap(err2)).Error()) {
-		assert.Contains(suite.T(), rec2.Body.String(), buildpackName2)
-		assert.Equal(suite.T(), http.StatusOK, context2.Response().Status)
+	err := suite.buildpackController.PostBuildpacks(suite.ctx)
+
+	suite.Equal(buildpackName, got.Name)
+	suite.Equal(position, got.Position)
+
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }
 
