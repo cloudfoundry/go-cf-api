@@ -1,6 +1,7 @@
 output   = "internal/app/cloudgontroller/sqlboiler/mysql"
 wipe     = true
-no-test  = false
+no-tests = true
+no-hooks = true
 package  = "models"
 
 [mysql]

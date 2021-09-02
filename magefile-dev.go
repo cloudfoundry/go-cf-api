@@ -61,10 +61,10 @@ func GenerateSQLBoiler() error {
 	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler"); err != nil {
 		return err
 	}
-	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml"); err != nil {
+	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml", "--templates", "sqlboiler-templates"); err != nil {
 		return err
 	}
-	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml"); err != nil {
+	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml", "--templates", "sqlboiler-templates"); err != nil {
 		return err
 	}
 
@@ -108,31 +108,6 @@ func modifySQLBoilerFiles(dbEngine string) error {
 			List: []*ast.Comment{{Text: commentText}},
 		}
 		commentMap[file] = append([]*ast.CommentGroup{comment}, commentMap[file]...)
-
-		// Skip certain tests that won't pass due to uniqueness constraints in our DB schema
-		for _, decl := range file.Decls {
-			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
-				switch fmt.Sprintf("%s::%s", dbEngine, funcDecl.Name.Name) {
-				case "mysql::testAppToManyAddOpRouteMappings", "mysql::testAppToManyAddOpServiceBindings", "mysql::testRouteToManyAddOpRouteMappings":
-					fallthrough
-				case "mysql::testAppToManyAddOpDroplets", "mysql::testAppToManySetOpDroplets", "mysql::testAppToManyRemoveOpDroplets", "mysql::testOrganizationToManyAddOpSpaces":
-					fallthrough
-				case "psql::testAppToManyAddOpDroplets", "psql::testAppToManySetOpDroplets", "psql::testAppToManyRemoveOpDroplets", "psql::testOrganizationToManyAddOpSpaces":
-					fallthrough
-				case "psql::testDomainToManyRoutes":
-					// Delete any comments in function body (these are separate from funcDecl node)
-					for _, stmt := range funcDecl.Body.List {
-						delete(commentMap, stmt)
-					}
-					// Give function empty body (this avoids having to delete references to the function)
-					tSkip, err := parser.ParseExpr(`t.Skip("Uniqueness constraints in our DB schema prevent this from ever passing")`)
-					if err != nil {
-						return err
-					}
-					funcDecl.Body.List = []ast.Stmt{&ast.ExprStmt{X: tSkip}}
-				}
-			}
-		}
 		file.Comments = commentMap.Comments()
 
 		buf := &bytes.Buffer{}
