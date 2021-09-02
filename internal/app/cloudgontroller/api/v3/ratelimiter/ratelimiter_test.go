@@ -1,155 +1,144 @@
 // +build unit
 
-package ratelimiter_test
+package ratelimiter
 
 import (
-	"database/sql/driver"
 	"net/http"
 	"net/http/httptest"
-	"regexp"
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
+	"github.com/stretchr/testify/suite"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
+	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
 )
 
-type Time struct {
-	time.Time
-}
-
-// Match satisfies sqlmock.Argument interface
-func (a Time) Match(v driver.Value) bool {
-	t, ok := v.(time.Time)
-	if !ok {
-		return false
+func (suite *RateLimiterSuite) TestNoRequestCountExists() {
+	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{}, nil)
+	userGUID := "123"
+	expected := &models.RequestCount{
+		UserGUID:   null.StringFrom(userGUID),
+		Count:      null.IntFrom(1),
+		ValidUntil: null.TimeFrom(suite.Now.Add(suite.RateLimiter.ResetInterval)),
 	}
-	return t.UTC().Truncate(time.Second) == a.UTC().Truncate(time.Second)
-}
+	suite.Inserter.EXPECT().Insert(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(nil)
 
-func TestNoRequestCountExists(t *testing.T) {
-	e := echo.New()
-	request := httptest.NewRequest(http.MethodGet, "/something", nil)
-	recorder := httptest.NewRecorder()
-	context := e.NewContext(request, recorder)
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
-
-	rateLimiter := RateLimiter{
-		GeneralLimit:  10,
-		ResetInterval: time.Minute * 1,
-		DB:            db,
-	}
-
-	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
-		WithArgs("123").
-		WillReturnRows(sqlmock.NewRows(nil))
-
-	mock.
-		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "request_counts" ("user_guid","count","valid_until") VALUES ($1,$2,$3) RETURNING "id"`)).
-		WithArgs("123", 1, Time{time.Now().Add(rateLimiter.ResetInterval)}).
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-
-	result, err := rateLimiter.Allow("123", context)
-	assert.NoError(t, err)
-	assert.True(t, result)
+	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
+	suite.NoError(err)
+	suite.True(result)
 }
 
 //nolint:dupl // test wrongly recognised as a duplicate
-func TestRequestCountExceedsRateLimit(t *testing.T) {
-	e := echo.New()
-	request := httptest.NewRequest(http.MethodGet, "/something", nil)
-	recorder := httptest.NewRecorder()
-	context := e.NewContext(request, recorder)
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
+func (suite *RateLimiterSuite) TestRequestCountExceedsRateLimit() {
+	expiryTime := suite.Now.Add(1 * time.Hour)
 
-	rateLimiter := RateLimiter{
-		GeneralLimit:  10,
-		ResetInterval: time.Minute * 1,
-		DB:            db,
+	userGUID := "123"
+	rc := &models.RequestCount{
+		ID:         1,
+		UserGUID:   null.StringFrom(userGUID),
+		Count:      null.IntFrom(10),
+		ValidUntil: null.TimeFrom(expiryTime),
 	}
+	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
+	expected := rc
+	expected.Count = null.IntFrom(11)
+	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
 
-	expiryTime := time.Now().Add(1 * time.Hour)
-
-	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
-		WithArgs("123").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 10, expiryTime))
-
-	mock.
-		ExpectExec(regexp.QuoteMeta(`UPDATE "request_counts" SET "user_guid"=$1,"count"=$2,"valid_until"=$3 WHERE "id"=$4`)).
-		WithArgs("123", 11, expiryTime, 1).
-		WillReturnResult(sqlmock.NewResult(1, 1))
-
-	result, err := rateLimiter.Allow("123", context)
-	assert.NoError(t, err)
-	assert.False(t, result)
+	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
+	suite.NoError(err)
+	suite.False(result)
 }
 
 //nolint:dupl // test wrongly recognised as a duplicate
-func TestRequestCountWithinRateLimit(t *testing.T) {
-	e := echo.New()
-	request := httptest.NewRequest(http.MethodGet, "/something", nil)
-	recorder := httptest.NewRecorder()
-	context := e.NewContext(request, recorder)
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
+func (suite *RateLimiterSuite) TestRequestCountWithinRateLimit() {
+	expiryTime := suite.Now.Add(1 * time.Hour)
 
-	rateLimiter := RateLimiter{
-		GeneralLimit:  10,
-		ResetInterval: time.Minute * 1,
-		DB:            db,
+	userGUID := "123"
+	rc := &models.RequestCount{
+		ID:         1,
+		UserGUID:   null.StringFrom(userGUID),
+		Count:      null.IntFrom(3),
+		ValidUntil: null.TimeFrom(expiryTime),
 	}
+	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
+	expected := rc
+	expected.Count = null.IntFrom(4)
+	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
 
-	expiryTime := time.Now().Add(1 * time.Hour)
-
-	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
-		WithArgs("123").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 3, expiryTime))
-
-	mock.
-		ExpectExec(regexp.QuoteMeta(`UPDATE "request_counts" SET "user_guid"=$1,"count"=$2,"valid_until"=$3 WHERE "id"=$4`)).
-		WithArgs("123", 4, expiryTime, 1).
-		WillReturnResult(sqlmock.NewResult(1, 1))
-
-	result, err := rateLimiter.Allow("123", context)
-	assert.NoError(t, err)
-	assert.True(t, result)
+	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
+	suite.NoError(err)
+	suite.True(result)
 }
 
 // When we're above the rate limit but its reset time is in the past
-func TestRequestCountExpired(t *testing.T) {
+func (suite *RateLimiterSuite) TestRequestCountExpired() {
+	expiryTime := suite.Now.Add(-1 * time.Hour)
+
+	userGUID := "123"
+	rc := &models.RequestCount{
+		ID:         1,
+		UserGUID:   null.StringFrom(userGUID),
+		Count:      null.IntFrom(3),
+		ValidUntil: null.TimeFrom(expiryTime),
+	}
+	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
+	expected := rc
+	expected.Count = null.IntFrom(1)
+	expected.ValidUntil = null.TimeFrom(suite.Now.Add(suite.RateLimiter.ResetInterval))
+	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
+
+	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
+	suite.NoError(err)
+	suite.True(result)
+}
+
+func (suite *RateLimiterSuite) SetupSuite() {
 	e := echo.New()
 	request := httptest.NewRequest(http.MethodGet, "/something", nil)
 	recorder := httptest.NewRecorder()
-	context := e.NewContext(request, recorder)
-	db, mock, err := sqlmock.New()
-	require.NoError(t, err)
+	suite.Context = e.NewContext(request, recorder)
 
-	rateLimiter := RateLimiter{
-		GeneralLimit:  10,
-		ResetInterval: time.Minute * 1,
-		DB:            db,
+	suite.ctrl = gomock.NewController(suite.T())
+	suite.Finisher = mock_models.NewMockRequestCountFinisher(suite.ctrl)
+	suite.Inserter = mock_models.NewMockRequestCountInserter(suite.ctrl)
+	suite.Updater = mock_models.NewMockRequestCountUpdater(suite.ctrl)
+	queriers = RateLimiterQueriers{
+		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher { return suite.Finisher },
+		Inserter: suite.Inserter,
+		Updater:  suite.Updater,
 	}
 
-	testTime := time.Now().UTC()
-	mock.
-		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "request_counts" WHERE ("request_counts"."user_guid" = $1);`)).
-		WithArgs("123").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "user_guid", "count", "valid_until"}).AddRow(1, "123", 57, testTime.Add(-1*time.Hour)))
+	suite.Now = time.Now().UTC()
+	now = func() time.Time { return suite.Now }
 
-	mock.
-		ExpectExec(regexp.QuoteMeta(`UPDATE "request_counts" SET "user_guid"=$1,"count"=$2,"valid_until"=$3 WHERE "id"=$4`)).
-		WithArgs("123", 1, Time{time.Now().Add(rateLimiter.ResetInterval)}, 1).
-		WillReturnResult(sqlmock.NewResult(1, 1))
+	suite.RateLimiter = RateLimiter{
+		GeneralLimit:  10,
+		ResetInterval: time.Minute * 1,
+		DB:            nil,
+	}
+}
 
-	result, err := rateLimiter.Allow("123", context)
-	assert.NoError(t, err)
-	assert.True(t, result)
+func (suite *RateLimiterSuite) After(suiteName, testName string) {
+	suite.ctrl.Finish()
+}
+
+type RateLimiterSuite struct {
+	suite.Suite
+	ctrl        *gomock.Controller
+	Context     echo.Context
+	Finisher    *mock_models.MockRequestCountFinisher
+	Inserter    *mock_models.MockRequestCountInserter
+	Updater     *mock_models.MockRequestCountUpdater
+	Now         time.Time
+	RateLimiter RateLimiter
+}
+
+func TestRateLimiterSuite(t *testing.T) {
+	t.Parallel()
+	suite.Run(t, new(RateLimiterSuite))
 }

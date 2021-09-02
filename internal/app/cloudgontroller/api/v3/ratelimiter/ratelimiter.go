@@ -11,6 +11,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -21,13 +22,31 @@ type RateLimiter struct {
 	ResetInterval time.Duration
 }
 
+type RateLimiterQueriers struct {
+	Finisher func(mods ...qm.QueryMod) models.RequestCountFinisher
+	Inserter models.RequestCountInserter
+	Updater  models.RequestCountUpdater
+}
+
+var (
+	now func() time.Time = time.Now
+
+	queriers RateLimiterQueriers = RateLimiterQueriers{
+		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher {
+			return models.RequestCounts(mods...)
+		},
+		Inserter: models.RequestCounts(),
+		Updater:  models.RequestCounts(),
+	}
+)
+
 func (r *RateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
 	var requestCount *models.RequestCount
 
 	logger := logging.FromContext(ctx)
 
 	dbCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	requestCountSlice, err := models.RequestCounts(models.RequestCountWhere.UserGUID.EQ(null.StringFrom(identifier))).All(dbCtx, r.DB)
+	requestCountSlice, err := queriers.Finisher(models.RequestCountWhere.UserGUID.EQ(null.StringFrom(identifier))).All(dbCtx, r.DB)
 	if err != nil {
 		return false, err
 	}
@@ -36,17 +55,17 @@ func (r *RateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
 		requestCount = &models.RequestCount{}
 		requestCount.UserGUID = null.StringFrom(identifier)
 		resetCount(requestCount, r.ResetInterval)
-		err = requestCount.Insert(dbCtx, r.DB, boil.Infer())
+		err = queriers.Inserter.Insert(requestCount, dbCtx, r.DB, boil.Infer())
 		if err != nil {
 			return false, err
 		}
 	} else {
 		requestCount = requestCountSlice[0]
 		requestCount.Count = null.IntFrom(requestCount.Count.Int + 1)
-		if requestCount.ValidUntil.Time.UTC().Before(time.Now().UTC()) {
+		if requestCount.ValidUntil.Time.UTC().Before(now().UTC()) {
 			resetCount(requestCount, r.ResetInterval)
 		}
-		_, err = requestCount.Update(dbCtx, r.DB, boil.Infer())
+		_, err = queriers.Updater.Update(requestCount, dbCtx, r.DB, boil.Infer())
 		if err != nil {
 			return false, err
 		}
@@ -71,7 +90,7 @@ func (r *RateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
 }
 
 func resetCount(requestCount *models.RequestCount, resetInterval time.Duration) {
-	expiryTime := time.Now().UTC().Add(resetInterval)
+	expiryTime := now().UTC().Add(resetInterval)
 	requestCount.ValidUntil = null.TimeFrom(expiryTime)
 	requestCount.Count = null.IntFrom(1)
 }
