@@ -121,7 +121,7 @@ type (
 	// This should almost always be used instead of []OrganizationsAuditor.
 	OrganizationsAuditorSlice []*OrganizationsAuditor
 
-	OrganizationsAuditorQuery struct {
+	organizationsAuditorQuery struct {
 		*queries.Query
 	}
 )
@@ -155,7 +155,7 @@ type OrganizationsAuditorFinisher interface {
 }
 
 // One returns a single organizationsAuditor record from the query.
-func (q OrganizationsAuditorQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsAuditor, error) {
+func (q organizationsAuditorQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsAuditor, error) {
 	o := &OrganizationsAuditor{}
 
 	queries.SetLimit(q.Query, 1)
@@ -172,7 +172,7 @@ func (q OrganizationsAuditorQuery) One(ctx context.Context, exec boil.ContextExe
 }
 
 // All returns all OrganizationsAuditor records from the query.
-func (q OrganizationsAuditorQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsAuditorSlice, error) {
+func (q organizationsAuditorQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsAuditorSlice, error) {
 	var o []*OrganizationsAuditor
 
 	err := q.Bind(ctx, exec, &o)
@@ -184,7 +184,7 @@ func (q OrganizationsAuditorQuery) All(ctx context.Context, exec boil.ContextExe
 }
 
 // Count returns the count of all OrganizationsAuditor records in the query.
-func (q OrganizationsAuditorQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsAuditorQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -199,7 +199,7 @@ func (q OrganizationsAuditorQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q OrganizationsAuditorQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q organizationsAuditorQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -215,7 +215,7 @@ func (q OrganizationsAuditorQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Organization pointed to by the foreign key.
-func (q OrganizationsAuditorQuery) Organization(o *OrganizationsAuditor, mods ...qm.QueryMod) OrganizationQuery {
+func (q organizationsAuditorQuery) Organization(o *OrganizationsAuditor, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OrganizationID),
 	}
@@ -229,7 +229,7 @@ func (q OrganizationsAuditorQuery) Organization(o *OrganizationsAuditor, mods ..
 }
 
 // User pointed to by the foreign key.
-func (q OrganizationsAuditorQuery) User(o *OrganizationsAuditor, mods ...qm.QueryMod) UserQuery {
+func (q organizationsAuditorQuery) User(o *OrganizationsAuditor, mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -437,7 +437,7 @@ func (organizationsAuditorL) LoadUser(ctx context.Context, e boil.ContextExecuto
 // SetOrganization of the organizationsAuditor to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.OrganizationsAuditors.
-func (q OrganizationsAuditorQuery) SetOrganization(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q organizationsAuditorQuery) SetOrganization(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -484,7 +484,7 @@ func (q OrganizationsAuditorQuery) SetOrganization(o *OrganizationsAuditor, ctx 
 // SetUser of the organizationsAuditor to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.OrganizationsAuditors.
-func (q OrganizationsAuditorQuery) SetUser(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q organizationsAuditorQuery) SetUser(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -529,9 +529,9 @@ func (q OrganizationsAuditorQuery) SetUser(o *OrganizationsAuditor, ctx context.
 }
 
 // OrganizationsAuditors retrieves all the records using an executor.
-func OrganizationsAuditors(mods ...qm.QueryMod) OrganizationsAuditorQuery {
+func OrganizationsAuditors(mods ...qm.QueryMod) organizationsAuditorQuery {
 	mods = append(mods, qm.From("`organizations_auditors`"))
-	return OrganizationsAuditorQuery{NewQuery(mods...)}
+	return organizationsAuditorQuery{NewQuery(mods...)}
 }
 
 type OrganizationsAuditorFinder interface {
@@ -570,7 +570,7 @@ type OrganizationsAuditorInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrganizationsAuditorQuery) Insert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q organizationsAuditorQuery) Insert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_auditors provided for insertion")
 	}
@@ -689,7 +689,7 @@ type OrganizationsAuditorUpdater interface {
 // Update uses an executor to update the OrganizationsAuditor.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrganizationsAuditorQuery) Update(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q organizationsAuditorQuery) Update(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -753,7 +753,7 @@ func (q OrganizationsAuditorQuery) Update(o *OrganizationsAuditor, ctx context.C
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrganizationsAuditorQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationsAuditorQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -770,7 +770,7 @@ func (q OrganizationsAuditorQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrganizationsAuditorQuery) UpdateAllSlice(o OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationsAuditorQuery) UpdateAllSlice(o OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -825,7 +825,7 @@ type OrganizationsAuditorDeleter interface {
 
 // Delete deletes a single OrganizationsAuditor record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrganizationsAuditorQuery) Delete(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsAuditorQuery) Delete(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no OrganizationsAuditor provided for delete")
 	}
@@ -852,7 +852,7 @@ func (q OrganizationsAuditorQuery) Delete(o *OrganizationsAuditor, ctx context.C
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrganizationsAuditorQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsAuditorQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no organizationsAuditorQuery provided for delete all")
 	}
@@ -873,7 +873,7 @@ func (q OrganizationsAuditorQuery) DeleteAll(ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrganizationsAuditorQuery) DeleteAllSlice(o OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsAuditorQuery) DeleteAllSlice(o OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -912,7 +912,7 @@ type OrganizationsAuditorReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrganizationsAuditorQuery) Reload(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationsAuditorQuery) Reload(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrganizationsAuditor(ctx, exec, o.OrganizationsAuditorsPK)
 	if err != nil {
 		return err
@@ -924,7 +924,7 @@ func (q OrganizationsAuditorQuery) Reload(o *OrganizationsAuditor, ctx context.C
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrganizationsAuditorQuery) ReloadAll(o *OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationsAuditorQuery) ReloadAll(o *OrganizationsAuditorSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

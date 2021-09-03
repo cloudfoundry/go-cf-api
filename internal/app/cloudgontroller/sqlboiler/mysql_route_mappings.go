@@ -142,7 +142,7 @@ type (
 	// This should almost always be used instead of []RouteMapping.
 	RouteMappingSlice []*RouteMapping
 
-	RouteMappingQuery struct {
+	routeMappingQuery struct {
 		*queries.Query
 	}
 )
@@ -176,7 +176,7 @@ type RouteMappingFinisher interface {
 }
 
 // One returns a single routeMapping record from the query.
-func (q RouteMappingQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteMapping, error) {
+func (q routeMappingQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteMapping, error) {
 	o := &RouteMapping{}
 
 	queries.SetLimit(q.Query, 1)
@@ -193,7 +193,7 @@ func (q RouteMappingQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // All returns all RouteMapping records from the query.
-func (q RouteMappingQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteMappingSlice, error) {
+func (q routeMappingQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteMappingSlice, error) {
 	var o []*RouteMapping
 
 	err := q.Bind(ctx, exec, &o)
@@ -205,7 +205,7 @@ func (q RouteMappingQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Count returns the count of all RouteMapping records in the query.
-func (q RouteMappingQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeMappingQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -220,7 +220,7 @@ func (q RouteMappingQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q RouteMappingQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q routeMappingQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -236,7 +236,7 @@ func (q RouteMappingQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // App pointed to by the foreign key.
-func (q RouteMappingQuery) App(o *RouteMapping, mods ...qm.QueryMod) AppQuery {
+func (q routeMappingQuery) App(o *RouteMapping, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -250,7 +250,7 @@ func (q RouteMappingQuery) App(o *RouteMapping, mods ...qm.QueryMod) AppQuery {
 }
 
 // Route pointed to by the foreign key.
-func (q RouteMappingQuery) Route(o *RouteMapping, mods ...qm.QueryMod) RouteQuery {
+func (q routeMappingQuery) Route(o *RouteMapping, mods ...qm.QueryMod) routeQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.RouteGUID),
 	}
@@ -458,7 +458,7 @@ func (routeMappingL) LoadRoute(ctx context.Context, e boil.ContextExecutor, sing
 // SetApp of the routeMapping to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.RouteMappings.
-func (q RouteMappingQuery) SetApp(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q routeMappingQuery) SetApp(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -505,7 +505,7 @@ func (q RouteMappingQuery) SetApp(o *RouteMapping, ctx context.Context, exec boi
 // SetRoute of the routeMapping to the related item.
 // Sets o.R.Route to related.
 // Adds o to related.R.RouteMappings.
-func (q RouteMappingQuery) SetRoute(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Route) error {
+func (q routeMappingQuery) SetRoute(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Route) error {
 	var err error
 	if insert {
 		if err = Routes().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -550,9 +550,9 @@ func (q RouteMappingQuery) SetRoute(o *RouteMapping, ctx context.Context, exec b
 }
 
 // RouteMappings retrieves all the records using an executor.
-func RouteMappings(mods ...qm.QueryMod) RouteMappingQuery {
+func RouteMappings(mods ...qm.QueryMod) routeMappingQuery {
 	mods = append(mods, qm.From("`route_mappings`"))
-	return RouteMappingQuery{NewQuery(mods...)}
+	return routeMappingQuery{NewQuery(mods...)}
 }
 
 type RouteMappingFinder interface {
@@ -591,7 +591,7 @@ type RouteMappingInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RouteMappingQuery) Insert(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q routeMappingQuery) Insert(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no route_mappings provided for insertion")
 	}
@@ -710,7 +710,7 @@ type RouteMappingUpdater interface {
 // Update uses an executor to update the RouteMapping.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RouteMappingQuery) Update(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q routeMappingQuery) Update(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -774,7 +774,7 @@ func (q RouteMappingQuery) Update(o *RouteMapping, ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RouteMappingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeMappingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -791,7 +791,7 @@ func (q RouteMappingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RouteMappingQuery) UpdateAllSlice(o RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeMappingQuery) UpdateAllSlice(o RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -846,7 +846,7 @@ type RouteMappingDeleter interface {
 
 // Delete deletes a single RouteMapping record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RouteMappingQuery) Delete(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeMappingQuery) Delete(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no RouteMapping provided for delete")
 	}
@@ -873,7 +873,7 @@ func (q RouteMappingQuery) Delete(o *RouteMapping, ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all matching rows.
-func (q RouteMappingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeMappingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no routeMappingQuery provided for delete all")
 	}
@@ -894,7 +894,7 @@ func (q RouteMappingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RouteMappingQuery) DeleteAllSlice(o RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeMappingQuery) DeleteAllSlice(o RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -933,7 +933,7 @@ type RouteMappingReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RouteMappingQuery) Reload(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeMappingQuery) Reload(o *RouteMapping, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRouteMapping(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -945,7 +945,7 @@ func (q RouteMappingQuery) Reload(o *RouteMapping, ctx context.Context, exec boi
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RouteMappingQuery) ReloadAll(o *RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeMappingQuery) ReloadAll(o *RouteMappingSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

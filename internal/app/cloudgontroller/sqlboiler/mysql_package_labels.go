@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []PackageLabel.
 	PackageLabelSlice []*PackageLabel
 
-	PackageLabelQuery struct {
+	packageLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type PackageLabelFinisher interface {
 }
 
 // One returns a single packageLabel record from the query.
-func (q PackageLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*PackageLabel, error) {
+func (q packageLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*PackageLabel, error) {
 	o := &PackageLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q PackageLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // All returns all PackageLabel records from the query.
-func (q PackageLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageLabelSlice, error) {
+func (q packageLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageLabelSlice, error) {
 	var o []*PackageLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q PackageLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Count returns the count of all PackageLabel records in the query.
-func (q PackageLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q PackageLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q PackageLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q packageLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q PackageLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Resource pointed to by the foreign key.
-func (q PackageLabelQuery) Resource(o *PackageLabel, mods ...qm.QueryMod) PackageQuery {
+func (q packageLabelQuery) Resource(o *PackageLabel, mods ...qm.QueryMod) packageQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (packageLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, s
 // SetResource of the packageLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourcePackageLabels.
-func (q PackageLabelQuery) SetResource(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Package) error {
+func (q packageLabelQuery) SetResource(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Package) error {
 	var err error
 	if insert {
 		if err = Packages().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q PackageLabelQuery) SetResource(o *PackageLabel, ctx context.Context, exe
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q PackageLabelQuery) RemoveResource(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, related *Package) error {
+func (q packageLabelQuery) RemoveResource(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, related *Package) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q PackageLabelQuery) RemoveResource(o *PackageLabel, ctx context.Context, 
 }
 
 // PackageLabels retrieves all the records using an executor.
-func PackageLabels(mods ...qm.QueryMod) PackageLabelQuery {
+func PackageLabels(mods ...qm.QueryMod) packageLabelQuery {
 	mods = append(mods, qm.From("`package_labels`"))
-	return PackageLabelQuery{NewQuery(mods...)}
+	return packageLabelQuery{NewQuery(mods...)}
 }
 
 type PackageLabelFinder interface {
@@ -461,7 +461,7 @@ type PackageLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q PackageLabelQuery) Insert(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q packageLabelQuery) Insert(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no package_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type PackageLabelUpdater interface {
 // Update uses an executor to update the PackageLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q PackageLabelQuery) Update(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q packageLabelQuery) Update(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q PackageLabelQuery) Update(o *PackageLabel, ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q PackageLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q packageLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q PackageLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q PackageLabelQuery) UpdateAllSlice(o PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q packageLabelQuery) UpdateAllSlice(o PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type PackageLabelDeleter interface {
 
 // Delete deletes a single PackageLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q PackageLabelQuery) Delete(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageLabelQuery) Delete(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no PackageLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q PackageLabelQuery) Delete(o *PackageLabel, ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all matching rows.
-func (q PackageLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no packageLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q PackageLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q PackageLabelQuery) DeleteAllSlice(o PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageLabelQuery) DeleteAllSlice(o PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type PackageLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q PackageLabelQuery) Reload(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q packageLabelQuery) Reload(o *PackageLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindPackageLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q PackageLabelQuery) Reload(o *PackageLabel, ctx context.Context, exec boi
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q PackageLabelQuery) ReloadAll(o *PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q packageLabelQuery) ReloadAll(o *PackageLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

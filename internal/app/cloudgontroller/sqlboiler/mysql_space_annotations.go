@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []SpaceAnnotation.
 	SpaceAnnotationSlice []*SpaceAnnotation
 
-	SpaceAnnotationQuery struct {
+	spaceAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type SpaceAnnotationFinisher interface {
 }
 
 // One returns a single spaceAnnotation record from the query.
-func (q SpaceAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceAnnotation, error) {
+func (q spaceAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceAnnotation, error) {
 	o := &SpaceAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q SpaceAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all SpaceAnnotation records from the query.
-func (q SpaceAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceAnnotationSlice, error) {
+func (q spaceAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceAnnotationSlice, error) {
 	var o []*SpaceAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q SpaceAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all SpaceAnnotation records in the query.
-func (q SpaceAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q SpaceAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q SpaceAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q spaceAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q SpaceAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Resource pointed to by the foreign key.
-func (q SpaceAnnotationQuery) Resource(o *SpaceAnnotation, mods ...qm.QueryMod) SpaceQuery {
+func (q spaceAnnotationQuery) Resource(o *SpaceAnnotation, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (spaceAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecutor
 // SetResource of the spaceAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceSpaceAnnotations.
-func (q SpaceAnnotationQuery) SetResource(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q spaceAnnotationQuery) SetResource(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q SpaceAnnotationQuery) SetResource(o *SpaceAnnotation, ctx context.Contex
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q SpaceAnnotationQuery) RemoveResource(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
+func (q spaceAnnotationQuery) RemoveResource(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q SpaceAnnotationQuery) RemoveResource(o *SpaceAnnotation, ctx context.Con
 }
 
 // SpaceAnnotations retrieves all the records using an executor.
-func SpaceAnnotations(mods ...qm.QueryMod) SpaceAnnotationQuery {
+func SpaceAnnotations(mods ...qm.QueryMod) spaceAnnotationQuery {
 	mods = append(mods, qm.From("`space_annotations`"))
-	return SpaceAnnotationQuery{NewQuery(mods...)}
+	return spaceAnnotationQuery{NewQuery(mods...)}
 }
 
 type SpaceAnnotationFinder interface {
@@ -461,7 +461,7 @@ type SpaceAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SpaceAnnotationQuery) Insert(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q spaceAnnotationQuery) Insert(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no space_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type SpaceAnnotationUpdater interface {
 // Update uses an executor to update the SpaceAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SpaceAnnotationQuery) Update(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q spaceAnnotationQuery) Update(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q SpaceAnnotationQuery) Update(o *SpaceAnnotation, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SpaceAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q SpaceAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SpaceAnnotationQuery) UpdateAllSlice(o SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceAnnotationQuery) UpdateAllSlice(o SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type SpaceAnnotationDeleter interface {
 
 // Delete deletes a single SpaceAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SpaceAnnotationQuery) Delete(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceAnnotationQuery) Delete(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SpaceAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q SpaceAnnotationQuery) Delete(o *SpaceAnnotation, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q SpaceAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no spaceAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q SpaceAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SpaceAnnotationQuery) DeleteAllSlice(o SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceAnnotationQuery) DeleteAllSlice(o SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type SpaceAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SpaceAnnotationQuery) Reload(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceAnnotationQuery) Reload(o *SpaceAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSpaceAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q SpaceAnnotationQuery) Reload(o *SpaceAnnotation, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SpaceAnnotationQuery) ReloadAll(o *SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceAnnotationQuery) ReloadAll(o *SpaceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

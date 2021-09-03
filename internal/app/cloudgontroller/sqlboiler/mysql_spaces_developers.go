@@ -121,7 +121,7 @@ type (
 	// This should almost always be used instead of []SpacesDeveloper.
 	SpacesDeveloperSlice []*SpacesDeveloper
 
-	SpacesDeveloperQuery struct {
+	spacesDeveloperQuery struct {
 		*queries.Query
 	}
 )
@@ -155,7 +155,7 @@ type SpacesDeveloperFinisher interface {
 }
 
 // One returns a single spacesDeveloper record from the query.
-func (q SpacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesDeveloper, error) {
+func (q spacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesDeveloper, error) {
 	o := &SpacesDeveloper{}
 
 	queries.SetLimit(q.Query, 1)
@@ -172,7 +172,7 @@ func (q SpacesDeveloperQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all SpacesDeveloper records from the query.
-func (q SpacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesDeveloperSlice, error) {
+func (q spacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesDeveloperSlice, error) {
 	var o []*SpacesDeveloper
 
 	err := q.Bind(ctx, exec, &o)
@@ -184,7 +184,7 @@ func (q SpacesDeveloperQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all SpacesDeveloper records in the query.
-func (q SpacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -199,7 +199,7 @@ func (q SpacesDeveloperQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q SpacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q spacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -215,7 +215,7 @@ func (q SpacesDeveloperQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Space pointed to by the foreign key.
-func (q SpacesDeveloperQuery) Space(o *SpacesDeveloper, mods ...qm.QueryMod) SpaceQuery {
+func (q spacesDeveloperQuery) Space(o *SpacesDeveloper, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -229,7 +229,7 @@ func (q SpacesDeveloperQuery) Space(o *SpacesDeveloper, mods ...qm.QueryMod) Spa
 }
 
 // User pointed to by the foreign key.
-func (q SpacesDeveloperQuery) User(o *SpacesDeveloper, mods ...qm.QueryMod) UserQuery {
+func (q spacesDeveloperQuery) User(o *SpacesDeveloper, mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -437,7 +437,7 @@ func (spacesDeveloperL) LoadUser(ctx context.Context, e boil.ContextExecutor, si
 // SetSpace of the spacesDeveloper to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.SpacesDevelopers.
-func (q SpacesDeveloperQuery) SetSpace(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q spacesDeveloperQuery) SetSpace(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -484,7 +484,7 @@ func (q SpacesDeveloperQuery) SetSpace(o *SpacesDeveloper, ctx context.Context, 
 // SetUser of the spacesDeveloper to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.SpacesDevelopers.
-func (q SpacesDeveloperQuery) SetUser(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q spacesDeveloperQuery) SetUser(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -529,9 +529,9 @@ func (q SpacesDeveloperQuery) SetUser(o *SpacesDeveloper, ctx context.Context, e
 }
 
 // SpacesDevelopers retrieves all the records using an executor.
-func SpacesDevelopers(mods ...qm.QueryMod) SpacesDeveloperQuery {
+func SpacesDevelopers(mods ...qm.QueryMod) spacesDeveloperQuery {
 	mods = append(mods, qm.From("`spaces_developers`"))
-	return SpacesDeveloperQuery{NewQuery(mods...)}
+	return spacesDeveloperQuery{NewQuery(mods...)}
 }
 
 type SpacesDeveloperFinder interface {
@@ -570,7 +570,7 @@ type SpacesDeveloperInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SpacesDeveloperQuery) Insert(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q spacesDeveloperQuery) Insert(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces_developers provided for insertion")
 	}
@@ -689,7 +689,7 @@ type SpacesDeveloperUpdater interface {
 // Update uses an executor to update the SpacesDeveloper.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SpacesDeveloperQuery) Update(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q spacesDeveloperQuery) Update(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -753,7 +753,7 @@ func (q SpacesDeveloperQuery) Update(o *SpacesDeveloper, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SpacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -770,7 +770,7 @@ func (q SpacesDeveloperQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SpacesDeveloperQuery) UpdateAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spacesDeveloperQuery) UpdateAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -825,7 +825,7 @@ type SpacesDeveloperDeleter interface {
 
 // Delete deletes a single SpacesDeveloper record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SpacesDeveloperQuery) Delete(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesDeveloperQuery) Delete(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SpacesDeveloper provided for delete")
 	}
@@ -852,7 +852,7 @@ func (q SpacesDeveloperQuery) Delete(o *SpacesDeveloper, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q SpacesDeveloperQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesDeveloperQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no spacesDeveloperQuery provided for delete all")
 	}
@@ -873,7 +873,7 @@ func (q SpacesDeveloperQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SpacesDeveloperQuery) DeleteAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesDeveloperQuery) DeleteAllSlice(o SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -912,7 +912,7 @@ type SpacesDeveloperReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SpacesDeveloperQuery) Reload(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spacesDeveloperQuery) Reload(o *SpacesDeveloper, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSpacesDeveloper(ctx, exec, o.SpacesDevelopersPK)
 	if err != nil {
 		return err
@@ -924,7 +924,7 @@ func (q SpacesDeveloperQuery) Reload(o *SpacesDeveloper, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SpacesDeveloperQuery) ReloadAll(o *SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spacesDeveloperQuery) ReloadAll(o *SpacesDeveloperSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

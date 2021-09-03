@@ -121,7 +121,7 @@ type (
 	// This should almost always be used instead of []SpacesApplicationSupporter.
 	SpacesApplicationSupporterSlice []*SpacesApplicationSupporter
 
-	SpacesApplicationSupporterQuery struct {
+	spacesApplicationSupporterQuery struct {
 		*queries.Query
 	}
 )
@@ -155,7 +155,7 @@ type SpacesApplicationSupporterFinisher interface {
 }
 
 // One returns a single spacesApplicationSupporter record from the query.
-func (q SpacesApplicationSupporterQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesApplicationSupporter, error) {
+func (q spacesApplicationSupporterQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpacesApplicationSupporter, error) {
 	o := &SpacesApplicationSupporter{}
 
 	queries.SetLimit(q.Query, 1)
@@ -172,7 +172,7 @@ func (q SpacesApplicationSupporterQuery) One(ctx context.Context, exec boil.Cont
 }
 
 // All returns all SpacesApplicationSupporter records from the query.
-func (q SpacesApplicationSupporterQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesApplicationSupporterSlice, error) {
+func (q spacesApplicationSupporterQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpacesApplicationSupporterSlice, error) {
 	var o []*SpacesApplicationSupporter
 
 	err := q.Bind(ctx, exec, &o)
@@ -184,7 +184,7 @@ func (q SpacesApplicationSupporterQuery) All(ctx context.Context, exec boil.Cont
 }
 
 // Count returns the count of all SpacesApplicationSupporter records in the query.
-func (q SpacesApplicationSupporterQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesApplicationSupporterQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -199,7 +199,7 @@ func (q SpacesApplicationSupporterQuery) Count(ctx context.Context, exec boil.Co
 }
 
 // Exists checks if the row exists in the table.
-func (q SpacesApplicationSupporterQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q spacesApplicationSupporterQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -215,7 +215,7 @@ func (q SpacesApplicationSupporterQuery) Exists(ctx context.Context, exec boil.C
 }
 
 // Space pointed to by the foreign key.
-func (q SpacesApplicationSupporterQuery) Space(o *SpacesApplicationSupporter, mods ...qm.QueryMod) SpaceQuery {
+func (q spacesApplicationSupporterQuery) Space(o *SpacesApplicationSupporter, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -229,7 +229,7 @@ func (q SpacesApplicationSupporterQuery) Space(o *SpacesApplicationSupporter, mo
 }
 
 // User pointed to by the foreign key.
-func (q SpacesApplicationSupporterQuery) User(o *SpacesApplicationSupporter, mods ...qm.QueryMod) UserQuery {
+func (q spacesApplicationSupporterQuery) User(o *SpacesApplicationSupporter, mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -437,7 +437,7 @@ func (spacesApplicationSupporterL) LoadUser(ctx context.Context, e boil.ContextE
 // SetSpace of the spacesApplicationSupporter to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.SpacesApplicationSupporters.
-func (q SpacesApplicationSupporterQuery) SetSpace(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q spacesApplicationSupporterQuery) SetSpace(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -484,7 +484,7 @@ func (q SpacesApplicationSupporterQuery) SetSpace(o *SpacesApplicationSupporter,
 // SetUser of the spacesApplicationSupporter to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.SpacesApplicationSupporters.
-func (q SpacesApplicationSupporterQuery) SetUser(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q spacesApplicationSupporterQuery) SetUser(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -529,9 +529,9 @@ func (q SpacesApplicationSupporterQuery) SetUser(o *SpacesApplicationSupporter, 
 }
 
 // SpacesApplicationSupporters retrieves all the records using an executor.
-func SpacesApplicationSupporters(mods ...qm.QueryMod) SpacesApplicationSupporterQuery {
+func SpacesApplicationSupporters(mods ...qm.QueryMod) spacesApplicationSupporterQuery {
 	mods = append(mods, qm.From("`spaces_application_supporters`"))
-	return SpacesApplicationSupporterQuery{NewQuery(mods...)}
+	return spacesApplicationSupporterQuery{NewQuery(mods...)}
 }
 
 type SpacesApplicationSupporterFinder interface {
@@ -570,7 +570,7 @@ type SpacesApplicationSupporterInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SpacesApplicationSupporterQuery) Insert(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q spacesApplicationSupporterQuery) Insert(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no spaces_application_supporters provided for insertion")
 	}
@@ -689,7 +689,7 @@ type SpacesApplicationSupporterUpdater interface {
 // Update uses an executor to update the SpacesApplicationSupporter.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SpacesApplicationSupporterQuery) Update(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q spacesApplicationSupporterQuery) Update(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -753,7 +753,7 @@ func (q SpacesApplicationSupporterQuery) Update(o *SpacesApplicationSupporter, c
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SpacesApplicationSupporterQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spacesApplicationSupporterQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -770,7 +770,7 @@ func (q SpacesApplicationSupporterQuery) UpdateAll(ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SpacesApplicationSupporterQuery) UpdateAllSlice(o SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spacesApplicationSupporterQuery) UpdateAllSlice(o SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -825,7 +825,7 @@ type SpacesApplicationSupporterDeleter interface {
 
 // Delete deletes a single SpacesApplicationSupporter record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SpacesApplicationSupporterQuery) Delete(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesApplicationSupporterQuery) Delete(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SpacesApplicationSupporter provided for delete")
 	}
@@ -852,7 +852,7 @@ func (q SpacesApplicationSupporterQuery) Delete(o *SpacesApplicationSupporter, c
 }
 
 // DeleteAll deletes all matching rows.
-func (q SpacesApplicationSupporterQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesApplicationSupporterQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no spacesApplicationSupporterQuery provided for delete all")
 	}
@@ -873,7 +873,7 @@ func (q SpacesApplicationSupporterQuery) DeleteAll(ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SpacesApplicationSupporterQuery) DeleteAllSlice(o SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spacesApplicationSupporterQuery) DeleteAllSlice(o SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -912,7 +912,7 @@ type SpacesApplicationSupporterReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SpacesApplicationSupporterQuery) Reload(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spacesApplicationSupporterQuery) Reload(o *SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSpacesApplicationSupporter(ctx, exec, o.SpacesApplicationSupportersPK)
 	if err != nil {
 		return err
@@ -924,7 +924,7 @@ func (q SpacesApplicationSupporterQuery) Reload(o *SpacesApplicationSupporter, c
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SpacesApplicationSupporterQuery) ReloadAll(o *SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spacesApplicationSupporterQuery) ReloadAll(o *SpacesApplicationSupporterSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

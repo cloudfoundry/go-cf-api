@@ -221,7 +221,7 @@ type (
 	// This should almost always be used instead of []ServicePlan.
 	ServicePlanSlice []*ServicePlan
 
-	ServicePlanQuery struct {
+	servicePlanQuery struct {
 		*queries.Query
 	}
 )
@@ -255,7 +255,7 @@ type ServicePlanFinisher interface {
 }
 
 // One returns a single servicePlan record from the query.
-func (q ServicePlanQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlan, error) {
+func (q servicePlanQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlan, error) {
 	o := &ServicePlan{}
 
 	queries.SetLimit(q.Query, 1)
@@ -272,7 +272,7 @@ func (q ServicePlanQuery) One(ctx context.Context, exec boil.ContextExecutor) (*
 }
 
 // All returns all ServicePlan records from the query.
-func (q ServicePlanQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanSlice, error) {
+func (q servicePlanQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanSlice, error) {
 	var o []*ServicePlan
 
 	err := q.Bind(ctx, exec, &o)
@@ -284,7 +284,7 @@ func (q ServicePlanQuery) All(ctx context.Context, exec boil.ContextExecutor) (S
 }
 
 // Count returns the count of all ServicePlan records in the query.
-func (q ServicePlanQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -299,7 +299,7 @@ func (q ServicePlanQuery) Count(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // Exists checks if the row exists in the table.
-func (q ServicePlanQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q servicePlanQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -315,7 +315,7 @@ func (q ServicePlanQuery) Exists(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Service pointed to by the foreign key.
-func (q ServicePlanQuery) Service(o *ServicePlan, mods ...qm.QueryMod) ServiceQuery {
+func (q servicePlanQuery) Service(o *ServicePlan, mods ...qm.QueryMod) serviceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.ServiceID),
 	}
@@ -329,7 +329,7 @@ func (q ServicePlanQuery) Service(o *ServicePlan, mods ...qm.QueryMod) ServiceQu
 }
 
 // ServiceInstances retrieves all the service_instance's ServiceInstances with an executor.
-func (q ServicePlanQuery) ServiceInstances(o *ServicePlan, mods ...qm.QueryMod) ServiceInstanceQuery {
+func (q servicePlanQuery) ServiceInstances(o *ServicePlan, mods ...qm.QueryMod) serviceInstanceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -350,7 +350,7 @@ func (q ServicePlanQuery) ServiceInstances(o *ServicePlan, mods ...qm.QueryMod) 
 }
 
 // ResourceServicePlanAnnotations retrieves all the service_plan_annotation's ServicePlanAnnotations with an executor via resource_guid column.
-func (q ServicePlanQuery) ResourceServicePlanAnnotations(o *ServicePlan, mods ...qm.QueryMod) ServicePlanAnnotationQuery {
+func (q servicePlanQuery) ResourceServicePlanAnnotations(o *ServicePlan, mods ...qm.QueryMod) servicePlanAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -371,7 +371,7 @@ func (q ServicePlanQuery) ResourceServicePlanAnnotations(o *ServicePlan, mods ..
 }
 
 // ResourceServicePlanLabels retrieves all the service_plan_label's ServicePlanLabels with an executor via resource_guid column.
-func (q ServicePlanQuery) ResourceServicePlanLabels(o *ServicePlan, mods ...qm.QueryMod) ServicePlanLabelQuery {
+func (q servicePlanQuery) ResourceServicePlanLabels(o *ServicePlan, mods ...qm.QueryMod) servicePlanLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -392,7 +392,7 @@ func (q ServicePlanQuery) ResourceServicePlanLabels(o *ServicePlan, mods ...qm.Q
 }
 
 // ServicePlanVisibilities retrieves all the service_plan_visibility's ServicePlanVisibilities with an executor.
-func (q ServicePlanQuery) ServicePlanVisibilities(o *ServicePlan, mods ...qm.QueryMod) ServicePlanVisibilityQuery {
+func (q servicePlanQuery) ServicePlanVisibilities(o *ServicePlan, mods ...qm.QueryMod) servicePlanVisibilityQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -875,7 +875,7 @@ func (servicePlanL) LoadServicePlanVisibilities(ctx context.Context, e boil.Cont
 // SetService of the servicePlan to the related item.
 // Sets o.R.Service to related.
 // Adds o to related.R.ServicePlans.
-func (q ServicePlanQuery) SetService(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
+func (q servicePlanQuery) SetService(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
 	var err error
 	if insert {
 		if err = Services().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -923,7 +923,7 @@ func (q ServicePlanQuery) SetService(o *ServicePlan, ctx context.Context, exec b
 // of the service_plan, optionally inserting them as new records.
 // Appends related to o.R.ServiceInstances.
 // Sets related.R.ServicePlan appropriately.
-func (q ServicePlanQuery) AddServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
+func (q servicePlanQuery) AddServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -978,7 +978,7 @@ func (q ServicePlanQuery) AddServiceInstances(o *ServicePlan, ctx context.Contex
 // Sets o.R.ServicePlan's ServiceInstances accordingly.
 // Replaces o.R.ServiceInstances with related.
 // Sets related.R.ServicePlan's ServiceInstances accordingly.
-func (q ServicePlanQuery) SetServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
+func (q servicePlanQuery) SetServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstance) error {
 	query := "update `service_instances` set `service_plan_id` = null where `service_plan_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -1009,7 +1009,7 @@ func (q ServicePlanQuery) SetServiceInstances(o *ServicePlan, ctx context.Contex
 // RemoveServiceInstances relationships from objects passed in.
 // Removes related items from R.ServiceInstances (uses pointer comparison, removal does not keep order)
 // Sets related.R.ServicePlan.
-func (q ServicePlanQuery) RemoveServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstance) error {
+func (q servicePlanQuery) RemoveServiceInstances(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstance) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1050,7 +1050,7 @@ func (q ServicePlanQuery) RemoveServiceInstances(o *ServicePlan, ctx context.Con
 // of the service_plan, optionally inserting them as new records.
 // Appends related to o.R.ResourceServicePlanAnnotations.
 // Sets related.R.Resource appropriately.
-func (q ServicePlanQuery) AddResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanAnnotation) error {
+func (q servicePlanQuery) AddResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1105,7 +1105,7 @@ func (q ServicePlanQuery) AddResourceServicePlanAnnotations(o *ServicePlan, ctx 
 // Sets o.R.Resource's ResourceServicePlanAnnotations accordingly.
 // Replaces o.R.ResourceServicePlanAnnotations with related.
 // Sets related.R.Resource's ResourceServicePlanAnnotations accordingly.
-func (q ServicePlanQuery) SetResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanAnnotation) error {
+func (q servicePlanQuery) SetResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanAnnotation) error {
 	query := "update `service_plan_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1136,7 +1136,7 @@ func (q ServicePlanQuery) SetResourceServicePlanAnnotations(o *ServicePlan, ctx 
 // RemoveResourceServicePlanAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceServicePlanAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServicePlanQuery) RemoveResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServicePlanAnnotation) error {
+func (q servicePlanQuery) RemoveResourceServicePlanAnnotations(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServicePlanAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1177,7 +1177,7 @@ func (q ServicePlanQuery) RemoveResourceServicePlanAnnotations(o *ServicePlan, c
 // of the service_plan, optionally inserting them as new records.
 // Appends related to o.R.ResourceServicePlanLabels.
 // Sets related.R.Resource appropriately.
-func (q ServicePlanQuery) AddResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanLabel) error {
+func (q servicePlanQuery) AddResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1232,7 +1232,7 @@ func (q ServicePlanQuery) AddResourceServicePlanLabels(o *ServicePlan, ctx conte
 // Sets o.R.Resource's ResourceServicePlanLabels accordingly.
 // Replaces o.R.ResourceServicePlanLabels with related.
 // Sets related.R.Resource's ResourceServicePlanLabels accordingly.
-func (q ServicePlanQuery) SetResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanLabel) error {
+func (q servicePlanQuery) SetResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanLabel) error {
 	query := "update `service_plan_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1263,7 +1263,7 @@ func (q ServicePlanQuery) SetResourceServicePlanLabels(o *ServicePlan, ctx conte
 // RemoveResourceServicePlanLabels relationships from objects passed in.
 // Removes related items from R.ResourceServicePlanLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServicePlanQuery) RemoveResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServicePlanLabel) error {
+func (q servicePlanQuery) RemoveResourceServicePlanLabels(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, related ...*ServicePlanLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1304,7 +1304,7 @@ func (q ServicePlanQuery) RemoveResourceServicePlanLabels(o *ServicePlan, ctx co
 // of the service_plan, optionally inserting them as new records.
 // Appends related to o.R.ServicePlanVisibilities.
 // Sets related.R.ServicePlan appropriately.
-func (q ServicePlanQuery) AddServicePlanVisibilities(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
+func (q servicePlanQuery) AddServicePlanVisibilities(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1354,9 +1354,9 @@ func (q ServicePlanQuery) AddServicePlanVisibilities(o *ServicePlan, ctx context
 }
 
 // ServicePlans retrieves all the records using an executor.
-func ServicePlans(mods ...qm.QueryMod) ServicePlanQuery {
+func ServicePlans(mods ...qm.QueryMod) servicePlanQuery {
 	mods = append(mods, qm.From("`service_plans`"))
-	return ServicePlanQuery{NewQuery(mods...)}
+	return servicePlanQuery{NewQuery(mods...)}
 }
 
 type ServicePlanFinder interface {
@@ -1395,7 +1395,7 @@ type ServicePlanInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServicePlanQuery) Insert(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q servicePlanQuery) Insert(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_plans provided for insertion")
 	}
@@ -1514,7 +1514,7 @@ type ServicePlanUpdater interface {
 // Update uses an executor to update the ServicePlan.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServicePlanQuery) Update(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q servicePlanQuery) Update(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1578,7 +1578,7 @@ func (q ServicePlanQuery) Update(o *ServicePlan, ctx context.Context, exec boil.
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServicePlanQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q servicePlanQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1595,7 +1595,7 @@ func (q ServicePlanQuery) UpdateAll(ctx context.Context, exec boil.ContextExecut
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServicePlanQuery) UpdateAllSlice(o ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q servicePlanQuery) UpdateAllSlice(o ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1650,7 +1650,7 @@ type ServicePlanDeleter interface {
 
 // Delete deletes a single ServicePlan record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServicePlanQuery) Delete(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanQuery) Delete(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServicePlan provided for delete")
 	}
@@ -1677,7 +1677,7 @@ func (q ServicePlanQuery) Delete(o *ServicePlan, ctx context.Context, exec boil.
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServicePlanQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no servicePlanQuery provided for delete all")
 	}
@@ -1698,7 +1698,7 @@ func (q ServicePlanQuery) DeleteAll(ctx context.Context, exec boil.ContextExecut
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServicePlanQuery) DeleteAllSlice(o ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanQuery) DeleteAllSlice(o ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1737,7 +1737,7 @@ type ServicePlanReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServicePlanQuery) Reload(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor) error {
+func (q servicePlanQuery) Reload(o *ServicePlan, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServicePlan(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1749,7 +1749,7 @@ func (q ServicePlanQuery) Reload(o *ServicePlan, ctx context.Context, exec boil.
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServicePlanQuery) ReloadAll(o *ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q servicePlanQuery) ReloadAll(o *ServicePlanSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

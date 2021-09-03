@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []RouteBindingLabel.
 	RouteBindingLabelSlice []*RouteBindingLabel
 
-	RouteBindingLabelQuery struct {
+	routeBindingLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type RouteBindingLabelFinisher interface {
 }
 
 // One returns a single routeBindingLabel record from the query.
-func (q RouteBindingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteBindingLabel, error) {
+func (q routeBindingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteBindingLabel, error) {
 	o := &RouteBindingLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q RouteBindingLabelQuery) One(ctx context.Context, exec boil.ContextExecut
 }
 
 // All returns all RouteBindingLabel records from the query.
-func (q RouteBindingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteBindingLabelSlice, error) {
+func (q routeBindingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteBindingLabelSlice, error) {
 	var o []*RouteBindingLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q RouteBindingLabelQuery) All(ctx context.Context, exec boil.ContextExecut
 }
 
 // Count returns the count of all RouteBindingLabel records in the query.
-func (q RouteBindingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q RouteBindingLabelQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q RouteBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q routeBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q RouteBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Resource pointed to by the foreign key.
-func (q RouteBindingLabelQuery) Resource(o *RouteBindingLabel, mods ...qm.QueryMod) RouteBindingQuery {
+func (q routeBindingLabelQuery) Resource(o *RouteBindingLabel, mods ...qm.QueryMod) routeBindingQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (routeBindingLabelL) LoadResource(ctx context.Context, e boil.ContextExecut
 // SetResource of the routeBindingLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceRouteBindingLabels.
-func (q RouteBindingLabelQuery) SetResource(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *RouteBinding) error {
+func (q routeBindingLabelQuery) SetResource(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *RouteBinding) error {
 	var err error
 	if insert {
 		if err = RouteBindings().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q RouteBindingLabelQuery) SetResource(o *RouteBindingLabel, ctx context.Co
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q RouteBindingLabelQuery) RemoveResource(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, related *RouteBinding) error {
+func (q routeBindingLabelQuery) RemoveResource(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, related *RouteBinding) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q RouteBindingLabelQuery) RemoveResource(o *RouteBindingLabel, ctx context
 }
 
 // RouteBindingLabels retrieves all the records using an executor.
-func RouteBindingLabels(mods ...qm.QueryMod) RouteBindingLabelQuery {
+func RouteBindingLabels(mods ...qm.QueryMod) routeBindingLabelQuery {
 	mods = append(mods, qm.From("`route_binding_labels`"))
-	return RouteBindingLabelQuery{NewQuery(mods...)}
+	return routeBindingLabelQuery{NewQuery(mods...)}
 }
 
 type RouteBindingLabelFinder interface {
@@ -461,7 +461,7 @@ type RouteBindingLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RouteBindingLabelQuery) Insert(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q routeBindingLabelQuery) Insert(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no route_binding_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type RouteBindingLabelUpdater interface {
 // Update uses an executor to update the RouteBindingLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RouteBindingLabelQuery) Update(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q routeBindingLabelQuery) Update(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q RouteBindingLabelQuery) Update(o *RouteBindingLabel, ctx context.Context
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RouteBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q RouteBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RouteBindingLabelQuery) UpdateAllSlice(o RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeBindingLabelQuery) UpdateAllSlice(o RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type RouteBindingLabelDeleter interface {
 
 // Delete deletes a single RouteBindingLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RouteBindingLabelQuery) Delete(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingLabelQuery) Delete(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no RouteBindingLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q RouteBindingLabelQuery) Delete(o *RouteBindingLabel, ctx context.Context
 }
 
 // DeleteAll deletes all matching rows.
-func (q RouteBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no routeBindingLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q RouteBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.Context
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RouteBindingLabelQuery) DeleteAllSlice(o RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingLabelQuery) DeleteAllSlice(o RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type RouteBindingLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RouteBindingLabelQuery) Reload(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeBindingLabelQuery) Reload(o *RouteBindingLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRouteBindingLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q RouteBindingLabelQuery) Reload(o *RouteBindingLabel, ctx context.Context
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RouteBindingLabelQuery) ReloadAll(o *RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeBindingLabelQuery) ReloadAll(o *RouteBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []TaskLabel.
 	TaskLabelSlice []*TaskLabel
 
-	TaskLabelQuery struct {
+	taskLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type TaskLabelFinisher interface {
 }
 
 // One returns a single taskLabel record from the query.
-func (q TaskLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*TaskLabel, error) {
+func (q taskLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*TaskLabel, error) {
 	o := &TaskLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q TaskLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Ta
 }
 
 // All returns all TaskLabel records from the query.
-func (q TaskLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskLabelSlice, error) {
+func (q taskLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskLabelSlice, error) {
 	var o []*TaskLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q TaskLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (Tas
 }
 
 // Count returns the count of all TaskLabel records in the query.
-func (q TaskLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q TaskLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // Exists checks if the row exists in the table.
-func (q TaskLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q taskLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q TaskLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Resource pointed to by the foreign key.
-func (q TaskLabelQuery) Resource(o *TaskLabel, mods ...qm.QueryMod) TaskQuery {
+func (q taskLabelQuery) Resource(o *TaskLabel, mods ...qm.QueryMod) taskQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (taskLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, sing
 // SetResource of the taskLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceTaskLabels.
-func (q TaskLabelQuery) SetResource(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Task) error {
+func (q taskLabelQuery) SetResource(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Task) error {
 	var err error
 	if insert {
 		if err = Tasks().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q TaskLabelQuery) SetResource(o *TaskLabel, ctx context.Context, exec boil
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q TaskLabelQuery) RemoveResource(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, related *Task) error {
+func (q taskLabelQuery) RemoveResource(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, related *Task) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q TaskLabelQuery) RemoveResource(o *TaskLabel, ctx context.Context, exec b
 }
 
 // TaskLabels retrieves all the records using an executor.
-func TaskLabels(mods ...qm.QueryMod) TaskLabelQuery {
+func TaskLabels(mods ...qm.QueryMod) taskLabelQuery {
 	mods = append(mods, qm.From("`task_labels`"))
-	return TaskLabelQuery{NewQuery(mods...)}
+	return taskLabelQuery{NewQuery(mods...)}
 }
 
 type TaskLabelFinder interface {
@@ -461,7 +461,7 @@ type TaskLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q TaskLabelQuery) Insert(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q taskLabelQuery) Insert(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no task_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type TaskLabelUpdater interface {
 // Update uses an executor to update the TaskLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q TaskLabelQuery) Update(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q taskLabelQuery) Update(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q TaskLabelQuery) Update(o *TaskLabel, ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q TaskLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q taskLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q TaskLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q TaskLabelQuery) UpdateAllSlice(o TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q taskLabelQuery) UpdateAllSlice(o TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type TaskLabelDeleter interface {
 
 // Delete deletes a single TaskLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q TaskLabelQuery) Delete(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskLabelQuery) Delete(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no TaskLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q TaskLabelQuery) Delete(o *TaskLabel, ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all matching rows.
-func (q TaskLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no taskLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q TaskLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q TaskLabelQuery) DeleteAllSlice(o TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskLabelQuery) DeleteAllSlice(o TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type TaskLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q TaskLabelQuery) Reload(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q taskLabelQuery) Reload(o *TaskLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindTaskLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q TaskLabelQuery) Reload(o *TaskLabel, ctx context.Context, exec boil.Cont
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q TaskLabelQuery) ReloadAll(o *TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q taskLabelQuery) ReloadAll(o *TaskLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -183,7 +183,7 @@ type (
 	// This should almost always be used instead of []Build.
 	BuildSlice []*Build
 
-	BuildQuery struct {
+	buildQuery struct {
 		*queries.Query
 	}
 )
@@ -217,7 +217,7 @@ type BuildFinisher interface {
 }
 
 // One returns a single build record from the query.
-func (q BuildQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Build, error) {
+func (q buildQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Build, error) {
 	o := &Build{}
 
 	queries.SetLimit(q.Query, 1)
@@ -234,7 +234,7 @@ func (q BuildQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Build,
 }
 
 // All returns all Build records from the query.
-func (q BuildQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildSlice, error) {
+func (q buildQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildSlice, error) {
 	var o []*Build
 
 	err := q.Bind(ctx, exec, &o)
@@ -246,7 +246,7 @@ func (q BuildQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildSl
 }
 
 // Count returns the count of all Build records in the query.
-func (q BuildQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -261,7 +261,7 @@ func (q BuildQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64
 }
 
 // Exists checks if the row exists in the table.
-func (q BuildQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q buildQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -277,7 +277,7 @@ func (q BuildQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 }
 
 // App pointed to by the foreign key.
-func (q BuildQuery) App(o *Build, mods ...qm.QueryMod) AppQuery {
+func (q buildQuery) App(o *Build, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -291,7 +291,7 @@ func (q BuildQuery) App(o *Build, mods ...qm.QueryMod) AppQuery {
 }
 
 // ResourceBuildAnnotations retrieves all the build_annotation's BuildAnnotations with an executor via resource_guid column.
-func (q BuildQuery) ResourceBuildAnnotations(o *Build, mods ...qm.QueryMod) BuildAnnotationQuery {
+func (q buildQuery) ResourceBuildAnnotations(o *Build, mods ...qm.QueryMod) buildAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -312,7 +312,7 @@ func (q BuildQuery) ResourceBuildAnnotations(o *Build, mods ...qm.QueryMod) Buil
 }
 
 // ResourceBuildLabels retrieves all the build_label's BuildLabels with an executor via resource_guid column.
-func (q BuildQuery) ResourceBuildLabels(o *Build, mods ...qm.QueryMod) BuildLabelQuery {
+func (q buildQuery) ResourceBuildLabels(o *Build, mods ...qm.QueryMod) buildLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -333,7 +333,7 @@ func (q BuildQuery) ResourceBuildLabels(o *Build, mods ...qm.QueryMod) BuildLabe
 }
 
 // KpackLifecycleData retrieves all the kpack_lifecycle_datum's KpackLifecycleData with an executor.
-func (q BuildQuery) KpackLifecycleData(o *Build, mods ...qm.QueryMod) KpackLifecycleDatumQuery {
+func (q buildQuery) KpackLifecycleData(o *Build, mods ...qm.QueryMod) kpackLifecycleDatumQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -729,7 +729,7 @@ func (buildL) LoadKpackLifecycleData(ctx context.Context, e boil.ContextExecutor
 // SetApp of the build to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Builds.
-func (q BuildQuery) SetApp(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q buildQuery) SetApp(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -776,7 +776,7 @@ func (q BuildQuery) SetApp(o *Build, ctx context.Context, exec boil.ContextExecu
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q BuildQuery) RemoveApp(o *Build, ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q buildQuery) RemoveApp(o *Build, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
@@ -810,7 +810,7 @@ func (q BuildQuery) RemoveApp(o *Build, ctx context.Context, exec boil.ContextEx
 // of the build, optionally inserting them as new records.
 // Appends related to o.R.ResourceBuildAnnotations.
 // Sets related.R.Resource appropriately.
-func (q BuildQuery) AddResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildAnnotation) error {
+func (q buildQuery) AddResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -865,7 +865,7 @@ func (q BuildQuery) AddResourceBuildAnnotations(o *Build, ctx context.Context, e
 // Sets o.R.Resource's ResourceBuildAnnotations accordingly.
 // Replaces o.R.ResourceBuildAnnotations with related.
 // Sets related.R.Resource's ResourceBuildAnnotations accordingly.
-func (q BuildQuery) SetResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildAnnotation) error {
+func (q buildQuery) SetResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildAnnotation) error {
 	query := "update `build_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -896,7 +896,7 @@ func (q BuildQuery) SetResourceBuildAnnotations(o *Build, ctx context.Context, e
 // RemoveResourceBuildAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceBuildAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q BuildQuery) RemoveResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*BuildAnnotation) error {
+func (q buildQuery) RemoveResourceBuildAnnotations(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*BuildAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -937,7 +937,7 @@ func (q BuildQuery) RemoveResourceBuildAnnotations(o *Build, ctx context.Context
 // of the build, optionally inserting them as new records.
 // Appends related to o.R.ResourceBuildLabels.
 // Sets related.R.Resource appropriately.
-func (q BuildQuery) AddResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildLabel) error {
+func (q buildQuery) AddResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -992,7 +992,7 @@ func (q BuildQuery) AddResourceBuildLabels(o *Build, ctx context.Context, exec b
 // Sets o.R.Resource's ResourceBuildLabels accordingly.
 // Replaces o.R.ResourceBuildLabels with related.
 // Sets related.R.Resource's ResourceBuildLabels accordingly.
-func (q BuildQuery) SetResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildLabel) error {
+func (q buildQuery) SetResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildLabel) error {
 	query := "update `build_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1023,7 +1023,7 @@ func (q BuildQuery) SetResourceBuildLabels(o *Build, ctx context.Context, exec b
 // RemoveResourceBuildLabels relationships from objects passed in.
 // Removes related items from R.ResourceBuildLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q BuildQuery) RemoveResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*BuildLabel) error {
+func (q buildQuery) RemoveResourceBuildLabels(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*BuildLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1064,7 +1064,7 @@ func (q BuildQuery) RemoveResourceBuildLabels(o *Build, ctx context.Context, exe
 // of the build, optionally inserting them as new records.
 // Appends related to o.R.KpackLifecycleData.
 // Sets related.R.Build appropriately.
-func (q BuildQuery) AddKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
+func (q buildQuery) AddKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1119,7 +1119,7 @@ func (q BuildQuery) AddKpackLifecycleData(o *Build, ctx context.Context, exec bo
 // Sets o.R.Build's KpackLifecycleData accordingly.
 // Replaces o.R.KpackLifecycleData with related.
 // Sets related.R.Build's KpackLifecycleData accordingly.
-func (q BuildQuery) SetKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
+func (q buildQuery) SetKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*KpackLifecycleDatum) error {
 	query := "update `kpack_lifecycle_data` set `build_guid` = null where `build_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1150,7 +1150,7 @@ func (q BuildQuery) SetKpackLifecycleData(o *Build, ctx context.Context, exec bo
 // RemoveKpackLifecycleData relationships from objects passed in.
 // Removes related items from R.KpackLifecycleData (uses pointer comparison, removal does not keep order)
 // Sets related.R.Build.
-func (q BuildQuery) RemoveKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*KpackLifecycleDatum) error {
+func (q buildQuery) RemoveKpackLifecycleData(o *Build, ctx context.Context, exec boil.ContextExecutor, related ...*KpackLifecycleDatum) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1188,9 +1188,9 @@ func (q BuildQuery) RemoveKpackLifecycleData(o *Build, ctx context.Context, exec
 }
 
 // Builds retrieves all the records using an executor.
-func Builds(mods ...qm.QueryMod) BuildQuery {
+func Builds(mods ...qm.QueryMod) buildQuery {
 	mods = append(mods, qm.From("`builds`"))
-	return BuildQuery{NewQuery(mods...)}
+	return buildQuery{NewQuery(mods...)}
 }
 
 type BuildFinder interface {
@@ -1229,7 +1229,7 @@ type BuildInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q BuildQuery) Insert(o *Build, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q buildQuery) Insert(o *Build, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no builds provided for insertion")
 	}
@@ -1348,7 +1348,7 @@ type BuildUpdater interface {
 // Update uses an executor to update the Build.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q BuildQuery) Update(o *Build, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q buildQuery) Update(o *Build, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1412,7 +1412,7 @@ func (q BuildQuery) Update(o *Build, ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q BuildQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1429,7 +1429,7 @@ func (q BuildQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q BuildQuery) UpdateAllSlice(o BuildSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildQuery) UpdateAllSlice(o BuildSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1484,7 +1484,7 @@ type BuildDeleter interface {
 
 // Delete deletes a single Build record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q BuildQuery) Delete(o *Build, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildQuery) Delete(o *Build, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Build provided for delete")
 	}
@@ -1511,7 +1511,7 @@ func (q BuildQuery) Delete(o *Build, ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all matching rows.
-func (q BuildQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no buildQuery provided for delete all")
 	}
@@ -1532,7 +1532,7 @@ func (q BuildQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q BuildQuery) DeleteAllSlice(o BuildSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildQuery) DeleteAllSlice(o BuildSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1571,7 +1571,7 @@ type BuildReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q BuildQuery) Reload(o *Build, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildQuery) Reload(o *Build, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindBuild(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1583,7 +1583,7 @@ func (q BuildQuery) Reload(o *Build, ctx context.Context, exec boil.ContextExecu
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q BuildQuery) ReloadAll(o *BuildSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildQuery) ReloadAll(o *BuildSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

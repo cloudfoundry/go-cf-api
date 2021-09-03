@@ -167,7 +167,7 @@ type (
 	// This should almost always be used instead of []BuildpackLifecycleDatum.
 	BuildpackLifecycleDatumSlice []*BuildpackLifecycleDatum
 
-	BuildpackLifecycleDatumQuery struct {
+	buildpackLifecycleDatumQuery struct {
 		*queries.Query
 	}
 )
@@ -201,7 +201,7 @@ type BuildpackLifecycleDatumFinisher interface {
 }
 
 // One returns a single buildpackLifecycleDatum record from the query.
-func (q BuildpackLifecycleDatumQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackLifecycleDatum, error) {
+func (q buildpackLifecycleDatumQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildpackLifecycleDatum, error) {
 	o := &BuildpackLifecycleDatum{}
 
 	queries.SetLimit(q.Query, 1)
@@ -218,7 +218,7 @@ func (q BuildpackLifecycleDatumQuery) One(ctx context.Context, exec boil.Context
 }
 
 // All returns all BuildpackLifecycleDatum records from the query.
-func (q BuildpackLifecycleDatumQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackLifecycleDatumSlice, error) {
+func (q buildpackLifecycleDatumQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackLifecycleDatumSlice, error) {
 	var o []*BuildpackLifecycleDatum
 
 	err := q.Bind(ctx, exec, &o)
@@ -230,7 +230,7 @@ func (q BuildpackLifecycleDatumQuery) All(ctx context.Context, exec boil.Context
 }
 
 // Count returns the count of all BuildpackLifecycleDatum records in the query.
-func (q BuildpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -245,7 +245,7 @@ func (q BuildpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.Conte
 }
 
 // Exists checks if the row exists in the table.
-func (q BuildpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q buildpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -261,7 +261,7 @@ func (q BuildpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.Cont
 }
 
 // BuildpackLifecycleBuildpacks retrieves all the buildpack_lifecycle_buildpack's BuildpackLifecycleBuildpacks with an executor.
-func (q BuildpackLifecycleDatumQuery) BuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, mods ...qm.QueryMod) BuildpackLifecycleBuildpackQuery {
+func (q buildpackLifecycleDatumQuery) BuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, mods ...qm.QueryMod) buildpackLifecycleBuildpackQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -376,7 +376,7 @@ func (buildpackLifecycleDatumL) LoadBuildpackLifecycleBuildpacks(ctx context.Con
 // of the buildpack_lifecycle_datum, optionally inserting them as new records.
 // Appends related to o.R.BuildpackLifecycleBuildpacks.
 // Sets related.R.BuildpackLifecycleDatum appropriately.
-func (q BuildpackLifecycleDatumQuery) AddBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLifecycleBuildpack) error {
+func (q buildpackLifecycleDatumQuery) AddBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLifecycleBuildpack) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -431,7 +431,7 @@ func (q BuildpackLifecycleDatumQuery) AddBuildpackLifecycleBuildpacks(o *Buildpa
 // Sets o.R.BuildpackLifecycleDatum's BuildpackLifecycleBuildpacks accordingly.
 // Replaces o.R.BuildpackLifecycleBuildpacks with related.
 // Sets related.R.BuildpackLifecycleDatum's BuildpackLifecycleBuildpacks accordingly.
-func (q BuildpackLifecycleDatumQuery) SetBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLifecycleBuildpack) error {
+func (q buildpackLifecycleDatumQuery) SetBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLifecycleBuildpack) error {
 	query := "update `buildpack_lifecycle_buildpacks` set `buildpack_lifecycle_data_guid` = null where `buildpack_lifecycle_data_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -462,7 +462,7 @@ func (q BuildpackLifecycleDatumQuery) SetBuildpackLifecycleBuildpacks(o *Buildpa
 // RemoveBuildpackLifecycleBuildpacks relationships from objects passed in.
 // Removes related items from R.BuildpackLifecycleBuildpacks (uses pointer comparison, removal does not keep order)
 // Sets related.R.BuildpackLifecycleDatum.
-func (q BuildpackLifecycleDatumQuery) RemoveBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackLifecycleBuildpack) error {
+func (q buildpackLifecycleDatumQuery) RemoveBuildpackLifecycleBuildpacks(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackLifecycleBuildpack) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -500,9 +500,9 @@ func (q BuildpackLifecycleDatumQuery) RemoveBuildpackLifecycleBuildpacks(o *Buil
 }
 
 // BuildpackLifecycleData retrieves all the records using an executor.
-func BuildpackLifecycleData(mods ...qm.QueryMod) BuildpackLifecycleDatumQuery {
+func BuildpackLifecycleData(mods ...qm.QueryMod) buildpackLifecycleDatumQuery {
 	mods = append(mods, qm.From("`buildpack_lifecycle_data`"))
-	return BuildpackLifecycleDatumQuery{NewQuery(mods...)}
+	return buildpackLifecycleDatumQuery{NewQuery(mods...)}
 }
 
 type BuildpackLifecycleDatumFinder interface {
@@ -541,7 +541,7 @@ type BuildpackLifecycleDatumInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q BuildpackLifecycleDatumQuery) Insert(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q buildpackLifecycleDatumQuery) Insert(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no buildpack_lifecycle_data provided for insertion")
 	}
@@ -660,7 +660,7 @@ type BuildpackLifecycleDatumUpdater interface {
 // Update uses an executor to update the BuildpackLifecycleDatum.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q BuildpackLifecycleDatumQuery) Update(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q buildpackLifecycleDatumQuery) Update(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -724,7 +724,7 @@ func (q BuildpackLifecycleDatumQuery) Update(o *BuildpackLifecycleDatum, ctx con
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q BuildpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -741,7 +741,7 @@ func (q BuildpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.C
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q BuildpackLifecycleDatumQuery) UpdateAllSlice(o BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildpackLifecycleDatumQuery) UpdateAllSlice(o BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -796,7 +796,7 @@ type BuildpackLifecycleDatumDeleter interface {
 
 // Delete deletes a single BuildpackLifecycleDatum record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q BuildpackLifecycleDatumQuery) Delete(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackLifecycleDatumQuery) Delete(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BuildpackLifecycleDatum provided for delete")
 	}
@@ -823,7 +823,7 @@ func (q BuildpackLifecycleDatumQuery) Delete(o *BuildpackLifecycleDatum, ctx con
 }
 
 // DeleteAll deletes all matching rows.
-func (q BuildpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no buildpackLifecycleDatumQuery provided for delete all")
 	}
@@ -844,7 +844,7 @@ func (q BuildpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.C
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q BuildpackLifecycleDatumQuery) DeleteAllSlice(o BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackLifecycleDatumQuery) DeleteAllSlice(o BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -883,7 +883,7 @@ type BuildpackLifecycleDatumReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q BuildpackLifecycleDatumQuery) Reload(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildpackLifecycleDatumQuery) Reload(o *BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindBuildpackLifecycleDatum(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -895,7 +895,7 @@ func (q BuildpackLifecycleDatumQuery) Reload(o *BuildpackLifecycleDatum, ctx con
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q BuildpackLifecycleDatumQuery) ReloadAll(o *BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildpackLifecycleDatumQuery) ReloadAll(o *BuildpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

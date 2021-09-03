@@ -133,7 +133,7 @@ type (
 	// This should almost always be used instead of []RouteBindingAnnotation.
 	RouteBindingAnnotationSlice []*RouteBindingAnnotation
 
-	RouteBindingAnnotationQuery struct {
+	routeBindingAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -167,7 +167,7 @@ type RouteBindingAnnotationFinisher interface {
 }
 
 // One returns a single routeBindingAnnotation record from the query.
-func (q RouteBindingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteBindingAnnotation, error) {
+func (q routeBindingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RouteBindingAnnotation, error) {
 	o := &RouteBindingAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -184,7 +184,7 @@ func (q RouteBindingAnnotationQuery) One(ctx context.Context, exec boil.ContextE
 }
 
 // All returns all RouteBindingAnnotation records from the query.
-func (q RouteBindingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteBindingAnnotationSlice, error) {
+func (q routeBindingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteBindingAnnotationSlice, error) {
 	var o []*RouteBindingAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -196,7 +196,7 @@ func (q RouteBindingAnnotationQuery) All(ctx context.Context, exec boil.ContextE
 }
 
 // Count returns the count of all RouteBindingAnnotation records in the query.
-func (q RouteBindingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -211,7 +211,7 @@ func (q RouteBindingAnnotationQuery) Count(ctx context.Context, exec boil.Contex
 }
 
 // Exists checks if the row exists in the table.
-func (q RouteBindingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q routeBindingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -227,7 +227,7 @@ func (q RouteBindingAnnotationQuery) Exists(ctx context.Context, exec boil.Conte
 }
 
 // Resource pointed to by the foreign key.
-func (q RouteBindingAnnotationQuery) Resource(o *RouteBindingAnnotation, mods ...qm.QueryMod) RouteBindingQuery {
+func (q routeBindingAnnotationQuery) Resource(o *RouteBindingAnnotation, mods ...qm.QueryMod) routeBindingQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -343,7 +343,7 @@ func (routeBindingAnnotationL) LoadResource(ctx context.Context, e boil.ContextE
 // SetResource of the routeBindingAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceRouteBindingAnnotations.
-func (q RouteBindingAnnotationQuery) SetResource(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *RouteBinding) error {
+func (q routeBindingAnnotationQuery) SetResource(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *RouteBinding) error {
 	var err error
 	if insert {
 		if err = RouteBindings().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -390,7 +390,7 @@ func (q RouteBindingAnnotationQuery) SetResource(o *RouteBindingAnnotation, ctx 
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q RouteBindingAnnotationQuery) RemoveResource(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, related *RouteBinding) error {
+func (q routeBindingAnnotationQuery) RemoveResource(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, related *RouteBinding) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -421,9 +421,9 @@ func (q RouteBindingAnnotationQuery) RemoveResource(o *RouteBindingAnnotation, c
 }
 
 // RouteBindingAnnotations retrieves all the records using an executor.
-func RouteBindingAnnotations(mods ...qm.QueryMod) RouteBindingAnnotationQuery {
+func RouteBindingAnnotations(mods ...qm.QueryMod) routeBindingAnnotationQuery {
 	mods = append(mods, qm.From("\"route_binding_annotations\""))
-	return RouteBindingAnnotationQuery{NewQuery(mods...)}
+	return routeBindingAnnotationQuery{NewQuery(mods...)}
 }
 
 type RouteBindingAnnotationFinder interface {
@@ -462,7 +462,7 @@ type RouteBindingAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RouteBindingAnnotationQuery) Insert(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q routeBindingAnnotationQuery) Insert(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no route_binding_annotations provided for insertion")
 	}
@@ -554,7 +554,7 @@ type RouteBindingAnnotationUpdater interface {
 // Update uses an executor to update the RouteBindingAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RouteBindingAnnotationQuery) Update(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q routeBindingAnnotationQuery) Update(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -618,7 +618,7 @@ func (q RouteBindingAnnotationQuery) Update(o *RouteBindingAnnotation, ctx conte
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RouteBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -635,7 +635,7 @@ func (q RouteBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RouteBindingAnnotationQuery) UpdateAllSlice(o RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeBindingAnnotationQuery) UpdateAllSlice(o RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -690,7 +690,7 @@ type RouteBindingAnnotationDeleter interface {
 
 // Delete deletes a single RouteBindingAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RouteBindingAnnotationQuery) Delete(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingAnnotationQuery) Delete(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no RouteBindingAnnotation provided for delete")
 	}
@@ -717,7 +717,7 @@ func (q RouteBindingAnnotationQuery) Delete(o *RouteBindingAnnotation, ctx conte
 }
 
 // DeleteAll deletes all matching rows.
-func (q RouteBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no routeBindingAnnotationQuery provided for delete all")
 	}
@@ -738,7 +738,7 @@ func (q RouteBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.Co
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RouteBindingAnnotationQuery) DeleteAllSlice(o RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeBindingAnnotationQuery) DeleteAllSlice(o RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -777,7 +777,7 @@ type RouteBindingAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RouteBindingAnnotationQuery) Reload(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeBindingAnnotationQuery) Reload(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRouteBindingAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -789,7 +789,7 @@ func (q RouteBindingAnnotationQuery) Reload(o *RouteBindingAnnotation, ctx conte
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RouteBindingAnnotationQuery) ReloadAll(o *RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeBindingAnnotationQuery) ReloadAll(o *RouteBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

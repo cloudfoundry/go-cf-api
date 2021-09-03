@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []ServiceInstanceAnnotation.
 	ServiceInstanceAnnotationSlice []*ServiceInstanceAnnotation
 
-	ServiceInstanceAnnotationQuery struct {
+	serviceInstanceAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type ServiceInstanceAnnotationFinisher interface {
 }
 
 // One returns a single serviceInstanceAnnotation record from the query.
-func (q ServiceInstanceAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstanceAnnotation, error) {
+func (q serviceInstanceAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstanceAnnotation, error) {
 	o := &ServiceInstanceAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q ServiceInstanceAnnotationQuery) One(ctx context.Context, exec boil.Conte
 }
 
 // All returns all ServiceInstanceAnnotation records from the query.
-func (q ServiceInstanceAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceAnnotationSlice, error) {
+func (q serviceInstanceAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceAnnotationSlice, error) {
 	var o []*ServiceInstanceAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q ServiceInstanceAnnotationQuery) All(ctx context.Context, exec boil.Conte
 }
 
 // Count returns the count of all ServiceInstanceAnnotation records in the query.
-func (q ServiceInstanceAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q ServiceInstanceAnnotationQuery) Count(ctx context.Context, exec boil.Con
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceInstanceAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceInstanceAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q ServiceInstanceAnnotationQuery) Exists(ctx context.Context, exec boil.Co
 }
 
 // Resource pointed to by the foreign key.
-func (q ServiceInstanceAnnotationQuery) Resource(o *ServiceInstanceAnnotation, mods ...qm.QueryMod) ServiceInstanceQuery {
+func (q serviceInstanceAnnotationQuery) Resource(o *ServiceInstanceAnnotation, mods ...qm.QueryMod) serviceInstanceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (serviceInstanceAnnotationL) LoadResource(ctx context.Context, e boil.Conte
 // SetResource of the serviceInstanceAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceInstanceAnnotations.
-func (q ServiceInstanceAnnotationQuery) SetResource(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceInstance) error {
+func (q serviceInstanceAnnotationQuery) SetResource(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceInstance) error {
 	var err error
 	if insert {
 		if err = ServiceInstances().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q ServiceInstanceAnnotationQuery) SetResource(o *ServiceInstanceAnnotation
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceInstanceAnnotationQuery) RemoveResource(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, related *ServiceInstance) error {
+func (q serviceInstanceAnnotationQuery) RemoveResource(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, related *ServiceInstance) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q ServiceInstanceAnnotationQuery) RemoveResource(o *ServiceInstanceAnnotat
 }
 
 // ServiceInstanceAnnotations retrieves all the records using an executor.
-func ServiceInstanceAnnotations(mods ...qm.QueryMod) ServiceInstanceAnnotationQuery {
+func ServiceInstanceAnnotations(mods ...qm.QueryMod) serviceInstanceAnnotationQuery {
 	mods = append(mods, qm.From("`service_instance_annotations`"))
-	return ServiceInstanceAnnotationQuery{NewQuery(mods...)}
+	return serviceInstanceAnnotationQuery{NewQuery(mods...)}
 }
 
 type ServiceInstanceAnnotationFinder interface {
@@ -461,7 +461,7 @@ type ServiceInstanceAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceInstanceAnnotationQuery) Insert(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceInstanceAnnotationQuery) Insert(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_instance_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type ServiceInstanceAnnotationUpdater interface {
 // Update uses an executor to update the ServiceInstanceAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceInstanceAnnotationQuery) Update(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceInstanceAnnotationQuery) Update(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q ServiceInstanceAnnotationQuery) Update(o *ServiceInstanceAnnotation, ctx
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceInstanceAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q ServiceInstanceAnnotationQuery) UpdateAll(ctx context.Context, exec boil
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceInstanceAnnotationQuery) UpdateAllSlice(o ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceAnnotationQuery) UpdateAllSlice(o ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type ServiceInstanceAnnotationDeleter interface {
 
 // Delete deletes a single ServiceInstanceAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceInstanceAnnotationQuery) Delete(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceAnnotationQuery) Delete(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceInstanceAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q ServiceInstanceAnnotationQuery) Delete(o *ServiceInstanceAnnotation, ctx
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceInstanceAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceInstanceAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q ServiceInstanceAnnotationQuery) DeleteAll(ctx context.Context, exec boil
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceInstanceAnnotationQuery) DeleteAllSlice(o ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceAnnotationQuery) DeleteAllSlice(o ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type ServiceInstanceAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceInstanceAnnotationQuery) Reload(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceAnnotationQuery) Reload(o *ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceInstanceAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q ServiceInstanceAnnotationQuery) Reload(o *ServiceInstanceAnnotation, ctx
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceInstanceAnnotationQuery) ReloadAll(o *ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceAnnotationQuery) ReloadAll(o *ServiceInstanceAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

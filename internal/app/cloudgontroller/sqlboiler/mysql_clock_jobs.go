@@ -100,7 +100,7 @@ type (
 	// This should almost always be used instead of []ClockJob.
 	ClockJobSlice []*ClockJob
 
-	ClockJobQuery struct {
+	clockJobQuery struct {
 		*queries.Query
 	}
 )
@@ -134,7 +134,7 @@ type ClockJobFinisher interface {
 }
 
 // One returns a single clockJob record from the query.
-func (q ClockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ClockJob, error) {
+func (q clockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ClockJob, error) {
 	o := &ClockJob{}
 
 	queries.SetLimit(q.Query, 1)
@@ -151,7 +151,7 @@ func (q ClockJobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Clo
 }
 
 // All returns all ClockJob records from the query.
-func (q ClockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (ClockJobSlice, error) {
+func (q clockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (ClockJobSlice, error) {
 	var o []*ClockJob
 
 	err := q.Bind(ctx, exec, &o)
@@ -163,7 +163,7 @@ func (q ClockJobQuery) All(ctx context.Context, exec boil.ContextExecutor) (Cloc
 }
 
 // Count returns the count of all ClockJob records in the query.
-func (q ClockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q clockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -178,7 +178,7 @@ func (q ClockJobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (in
 }
 
 // Exists checks if the row exists in the table.
-func (q ClockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q clockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -194,9 +194,9 @@ func (q ClockJobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (b
 }
 
 // ClockJobs retrieves all the records using an executor.
-func ClockJobs(mods ...qm.QueryMod) ClockJobQuery {
+func ClockJobs(mods ...qm.QueryMod) clockJobQuery {
 	mods = append(mods, qm.From("`clock_jobs`"))
-	return ClockJobQuery{NewQuery(mods...)}
+	return clockJobQuery{NewQuery(mods...)}
 }
 
 type ClockJobFinder interface {
@@ -235,7 +235,7 @@ type ClockJobInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ClockJobQuery) Insert(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q clockJobQuery) Insert(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no clock_jobs provided for insertion")
 	}
@@ -344,7 +344,7 @@ type ClockJobUpdater interface {
 // Update uses an executor to update the ClockJob.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ClockJobQuery) Update(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q clockJobQuery) Update(o *ClockJob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
 	key := makeCacheKey(columns, nil)
 	clockJobUpdateCacheMut.RLock()
@@ -402,7 +402,7 @@ func (q ClockJobQuery) Update(o *ClockJob, ctx context.Context, exec boil.Contex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ClockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q clockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -419,7 +419,7 @@ func (q ClockJobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor,
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ClockJobQuery) UpdateAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q clockJobQuery) UpdateAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -474,7 +474,7 @@ type ClockJobDeleter interface {
 
 // Delete deletes a single ClockJob record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ClockJobQuery) Delete(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q clockJobQuery) Delete(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ClockJob provided for delete")
 	}
@@ -501,7 +501,7 @@ func (q ClockJobQuery) Delete(o *ClockJob, ctx context.Context, exec boil.Contex
 }
 
 // DeleteAll deletes all matching rows.
-func (q ClockJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q clockJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no clockJobQuery provided for delete all")
 	}
@@ -522,7 +522,7 @@ func (q ClockJobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ClockJobQuery) DeleteAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q clockJobQuery) DeleteAllSlice(o ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -561,7 +561,7 @@ type ClockJobReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ClockJobQuery) Reload(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) error {
+func (q clockJobQuery) Reload(o *ClockJob, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindClockJob(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -573,7 +573,7 @@ func (q ClockJobQuery) Reload(o *ClockJob, ctx context.Context, exec boil.Contex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ClockJobQuery) ReloadAll(o *ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q clockJobQuery) ReloadAll(o *ClockJobSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

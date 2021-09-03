@@ -278,7 +278,7 @@ type (
 	// This should almost always be used instead of []Droplet.
 	DropletSlice []*Droplet
 
-	DropletQuery struct {
+	dropletQuery struct {
 		*queries.Query
 	}
 )
@@ -312,7 +312,7 @@ type DropletFinisher interface {
 }
 
 // One returns a single droplet record from the query.
-func (q DropletQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Droplet, error) {
+func (q dropletQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Droplet, error) {
 	o := &Droplet{}
 
 	queries.SetLimit(q.Query, 1)
@@ -329,7 +329,7 @@ func (q DropletQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Drop
 }
 
 // All returns all Droplet records from the query.
-func (q DropletQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletSlice, error) {
+func (q dropletQuery) All(ctx context.Context, exec boil.ContextExecutor) (DropletSlice, error) {
 	var o []*Droplet
 
 	err := q.Bind(ctx, exec, &o)
@@ -341,7 +341,7 @@ func (q DropletQuery) All(ctx context.Context, exec boil.ContextExecutor) (Dropl
 }
 
 // Count returns the count of all Droplet records in the query.
-func (q DropletQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q dropletQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -356,7 +356,7 @@ func (q DropletQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q DropletQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q dropletQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -372,7 +372,7 @@ func (q DropletQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // App pointed to by the foreign key.
-func (q DropletQuery) App(o *Droplet, mods ...qm.QueryMod) AppQuery {
+func (q dropletQuery) App(o *Droplet, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -386,7 +386,7 @@ func (q DropletQuery) App(o *Droplet, mods ...qm.QueryMod) AppQuery {
 }
 
 // ResourceDropletAnnotations retrieves all the droplet_annotation's DropletAnnotations with an executor via resource_guid column.
-func (q DropletQuery) ResourceDropletAnnotations(o *Droplet, mods ...qm.QueryMod) DropletAnnotationQuery {
+func (q dropletQuery) ResourceDropletAnnotations(o *Droplet, mods ...qm.QueryMod) dropletAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -407,7 +407,7 @@ func (q DropletQuery) ResourceDropletAnnotations(o *Droplet, mods ...qm.QueryMod
 }
 
 // ResourceDropletLabels retrieves all the droplet_label's DropletLabels with an executor via resource_guid column.
-func (q DropletQuery) ResourceDropletLabels(o *Droplet, mods ...qm.QueryMod) DropletLabelQuery {
+func (q dropletQuery) ResourceDropletLabels(o *Droplet, mods ...qm.QueryMod) dropletLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -712,7 +712,7 @@ func (dropletL) LoadResourceDropletLabels(ctx context.Context, e boil.ContextExe
 // SetApp of the droplet to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Droplets.
-func (q DropletQuery) SetApp(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q dropletQuery) SetApp(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -759,7 +759,7 @@ func (q DropletQuery) SetApp(o *Droplet, ctx context.Context, exec boil.ContextE
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q DropletQuery) RemoveApp(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q dropletQuery) RemoveApp(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
@@ -793,7 +793,7 @@ func (q DropletQuery) RemoveApp(o *Droplet, ctx context.Context, exec boil.Conte
 // of the droplet, optionally inserting them as new records.
 // Appends related to o.R.ResourceDropletAnnotations.
 // Sets related.R.Resource appropriately.
-func (q DropletQuery) AddResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletAnnotation) error {
+func (q dropletQuery) AddResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -848,7 +848,7 @@ func (q DropletQuery) AddResourceDropletAnnotations(o *Droplet, ctx context.Cont
 // Sets o.R.Resource's ResourceDropletAnnotations accordingly.
 // Replaces o.R.ResourceDropletAnnotations with related.
 // Sets related.R.Resource's ResourceDropletAnnotations accordingly.
-func (q DropletQuery) SetResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletAnnotation) error {
+func (q dropletQuery) SetResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletAnnotation) error {
 	query := "update `droplet_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -879,7 +879,7 @@ func (q DropletQuery) SetResourceDropletAnnotations(o *Droplet, ctx context.Cont
 // RemoveResourceDropletAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceDropletAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DropletQuery) RemoveResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related ...*DropletAnnotation) error {
+func (q dropletQuery) RemoveResourceDropletAnnotations(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related ...*DropletAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -920,7 +920,7 @@ func (q DropletQuery) RemoveResourceDropletAnnotations(o *Droplet, ctx context.C
 // of the droplet, optionally inserting them as new records.
 // Appends related to o.R.ResourceDropletLabels.
 // Sets related.R.Resource appropriately.
-func (q DropletQuery) AddResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletLabel) error {
+func (q dropletQuery) AddResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -975,7 +975,7 @@ func (q DropletQuery) AddResourceDropletLabels(o *Droplet, ctx context.Context, 
 // Sets o.R.Resource's ResourceDropletLabels accordingly.
 // Replaces o.R.ResourceDropletLabels with related.
 // Sets related.R.Resource's ResourceDropletLabels accordingly.
-func (q DropletQuery) SetResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletLabel) error {
+func (q dropletQuery) SetResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DropletLabel) error {
 	query := "update `droplet_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1006,7 +1006,7 @@ func (q DropletQuery) SetResourceDropletLabels(o *Droplet, ctx context.Context, 
 // RemoveResourceDropletLabels relationships from objects passed in.
 // Removes related items from R.ResourceDropletLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DropletQuery) RemoveResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related ...*DropletLabel) error {
+func (q dropletQuery) RemoveResourceDropletLabels(o *Droplet, ctx context.Context, exec boil.ContextExecutor, related ...*DropletLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1044,9 +1044,9 @@ func (q DropletQuery) RemoveResourceDropletLabels(o *Droplet, ctx context.Contex
 }
 
 // Droplets retrieves all the records using an executor.
-func Droplets(mods ...qm.QueryMod) DropletQuery {
+func Droplets(mods ...qm.QueryMod) dropletQuery {
 	mods = append(mods, qm.From("`droplets`"))
-	return DropletQuery{NewQuery(mods...)}
+	return dropletQuery{NewQuery(mods...)}
 }
 
 type DropletFinder interface {
@@ -1085,7 +1085,7 @@ type DropletInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q DropletQuery) Insert(o *Droplet, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q dropletQuery) Insert(o *Droplet, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no droplets provided for insertion")
 	}
@@ -1204,7 +1204,7 @@ type DropletUpdater interface {
 // Update uses an executor to update the Droplet.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q DropletQuery) Update(o *Droplet, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q dropletQuery) Update(o *Droplet, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1268,7 +1268,7 @@ func (q DropletQuery) Update(o *Droplet, ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q DropletQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q dropletQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1285,7 +1285,7 @@ func (q DropletQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q DropletQuery) UpdateAllSlice(o DropletSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q dropletQuery) UpdateAllSlice(o DropletSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1340,7 +1340,7 @@ type DropletDeleter interface {
 
 // Delete deletes a single Droplet record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q DropletQuery) Delete(o *Droplet, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q dropletQuery) Delete(o *Droplet, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Droplet provided for delete")
 	}
@@ -1367,7 +1367,7 @@ func (q DropletQuery) Delete(o *Droplet, ctx context.Context, exec boil.ContextE
 }
 
 // DeleteAll deletes all matching rows.
-func (q DropletQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q dropletQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no dropletQuery provided for delete all")
 	}
@@ -1388,7 +1388,7 @@ func (q DropletQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q DropletQuery) DeleteAllSlice(o DropletSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q dropletQuery) DeleteAllSlice(o DropletSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1427,7 +1427,7 @@ type DropletReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q DropletQuery) Reload(o *Droplet, ctx context.Context, exec boil.ContextExecutor) error {
+func (q dropletQuery) Reload(o *Droplet, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindDroplet(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1439,7 +1439,7 @@ func (q DropletQuery) Reload(o *Droplet, ctx context.Context, exec boil.ContextE
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q DropletQuery) ReloadAll(o *DropletSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q dropletQuery) ReloadAll(o *DropletSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

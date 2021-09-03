@@ -108,7 +108,7 @@ type (
 	// This should almost always be used instead of []ServiceDashboardClient.
 	ServiceDashboardClientSlice []*ServiceDashboardClient
 
-	ServiceDashboardClientQuery struct {
+	serviceDashboardClientQuery struct {
 		*queries.Query
 	}
 )
@@ -142,7 +142,7 @@ type ServiceDashboardClientFinisher interface {
 }
 
 // One returns a single serviceDashboardClient record from the query.
-func (q ServiceDashboardClientQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceDashboardClient, error) {
+func (q serviceDashboardClientQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceDashboardClient, error) {
 	o := &ServiceDashboardClient{}
 
 	queries.SetLimit(q.Query, 1)
@@ -159,7 +159,7 @@ func (q ServiceDashboardClientQuery) One(ctx context.Context, exec boil.ContextE
 }
 
 // All returns all ServiceDashboardClient records from the query.
-func (q ServiceDashboardClientQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceDashboardClientSlice, error) {
+func (q serviceDashboardClientQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceDashboardClientSlice, error) {
 	var o []*ServiceDashboardClient
 
 	err := q.Bind(ctx, exec, &o)
@@ -171,7 +171,7 @@ func (q ServiceDashboardClientQuery) All(ctx context.Context, exec boil.ContextE
 }
 
 // Count returns the count of all ServiceDashboardClient records in the query.
-func (q ServiceDashboardClientQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceDashboardClientQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -186,7 +186,7 @@ func (q ServiceDashboardClientQuery) Count(ctx context.Context, exec boil.Contex
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceDashboardClientQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceDashboardClientQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -202,9 +202,9 @@ func (q ServiceDashboardClientQuery) Exists(ctx context.Context, exec boil.Conte
 }
 
 // ServiceDashboardClients retrieves all the records using an executor.
-func ServiceDashboardClients(mods ...qm.QueryMod) ServiceDashboardClientQuery {
+func ServiceDashboardClients(mods ...qm.QueryMod) serviceDashboardClientQuery {
 	mods = append(mods, qm.From("\"service_dashboard_clients\""))
-	return ServiceDashboardClientQuery{NewQuery(mods...)}
+	return serviceDashboardClientQuery{NewQuery(mods...)}
 }
 
 type ServiceDashboardClientFinder interface {
@@ -243,7 +243,7 @@ type ServiceDashboardClientInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceDashboardClientQuery) Insert(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceDashboardClientQuery) Insert(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_dashboard_clients provided for insertion")
 	}
@@ -335,7 +335,7 @@ type ServiceDashboardClientUpdater interface {
 // Update uses an executor to update the ServiceDashboardClient.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceDashboardClientQuery) Update(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceDashboardClientQuery) Update(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -399,7 +399,7 @@ func (q ServiceDashboardClientQuery) Update(o *ServiceDashboardClient, ctx conte
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -416,7 +416,7 @@ func (q ServiceDashboardClientQuery) UpdateAll(ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceDashboardClientQuery) UpdateAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceDashboardClientQuery) UpdateAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -471,7 +471,7 @@ type ServiceDashboardClientDeleter interface {
 
 // Delete deletes a single ServiceDashboardClient record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceDashboardClientQuery) Delete(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceDashboardClientQuery) Delete(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceDashboardClient provided for delete")
 	}
@@ -498,7 +498,7 @@ func (q ServiceDashboardClientQuery) Delete(o *ServiceDashboardClient, ctx conte
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceDashboardClientQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceDashboardClientQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceDashboardClientQuery provided for delete all")
 	}
@@ -519,7 +519,7 @@ func (q ServiceDashboardClientQuery) DeleteAll(ctx context.Context, exec boil.Co
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceDashboardClientQuery) DeleteAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceDashboardClientQuery) DeleteAllSlice(o ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -558,7 +558,7 @@ type ServiceDashboardClientReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceDashboardClientQuery) Reload(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceDashboardClientQuery) Reload(o *ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceDashboardClient(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -570,7 +570,7 @@ func (q ServiceDashboardClientQuery) Reload(o *ServiceDashboardClient, ctx conte
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceDashboardClientQuery) ReloadAll(o *ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceDashboardClientQuery) ReloadAll(o *ServiceDashboardClientSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

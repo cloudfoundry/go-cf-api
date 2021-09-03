@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []ServiceBindingAnnotation.
 	ServiceBindingAnnotationSlice []*ServiceBindingAnnotation
 
-	ServiceBindingAnnotationQuery struct {
+	serviceBindingAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type ServiceBindingAnnotationFinisher interface {
 }
 
 // One returns a single serviceBindingAnnotation record from the query.
-func (q ServiceBindingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingAnnotation, error) {
+func (q serviceBindingAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingAnnotation, error) {
 	o := &ServiceBindingAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q ServiceBindingAnnotationQuery) One(ctx context.Context, exec boil.Contex
 }
 
 // All returns all ServiceBindingAnnotation records from the query.
-func (q ServiceBindingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingAnnotationSlice, error) {
+func (q serviceBindingAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingAnnotationSlice, error) {
 	var o []*ServiceBindingAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q ServiceBindingAnnotationQuery) All(ctx context.Context, exec boil.Contex
 }
 
 // Count returns the count of all ServiceBindingAnnotation records in the query.
-func (q ServiceBindingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q ServiceBindingAnnotationQuery) Count(ctx context.Context, exec boil.Cont
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceBindingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceBindingAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q ServiceBindingAnnotationQuery) Exists(ctx context.Context, exec boil.Con
 }
 
 // Resource pointed to by the foreign key.
-func (q ServiceBindingAnnotationQuery) Resource(o *ServiceBindingAnnotation, mods ...qm.QueryMod) ServiceBindingQuery {
+func (q serviceBindingAnnotationQuery) Resource(o *ServiceBindingAnnotation, mods ...qm.QueryMod) serviceBindingQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (serviceBindingAnnotationL) LoadResource(ctx context.Context, e boil.Contex
 // SetResource of the serviceBindingAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceBindingAnnotations.
-func (q ServiceBindingAnnotationQuery) SetResource(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
+func (q serviceBindingAnnotationQuery) SetResource(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
 	var err error
 	if insert {
 		if err = ServiceBindings().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q ServiceBindingAnnotationQuery) SetResource(o *ServiceBindingAnnotation, 
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceBindingAnnotationQuery) RemoveResource(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
+func (q serviceBindingAnnotationQuery) RemoveResource(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q ServiceBindingAnnotationQuery) RemoveResource(o *ServiceBindingAnnotatio
 }
 
 // ServiceBindingAnnotations retrieves all the records using an executor.
-func ServiceBindingAnnotations(mods ...qm.QueryMod) ServiceBindingAnnotationQuery {
+func ServiceBindingAnnotations(mods ...qm.QueryMod) serviceBindingAnnotationQuery {
 	mods = append(mods, qm.From("`service_binding_annotations`"))
-	return ServiceBindingAnnotationQuery{NewQuery(mods...)}
+	return serviceBindingAnnotationQuery{NewQuery(mods...)}
 }
 
 type ServiceBindingAnnotationFinder interface {
@@ -461,7 +461,7 @@ type ServiceBindingAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceBindingAnnotationQuery) Insert(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceBindingAnnotationQuery) Insert(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_binding_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type ServiceBindingAnnotationUpdater interface {
 // Update uses an executor to update the ServiceBindingAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceBindingAnnotationQuery) Update(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceBindingAnnotationQuery) Update(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q ServiceBindingAnnotationQuery) Update(o *ServiceBindingAnnotation, ctx c
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q ServiceBindingAnnotationQuery) UpdateAll(ctx context.Context, exec boil.
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceBindingAnnotationQuery) UpdateAllSlice(o ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBindingAnnotationQuery) UpdateAllSlice(o ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type ServiceBindingAnnotationDeleter interface {
 
 // Delete deletes a single ServiceBindingAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceBindingAnnotationQuery) Delete(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingAnnotationQuery) Delete(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceBindingAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q ServiceBindingAnnotationQuery) Delete(o *ServiceBindingAnnotation, ctx c
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceBindingAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q ServiceBindingAnnotationQuery) DeleteAll(ctx context.Context, exec boil.
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceBindingAnnotationQuery) DeleteAllSlice(o ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingAnnotationQuery) DeleteAllSlice(o ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type ServiceBindingAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceBindingAnnotationQuery) Reload(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBindingAnnotationQuery) Reload(o *ServiceBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceBindingAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q ServiceBindingAnnotationQuery) Reload(o *ServiceBindingAnnotation, ctx c
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceBindingAnnotationQuery) ReloadAll(o *ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBindingAnnotationQuery) ReloadAll(o *ServiceBindingAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

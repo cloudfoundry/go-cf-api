@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []OrganizationAnnotation.
 	OrganizationAnnotationSlice []*OrganizationAnnotation
 
-	OrganizationAnnotationQuery struct {
+	organizationAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type OrganizationAnnotationFinisher interface {
 }
 
 // One returns a single organizationAnnotation record from the query.
-func (q OrganizationAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationAnnotation, error) {
+func (q organizationAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationAnnotation, error) {
 	o := &OrganizationAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q OrganizationAnnotationQuery) One(ctx context.Context, exec boil.ContextE
 }
 
 // All returns all OrganizationAnnotation records from the query.
-func (q OrganizationAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationAnnotationSlice, error) {
+func (q organizationAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationAnnotationSlice, error) {
 	var o []*OrganizationAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q OrganizationAnnotationQuery) All(ctx context.Context, exec boil.ContextE
 }
 
 // Count returns the count of all OrganizationAnnotation records in the query.
-func (q OrganizationAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q OrganizationAnnotationQuery) Count(ctx context.Context, exec boil.Contex
 }
 
 // Exists checks if the row exists in the table.
-func (q OrganizationAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q organizationAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q OrganizationAnnotationQuery) Exists(ctx context.Context, exec boil.Conte
 }
 
 // Resource pointed to by the foreign key.
-func (q OrganizationAnnotationQuery) Resource(o *OrganizationAnnotation, mods ...qm.QueryMod) OrganizationQuery {
+func (q organizationAnnotationQuery) Resource(o *OrganizationAnnotation, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (organizationAnnotationL) LoadResource(ctx context.Context, e boil.ContextE
 // SetResource of the organizationAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceOrganizationAnnotations.
-func (q OrganizationAnnotationQuery) SetResource(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q organizationAnnotationQuery) SetResource(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q OrganizationAnnotationQuery) SetResource(o *OrganizationAnnotation, ctx 
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q OrganizationAnnotationQuery) RemoveResource(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
+func (q organizationAnnotationQuery) RemoveResource(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q OrganizationAnnotationQuery) RemoveResource(o *OrganizationAnnotation, c
 }
 
 // OrganizationAnnotations retrieves all the records using an executor.
-func OrganizationAnnotations(mods ...qm.QueryMod) OrganizationAnnotationQuery {
+func OrganizationAnnotations(mods ...qm.QueryMod) organizationAnnotationQuery {
 	mods = append(mods, qm.From("`organization_annotations`"))
-	return OrganizationAnnotationQuery{NewQuery(mods...)}
+	return organizationAnnotationQuery{NewQuery(mods...)}
 }
 
 type OrganizationAnnotationFinder interface {
@@ -461,7 +461,7 @@ type OrganizationAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrganizationAnnotationQuery) Insert(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q organizationAnnotationQuery) Insert(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organization_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type OrganizationAnnotationUpdater interface {
 // Update uses an executor to update the OrganizationAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrganizationAnnotationQuery) Update(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q organizationAnnotationQuery) Update(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q OrganizationAnnotationQuery) Update(o *OrganizationAnnotation, ctx conte
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrganizationAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q OrganizationAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrganizationAnnotationQuery) UpdateAllSlice(o OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationAnnotationQuery) UpdateAllSlice(o OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type OrganizationAnnotationDeleter interface {
 
 // Delete deletes a single OrganizationAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrganizationAnnotationQuery) Delete(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationAnnotationQuery) Delete(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no OrganizationAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q OrganizationAnnotationQuery) Delete(o *OrganizationAnnotation, ctx conte
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrganizationAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no organizationAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q OrganizationAnnotationQuery) DeleteAll(ctx context.Context, exec boil.Co
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrganizationAnnotationQuery) DeleteAllSlice(o OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationAnnotationQuery) DeleteAllSlice(o OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type OrganizationAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrganizationAnnotationQuery) Reload(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationAnnotationQuery) Reload(o *OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrganizationAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q OrganizationAnnotationQuery) Reload(o *OrganizationAnnotation, ctx conte
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrganizationAnnotationQuery) ReloadAll(o *OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationAnnotationQuery) ReloadAll(o *OrganizationAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

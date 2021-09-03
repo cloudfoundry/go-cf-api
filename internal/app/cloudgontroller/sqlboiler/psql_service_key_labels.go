@@ -133,7 +133,7 @@ type (
 	// This should almost always be used instead of []ServiceKeyLabel.
 	ServiceKeyLabelSlice []*ServiceKeyLabel
 
-	ServiceKeyLabelQuery struct {
+	serviceKeyLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -167,7 +167,7 @@ type ServiceKeyLabelFinisher interface {
 }
 
 // One returns a single serviceKeyLabel record from the query.
-func (q ServiceKeyLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceKeyLabel, error) {
+func (q serviceKeyLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceKeyLabel, error) {
 	o := &ServiceKeyLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -184,7 +184,7 @@ func (q ServiceKeyLabelQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all ServiceKeyLabel records from the query.
-func (q ServiceKeyLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceKeyLabelSlice, error) {
+func (q serviceKeyLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceKeyLabelSlice, error) {
 	var o []*ServiceKeyLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -196,7 +196,7 @@ func (q ServiceKeyLabelQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all ServiceKeyLabel records in the query.
-func (q ServiceKeyLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceKeyLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -211,7 +211,7 @@ func (q ServiceKeyLabelQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceKeyLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceKeyLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -227,7 +227,7 @@ func (q ServiceKeyLabelQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Resource pointed to by the foreign key.
-func (q ServiceKeyLabelQuery) Resource(o *ServiceKeyLabel, mods ...qm.QueryMod) ServiceKeyQuery {
+func (q serviceKeyLabelQuery) Resource(o *ServiceKeyLabel, mods ...qm.QueryMod) serviceKeyQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -343,7 +343,7 @@ func (serviceKeyLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor
 // SetResource of the serviceKeyLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceKeyLabels.
-func (q ServiceKeyLabelQuery) SetResource(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceKey) error {
+func (q serviceKeyLabelQuery) SetResource(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceKey) error {
 	var err error
 	if insert {
 		if err = ServiceKeys().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -390,7 +390,7 @@ func (q ServiceKeyLabelQuery) SetResource(o *ServiceKeyLabel, ctx context.Contex
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceKeyLabelQuery) RemoveResource(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, related *ServiceKey) error {
+func (q serviceKeyLabelQuery) RemoveResource(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, related *ServiceKey) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -421,9 +421,9 @@ func (q ServiceKeyLabelQuery) RemoveResource(o *ServiceKeyLabel, ctx context.Con
 }
 
 // ServiceKeyLabels retrieves all the records using an executor.
-func ServiceKeyLabels(mods ...qm.QueryMod) ServiceKeyLabelQuery {
+func ServiceKeyLabels(mods ...qm.QueryMod) serviceKeyLabelQuery {
 	mods = append(mods, qm.From("\"service_key_labels\""))
-	return ServiceKeyLabelQuery{NewQuery(mods...)}
+	return serviceKeyLabelQuery{NewQuery(mods...)}
 }
 
 type ServiceKeyLabelFinder interface {
@@ -462,7 +462,7 @@ type ServiceKeyLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceKeyLabelQuery) Insert(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceKeyLabelQuery) Insert(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_key_labels provided for insertion")
 	}
@@ -554,7 +554,7 @@ type ServiceKeyLabelUpdater interface {
 // Update uses an executor to update the ServiceKeyLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceKeyLabelQuery) Update(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceKeyLabelQuery) Update(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -618,7 +618,7 @@ func (q ServiceKeyLabelQuery) Update(o *ServiceKeyLabel, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceKeyLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceKeyLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -635,7 +635,7 @@ func (q ServiceKeyLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceKeyLabelQuery) UpdateAllSlice(o ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceKeyLabelQuery) UpdateAllSlice(o ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -690,7 +690,7 @@ type ServiceKeyLabelDeleter interface {
 
 // Delete deletes a single ServiceKeyLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceKeyLabelQuery) Delete(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceKeyLabelQuery) Delete(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceKeyLabel provided for delete")
 	}
@@ -717,7 +717,7 @@ func (q ServiceKeyLabelQuery) Delete(o *ServiceKeyLabel, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceKeyLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceKeyLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceKeyLabelQuery provided for delete all")
 	}
@@ -738,7 +738,7 @@ func (q ServiceKeyLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceKeyLabelQuery) DeleteAllSlice(o ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceKeyLabelQuery) DeleteAllSlice(o ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -777,7 +777,7 @@ type ServiceKeyLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceKeyLabelQuery) Reload(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceKeyLabelQuery) Reload(o *ServiceKeyLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceKeyLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -789,7 +789,7 @@ func (q ServiceKeyLabelQuery) Reload(o *ServiceKeyLabel, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceKeyLabelQuery) ReloadAll(o *ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceKeyLabelQuery) ReloadAll(o *ServiceKeyLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []SpaceLabel.
 	SpaceLabelSlice []*SpaceLabel
 
-	SpaceLabelQuery struct {
+	spaceLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type SpaceLabelFinisher interface {
 }
 
 // One returns a single spaceLabel record from the query.
-func (q SpaceLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceLabel, error) {
+func (q spaceLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceLabel, error) {
 	o := &SpaceLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q SpaceLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*S
 }
 
 // All returns all SpaceLabel records from the query.
-func (q SpaceLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceLabelSlice, error) {
+func (q spaceLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceLabelSlice, error) {
 	var o []*SpaceLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q SpaceLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (Sp
 }
 
 // Count returns the count of all SpaceLabel records in the query.
-func (q SpaceLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q SpaceLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q SpaceLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q spaceLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q SpaceLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // Resource pointed to by the foreign key.
-func (q SpaceLabelQuery) Resource(o *SpaceLabel, mods ...qm.QueryMod) SpaceQuery {
+func (q spaceLabelQuery) Resource(o *SpaceLabel, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (spaceLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, sin
 // SetResource of the spaceLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceSpaceLabels.
-func (q SpaceLabelQuery) SetResource(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q spaceLabelQuery) SetResource(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q SpaceLabelQuery) SetResource(o *SpaceLabel, ctx context.Context, exec bo
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q SpaceLabelQuery) RemoveResource(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
+func (q spaceLabelQuery) RemoveResource(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q SpaceLabelQuery) RemoveResource(o *SpaceLabel, ctx context.Context, exec
 }
 
 // SpaceLabels retrieves all the records using an executor.
-func SpaceLabels(mods ...qm.QueryMod) SpaceLabelQuery {
+func SpaceLabels(mods ...qm.QueryMod) spaceLabelQuery {
 	mods = append(mods, qm.From("`space_labels`"))
-	return SpaceLabelQuery{NewQuery(mods...)}
+	return spaceLabelQuery{NewQuery(mods...)}
 }
 
 type SpaceLabelFinder interface {
@@ -461,7 +461,7 @@ type SpaceLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SpaceLabelQuery) Insert(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q spaceLabelQuery) Insert(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no space_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type SpaceLabelUpdater interface {
 // Update uses an executor to update the SpaceLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SpaceLabelQuery) Update(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q spaceLabelQuery) Update(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q SpaceLabelQuery) Update(o *SpaceLabel, ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SpaceLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q SpaceLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SpaceLabelQuery) UpdateAllSlice(o SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceLabelQuery) UpdateAllSlice(o SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type SpaceLabelDeleter interface {
 
 // Delete deletes a single SpaceLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SpaceLabelQuery) Delete(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceLabelQuery) Delete(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SpaceLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q SpaceLabelQuery) Delete(o *SpaceLabel, ctx context.Context, exec boil.Co
 }
 
 // DeleteAll deletes all matching rows.
-func (q SpaceLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no spaceLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q SpaceLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SpaceLabelQuery) DeleteAllSlice(o SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceLabelQuery) DeleteAllSlice(o SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type SpaceLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SpaceLabelQuery) Reload(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceLabelQuery) Reload(o *SpaceLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSpaceLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q SpaceLabelQuery) Reload(o *SpaceLabel, ctx context.Context, exec boil.Co
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SpaceLabelQuery) ReloadAll(o *SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceLabelQuery) ReloadAll(o *SpaceLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

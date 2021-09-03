@@ -185,7 +185,7 @@ type (
 	// This should almost always be used instead of []Event.
 	EventSlice []*Event
 
-	EventQuery struct {
+	eventQuery struct {
 		*queries.Query
 	}
 )
@@ -219,7 +219,7 @@ type EventFinisher interface {
 }
 
 // One returns a single event record from the query.
-func (q EventQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Event, error) {
+func (q eventQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Event, error) {
 	o := &Event{}
 
 	queries.SetLimit(q.Query, 1)
@@ -236,7 +236,7 @@ func (q EventQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Event,
 }
 
 // All returns all Event records from the query.
-func (q EventQuery) All(ctx context.Context, exec boil.ContextExecutor) (EventSlice, error) {
+func (q eventQuery) All(ctx context.Context, exec boil.ContextExecutor) (EventSlice, error) {
 	var o []*Event
 
 	err := q.Bind(ctx, exec, &o)
@@ -248,7 +248,7 @@ func (q EventQuery) All(ctx context.Context, exec boil.ContextExecutor) (EventSl
 }
 
 // Count returns the count of all Event records in the query.
-func (q EventQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q eventQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -263,7 +263,7 @@ func (q EventQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64
 }
 
 // Exists checks if the row exists in the table.
-func (q EventQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q eventQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -279,9 +279,9 @@ func (q EventQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 }
 
 // Events retrieves all the records using an executor.
-func Events(mods ...qm.QueryMod) EventQuery {
+func Events(mods ...qm.QueryMod) eventQuery {
 	mods = append(mods, qm.From("\"events\""))
-	return EventQuery{NewQuery(mods...)}
+	return eventQuery{NewQuery(mods...)}
 }
 
 type EventFinder interface {
@@ -320,7 +320,7 @@ type EventInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q EventQuery) Insert(o *Event, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q eventQuery) Insert(o *Event, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no events provided for insertion")
 	}
@@ -412,7 +412,7 @@ type EventUpdater interface {
 // Update uses an executor to update the Event.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q EventQuery) Update(o *Event, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q eventQuery) Update(o *Event, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -476,7 +476,7 @@ func (q EventQuery) Update(o *Event, ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q EventQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q eventQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -493,7 +493,7 @@ func (q EventQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q EventQuery) UpdateAllSlice(o EventSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q eventQuery) UpdateAllSlice(o EventSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -548,7 +548,7 @@ type EventDeleter interface {
 
 // Delete deletes a single Event record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q EventQuery) Delete(o *Event, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q eventQuery) Delete(o *Event, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Event provided for delete")
 	}
@@ -575,7 +575,7 @@ func (q EventQuery) Delete(o *Event, ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all matching rows.
-func (q EventQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q eventQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no eventQuery provided for delete all")
 	}
@@ -596,7 +596,7 @@ func (q EventQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q EventQuery) DeleteAllSlice(o EventSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q eventQuery) DeleteAllSlice(o EventSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -635,7 +635,7 @@ type EventReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q EventQuery) Reload(o *Event, ctx context.Context, exec boil.ContextExecutor) error {
+func (q eventQuery) Reload(o *Event, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindEvent(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -647,7 +647,7 @@ func (q EventQuery) Reload(o *Event, ctx context.Context, exec boil.ContextExecu
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q EventQuery) ReloadAll(o *EventSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q eventQuery) ReloadAll(o *EventSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -121,7 +121,7 @@ type (
 	// This should almost always be used instead of []OrganizationsUser.
 	OrganizationsUserSlice []*OrganizationsUser
 
-	OrganizationsUserQuery struct {
+	organizationsUserQuery struct {
 		*queries.Query
 	}
 )
@@ -155,7 +155,7 @@ type OrganizationsUserFinisher interface {
 }
 
 // One returns a single organizationsUser record from the query.
-func (q OrganizationsUserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsUser, error) {
+func (q organizationsUserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationsUser, error) {
 	o := &OrganizationsUser{}
 
 	queries.SetLimit(q.Query, 1)
@@ -172,7 +172,7 @@ func (q OrganizationsUserQuery) One(ctx context.Context, exec boil.ContextExecut
 }
 
 // All returns all OrganizationsUser records from the query.
-func (q OrganizationsUserQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsUserSlice, error) {
+func (q organizationsUserQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationsUserSlice, error) {
 	var o []*OrganizationsUser
 
 	err := q.Bind(ctx, exec, &o)
@@ -184,7 +184,7 @@ func (q OrganizationsUserQuery) All(ctx context.Context, exec boil.ContextExecut
 }
 
 // Count returns the count of all OrganizationsUser records in the query.
-func (q OrganizationsUserQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsUserQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -199,7 +199,7 @@ func (q OrganizationsUserQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q OrganizationsUserQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q organizationsUserQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -215,7 +215,7 @@ func (q OrganizationsUserQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Organization pointed to by the foreign key.
-func (q OrganizationsUserQuery) Organization(o *OrganizationsUser, mods ...qm.QueryMod) OrganizationQuery {
+func (q organizationsUserQuery) Organization(o *OrganizationsUser, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OrganizationID),
 	}
@@ -229,7 +229,7 @@ func (q OrganizationsUserQuery) Organization(o *OrganizationsUser, mods ...qm.Qu
 }
 
 // User pointed to by the foreign key.
-func (q OrganizationsUserQuery) User(o *OrganizationsUser, mods ...qm.QueryMod) UserQuery {
+func (q organizationsUserQuery) User(o *OrganizationsUser, mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.UserID),
 	}
@@ -437,7 +437,7 @@ func (organizationsUserL) LoadUser(ctx context.Context, e boil.ContextExecutor, 
 // SetOrganization of the organizationsUser to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.OrganizationsUsers.
-func (q OrganizationsUserQuery) SetOrganization(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q organizationsUserQuery) SetOrganization(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -484,7 +484,7 @@ func (q OrganizationsUserQuery) SetOrganization(o *OrganizationsUser, ctx contex
 // SetUser of the organizationsUser to the related item.
 // Sets o.R.User to related.
 // Adds o to related.R.OrganizationsUsers.
-func (q OrganizationsUserQuery) SetUser(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q organizationsUserQuery) SetUser(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -529,9 +529,9 @@ func (q OrganizationsUserQuery) SetUser(o *OrganizationsUser, ctx context.Contex
 }
 
 // OrganizationsUsers retrieves all the records using an executor.
-func OrganizationsUsers(mods ...qm.QueryMod) OrganizationsUserQuery {
+func OrganizationsUsers(mods ...qm.QueryMod) organizationsUserQuery {
 	mods = append(mods, qm.From("`organizations_users`"))
-	return OrganizationsUserQuery{NewQuery(mods...)}
+	return organizationsUserQuery{NewQuery(mods...)}
 }
 
 type OrganizationsUserFinder interface {
@@ -570,7 +570,7 @@ type OrganizationsUserInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrganizationsUserQuery) Insert(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q organizationsUserQuery) Insert(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations_users provided for insertion")
 	}
@@ -689,7 +689,7 @@ type OrganizationsUserUpdater interface {
 // Update uses an executor to update the OrganizationsUser.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrganizationsUserQuery) Update(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q organizationsUserQuery) Update(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -753,7 +753,7 @@ func (q OrganizationsUserQuery) Update(o *OrganizationsUser, ctx context.Context
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrganizationsUserQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationsUserQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -770,7 +770,7 @@ func (q OrganizationsUserQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrganizationsUserQuery) UpdateAllSlice(o OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationsUserQuery) UpdateAllSlice(o OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -825,7 +825,7 @@ type OrganizationsUserDeleter interface {
 
 // Delete deletes a single OrganizationsUser record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrganizationsUserQuery) Delete(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsUserQuery) Delete(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no OrganizationsUser provided for delete")
 	}
@@ -852,7 +852,7 @@ func (q OrganizationsUserQuery) Delete(o *OrganizationsUser, ctx context.Context
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrganizationsUserQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsUserQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no organizationsUserQuery provided for delete all")
 	}
@@ -873,7 +873,7 @@ func (q OrganizationsUserQuery) DeleteAll(ctx context.Context, exec boil.Context
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrganizationsUserQuery) DeleteAllSlice(o OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationsUserQuery) DeleteAllSlice(o OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -912,7 +912,7 @@ type OrganizationsUserReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrganizationsUserQuery) Reload(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationsUserQuery) Reload(o *OrganizationsUser, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrganizationsUser(ctx, exec, o.OrganizationsUsersPK)
 	if err != nil {
 		return err
@@ -924,7 +924,7 @@ func (q OrganizationsUserQuery) Reload(o *OrganizationsUser, ctx context.Context
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrganizationsUserQuery) ReloadAll(o *OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationsUserQuery) ReloadAll(o *OrganizationsUserSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

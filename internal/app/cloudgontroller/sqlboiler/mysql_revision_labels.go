@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []RevisionLabel.
 	RevisionLabelSlice []*RevisionLabel
 
-	RevisionLabelQuery struct {
+	revisionLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type RevisionLabelFinisher interface {
 }
 
 // One returns a single revisionLabel record from the query.
-func (q RevisionLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionLabel, error) {
+func (q revisionLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionLabel, error) {
 	o := &RevisionLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q RevisionLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // All returns all RevisionLabel records from the query.
-func (q RevisionLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionLabelSlice, error) {
+func (q revisionLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionLabelSlice, error) {
 	var o []*RevisionLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q RevisionLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // Count returns the count of all RevisionLabel records in the query.
-func (q RevisionLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q RevisionLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Exists checks if the row exists in the table.
-func (q RevisionLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q revisionLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q RevisionLabelQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Resource pointed to by the foreign key.
-func (q RevisionLabelQuery) Resource(o *RevisionLabel, mods ...qm.QueryMod) RevisionQuery {
+func (q revisionLabelQuery) Resource(o *RevisionLabel, mods ...qm.QueryMod) revisionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (revisionLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, 
 // SetResource of the revisionLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceRevisionLabels.
-func (q RevisionLabelQuery) SetResource(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
+func (q revisionLabelQuery) SetResource(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
 	var err error
 	if insert {
 		if err = Revisions().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q RevisionLabelQuery) SetResource(o *RevisionLabel, ctx context.Context, e
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q RevisionLabelQuery) RemoveResource(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, related *Revision) error {
+func (q revisionLabelQuery) RemoveResource(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, related *Revision) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q RevisionLabelQuery) RemoveResource(o *RevisionLabel, ctx context.Context
 }
 
 // RevisionLabels retrieves all the records using an executor.
-func RevisionLabels(mods ...qm.QueryMod) RevisionLabelQuery {
+func RevisionLabels(mods ...qm.QueryMod) revisionLabelQuery {
 	mods = append(mods, qm.From("`revision_labels`"))
-	return RevisionLabelQuery{NewQuery(mods...)}
+	return revisionLabelQuery{NewQuery(mods...)}
 }
 
 type RevisionLabelFinder interface {
@@ -461,7 +461,7 @@ type RevisionLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RevisionLabelQuery) Insert(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q revisionLabelQuery) Insert(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no revision_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type RevisionLabelUpdater interface {
 // Update uses an executor to update the RevisionLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RevisionLabelQuery) Update(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q revisionLabelQuery) Update(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q RevisionLabelQuery) Update(o *RevisionLabel, ctx context.Context, exec b
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RevisionLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q revisionLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q RevisionLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExec
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RevisionLabelQuery) UpdateAllSlice(o RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q revisionLabelQuery) UpdateAllSlice(o RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type RevisionLabelDeleter interface {
 
 // Delete deletes a single RevisionLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RevisionLabelQuery) Delete(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionLabelQuery) Delete(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no RevisionLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q RevisionLabelQuery) Delete(o *RevisionLabel, ctx context.Context, exec b
 }
 
 // DeleteAll deletes all matching rows.
-func (q RevisionLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no revisionLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q RevisionLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExec
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RevisionLabelQuery) DeleteAllSlice(o RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionLabelQuery) DeleteAllSlice(o RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type RevisionLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RevisionLabelQuery) Reload(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q revisionLabelQuery) Reload(o *RevisionLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRevisionLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q RevisionLabelQuery) Reload(o *RevisionLabel, ctx context.Context, exec b
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RevisionLabelQuery) ReloadAll(o *RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q revisionLabelQuery) ReloadAll(o *RevisionLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

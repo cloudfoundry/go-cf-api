@@ -146,7 +146,7 @@ type (
 	// This should almost always be used instead of []Job.
 	JobSlice []*Job
 
-	JobQuery struct {
+	jobQuery struct {
 		*queries.Query
 	}
 )
@@ -180,7 +180,7 @@ type JobFinisher interface {
 }
 
 // One returns a single job record from the query.
-func (q JobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Job, error) {
+func (q jobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Job, error) {
 	o := &Job{}
 
 	queries.SetLimit(q.Query, 1)
@@ -197,7 +197,7 @@ func (q JobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Job, err
 }
 
 // All returns all Job records from the query.
-func (q JobQuery) All(ctx context.Context, exec boil.ContextExecutor) (JobSlice, error) {
+func (q jobQuery) All(ctx context.Context, exec boil.ContextExecutor) (JobSlice, error) {
 	var o []*Job
 
 	err := q.Bind(ctx, exec, &o)
@@ -209,7 +209,7 @@ func (q JobQuery) All(ctx context.Context, exec boil.ContextExecutor) (JobSlice,
 }
 
 // Count returns the count of all Job records in the query.
-func (q JobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q jobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -224,7 +224,7 @@ func (q JobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, 
 }
 
 // Exists checks if the row exists in the table.
-func (q JobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q jobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -240,7 +240,7 @@ func (q JobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, 
 }
 
 // FKJobJobWarnings retrieves all the job_warning's JobWarnings with an executor via fk_jobs_id column.
-func (q JobQuery) FKJobJobWarnings(o *Job, mods ...qm.QueryMod) JobWarningQuery {
+func (q jobQuery) FKJobJobWarnings(o *Job, mods ...qm.QueryMod) jobWarningQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -355,7 +355,7 @@ func (jobL) LoadFKJobJobWarnings(ctx context.Context, e boil.ContextExecutor, si
 // of the job, optionally inserting them as new records.
 // Appends related to o.R.FKJobJobWarnings.
 // Sets related.R.FKJob appropriately.
-func (q JobQuery) AddFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*JobWarning) error {
+func (q jobQuery) AddFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*JobWarning) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -410,7 +410,7 @@ func (q JobQuery) AddFKJobJobWarnings(o *Job, ctx context.Context, exec boil.Con
 // Sets o.R.FKJob's FKJobJobWarnings accordingly.
 // Replaces o.R.FKJobJobWarnings with related.
 // Sets related.R.FKJob's FKJobJobWarnings accordingly.
-func (q JobQuery) SetFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*JobWarning) error {
+func (q jobQuery) SetFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*JobWarning) error {
 	query := "update `job_warnings` set `fk_jobs_id` = null where `fk_jobs_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -441,7 +441,7 @@ func (q JobQuery) SetFKJobJobWarnings(o *Job, ctx context.Context, exec boil.Con
 // RemoveFKJobJobWarnings relationships from objects passed in.
 // Removes related items from R.FKJobJobWarnings (uses pointer comparison, removal does not keep order)
 // Sets related.R.FKJob.
-func (q JobQuery) RemoveFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, related ...*JobWarning) error {
+func (q jobQuery) RemoveFKJobJobWarnings(o *Job, ctx context.Context, exec boil.ContextExecutor, related ...*JobWarning) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -479,9 +479,9 @@ func (q JobQuery) RemoveFKJobJobWarnings(o *Job, ctx context.Context, exec boil.
 }
 
 // Jobs retrieves all the records using an executor.
-func Jobs(mods ...qm.QueryMod) JobQuery {
+func Jobs(mods ...qm.QueryMod) jobQuery {
 	mods = append(mods, qm.From("`jobs`"))
-	return JobQuery{NewQuery(mods...)}
+	return jobQuery{NewQuery(mods...)}
 }
 
 type JobFinder interface {
@@ -520,7 +520,7 @@ type JobInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q JobQuery) Insert(o *Job, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q jobQuery) Insert(o *Job, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no jobs provided for insertion")
 	}
@@ -639,7 +639,7 @@ type JobUpdater interface {
 // Update uses an executor to update the Job.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q JobQuery) Update(o *Job, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q jobQuery) Update(o *Job, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -703,7 +703,7 @@ func (q JobQuery) Update(o *Job, ctx context.Context, exec boil.ContextExecutor,
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q JobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q jobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -720,7 +720,7 @@ func (q JobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q JobQuery) UpdateAllSlice(o JobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q jobQuery) UpdateAllSlice(o JobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -775,7 +775,7 @@ type JobDeleter interface {
 
 // Delete deletes a single Job record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q JobQuery) Delete(o *Job, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q jobQuery) Delete(o *Job, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Job provided for delete")
 	}
@@ -802,7 +802,7 @@ func (q JobQuery) Delete(o *Job, ctx context.Context, exec boil.ContextExecutor)
 }
 
 // DeleteAll deletes all matching rows.
-func (q JobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q jobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no jobQuery provided for delete all")
 	}
@@ -823,7 +823,7 @@ func (q JobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q JobQuery) DeleteAllSlice(o JobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q jobQuery) DeleteAllSlice(o JobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -862,7 +862,7 @@ type JobReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q JobQuery) Reload(o *Job, ctx context.Context, exec boil.ContextExecutor) error {
+func (q jobQuery) Reload(o *Job, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindJob(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -874,7 +874,7 @@ func (q JobQuery) Reload(o *Job, ctx context.Context, exec boil.ContextExecutor)
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q JobQuery) ReloadAll(o *JobSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q jobQuery) ReloadAll(o *JobSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

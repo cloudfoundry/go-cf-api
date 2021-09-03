@@ -125,7 +125,7 @@ type (
 	// This should almost always be used instead of []SidecarProcessType.
 	SidecarProcessTypeSlice []*SidecarProcessType
 
-	SidecarProcessTypeQuery struct {
+	sidecarProcessTypeQuery struct {
 		*queries.Query
 	}
 )
@@ -159,7 +159,7 @@ type SidecarProcessTypeFinisher interface {
 }
 
 // One returns a single sidecarProcessType record from the query.
-func (q SidecarProcessTypeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SidecarProcessType, error) {
+func (q sidecarProcessTypeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SidecarProcessType, error) {
 	o := &SidecarProcessType{}
 
 	queries.SetLimit(q.Query, 1)
@@ -176,7 +176,7 @@ func (q SidecarProcessTypeQuery) One(ctx context.Context, exec boil.ContextExecu
 }
 
 // All returns all SidecarProcessType records from the query.
-func (q SidecarProcessTypeQuery) All(ctx context.Context, exec boil.ContextExecutor) (SidecarProcessTypeSlice, error) {
+func (q sidecarProcessTypeQuery) All(ctx context.Context, exec boil.ContextExecutor) (SidecarProcessTypeSlice, error) {
 	var o []*SidecarProcessType
 
 	err := q.Bind(ctx, exec, &o)
@@ -188,7 +188,7 @@ func (q SidecarProcessTypeQuery) All(ctx context.Context, exec boil.ContextExecu
 }
 
 // Count returns the count of all SidecarProcessType records in the query.
-func (q SidecarProcessTypeQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q sidecarProcessTypeQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -203,7 +203,7 @@ func (q SidecarProcessTypeQuery) Count(ctx context.Context, exec boil.ContextExe
 }
 
 // Exists checks if the row exists in the table.
-func (q SidecarProcessTypeQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q sidecarProcessTypeQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -219,7 +219,7 @@ func (q SidecarProcessTypeQuery) Exists(ctx context.Context, exec boil.ContextEx
 }
 
 // Sidecar pointed to by the foreign key.
-func (q SidecarProcessTypeQuery) Sidecar(o *SidecarProcessType, mods ...qm.QueryMod) SidecarQuery {
+func (q sidecarProcessTypeQuery) Sidecar(o *SidecarProcessType, mods ...qm.QueryMod) sidecarQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.SidecarGUID),
 	}
@@ -331,7 +331,7 @@ func (sidecarProcessTypeL) LoadSidecar(ctx context.Context, e boil.ContextExecut
 // SetSidecar of the sidecarProcessType to the related item.
 // Sets o.R.Sidecar to related.
 // Adds o to related.R.SidecarProcessTypes.
-func (q SidecarProcessTypeQuery) SetSidecar(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Sidecar) error {
+func (q sidecarProcessTypeQuery) SetSidecar(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Sidecar) error {
 	var err error
 	if insert {
 		if err = Sidecars().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -376,9 +376,9 @@ func (q SidecarProcessTypeQuery) SetSidecar(o *SidecarProcessType, ctx context.C
 }
 
 // SidecarProcessTypes retrieves all the records using an executor.
-func SidecarProcessTypes(mods ...qm.QueryMod) SidecarProcessTypeQuery {
+func SidecarProcessTypes(mods ...qm.QueryMod) sidecarProcessTypeQuery {
 	mods = append(mods, qm.From("`sidecar_process_types`"))
-	return SidecarProcessTypeQuery{NewQuery(mods...)}
+	return sidecarProcessTypeQuery{NewQuery(mods...)}
 }
 
 type SidecarProcessTypeFinder interface {
@@ -417,7 +417,7 @@ type SidecarProcessTypeInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SidecarProcessTypeQuery) Insert(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q sidecarProcessTypeQuery) Insert(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no sidecar_process_types provided for insertion")
 	}
@@ -536,7 +536,7 @@ type SidecarProcessTypeUpdater interface {
 // Update uses an executor to update the SidecarProcessType.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SidecarProcessTypeQuery) Update(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q sidecarProcessTypeQuery) Update(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -600,7 +600,7 @@ func (q SidecarProcessTypeQuery) Update(o *SidecarProcessType, ctx context.Conte
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SidecarProcessTypeQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q sidecarProcessTypeQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -617,7 +617,7 @@ func (q SidecarProcessTypeQuery) UpdateAll(ctx context.Context, exec boil.Contex
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SidecarProcessTypeQuery) UpdateAllSlice(o SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q sidecarProcessTypeQuery) UpdateAllSlice(o SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -672,7 +672,7 @@ type SidecarProcessTypeDeleter interface {
 
 // Delete deletes a single SidecarProcessType record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SidecarProcessTypeQuery) Delete(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q sidecarProcessTypeQuery) Delete(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SidecarProcessType provided for delete")
 	}
@@ -699,7 +699,7 @@ func (q SidecarProcessTypeQuery) Delete(o *SidecarProcessType, ctx context.Conte
 }
 
 // DeleteAll deletes all matching rows.
-func (q SidecarProcessTypeQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q sidecarProcessTypeQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no sidecarProcessTypeQuery provided for delete all")
 	}
@@ -720,7 +720,7 @@ func (q SidecarProcessTypeQuery) DeleteAll(ctx context.Context, exec boil.Contex
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SidecarProcessTypeQuery) DeleteAllSlice(o SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q sidecarProcessTypeQuery) DeleteAllSlice(o SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -759,7 +759,7 @@ type SidecarProcessTypeReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SidecarProcessTypeQuery) Reload(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor) error {
+func (q sidecarProcessTypeQuery) Reload(o *SidecarProcessType, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSidecarProcessType(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -771,7 +771,7 @@ func (q SidecarProcessTypeQuery) Reload(o *SidecarProcessType, ctx context.Conte
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SidecarProcessTypeQuery) ReloadAll(o *SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q sidecarProcessTypeQuery) ReloadAll(o *SidecarProcessTypeSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

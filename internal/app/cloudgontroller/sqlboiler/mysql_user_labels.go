@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []UserLabel.
 	UserLabelSlice []*UserLabel
 
-	UserLabelQuery struct {
+	userLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type UserLabelFinisher interface {
 }
 
 // One returns a single userLabel record from the query.
-func (q UserLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*UserLabel, error) {
+func (q userLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*UserLabel, error) {
 	o := &UserLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q UserLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Us
 }
 
 // All returns all UserLabel records from the query.
-func (q UserLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserLabelSlice, error) {
+func (q userLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserLabelSlice, error) {
 	var o []*UserLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q UserLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (Use
 }
 
 // Count returns the count of all UserLabel records in the query.
-func (q UserLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q UserLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // Exists checks if the row exists in the table.
-func (q UserLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q userLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q UserLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Resource pointed to by the foreign key.
-func (q UserLabelQuery) Resource(o *UserLabel, mods ...qm.QueryMod) UserQuery {
+func (q userLabelQuery) Resource(o *UserLabel, mods ...qm.QueryMod) userQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (userLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, sing
 // SetResource of the userLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceUserLabels.
-func (q UserLabelQuery) SetResource(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
+func (q userLabelQuery) SetResource(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *User) error {
 	var err error
 	if insert {
 		if err = Users().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q UserLabelQuery) SetResource(o *UserLabel, ctx context.Context, exec boil
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q UserLabelQuery) RemoveResource(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, related *User) error {
+func (q userLabelQuery) RemoveResource(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, related *User) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q UserLabelQuery) RemoveResource(o *UserLabel, ctx context.Context, exec b
 }
 
 // UserLabels retrieves all the records using an executor.
-func UserLabels(mods ...qm.QueryMod) UserLabelQuery {
+func UserLabels(mods ...qm.QueryMod) userLabelQuery {
 	mods = append(mods, qm.From("`user_labels`"))
-	return UserLabelQuery{NewQuery(mods...)}
+	return userLabelQuery{NewQuery(mods...)}
 }
 
 type UserLabelFinder interface {
@@ -461,7 +461,7 @@ type UserLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q UserLabelQuery) Insert(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q userLabelQuery) Insert(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no user_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type UserLabelUpdater interface {
 // Update uses an executor to update the UserLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q UserLabelQuery) Update(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q userLabelQuery) Update(o *UserLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q UserLabelQuery) Update(o *UserLabel, ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q UserLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q UserLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q UserLabelQuery) UpdateAllSlice(o UserLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userLabelQuery) UpdateAllSlice(o UserLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type UserLabelDeleter interface {
 
 // Delete deletes a single UserLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q UserLabelQuery) Delete(o *UserLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userLabelQuery) Delete(o *UserLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no UserLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q UserLabelQuery) Delete(o *UserLabel, ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all matching rows.
-func (q UserLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no userLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q UserLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q UserLabelQuery) DeleteAllSlice(o UserLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userLabelQuery) DeleteAllSlice(o UserLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type UserLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q UserLabelQuery) Reload(o *UserLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q userLabelQuery) Reload(o *UserLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindUserLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q UserLabelQuery) Reload(o *UserLabel, ctx context.Context, exec boil.Cont
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q UserLabelQuery) ReloadAll(o *UserLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q userLabelQuery) ReloadAll(o *UserLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

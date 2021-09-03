@@ -147,7 +147,7 @@ type (
 	// This should almost always be used instead of []ServiceInstanceOperation.
 	ServiceInstanceOperationSlice []*ServiceInstanceOperation
 
-	ServiceInstanceOperationQuery struct {
+	serviceInstanceOperationQuery struct {
 		*queries.Query
 	}
 )
@@ -181,7 +181,7 @@ type ServiceInstanceOperationFinisher interface {
 }
 
 // One returns a single serviceInstanceOperation record from the query.
-func (q ServiceInstanceOperationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstanceOperation, error) {
+func (q serviceInstanceOperationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstanceOperation, error) {
 	o := &ServiceInstanceOperation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -198,7 +198,7 @@ func (q ServiceInstanceOperationQuery) One(ctx context.Context, exec boil.Contex
 }
 
 // All returns all ServiceInstanceOperation records from the query.
-func (q ServiceInstanceOperationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceOperationSlice, error) {
+func (q serviceInstanceOperationQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceOperationSlice, error) {
 	var o []*ServiceInstanceOperation
 
 	err := q.Bind(ctx, exec, &o)
@@ -210,7 +210,7 @@ func (q ServiceInstanceOperationQuery) All(ctx context.Context, exec boil.Contex
 }
 
 // Count returns the count of all ServiceInstanceOperation records in the query.
-func (q ServiceInstanceOperationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceOperationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -225,7 +225,7 @@ func (q ServiceInstanceOperationQuery) Count(ctx context.Context, exec boil.Cont
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceInstanceOperationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceInstanceOperationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -241,7 +241,7 @@ func (q ServiceInstanceOperationQuery) Exists(ctx context.Context, exec boil.Con
 }
 
 // ServiceInstance pointed to by the foreign key.
-func (q ServiceInstanceOperationQuery) ServiceInstance(o *ServiceInstanceOperation, mods ...qm.QueryMod) ServiceInstanceQuery {
+func (q serviceInstanceOperationQuery) ServiceInstance(o *ServiceInstanceOperation, mods ...qm.QueryMod) serviceInstanceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.ServiceInstanceID),
 	}
@@ -357,7 +357,7 @@ func (serviceInstanceOperationL) LoadServiceInstance(ctx context.Context, e boil
 // SetServiceInstance of the serviceInstanceOperation to the related item.
 // Sets o.R.ServiceInstance to related.
 // Adds o to related.R.ServiceInstanceOperations.
-func (q ServiceInstanceOperationQuery) SetServiceInstance(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceInstance) error {
+func (q serviceInstanceOperationQuery) SetServiceInstance(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceInstance) error {
 	var err error
 	if insert {
 		if err = ServiceInstances().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -404,7 +404,7 @@ func (q ServiceInstanceOperationQuery) SetServiceInstance(o *ServiceInstanceOper
 // RemoveServiceInstance relationship.
 // Sets o.R.ServiceInstance to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceInstanceOperationQuery) RemoveServiceInstance(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, related *ServiceInstance) error {
+func (q serviceInstanceOperationQuery) RemoveServiceInstance(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, related *ServiceInstance) error {
 	var err error
 
 	queries.SetScanner(&o.ServiceInstanceID, nil)
@@ -435,9 +435,9 @@ func (q ServiceInstanceOperationQuery) RemoveServiceInstance(o *ServiceInstanceO
 }
 
 // ServiceInstanceOperations retrieves all the records using an executor.
-func ServiceInstanceOperations(mods ...qm.QueryMod) ServiceInstanceOperationQuery {
+func ServiceInstanceOperations(mods ...qm.QueryMod) serviceInstanceOperationQuery {
 	mods = append(mods, qm.From("\"service_instance_operations\""))
-	return ServiceInstanceOperationQuery{NewQuery(mods...)}
+	return serviceInstanceOperationQuery{NewQuery(mods...)}
 }
 
 type ServiceInstanceOperationFinder interface {
@@ -476,7 +476,7 @@ type ServiceInstanceOperationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceInstanceOperationQuery) Insert(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceInstanceOperationQuery) Insert(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_instance_operations provided for insertion")
 	}
@@ -568,7 +568,7 @@ type ServiceInstanceOperationUpdater interface {
 // Update uses an executor to update the ServiceInstanceOperation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceInstanceOperationQuery) Update(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceInstanceOperationQuery) Update(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -632,7 +632,7 @@ func (q ServiceInstanceOperationQuery) Update(o *ServiceInstanceOperation, ctx c
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceInstanceOperationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceOperationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -649,7 +649,7 @@ func (q ServiceInstanceOperationQuery) UpdateAll(ctx context.Context, exec boil.
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceInstanceOperationQuery) UpdateAllSlice(o ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceOperationQuery) UpdateAllSlice(o ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -704,7 +704,7 @@ type ServiceInstanceOperationDeleter interface {
 
 // Delete deletes a single ServiceInstanceOperation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceInstanceOperationQuery) Delete(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceOperationQuery) Delete(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceInstanceOperation provided for delete")
 	}
@@ -731,7 +731,7 @@ func (q ServiceInstanceOperationQuery) Delete(o *ServiceInstanceOperation, ctx c
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceInstanceOperationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceOperationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceInstanceOperationQuery provided for delete all")
 	}
@@ -752,7 +752,7 @@ func (q ServiceInstanceOperationQuery) DeleteAll(ctx context.Context, exec boil.
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceInstanceOperationQuery) DeleteAllSlice(o ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceOperationQuery) DeleteAllSlice(o ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -791,7 +791,7 @@ type ServiceInstanceOperationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceInstanceOperationQuery) Reload(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceOperationQuery) Reload(o *ServiceInstanceOperation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceInstanceOperation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -803,7 +803,7 @@ func (q ServiceInstanceOperationQuery) Reload(o *ServiceInstanceOperation, ctx c
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceInstanceOperationQuery) ReloadAll(o *ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceOperationQuery) ReloadAll(o *ServiceInstanceOperationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

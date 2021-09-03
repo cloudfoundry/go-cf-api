@@ -197,7 +197,7 @@ type (
 	// This should almost always be used instead of []Deployment.
 	DeploymentSlice []*Deployment
 
-	DeploymentQuery struct {
+	deploymentQuery struct {
 		*queries.Query
 	}
 )
@@ -231,7 +231,7 @@ type DeploymentFinisher interface {
 }
 
 // One returns a single deployment record from the query.
-func (q DeploymentQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Deployment, error) {
+func (q deploymentQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Deployment, error) {
 	o := &Deployment{}
 
 	queries.SetLimit(q.Query, 1)
@@ -248,7 +248,7 @@ func (q DeploymentQuery) One(ctx context.Context, exec boil.ContextExecutor) (*D
 }
 
 // All returns all Deployment records from the query.
-func (q DeploymentQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentSlice, error) {
+func (q deploymentQuery) All(ctx context.Context, exec boil.ContextExecutor) (DeploymentSlice, error) {
 	var o []*Deployment
 
 	err := q.Bind(ctx, exec, &o)
@@ -260,7 +260,7 @@ func (q DeploymentQuery) All(ctx context.Context, exec boil.ContextExecutor) (De
 }
 
 // Count returns the count of all Deployment records in the query.
-func (q DeploymentQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q deploymentQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -275,7 +275,7 @@ func (q DeploymentQuery) Count(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Exists checks if the row exists in the table.
-func (q DeploymentQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q deploymentQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -291,7 +291,7 @@ func (q DeploymentQuery) Exists(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // App pointed to by the foreign key.
-func (q DeploymentQuery) App(o *Deployment, mods ...qm.QueryMod) AppQuery {
+func (q deploymentQuery) App(o *Deployment, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -305,7 +305,7 @@ func (q DeploymentQuery) App(o *Deployment, mods ...qm.QueryMod) AppQuery {
 }
 
 // ResourceDeploymentAnnotations retrieves all the deployment_annotation's DeploymentAnnotations with an executor via resource_guid column.
-func (q DeploymentQuery) ResourceDeploymentAnnotations(o *Deployment, mods ...qm.QueryMod) DeploymentAnnotationQuery {
+func (q deploymentQuery) ResourceDeploymentAnnotations(o *Deployment, mods ...qm.QueryMod) deploymentAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -326,7 +326,7 @@ func (q DeploymentQuery) ResourceDeploymentAnnotations(o *Deployment, mods ...qm
 }
 
 // ResourceDeploymentLabels retrieves all the deployment_label's DeploymentLabels with an executor via resource_guid column.
-func (q DeploymentQuery) ResourceDeploymentLabels(o *Deployment, mods ...qm.QueryMod) DeploymentLabelQuery {
+func (q deploymentQuery) ResourceDeploymentLabels(o *Deployment, mods ...qm.QueryMod) deploymentLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -347,7 +347,7 @@ func (q DeploymentQuery) ResourceDeploymentLabels(o *Deployment, mods ...qm.Quer
 }
 
 // DeploymentProcesses retrieves all the deployment_process's DeploymentProcesses with an executor.
-func (q DeploymentQuery) DeploymentProcesses(o *Deployment, mods ...qm.QueryMod) DeploymentProcessQuery {
+func (q deploymentQuery) DeploymentProcesses(o *Deployment, mods ...qm.QueryMod) deploymentProcessQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -743,7 +743,7 @@ func (deploymentL) LoadDeploymentProcesses(ctx context.Context, e boil.ContextEx
 // SetApp of the deployment to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Deployments.
-func (q DeploymentQuery) SetApp(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q deploymentQuery) SetApp(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -790,7 +790,7 @@ func (q DeploymentQuery) SetApp(o *Deployment, ctx context.Context, exec boil.Co
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q DeploymentQuery) RemoveApp(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q deploymentQuery) RemoveApp(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
@@ -824,7 +824,7 @@ func (q DeploymentQuery) RemoveApp(o *Deployment, ctx context.Context, exec boil
 // of the deployment, optionally inserting them as new records.
 // Appends related to o.R.ResourceDeploymentAnnotations.
 // Sets related.R.Resource appropriately.
-func (q DeploymentQuery) AddResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentAnnotation) error {
+func (q deploymentQuery) AddResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -879,7 +879,7 @@ func (q DeploymentQuery) AddResourceDeploymentAnnotations(o *Deployment, ctx con
 // Sets o.R.Resource's ResourceDeploymentAnnotations accordingly.
 // Replaces o.R.ResourceDeploymentAnnotations with related.
 // Sets related.R.Resource's ResourceDeploymentAnnotations accordingly.
-func (q DeploymentQuery) SetResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentAnnotation) error {
+func (q deploymentQuery) SetResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentAnnotation) error {
 	query := "update `deployment_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -910,7 +910,7 @@ func (q DeploymentQuery) SetResourceDeploymentAnnotations(o *Deployment, ctx con
 // RemoveResourceDeploymentAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceDeploymentAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DeploymentQuery) RemoveResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentAnnotation) error {
+func (q deploymentQuery) RemoveResourceDeploymentAnnotations(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -951,7 +951,7 @@ func (q DeploymentQuery) RemoveResourceDeploymentAnnotations(o *Deployment, ctx 
 // of the deployment, optionally inserting them as new records.
 // Appends related to o.R.ResourceDeploymentLabels.
 // Sets related.R.Resource appropriately.
-func (q DeploymentQuery) AddResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentLabel) error {
+func (q deploymentQuery) AddResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1006,7 +1006,7 @@ func (q DeploymentQuery) AddResourceDeploymentLabels(o *Deployment, ctx context.
 // Sets o.R.Resource's ResourceDeploymentLabels accordingly.
 // Replaces o.R.ResourceDeploymentLabels with related.
 // Sets related.R.Resource's ResourceDeploymentLabels accordingly.
-func (q DeploymentQuery) SetResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentLabel) error {
+func (q deploymentQuery) SetResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentLabel) error {
 	query := "update `deployment_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1037,7 +1037,7 @@ func (q DeploymentQuery) SetResourceDeploymentLabels(o *Deployment, ctx context.
 // RemoveResourceDeploymentLabels relationships from objects passed in.
 // Removes related items from R.ResourceDeploymentLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DeploymentQuery) RemoveResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentLabel) error {
+func (q deploymentQuery) RemoveResourceDeploymentLabels(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1078,7 +1078,7 @@ func (q DeploymentQuery) RemoveResourceDeploymentLabels(o *Deployment, ctx conte
 // of the deployment, optionally inserting them as new records.
 // Appends related to o.R.DeploymentProcesses.
 // Sets related.R.Deployment appropriately.
-func (q DeploymentQuery) AddDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentProcess) error {
+func (q deploymentQuery) AddDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentProcess) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1133,7 +1133,7 @@ func (q DeploymentQuery) AddDeploymentProcesses(o *Deployment, ctx context.Conte
 // Sets o.R.Deployment's DeploymentProcesses accordingly.
 // Replaces o.R.DeploymentProcesses with related.
 // Sets related.R.Deployment's DeploymentProcesses accordingly.
-func (q DeploymentQuery) SetDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentProcess) error {
+func (q deploymentQuery) SetDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DeploymentProcess) error {
 	query := "update `deployment_processes` set `deployment_guid` = null where `deployment_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1164,7 +1164,7 @@ func (q DeploymentQuery) SetDeploymentProcesses(o *Deployment, ctx context.Conte
 // RemoveDeploymentProcesses relationships from objects passed in.
 // Removes related items from R.DeploymentProcesses (uses pointer comparison, removal does not keep order)
 // Sets related.R.Deployment.
-func (q DeploymentQuery) RemoveDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentProcess) error {
+func (q deploymentQuery) RemoveDeploymentProcesses(o *Deployment, ctx context.Context, exec boil.ContextExecutor, related ...*DeploymentProcess) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1202,9 +1202,9 @@ func (q DeploymentQuery) RemoveDeploymentProcesses(o *Deployment, ctx context.Co
 }
 
 // Deployments retrieves all the records using an executor.
-func Deployments(mods ...qm.QueryMod) DeploymentQuery {
+func Deployments(mods ...qm.QueryMod) deploymentQuery {
 	mods = append(mods, qm.From("`deployments`"))
-	return DeploymentQuery{NewQuery(mods...)}
+	return deploymentQuery{NewQuery(mods...)}
 }
 
 type DeploymentFinder interface {
@@ -1243,7 +1243,7 @@ type DeploymentInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q DeploymentQuery) Insert(o *Deployment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q deploymentQuery) Insert(o *Deployment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no deployments provided for insertion")
 	}
@@ -1362,7 +1362,7 @@ type DeploymentUpdater interface {
 // Update uses an executor to update the Deployment.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q DeploymentQuery) Update(o *Deployment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q deploymentQuery) Update(o *Deployment, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1426,7 +1426,7 @@ func (q DeploymentQuery) Update(o *Deployment, ctx context.Context, exec boil.Co
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q DeploymentQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q deploymentQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1443,7 +1443,7 @@ func (q DeploymentQuery) UpdateAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q DeploymentQuery) UpdateAllSlice(o DeploymentSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q deploymentQuery) UpdateAllSlice(o DeploymentSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1498,7 +1498,7 @@ type DeploymentDeleter interface {
 
 // Delete deletes a single Deployment record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q DeploymentQuery) Delete(o *Deployment, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q deploymentQuery) Delete(o *Deployment, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Deployment provided for delete")
 	}
@@ -1525,7 +1525,7 @@ func (q DeploymentQuery) Delete(o *Deployment, ctx context.Context, exec boil.Co
 }
 
 // DeleteAll deletes all matching rows.
-func (q DeploymentQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q deploymentQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no deploymentQuery provided for delete all")
 	}
@@ -1546,7 +1546,7 @@ func (q DeploymentQuery) DeleteAll(ctx context.Context, exec boil.ContextExecuto
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q DeploymentQuery) DeleteAllSlice(o DeploymentSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q deploymentQuery) DeleteAllSlice(o DeploymentSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1585,7 +1585,7 @@ type DeploymentReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q DeploymentQuery) Reload(o *Deployment, ctx context.Context, exec boil.ContextExecutor) error {
+func (q deploymentQuery) Reload(o *Deployment, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindDeployment(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1597,7 +1597,7 @@ func (q DeploymentQuery) Reload(o *Deployment, ctx context.Context, exec boil.Co
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q DeploymentQuery) ReloadAll(o *DeploymentSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q deploymentQuery) ReloadAll(o *DeploymentSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

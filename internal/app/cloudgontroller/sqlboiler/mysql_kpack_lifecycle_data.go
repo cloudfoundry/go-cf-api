@@ -135,7 +135,7 @@ type (
 	// This should almost always be used instead of []KpackLifecycleDatum.
 	KpackLifecycleDatumSlice []*KpackLifecycleDatum
 
-	KpackLifecycleDatumQuery struct {
+	kpackLifecycleDatumQuery struct {
 		*queries.Query
 	}
 )
@@ -169,7 +169,7 @@ type KpackLifecycleDatumFinisher interface {
 }
 
 // One returns a single kpackLifecycleDatum record from the query.
-func (q KpackLifecycleDatumQuery) One(ctx context.Context, exec boil.ContextExecutor) (*KpackLifecycleDatum, error) {
+func (q kpackLifecycleDatumQuery) One(ctx context.Context, exec boil.ContextExecutor) (*KpackLifecycleDatum, error) {
 	o := &KpackLifecycleDatum{}
 
 	queries.SetLimit(q.Query, 1)
@@ -186,7 +186,7 @@ func (q KpackLifecycleDatumQuery) One(ctx context.Context, exec boil.ContextExec
 }
 
 // All returns all KpackLifecycleDatum records from the query.
-func (q KpackLifecycleDatumQuery) All(ctx context.Context, exec boil.ContextExecutor) (KpackLifecycleDatumSlice, error) {
+func (q kpackLifecycleDatumQuery) All(ctx context.Context, exec boil.ContextExecutor) (KpackLifecycleDatumSlice, error) {
 	var o []*KpackLifecycleDatum
 
 	err := q.Bind(ctx, exec, &o)
@@ -198,7 +198,7 @@ func (q KpackLifecycleDatumQuery) All(ctx context.Context, exec boil.ContextExec
 }
 
 // Count returns the count of all KpackLifecycleDatum records in the query.
-func (q KpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q kpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -213,7 +213,7 @@ func (q KpackLifecycleDatumQuery) Count(ctx context.Context, exec boil.ContextEx
 }
 
 // Exists checks if the row exists in the table.
-func (q KpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q kpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -229,7 +229,7 @@ func (q KpackLifecycleDatumQuery) Exists(ctx context.Context, exec boil.ContextE
 }
 
 // App pointed to by the foreign key.
-func (q KpackLifecycleDatumQuery) App(o *KpackLifecycleDatum, mods ...qm.QueryMod) AppQuery {
+func (q kpackLifecycleDatumQuery) App(o *KpackLifecycleDatum, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -243,7 +243,7 @@ func (q KpackLifecycleDatumQuery) App(o *KpackLifecycleDatum, mods ...qm.QueryMo
 }
 
 // Build pointed to by the foreign key.
-func (q KpackLifecycleDatumQuery) Build(o *KpackLifecycleDatum, mods ...qm.QueryMod) BuildQuery {
+func (q kpackLifecycleDatumQuery) Build(o *KpackLifecycleDatum, mods ...qm.QueryMod) buildQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.BuildGUID),
 	}
@@ -459,7 +459,7 @@ func (kpackLifecycleDatumL) LoadBuild(ctx context.Context, e boil.ContextExecuto
 // SetApp of the kpackLifecycleDatum to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.KpackLifecycleData.
-func (q KpackLifecycleDatumQuery) SetApp(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q kpackLifecycleDatumQuery) SetApp(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -506,7 +506,7 @@ func (q KpackLifecycleDatumQuery) SetApp(o *KpackLifecycleDatum, ctx context.Con
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q KpackLifecycleDatumQuery) RemoveApp(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q kpackLifecycleDatumQuery) RemoveApp(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
@@ -539,7 +539,7 @@ func (q KpackLifecycleDatumQuery) RemoveApp(o *KpackLifecycleDatum, ctx context.
 // SetBuild of the kpackLifecycleDatum to the related item.
 // Sets o.R.Build to related.
 // Adds o to related.R.KpackLifecycleData.
-func (q KpackLifecycleDatumQuery) SetBuild(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
+func (q kpackLifecycleDatumQuery) SetBuild(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
 	var err error
 	if insert {
 		if err = Builds().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -586,7 +586,7 @@ func (q KpackLifecycleDatumQuery) SetBuild(o *KpackLifecycleDatum, ctx context.C
 // RemoveBuild relationship.
 // Sets o.R.Build to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q KpackLifecycleDatumQuery) RemoveBuild(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related *Build) error {
+func (q kpackLifecycleDatumQuery) RemoveBuild(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, related *Build) error {
 	var err error
 
 	queries.SetScanner(&o.BuildGUID, nil)
@@ -617,9 +617,9 @@ func (q KpackLifecycleDatumQuery) RemoveBuild(o *KpackLifecycleDatum, ctx contex
 }
 
 // KpackLifecycleData retrieves all the records using an executor.
-func KpackLifecycleData(mods ...qm.QueryMod) KpackLifecycleDatumQuery {
+func KpackLifecycleData(mods ...qm.QueryMod) kpackLifecycleDatumQuery {
 	mods = append(mods, qm.From("`kpack_lifecycle_data`"))
-	return KpackLifecycleDatumQuery{NewQuery(mods...)}
+	return kpackLifecycleDatumQuery{NewQuery(mods...)}
 }
 
 type KpackLifecycleDatumFinder interface {
@@ -658,7 +658,7 @@ type KpackLifecycleDatumInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q KpackLifecycleDatumQuery) Insert(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q kpackLifecycleDatumQuery) Insert(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no kpack_lifecycle_data provided for insertion")
 	}
@@ -777,7 +777,7 @@ type KpackLifecycleDatumUpdater interface {
 // Update uses an executor to update the KpackLifecycleDatum.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q KpackLifecycleDatumQuery) Update(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q kpackLifecycleDatumQuery) Update(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -841,7 +841,7 @@ func (q KpackLifecycleDatumQuery) Update(o *KpackLifecycleDatum, ctx context.Con
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q KpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q kpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -858,7 +858,7 @@ func (q KpackLifecycleDatumQuery) UpdateAll(ctx context.Context, exec boil.Conte
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q KpackLifecycleDatumQuery) UpdateAllSlice(o KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q kpackLifecycleDatumQuery) UpdateAllSlice(o KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -913,7 +913,7 @@ type KpackLifecycleDatumDeleter interface {
 
 // Delete deletes a single KpackLifecycleDatum record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q KpackLifecycleDatumQuery) Delete(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q kpackLifecycleDatumQuery) Delete(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no KpackLifecycleDatum provided for delete")
 	}
@@ -940,7 +940,7 @@ func (q KpackLifecycleDatumQuery) Delete(o *KpackLifecycleDatum, ctx context.Con
 }
 
 // DeleteAll deletes all matching rows.
-func (q KpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q kpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no kpackLifecycleDatumQuery provided for delete all")
 	}
@@ -961,7 +961,7 @@ func (q KpackLifecycleDatumQuery) DeleteAll(ctx context.Context, exec boil.Conte
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q KpackLifecycleDatumQuery) DeleteAllSlice(o KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q kpackLifecycleDatumQuery) DeleteAllSlice(o KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1000,7 +1000,7 @@ type KpackLifecycleDatumReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q KpackLifecycleDatumQuery) Reload(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) error {
+func (q kpackLifecycleDatumQuery) Reload(o *KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindKpackLifecycleDatum(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1012,7 +1012,7 @@ func (q KpackLifecycleDatumQuery) Reload(o *KpackLifecycleDatum, ctx context.Con
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q KpackLifecycleDatumQuery) ReloadAll(o *KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q kpackLifecycleDatumQuery) ReloadAll(o *KpackLifecycleDatumSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

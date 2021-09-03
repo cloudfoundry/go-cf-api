@@ -161,7 +161,7 @@ type (
 	// This should almost always be used instead of []Route.
 	RouteSlice []*Route
 
-	RouteQuery struct {
+	routeQuery struct {
 		*queries.Query
 	}
 )
@@ -195,7 +195,7 @@ type RouteFinisher interface {
 }
 
 // One returns a single route record from the query.
-func (q RouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Route, error) {
+func (q routeQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Route, error) {
 	o := &Route{}
 
 	queries.SetLimit(q.Query, 1)
@@ -212,7 +212,7 @@ func (q RouteQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Route,
 }
 
 // All returns all Route records from the query.
-func (q RouteQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteSlice, error) {
+func (q routeQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteSlice, error) {
 	var o []*Route
 
 	err := q.Bind(ctx, exec, &o)
@@ -224,7 +224,7 @@ func (q RouteQuery) All(ctx context.Context, exec boil.ContextExecutor) (RouteSl
 }
 
 // Count returns the count of all Route records in the query.
-func (q RouteQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -239,7 +239,7 @@ func (q RouteQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64
 }
 
 // Exists checks if the row exists in the table.
-func (q RouteQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q routeQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -255,7 +255,7 @@ func (q RouteQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool
 }
 
 // Domain pointed to by the foreign key.
-func (q RouteQuery) Domain(o *Route, mods ...qm.QueryMod) DomainQuery {
+func (q routeQuery) Domain(o *Route, mods ...qm.QueryMod) domainQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.DomainID),
 	}
@@ -269,7 +269,7 @@ func (q RouteQuery) Domain(o *Route, mods ...qm.QueryMod) DomainQuery {
 }
 
 // Space pointed to by the foreign key.
-func (q RouteQuery) Space(o *Route, mods ...qm.QueryMod) SpaceQuery {
+func (q routeQuery) Space(o *Route, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.SpaceID),
 	}
@@ -283,7 +283,7 @@ func (q RouteQuery) Space(o *Route, mods ...qm.QueryMod) SpaceQuery {
 }
 
 // ResourceRouteAnnotations retrieves all the route_annotation's RouteAnnotations with an executor via resource_guid column.
-func (q RouteQuery) ResourceRouteAnnotations(o *Route, mods ...qm.QueryMod) RouteAnnotationQuery {
+func (q routeQuery) ResourceRouteAnnotations(o *Route, mods ...qm.QueryMod) routeAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -304,7 +304,7 @@ func (q RouteQuery) ResourceRouteAnnotations(o *Route, mods ...qm.QueryMod) Rout
 }
 
 // RouteBindings retrieves all the route_binding's RouteBindings with an executor.
-func (q RouteQuery) RouteBindings(o *Route, mods ...qm.QueryMod) RouteBindingQuery {
+func (q routeQuery) RouteBindings(o *Route, mods ...qm.QueryMod) routeBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -325,7 +325,7 @@ func (q RouteQuery) RouteBindings(o *Route, mods ...qm.QueryMod) RouteBindingQue
 }
 
 // ResourceRouteLabels retrieves all the route_label's RouteLabels with an executor via resource_guid column.
-func (q RouteQuery) ResourceRouteLabels(o *Route, mods ...qm.QueryMod) RouteLabelQuery {
+func (q routeQuery) ResourceRouteLabels(o *Route, mods ...qm.QueryMod) routeLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -346,7 +346,7 @@ func (q RouteQuery) ResourceRouteLabels(o *Route, mods ...qm.QueryMod) RouteLabe
 }
 
 // RouteMappings retrieves all the route_mapping's RouteMappings with an executor.
-func (q RouteQuery) RouteMappings(o *Route, mods ...qm.QueryMod) RouteMappingQuery {
+func (q routeQuery) RouteMappings(o *Route, mods ...qm.QueryMod) routeMappingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -925,7 +925,7 @@ func (routeL) LoadRouteMappings(ctx context.Context, e boil.ContextExecutor, sin
 // SetDomain of the route to the related item.
 // Sets o.R.Domain to related.
 // Adds o to related.R.Routes.
-func (q RouteQuery) SetDomain(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
+func (q routeQuery) SetDomain(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Domain) error {
 	var err error
 	if insert {
 		if err = Domains().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -972,7 +972,7 @@ func (q RouteQuery) SetDomain(o *Route, ctx context.Context, exec boil.ContextEx
 // SetSpace of the route to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.Routes.
-func (q RouteQuery) SetSpace(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q routeQuery) SetSpace(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -1020,7 +1020,7 @@ func (q RouteQuery) SetSpace(o *Route, ctx context.Context, exec boil.ContextExe
 // of the route, optionally inserting them as new records.
 // Appends related to o.R.ResourceRouteAnnotations.
 // Sets related.R.Resource appropriately.
-func (q RouteQuery) AddResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteAnnotation) error {
+func (q routeQuery) AddResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1075,7 +1075,7 @@ func (q RouteQuery) AddResourceRouteAnnotations(o *Route, ctx context.Context, e
 // Sets o.R.Resource's ResourceRouteAnnotations accordingly.
 // Replaces o.R.ResourceRouteAnnotations with related.
 // Sets related.R.Resource's ResourceRouteAnnotations accordingly.
-func (q RouteQuery) SetResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteAnnotation) error {
+func (q routeQuery) SetResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteAnnotation) error {
 	query := "update `route_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1106,7 +1106,7 @@ func (q RouteQuery) SetResourceRouteAnnotations(o *Route, ctx context.Context, e
 // RemoveResourceRouteAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceRouteAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q RouteQuery) RemoveResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteAnnotation) error {
+func (q routeQuery) RemoveResourceRouteAnnotations(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1147,7 +1147,7 @@ func (q RouteQuery) RemoveResourceRouteAnnotations(o *Route, ctx context.Context
 // of the route, optionally inserting them as new records.
 // Appends related to o.R.RouteBindings.
 // Sets related.R.Route appropriately.
-func (q RouteQuery) AddRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q routeQuery) AddRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1202,7 +1202,7 @@ func (q RouteQuery) AddRouteBindings(o *Route, ctx context.Context, exec boil.Co
 // Sets o.R.Route's RouteBindings accordingly.
 // Replaces o.R.RouteBindings with related.
 // Sets related.R.Route's RouteBindings accordingly.
-func (q RouteQuery) SetRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q routeQuery) SetRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	query := "update `route_bindings` set `route_id` = null where `route_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -1233,7 +1233,7 @@ func (q RouteQuery) SetRouteBindings(o *Route, ctx context.Context, exec boil.Co
 // RemoveRouteBindings relationships from objects passed in.
 // Removes related items from R.RouteBindings (uses pointer comparison, removal does not keep order)
 // Sets related.R.Route.
-func (q RouteQuery) RemoveRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
+func (q routeQuery) RemoveRouteBindings(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1274,7 +1274,7 @@ func (q RouteQuery) RemoveRouteBindings(o *Route, ctx context.Context, exec boil
 // of the route, optionally inserting them as new records.
 // Appends related to o.R.ResourceRouteLabels.
 // Sets related.R.Resource appropriately.
-func (q RouteQuery) AddResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteLabel) error {
+func (q routeQuery) AddResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1329,7 +1329,7 @@ func (q RouteQuery) AddResourceRouteLabels(o *Route, ctx context.Context, exec b
 // Sets o.R.Resource's ResourceRouteLabels accordingly.
 // Replaces o.R.ResourceRouteLabels with related.
 // Sets related.R.Resource's ResourceRouteLabels accordingly.
-func (q RouteQuery) SetResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteLabel) error {
+func (q routeQuery) SetResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteLabel) error {
 	query := "update `route_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1360,7 +1360,7 @@ func (q RouteQuery) SetResourceRouteLabels(o *Route, ctx context.Context, exec b
 // RemoveResourceRouteLabels relationships from objects passed in.
 // Removes related items from R.ResourceRouteLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q RouteQuery) RemoveResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteLabel) error {
+func (q routeQuery) RemoveResourceRouteLabels(o *Route, ctx context.Context, exec boil.ContextExecutor, related ...*RouteLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1401,7 +1401,7 @@ func (q RouteQuery) RemoveResourceRouteLabels(o *Route, ctx context.Context, exe
 // of the route, optionally inserting them as new records.
 // Appends related to o.R.RouteMappings.
 // Sets related.R.Route appropriately.
-func (q RouteQuery) AddRouteMappings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteMapping) error {
+func (q routeQuery) AddRouteMappings(o *Route, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteMapping) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1451,9 +1451,9 @@ func (q RouteQuery) AddRouteMappings(o *Route, ctx context.Context, exec boil.Co
 }
 
 // Routes retrieves all the records using an executor.
-func Routes(mods ...qm.QueryMod) RouteQuery {
+func Routes(mods ...qm.QueryMod) routeQuery {
 	mods = append(mods, qm.From("`routes`"))
-	return RouteQuery{NewQuery(mods...)}
+	return routeQuery{NewQuery(mods...)}
 }
 
 type RouteFinder interface {
@@ -1492,7 +1492,7 @@ type RouteInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RouteQuery) Insert(o *Route, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q routeQuery) Insert(o *Route, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no routes provided for insertion")
 	}
@@ -1611,7 +1611,7 @@ type RouteUpdater interface {
 // Update uses an executor to update the Route.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RouteQuery) Update(o *Route, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q routeQuery) Update(o *Route, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1675,7 +1675,7 @@ func (q RouteQuery) Update(o *Route, ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RouteQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1692,7 +1692,7 @@ func (q RouteQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, co
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RouteQuery) UpdateAllSlice(o RouteSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q routeQuery) UpdateAllSlice(o RouteSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1747,7 +1747,7 @@ type RouteDeleter interface {
 
 // Delete deletes a single Route record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RouteQuery) Delete(o *Route, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeQuery) Delete(o *Route, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Route provided for delete")
 	}
@@ -1774,7 +1774,7 @@ func (q RouteQuery) Delete(o *Route, ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all matching rows.
-func (q RouteQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no routeQuery provided for delete all")
 	}
@@ -1795,7 +1795,7 @@ func (q RouteQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RouteQuery) DeleteAllSlice(o RouteSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q routeQuery) DeleteAllSlice(o RouteSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1834,7 +1834,7 @@ type RouteReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RouteQuery) Reload(o *Route, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeQuery) Reload(o *Route, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRoute(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1846,7 +1846,7 @@ func (q RouteQuery) Reload(o *Route, ctx context.Context, exec boil.ContextExecu
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RouteQuery) ReloadAll(o *RouteSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q routeQuery) ReloadAll(o *RouteSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

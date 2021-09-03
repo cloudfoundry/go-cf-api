@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []ServicePlanLabel.
 	ServicePlanLabelSlice []*ServicePlanLabel
 
-	ServicePlanLabelQuery struct {
+	servicePlanLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type ServicePlanLabelFinisher interface {
 }
 
 // One returns a single servicePlanLabel record from the query.
-func (q ServicePlanLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlanLabel, error) {
+func (q servicePlanLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServicePlanLabel, error) {
 	o := &ServicePlanLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q ServicePlanLabelQuery) One(ctx context.Context, exec boil.ContextExecuto
 }
 
 // All returns all ServicePlanLabel records from the query.
-func (q ServicePlanLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanLabelSlice, error) {
+func (q servicePlanLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServicePlanLabelSlice, error) {
 	var o []*ServicePlanLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q ServicePlanLabelQuery) All(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Count returns the count of all ServicePlanLabel records in the query.
-func (q ServicePlanLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q ServicePlanLabelQuery) Count(ctx context.Context, exec boil.ContextExecu
 }
 
 // Exists checks if the row exists in the table.
-func (q ServicePlanLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q servicePlanLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q ServicePlanLabelQuery) Exists(ctx context.Context, exec boil.ContextExec
 }
 
 // Resource pointed to by the foreign key.
-func (q ServicePlanLabelQuery) Resource(o *ServicePlanLabel, mods ...qm.QueryMod) ServicePlanQuery {
+func (q servicePlanLabelQuery) Resource(o *ServicePlanLabel, mods ...qm.QueryMod) servicePlanQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (servicePlanLabelL) LoadResource(ctx context.Context, e boil.ContextExecuto
 // SetResource of the servicePlanLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServicePlanLabels.
-func (q ServicePlanLabelQuery) SetResource(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
+func (q servicePlanLabelQuery) SetResource(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
 	var err error
 	if insert {
 		if err = ServicePlans().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q ServicePlanLabelQuery) SetResource(o *ServicePlanLabel, ctx context.Cont
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServicePlanLabelQuery) RemoveResource(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
+func (q servicePlanLabelQuery) RemoveResource(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q ServicePlanLabelQuery) RemoveResource(o *ServicePlanLabel, ctx context.C
 }
 
 // ServicePlanLabels retrieves all the records using an executor.
-func ServicePlanLabels(mods ...qm.QueryMod) ServicePlanLabelQuery {
+func ServicePlanLabels(mods ...qm.QueryMod) servicePlanLabelQuery {
 	mods = append(mods, qm.From("`service_plan_labels`"))
-	return ServicePlanLabelQuery{NewQuery(mods...)}
+	return servicePlanLabelQuery{NewQuery(mods...)}
 }
 
 type ServicePlanLabelFinder interface {
@@ -461,7 +461,7 @@ type ServicePlanLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServicePlanLabelQuery) Insert(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q servicePlanLabelQuery) Insert(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_plan_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type ServicePlanLabelUpdater interface {
 // Update uses an executor to update the ServicePlanLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServicePlanLabelQuery) Update(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q servicePlanLabelQuery) Update(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q ServicePlanLabelQuery) Update(o *ServicePlanLabel, ctx context.Context, 
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServicePlanLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q servicePlanLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q ServicePlanLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServicePlanLabelQuery) UpdateAllSlice(o ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q servicePlanLabelQuery) UpdateAllSlice(o ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type ServicePlanLabelDeleter interface {
 
 // Delete deletes a single ServicePlanLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServicePlanLabelQuery) Delete(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanLabelQuery) Delete(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServicePlanLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q ServicePlanLabelQuery) Delete(o *ServicePlanLabel, ctx context.Context, 
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServicePlanLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no servicePlanLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q ServicePlanLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextE
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServicePlanLabelQuery) DeleteAllSlice(o ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q servicePlanLabelQuery) DeleteAllSlice(o ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type ServicePlanLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServicePlanLabelQuery) Reload(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q servicePlanLabelQuery) Reload(o *ServicePlanLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServicePlanLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q ServicePlanLabelQuery) Reload(o *ServicePlanLabel, ctx context.Context, 
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServicePlanLabelQuery) ReloadAll(o *ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q servicePlanLabelQuery) ReloadAll(o *ServicePlanLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

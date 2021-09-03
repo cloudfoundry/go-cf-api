@@ -176,7 +176,7 @@ type (
 	// This should almost always be used instead of []Organization.
 	OrganizationSlice []*Organization
 
-	OrganizationQuery struct {
+	organizationQuery struct {
 		*queries.Query
 	}
 )
@@ -210,7 +210,7 @@ type OrganizationFinisher interface {
 }
 
 // One returns a single organization record from the query.
-func (q OrganizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Organization, error) {
+func (q organizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Organization, error) {
 	o := &Organization{}
 
 	queries.SetLimit(q.Query, 1)
@@ -227,7 +227,7 @@ func (q OrganizationQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // All returns all Organization records from the query.
-func (q OrganizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationSlice, error) {
+func (q organizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationSlice, error) {
 	var o []*Organization
 
 	err := q.Bind(ctx, exec, &o)
@@ -239,7 +239,7 @@ func (q OrganizationQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Count returns the count of all Organization records in the query.
-func (q OrganizationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -254,7 +254,7 @@ func (q OrganizationQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q OrganizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q organizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -270,7 +270,7 @@ func (q OrganizationQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // QuotaDefinition pointed to by the foreign key.
-func (q OrganizationQuery) QuotaDefinition(o *Organization, mods ...qm.QueryMod) QuotaDefinitionQuery {
+func (q organizationQuery) QuotaDefinition(o *Organization, mods ...qm.QueryMod) quotaDefinitionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.QuotaDefinitionID),
 	}
@@ -284,7 +284,7 @@ func (q OrganizationQuery) QuotaDefinition(o *Organization, mods ...qm.QueryMod)
 }
 
 // OwningOrganizationDomains retrieves all the domain's Domains with an executor via owning_organization_id column.
-func (q OrganizationQuery) OwningOrganizationDomains(o *Organization, mods ...qm.QueryMod) DomainQuery {
+func (q organizationQuery) OwningOrganizationDomains(o *Organization, mods ...qm.QueryMod) domainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -305,7 +305,7 @@ func (q OrganizationQuery) OwningOrganizationDomains(o *Organization, mods ...qm
 }
 
 // ResourceOrganizationAnnotations retrieves all the organization_annotation's OrganizationAnnotations with an executor via resource_guid column.
-func (q OrganizationQuery) ResourceOrganizationAnnotations(o *Organization, mods ...qm.QueryMod) OrganizationAnnotationQuery {
+func (q organizationQuery) ResourceOrganizationAnnotations(o *Organization, mods ...qm.QueryMod) organizationAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -326,7 +326,7 @@ func (q OrganizationQuery) ResourceOrganizationAnnotations(o *Organization, mods
 }
 
 // ResourceOrganizationLabels retrieves all the organization_label's OrganizationLabels with an executor via resource_guid column.
-func (q OrganizationQuery) ResourceOrganizationLabels(o *Organization, mods ...qm.QueryMod) OrganizationLabelQuery {
+func (q organizationQuery) ResourceOrganizationLabels(o *Organization, mods ...qm.QueryMod) organizationLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -347,7 +347,7 @@ func (q OrganizationQuery) ResourceOrganizationLabels(o *Organization, mods ...q
 }
 
 // OrganizationsAuditors retrieves all the organizations_auditor's OrganizationsAuditors with an executor.
-func (q OrganizationQuery) OrganizationsAuditors(o *Organization, mods ...qm.QueryMod) OrganizationsAuditorQuery {
+func (q organizationQuery) OrganizationsAuditors(o *Organization, mods ...qm.QueryMod) organizationsAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -368,7 +368,7 @@ func (q OrganizationQuery) OrganizationsAuditors(o *Organization, mods ...qm.Que
 }
 
 // OrganizationsBillingManagers retrieves all the organizations_billing_manager's OrganizationsBillingManagers with an executor.
-func (q OrganizationQuery) OrganizationsBillingManagers(o *Organization, mods ...qm.QueryMod) OrganizationsBillingManagerQuery {
+func (q organizationQuery) OrganizationsBillingManagers(o *Organization, mods ...qm.QueryMod) organizationsBillingManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -389,7 +389,7 @@ func (q OrganizationQuery) OrganizationsBillingManagers(o *Organization, mods ..
 }
 
 // IsolationSegments retrieves all the isolation_segment's IsolationSegments with an executor.
-func (q OrganizationQuery) IsolationSegments(o *Organization, mods ...qm.QueryMod) IsolationSegmentQuery {
+func (q organizationQuery) IsolationSegments(o *Organization, mods ...qm.QueryMod) isolationSegmentQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -411,7 +411,7 @@ func (q OrganizationQuery) IsolationSegments(o *Organization, mods ...qm.QueryMo
 }
 
 // OrganizationsManagers retrieves all the organizations_manager's OrganizationsManagers with an executor.
-func (q OrganizationQuery) OrganizationsManagers(o *Organization, mods ...qm.QueryMod) OrganizationsManagerQuery {
+func (q organizationQuery) OrganizationsManagers(o *Organization, mods ...qm.QueryMod) organizationsManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -432,7 +432,7 @@ func (q OrganizationQuery) OrganizationsManagers(o *Organization, mods ...qm.Que
 }
 
 // OrganizationsPrivateDomains retrieves all the organizations_private_domain's OrganizationsPrivateDomains with an executor.
-func (q OrganizationQuery) OrganizationsPrivateDomains(o *Organization, mods ...qm.QueryMod) OrganizationsPrivateDomainQuery {
+func (q organizationQuery) OrganizationsPrivateDomains(o *Organization, mods ...qm.QueryMod) organizationsPrivateDomainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -453,7 +453,7 @@ func (q OrganizationQuery) OrganizationsPrivateDomains(o *Organization, mods ...
 }
 
 // OrganizationsUsers retrieves all the organizations_user's OrganizationsUsers with an executor.
-func (q OrganizationQuery) OrganizationsUsers(o *Organization, mods ...qm.QueryMod) OrganizationsUserQuery {
+func (q organizationQuery) OrganizationsUsers(o *Organization, mods ...qm.QueryMod) organizationsUserQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -474,7 +474,7 @@ func (q OrganizationQuery) OrganizationsUsers(o *Organization, mods ...qm.QueryM
 }
 
 // ServicePlanVisibilities retrieves all the service_plan_visibility's ServicePlanVisibilities with an executor.
-func (q OrganizationQuery) ServicePlanVisibilities(o *Organization, mods ...qm.QueryMod) ServicePlanVisibilityQuery {
+func (q organizationQuery) ServicePlanVisibilities(o *Organization, mods ...qm.QueryMod) servicePlanVisibilityQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -495,7 +495,7 @@ func (q OrganizationQuery) ServicePlanVisibilities(o *Organization, mods ...qm.Q
 }
 
 // SpaceQuotaDefinitions retrieves all the space_quota_definition's SpaceQuotaDefinitions with an executor.
-func (q OrganizationQuery) SpaceQuotaDefinitions(o *Organization, mods ...qm.QueryMod) SpaceQuotaDefinitionQuery {
+func (q organizationQuery) SpaceQuotaDefinitions(o *Organization, mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -516,7 +516,7 @@ func (q OrganizationQuery) SpaceQuotaDefinitions(o *Organization, mods ...qm.Que
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (q OrganizationQuery) Spaces(o *Organization, mods ...qm.QueryMod) SpaceQuery {
+func (q organizationQuery) Spaces(o *Organization, mods ...qm.QueryMod) spaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -1744,7 +1744,7 @@ func (organizationL) LoadSpaces(ctx context.Context, e boil.ContextExecutor, sin
 // SetQuotaDefinition of the organization to the related item.
 // Sets o.R.QuotaDefinition to related.
 // Adds o to related.R.Organizations.
-func (q OrganizationQuery) SetQuotaDefinition(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related *QuotaDefinition) error {
+func (q organizationQuery) SetQuotaDefinition(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related *QuotaDefinition) error {
 	var err error
 	if insert {
 		if err = QuotaDefinitions().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -1792,7 +1792,7 @@ func (q OrganizationQuery) SetQuotaDefinition(o *Organization, ctx context.Conte
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OwningOrganizationDomains.
 // Sets related.R.OwningOrganization appropriately.
-func (q OrganizationQuery) AddOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
+func (q organizationQuery) AddOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1847,7 +1847,7 @@ func (q OrganizationQuery) AddOwningOrganizationDomains(o *Organization, ctx con
 // Sets o.R.OwningOrganization's OwningOrganizationDomains accordingly.
 // Replaces o.R.OwningOrganizationDomains with related.
 // Sets related.R.OwningOrganization's OwningOrganizationDomains accordingly.
-func (q OrganizationQuery) SetOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
+func (q organizationQuery) SetOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Domain) error {
 	query := "update \"domains\" set \"owning_organization_id\" = null where \"owning_organization_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -1878,7 +1878,7 @@ func (q OrganizationQuery) SetOwningOrganizationDomains(o *Organization, ctx con
 // RemoveOwningOrganizationDomains relationships from objects passed in.
 // Removes related items from R.OwningOrganizationDomains (uses pointer comparison, removal does not keep order)
 // Sets related.R.OwningOrganization.
-func (q OrganizationQuery) RemoveOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*Domain) error {
+func (q organizationQuery) RemoveOwningOrganizationDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*Domain) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1919,7 +1919,7 @@ func (q OrganizationQuery) RemoveOwningOrganizationDomains(o *Organization, ctx 
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ResourceOrganizationAnnotations.
 // Sets related.R.Resource appropriately.
-func (q OrganizationQuery) AddResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
+func (q organizationQuery) AddResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1974,7 +1974,7 @@ func (q OrganizationQuery) AddResourceOrganizationAnnotations(o *Organization, c
 // Sets o.R.Resource's ResourceOrganizationAnnotations accordingly.
 // Replaces o.R.ResourceOrganizationAnnotations with related.
 // Sets related.R.Resource's ResourceOrganizationAnnotations accordingly.
-func (q OrganizationQuery) SetResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
+func (q organizationQuery) SetResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationAnnotation) error {
 	query := "update \"organization_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2005,7 +2005,7 @@ func (q OrganizationQuery) SetResourceOrganizationAnnotations(o *Organization, c
 // RemoveResourceOrganizationAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceOrganizationAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q OrganizationQuery) RemoveResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationAnnotation) error {
+func (q organizationQuery) RemoveResourceOrganizationAnnotations(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2046,7 +2046,7 @@ func (q OrganizationQuery) RemoveResourceOrganizationAnnotations(o *Organization
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ResourceOrganizationLabels.
 // Sets related.R.Resource appropriately.
-func (q OrganizationQuery) AddResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
+func (q organizationQuery) AddResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2101,7 +2101,7 @@ func (q OrganizationQuery) AddResourceOrganizationLabels(o *Organization, ctx co
 // Sets o.R.Resource's ResourceOrganizationLabels accordingly.
 // Replaces o.R.ResourceOrganizationLabels with related.
 // Sets related.R.Resource's ResourceOrganizationLabels accordingly.
-func (q OrganizationQuery) SetResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
+func (q organizationQuery) SetResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationLabel) error {
 	query := "update \"organization_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2132,7 +2132,7 @@ func (q OrganizationQuery) SetResourceOrganizationLabels(o *Organization, ctx co
 // RemoveResourceOrganizationLabels relationships from objects passed in.
 // Removes related items from R.ResourceOrganizationLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q OrganizationQuery) RemoveResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationLabel) error {
+func (q organizationQuery) RemoveResourceOrganizationLabels(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*OrganizationLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2173,7 +2173,7 @@ func (q OrganizationQuery) RemoveResourceOrganizationLabels(o *Organization, ctx
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsAuditors.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddOrganizationsAuditors(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
+func (q organizationQuery) AddOrganizationsAuditors(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2226,7 +2226,7 @@ func (q OrganizationQuery) AddOrganizationsAuditors(o *Organization, ctx context
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsBillingManagers.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddOrganizationsBillingManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
+func (q organizationQuery) AddOrganizationsBillingManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2279,7 +2279,7 @@ func (q OrganizationQuery) AddOrganizationsBillingManagers(o *Organization, ctx 
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.IsolationSegments.
 // Sets related.R.Organizations appropriately.
-func (q OrganizationQuery) AddIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
+func (q organizationQuery) AddIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2329,7 +2329,7 @@ func (q OrganizationQuery) AddIsolationSegments(o *Organization, ctx context.Con
 // Sets o.R.Organizations's IsolationSegments accordingly.
 // Replaces o.R.IsolationSegments with related.
 // Sets related.R.Organizations's IsolationSegments accordingly.
-func (q OrganizationQuery) SetIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
+func (q organizationQuery) SetIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*IsolationSegment) error {
 	query := "delete from \"organizations_isolation_segments\" where \"organization_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2352,7 +2352,7 @@ func (q OrganizationQuery) SetIsolationSegments(o *Organization, ctx context.Con
 // RemoveIsolationSegments relationships from objects passed in.
 // Removes related items from R.IsolationSegments (uses pointer comparison, removal does not keep order)
 // Sets related.R.Organizations.
-func (q OrganizationQuery) RemoveIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegment) error {
+func (q organizationQuery) RemoveIsolationSegments(o *Organization, ctx context.Context, exec boil.ContextExecutor, related ...*IsolationSegment) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2423,7 +2423,7 @@ func removeIsolationSegmentsFromOrganizationsSlice(o *Organization, related []*I
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsManagers.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddOrganizationsManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
+func (q organizationQuery) AddOrganizationsManagers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2476,7 +2476,7 @@ func (q OrganizationQuery) AddOrganizationsManagers(o *Organization, ctx context
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsPrivateDomains.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddOrganizationsPrivateDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
+func (q organizationQuery) AddOrganizationsPrivateDomains(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2529,7 +2529,7 @@ func (q OrganizationQuery) AddOrganizationsPrivateDomains(o *Organization, ctx c
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsUsers.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddOrganizationsUsers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
+func (q organizationQuery) AddOrganizationsUsers(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2582,7 +2582,7 @@ func (q OrganizationQuery) AddOrganizationsUsers(o *Organization, ctx context.Co
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.ServicePlanVisibilities.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddServicePlanVisibilities(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
+func (q organizationQuery) AddServicePlanVisibilities(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlanVisibility) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2635,7 +2635,7 @@ func (q OrganizationQuery) AddServicePlanVisibilities(o *Organization, ctx conte
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.SpaceQuotaDefinitions.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddSpaceQuotaDefinitions(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceQuotaDefinition) error {
+func (q organizationQuery) AddSpaceQuotaDefinitions(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpaceQuotaDefinition) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2688,7 +2688,7 @@ func (q OrganizationQuery) AddSpaceQuotaDefinitions(o *Organization, ctx context
 // of the organization, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.Organization appropriately.
-func (q OrganizationQuery) AddSpaces(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q organizationQuery) AddSpaces(o *Organization, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2738,9 +2738,9 @@ func (q OrganizationQuery) AddSpaces(o *Organization, ctx context.Context, exec 
 }
 
 // Organizations retrieves all the records using an executor.
-func Organizations(mods ...qm.QueryMod) OrganizationQuery {
+func Organizations(mods ...qm.QueryMod) organizationQuery {
 	mods = append(mods, qm.From("\"organizations\""))
-	return OrganizationQuery{NewQuery(mods...)}
+	return organizationQuery{NewQuery(mods...)}
 }
 
 type OrganizationFinder interface {
@@ -2779,7 +2779,7 @@ type OrganizationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrganizationQuery) Insert(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q organizationQuery) Insert(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organizations provided for insertion")
 	}
@@ -2871,7 +2871,7 @@ type OrganizationUpdater interface {
 // Update uses an executor to update the Organization.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrganizationQuery) Update(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q organizationQuery) Update(o *Organization, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -2935,7 +2935,7 @@ func (q OrganizationQuery) Update(o *Organization, ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrganizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -2952,7 +2952,7 @@ func (q OrganizationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrganizationQuery) UpdateAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationQuery) UpdateAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -3007,7 +3007,7 @@ type OrganizationDeleter interface {
 
 // Delete deletes a single Organization record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrganizationQuery) Delete(o *Organization, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationQuery) Delete(o *Organization, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Organization provided for delete")
 	}
@@ -3034,7 +3034,7 @@ func (q OrganizationQuery) Delete(o *Organization, ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrganizationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no organizationQuery provided for delete all")
 	}
@@ -3055,7 +3055,7 @@ func (q OrganizationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrganizationQuery) DeleteAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationQuery) DeleteAllSlice(o OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -3094,7 +3094,7 @@ type OrganizationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrganizationQuery) Reload(o *Organization, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationQuery) Reload(o *Organization, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrganization(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -3106,7 +3106,7 @@ func (q OrganizationQuery) Reload(o *Organization, ctx context.Context, exec boi
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrganizationQuery) ReloadAll(o *OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationQuery) ReloadAll(o *OrganizationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

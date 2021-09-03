@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []TaskAnnotation.
 	TaskAnnotationSlice []*TaskAnnotation
 
-	TaskAnnotationQuery struct {
+	taskAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type TaskAnnotationFinisher interface {
 }
 
 // One returns a single taskAnnotation record from the query.
-func (q TaskAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*TaskAnnotation, error) {
+func (q taskAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*TaskAnnotation, error) {
 	o := &TaskAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q TaskAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // All returns all TaskAnnotation records from the query.
-func (q TaskAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskAnnotationSlice, error) {
+func (q taskAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (TaskAnnotationSlice, error) {
 	var o []*TaskAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q TaskAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Count returns the count of all TaskAnnotation records in the query.
-func (q TaskAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q TaskAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecuto
 }
 
 // Exists checks if the row exists in the table.
-func (q TaskAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q taskAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q TaskAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecut
 }
 
 // Resource pointed to by the foreign key.
-func (q TaskAnnotationQuery) Resource(o *TaskAnnotation, mods ...qm.QueryMod) TaskQuery {
+func (q taskAnnotationQuery) Resource(o *TaskAnnotation, mods ...qm.QueryMod) taskQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (taskAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecutor,
 // SetResource of the taskAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceTaskAnnotations.
-func (q TaskAnnotationQuery) SetResource(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Task) error {
+func (q taskAnnotationQuery) SetResource(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Task) error {
 	var err error
 	if insert {
 		if err = Tasks().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q TaskAnnotationQuery) SetResource(o *TaskAnnotation, ctx context.Context,
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q TaskAnnotationQuery) RemoveResource(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Task) error {
+func (q taskAnnotationQuery) RemoveResource(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Task) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q TaskAnnotationQuery) RemoveResource(o *TaskAnnotation, ctx context.Conte
 }
 
 // TaskAnnotations retrieves all the records using an executor.
-func TaskAnnotations(mods ...qm.QueryMod) TaskAnnotationQuery {
+func TaskAnnotations(mods ...qm.QueryMod) taskAnnotationQuery {
 	mods = append(mods, qm.From("`task_annotations`"))
-	return TaskAnnotationQuery{NewQuery(mods...)}
+	return taskAnnotationQuery{NewQuery(mods...)}
 }
 
 type TaskAnnotationFinder interface {
@@ -461,7 +461,7 @@ type TaskAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q TaskAnnotationQuery) Insert(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q taskAnnotationQuery) Insert(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no task_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type TaskAnnotationUpdater interface {
 // Update uses an executor to update the TaskAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q TaskAnnotationQuery) Update(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q taskAnnotationQuery) Update(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q TaskAnnotationQuery) Update(o *TaskAnnotation, ctx context.Context, exec
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q TaskAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q taskAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q TaskAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExe
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q TaskAnnotationQuery) UpdateAllSlice(o TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q taskAnnotationQuery) UpdateAllSlice(o TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type TaskAnnotationDeleter interface {
 
 // Delete deletes a single TaskAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q TaskAnnotationQuery) Delete(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskAnnotationQuery) Delete(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no TaskAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q TaskAnnotationQuery) Delete(o *TaskAnnotation, ctx context.Context, exec
 }
 
 // DeleteAll deletes all matching rows.
-func (q TaskAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no taskAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q TaskAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExe
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q TaskAnnotationQuery) DeleteAllSlice(o TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q taskAnnotationQuery) DeleteAllSlice(o TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type TaskAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q TaskAnnotationQuery) Reload(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q taskAnnotationQuery) Reload(o *TaskAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindTaskAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q TaskAnnotationQuery) Reload(o *TaskAnnotation, ctx context.Context, exec
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q TaskAnnotationQuery) ReloadAll(o *TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q taskAnnotationQuery) ReloadAll(o *TaskAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

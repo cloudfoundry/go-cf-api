@@ -133,7 +133,7 @@ type (
 	// This should almost always be used instead of []ServiceBindingLabel.
 	ServiceBindingLabelSlice []*ServiceBindingLabel
 
-	ServiceBindingLabelQuery struct {
+	serviceBindingLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -167,7 +167,7 @@ type ServiceBindingLabelFinisher interface {
 }
 
 // One returns a single serviceBindingLabel record from the query.
-func (q ServiceBindingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingLabel, error) {
+func (q serviceBindingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBindingLabel, error) {
 	o := &ServiceBindingLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -184,7 +184,7 @@ func (q ServiceBindingLabelQuery) One(ctx context.Context, exec boil.ContextExec
 }
 
 // All returns all ServiceBindingLabel records from the query.
-func (q ServiceBindingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingLabelSlice, error) {
+func (q serviceBindingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBindingLabelSlice, error) {
 	var o []*ServiceBindingLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -196,7 +196,7 @@ func (q ServiceBindingLabelQuery) All(ctx context.Context, exec boil.ContextExec
 }
 
 // Count returns the count of all ServiceBindingLabel records in the query.
-func (q ServiceBindingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -211,7 +211,7 @@ func (q ServiceBindingLabelQuery) Count(ctx context.Context, exec boil.ContextEx
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -227,7 +227,7 @@ func (q ServiceBindingLabelQuery) Exists(ctx context.Context, exec boil.ContextE
 }
 
 // Resource pointed to by the foreign key.
-func (q ServiceBindingLabelQuery) Resource(o *ServiceBindingLabel, mods ...qm.QueryMod) ServiceBindingQuery {
+func (q serviceBindingLabelQuery) Resource(o *ServiceBindingLabel, mods ...qm.QueryMod) serviceBindingQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.ResourceGUID),
 	}
@@ -343,7 +343,7 @@ func (serviceBindingLabelL) LoadResource(ctx context.Context, e boil.ContextExec
 // SetResource of the serviceBindingLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceBindingLabels.
-func (q ServiceBindingLabelQuery) SetResource(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
+func (q serviceBindingLabelQuery) SetResource(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBinding) error {
 	var err error
 	if insert {
 		if err = ServiceBindings().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -390,7 +390,7 @@ func (q ServiceBindingLabelQuery) SetResource(o *ServiceBindingLabel, ctx contex
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceBindingLabelQuery) RemoveResource(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
+func (q serviceBindingLabelQuery) RemoveResource(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, related *ServiceBinding) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -421,9 +421,9 @@ func (q ServiceBindingLabelQuery) RemoveResource(o *ServiceBindingLabel, ctx con
 }
 
 // ServiceBindingLabels retrieves all the records using an executor.
-func ServiceBindingLabels(mods ...qm.QueryMod) ServiceBindingLabelQuery {
+func ServiceBindingLabels(mods ...qm.QueryMod) serviceBindingLabelQuery {
 	mods = append(mods, qm.From("\"service_binding_labels\""))
-	return ServiceBindingLabelQuery{NewQuery(mods...)}
+	return serviceBindingLabelQuery{NewQuery(mods...)}
 }
 
 type ServiceBindingLabelFinder interface {
@@ -462,7 +462,7 @@ type ServiceBindingLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceBindingLabelQuery) Insert(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceBindingLabelQuery) Insert(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_binding_labels provided for insertion")
 	}
@@ -554,7 +554,7 @@ type ServiceBindingLabelUpdater interface {
 // Update uses an executor to update the ServiceBindingLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceBindingLabelQuery) Update(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceBindingLabelQuery) Update(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -618,7 +618,7 @@ func (q ServiceBindingLabelQuery) Update(o *ServiceBindingLabel, ctx context.Con
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -635,7 +635,7 @@ func (q ServiceBindingLabelQuery) UpdateAll(ctx context.Context, exec boil.Conte
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceBindingLabelQuery) UpdateAllSlice(o ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBindingLabelQuery) UpdateAllSlice(o ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -690,7 +690,7 @@ type ServiceBindingLabelDeleter interface {
 
 // Delete deletes a single ServiceBindingLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceBindingLabelQuery) Delete(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingLabelQuery) Delete(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceBindingLabel provided for delete")
 	}
@@ -717,7 +717,7 @@ func (q ServiceBindingLabelQuery) Delete(o *ServiceBindingLabel, ctx context.Con
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceBindingLabelQuery provided for delete all")
 	}
@@ -738,7 +738,7 @@ func (q ServiceBindingLabelQuery) DeleteAll(ctx context.Context, exec boil.Conte
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceBindingLabelQuery) DeleteAllSlice(o ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBindingLabelQuery) DeleteAllSlice(o ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -777,7 +777,7 @@ type ServiceBindingLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceBindingLabelQuery) Reload(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBindingLabelQuery) Reload(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceBindingLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -789,7 +789,7 @@ func (q ServiceBindingLabelQuery) Reload(o *ServiceBindingLabel, ctx context.Con
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceBindingLabelQuery) ReloadAll(o *ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBindingLabelQuery) ReloadAll(o *ServiceBindingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

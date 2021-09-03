@@ -99,7 +99,7 @@ type (
 	// This should almost always be used instead of []StagingSecurityGroupsSpace.
 	StagingSecurityGroupsSpaceSlice []*StagingSecurityGroupsSpace
 
-	StagingSecurityGroupsSpaceQuery struct {
+	stagingSecurityGroupsSpaceQuery struct {
 		*queries.Query
 	}
 )
@@ -133,7 +133,7 @@ type StagingSecurityGroupsSpaceFinisher interface {
 }
 
 // One returns a single stagingSecurityGroupsSpace record from the query.
-func (q StagingSecurityGroupsSpaceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*StagingSecurityGroupsSpace, error) {
+func (q stagingSecurityGroupsSpaceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*StagingSecurityGroupsSpace, error) {
 	o := &StagingSecurityGroupsSpace{}
 
 	queries.SetLimit(q.Query, 1)
@@ -150,7 +150,7 @@ func (q StagingSecurityGroupsSpaceQuery) One(ctx context.Context, exec boil.Cont
 }
 
 // All returns all StagingSecurityGroupsSpace records from the query.
-func (q StagingSecurityGroupsSpaceQuery) All(ctx context.Context, exec boil.ContextExecutor) (StagingSecurityGroupsSpaceSlice, error) {
+func (q stagingSecurityGroupsSpaceQuery) All(ctx context.Context, exec boil.ContextExecutor) (StagingSecurityGroupsSpaceSlice, error) {
 	var o []*StagingSecurityGroupsSpace
 
 	err := q.Bind(ctx, exec, &o)
@@ -162,7 +162,7 @@ func (q StagingSecurityGroupsSpaceQuery) All(ctx context.Context, exec boil.Cont
 }
 
 // Count returns the count of all StagingSecurityGroupsSpace records in the query.
-func (q StagingSecurityGroupsSpaceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -177,7 +177,7 @@ func (q StagingSecurityGroupsSpaceQuery) Count(ctx context.Context, exec boil.Co
 }
 
 // Exists checks if the row exists in the table.
-func (q StagingSecurityGroupsSpaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q stagingSecurityGroupsSpaceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -193,7 +193,7 @@ func (q StagingSecurityGroupsSpaceQuery) Exists(ctx context.Context, exec boil.C
 }
 
 // StagingSecurityGroup pointed to by the foreign key.
-func (q StagingSecurityGroupsSpaceQuery) StagingSecurityGroup(o *StagingSecurityGroupsSpace, mods ...qm.QueryMod) SecurityGroupQuery {
+func (q stagingSecurityGroupsSpaceQuery) StagingSecurityGroup(o *StagingSecurityGroupsSpace, mods ...qm.QueryMod) securityGroupQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.StagingSecurityGroupID),
 	}
@@ -207,7 +207,7 @@ func (q StagingSecurityGroupsSpaceQuery) StagingSecurityGroup(o *StagingSecurity
 }
 
 // StagingSpace pointed to by the foreign key.
-func (q StagingSecurityGroupsSpaceQuery) StagingSpace(o *StagingSecurityGroupsSpace, mods ...qm.QueryMod) SpaceQuery {
+func (q stagingSecurityGroupsSpaceQuery) StagingSpace(o *StagingSecurityGroupsSpace, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.StagingSpaceID),
 	}
@@ -415,7 +415,7 @@ func (stagingSecurityGroupsSpaceL) LoadStagingSpace(ctx context.Context, e boil.
 // SetStagingSecurityGroup of the stagingSecurityGroupsSpace to the related item.
 // Sets o.R.StagingSecurityGroup to related.
 // Adds o to related.R.StagingSecurityGroupStagingSecurityGroupsSpaces.
-func (q StagingSecurityGroupsSpaceQuery) SetStagingSecurityGroup(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, insert bool, related *SecurityGroup) error {
+func (q stagingSecurityGroupsSpaceQuery) SetStagingSecurityGroup(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, insert bool, related *SecurityGroup) error {
 	var err error
 	if insert {
 		if err = SecurityGroups().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -462,7 +462,7 @@ func (q StagingSecurityGroupsSpaceQuery) SetStagingSecurityGroup(o *StagingSecur
 // SetStagingSpace of the stagingSecurityGroupsSpace to the related item.
 // Sets o.R.StagingSpace to related.
 // Adds o to related.R.StagingSpaceStagingSecurityGroupsSpaces.
-func (q StagingSecurityGroupsSpaceQuery) SetStagingSpace(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q stagingSecurityGroupsSpaceQuery) SetStagingSpace(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -507,9 +507,9 @@ func (q StagingSecurityGroupsSpaceQuery) SetStagingSpace(o *StagingSecurityGroup
 }
 
 // StagingSecurityGroupsSpaces retrieves all the records using an executor.
-func StagingSecurityGroupsSpaces(mods ...qm.QueryMod) StagingSecurityGroupsSpaceQuery {
+func StagingSecurityGroupsSpaces(mods ...qm.QueryMod) stagingSecurityGroupsSpaceQuery {
 	mods = append(mods, qm.From("`staging_security_groups_spaces`"))
-	return StagingSecurityGroupsSpaceQuery{NewQuery(mods...)}
+	return stagingSecurityGroupsSpaceQuery{NewQuery(mods...)}
 }
 
 type StagingSecurityGroupsSpaceFinder interface {
@@ -548,7 +548,7 @@ type StagingSecurityGroupsSpaceInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q StagingSecurityGroupsSpaceQuery) Insert(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q stagingSecurityGroupsSpaceQuery) Insert(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no staging_security_groups_spaces provided for insertion")
 	}
@@ -657,7 +657,7 @@ type StagingSecurityGroupsSpaceUpdater interface {
 // Update uses an executor to update the StagingSecurityGroupsSpace.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q StagingSecurityGroupsSpaceQuery) Update(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) Update(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
 	key := makeCacheKey(columns, nil)
 	stagingSecurityGroupsSpaceUpdateCacheMut.RLock()
@@ -715,7 +715,7 @@ func (q StagingSecurityGroupsSpaceQuery) Update(o *StagingSecurityGroupsSpace, c
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q StagingSecurityGroupsSpaceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -732,7 +732,7 @@ func (q StagingSecurityGroupsSpaceQuery) UpdateAll(ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q StagingSecurityGroupsSpaceQuery) UpdateAllSlice(o StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) UpdateAllSlice(o StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -787,7 +787,7 @@ type StagingSecurityGroupsSpaceDeleter interface {
 
 // Delete deletes a single StagingSecurityGroupsSpace record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q StagingSecurityGroupsSpaceQuery) Delete(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) Delete(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no StagingSecurityGroupsSpace provided for delete")
 	}
@@ -814,7 +814,7 @@ func (q StagingSecurityGroupsSpaceQuery) Delete(o *StagingSecurityGroupsSpace, c
 }
 
 // DeleteAll deletes all matching rows.
-func (q StagingSecurityGroupsSpaceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no stagingSecurityGroupsSpaceQuery provided for delete all")
 	}
@@ -835,7 +835,7 @@ func (q StagingSecurityGroupsSpaceQuery) DeleteAll(ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q StagingSecurityGroupsSpaceQuery) DeleteAllSlice(o StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q stagingSecurityGroupsSpaceQuery) DeleteAllSlice(o StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -874,7 +874,7 @@ type StagingSecurityGroupsSpaceReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q StagingSecurityGroupsSpaceQuery) Reload(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor) error {
+func (q stagingSecurityGroupsSpaceQuery) Reload(o *StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindStagingSecurityGroupsSpace(ctx, exec, o.StagingSecurityGroupsSpacesPK)
 	if err != nil {
 		return err
@@ -886,7 +886,7 @@ func (q StagingSecurityGroupsSpaceQuery) Reload(o *StagingSecurityGroupsSpace, c
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q StagingSecurityGroupsSpaceQuery) ReloadAll(o *StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q stagingSecurityGroupsSpaceQuery) ReloadAll(o *StagingSecurityGroupsSpaceSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

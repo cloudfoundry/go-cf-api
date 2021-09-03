@@ -184,7 +184,7 @@ type (
 	// This should almost always be used instead of []SpaceQuotaDefinition.
 	SpaceQuotaDefinitionSlice []*SpaceQuotaDefinition
 
-	SpaceQuotaDefinitionQuery struct {
+	spaceQuotaDefinitionQuery struct {
 		*queries.Query
 	}
 )
@@ -218,7 +218,7 @@ type SpaceQuotaDefinitionFinisher interface {
 }
 
 // One returns a single spaceQuotaDefinition record from the query.
-func (q SpaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceQuotaDefinition, error) {
+func (q spaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExecutor) (*SpaceQuotaDefinition, error) {
 	o := &SpaceQuotaDefinition{}
 
 	queries.SetLimit(q.Query, 1)
@@ -235,7 +235,7 @@ func (q SpaceQuotaDefinitionQuery) One(ctx context.Context, exec boil.ContextExe
 }
 
 // All returns all SpaceQuotaDefinition records from the query.
-func (q SpaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceQuotaDefinitionSlice, error) {
+func (q spaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExecutor) (SpaceQuotaDefinitionSlice, error) {
 	var o []*SpaceQuotaDefinition
 
 	err := q.Bind(ctx, exec, &o)
@@ -247,7 +247,7 @@ func (q SpaceQuotaDefinitionQuery) All(ctx context.Context, exec boil.ContextExe
 }
 
 // Count returns the count of all SpaceQuotaDefinition records in the query.
-func (q SpaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -262,7 +262,7 @@ func (q SpaceQuotaDefinitionQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q SpaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q spaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -278,7 +278,7 @@ func (q SpaceQuotaDefinitionQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Organization pointed to by the foreign key.
-func (q SpaceQuotaDefinitionQuery) Organization(o *SpaceQuotaDefinition, mods ...qm.QueryMod) OrganizationQuery {
+func (q spaceQuotaDefinitionQuery) Organization(o *SpaceQuotaDefinition, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OrganizationID),
 	}
@@ -292,7 +292,7 @@ func (q SpaceQuotaDefinitionQuery) Organization(o *SpaceQuotaDefinition, mods ..
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (q SpaceQuotaDefinitionQuery) Spaces(o *SpaceQuotaDefinition, mods ...qm.QueryMod) SpaceQuery {
+func (q spaceQuotaDefinitionQuery) Spaces(o *SpaceQuotaDefinition, mods ...qm.QueryMod) spaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -502,7 +502,7 @@ func (spaceQuotaDefinitionL) LoadSpaces(ctx context.Context, e boil.ContextExecu
 // SetOrganization of the spaceQuotaDefinition to the related item.
 // Sets o.R.Organization to related.
 // Adds o to related.R.SpaceQuotaDefinitions.
-func (q SpaceQuotaDefinitionQuery) SetOrganization(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q spaceQuotaDefinitionQuery) SetOrganization(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -550,7 +550,7 @@ func (q SpaceQuotaDefinitionQuery) SetOrganization(o *SpaceQuotaDefinition, ctx 
 // of the space_quota_definition, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.SpaceQuotaDefinition appropriately.
-func (q SpaceQuotaDefinitionQuery) AddSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q spaceQuotaDefinitionQuery) AddSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -605,7 +605,7 @@ func (q SpaceQuotaDefinitionQuery) AddSpaces(o *SpaceQuotaDefinition, ctx contex
 // Sets o.R.SpaceQuotaDefinition's Spaces accordingly.
 // Replaces o.R.Spaces with related.
 // Sets related.R.SpaceQuotaDefinition's Spaces accordingly.
-func (q SpaceQuotaDefinitionQuery) SetSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q spaceQuotaDefinitionQuery) SetSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	query := "update `spaces` set `space_quota_definition_id` = null where `space_quota_definition_id` = ?"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -636,7 +636,7 @@ func (q SpaceQuotaDefinitionQuery) SetSpaces(o *SpaceQuotaDefinition, ctx contex
 // RemoveSpaces relationships from objects passed in.
 // Removes related items from R.Spaces (uses pointer comparison, removal does not keep order)
 // Sets related.R.SpaceQuotaDefinition.
-func (q SpaceQuotaDefinitionQuery) RemoveSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
+func (q spaceQuotaDefinitionQuery) RemoveSpaces(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -674,9 +674,9 @@ func (q SpaceQuotaDefinitionQuery) RemoveSpaces(o *SpaceQuotaDefinition, ctx con
 }
 
 // SpaceQuotaDefinitions retrieves all the records using an executor.
-func SpaceQuotaDefinitions(mods ...qm.QueryMod) SpaceQuotaDefinitionQuery {
+func SpaceQuotaDefinitions(mods ...qm.QueryMod) spaceQuotaDefinitionQuery {
 	mods = append(mods, qm.From("`space_quota_definitions`"))
-	return SpaceQuotaDefinitionQuery{NewQuery(mods...)}
+	return spaceQuotaDefinitionQuery{NewQuery(mods...)}
 }
 
 type SpaceQuotaDefinitionFinder interface {
@@ -715,7 +715,7 @@ type SpaceQuotaDefinitionInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q SpaceQuotaDefinitionQuery) Insert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q spaceQuotaDefinitionQuery) Insert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no space_quota_definitions provided for insertion")
 	}
@@ -834,7 +834,7 @@ type SpaceQuotaDefinitionUpdater interface {
 // Update uses an executor to update the SpaceQuotaDefinition.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q SpaceQuotaDefinitionQuery) Update(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q spaceQuotaDefinitionQuery) Update(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -898,7 +898,7 @@ func (q SpaceQuotaDefinitionQuery) Update(o *SpaceQuotaDefinition, ctx context.C
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q SpaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -915,7 +915,7 @@ func (q SpaceQuotaDefinitionQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q SpaceQuotaDefinitionQuery) UpdateAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q spaceQuotaDefinitionQuery) UpdateAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -970,7 +970,7 @@ type SpaceQuotaDefinitionDeleter interface {
 
 // Delete deletes a single SpaceQuotaDefinition record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q SpaceQuotaDefinitionQuery) Delete(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceQuotaDefinitionQuery) Delete(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no SpaceQuotaDefinition provided for delete")
 	}
@@ -997,7 +997,7 @@ func (q SpaceQuotaDefinitionQuery) Delete(o *SpaceQuotaDefinition, ctx context.C
 }
 
 // DeleteAll deletes all matching rows.
-func (q SpaceQuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceQuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no spaceQuotaDefinitionQuery provided for delete all")
 	}
@@ -1018,7 +1018,7 @@ func (q SpaceQuotaDefinitionQuery) DeleteAll(ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q SpaceQuotaDefinitionQuery) DeleteAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q spaceQuotaDefinitionQuery) DeleteAllSlice(o SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1057,7 +1057,7 @@ type SpaceQuotaDefinitionReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q SpaceQuotaDefinitionQuery) Reload(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceQuotaDefinitionQuery) Reload(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindSpaceQuotaDefinition(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1069,7 +1069,7 @@ func (q SpaceQuotaDefinitionQuery) Reload(o *SpaceQuotaDefinition, ctx context.C
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q SpaceQuotaDefinitionQuery) ReloadAll(o *SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q spaceQuotaDefinitionQuery) ReloadAll(o *SpaceQuotaDefinitionSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

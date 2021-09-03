@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []ProcessLabel.
 	ProcessLabelSlice []*ProcessLabel
 
-	ProcessLabelQuery struct {
+	processLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type ProcessLabelFinisher interface {
 }
 
 // One returns a single processLabel record from the query.
-func (q ProcessLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ProcessLabel, error) {
+func (q processLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ProcessLabel, error) {
 	o := &ProcessLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q ProcessLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // All returns all ProcessLabel records from the query.
-func (q ProcessLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessLabelSlice, error) {
+func (q processLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessLabelSlice, error) {
 	var o []*ProcessLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q ProcessLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Count returns the count of all ProcessLabel records in the query.
-func (q ProcessLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q ProcessLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q ProcessLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q processLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q ProcessLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Resource pointed to by the foreign key.
-func (q ProcessLabelQuery) Resource(o *ProcessLabel, mods ...qm.QueryMod) ProcessQuery {
+func (q processLabelQuery) Resource(o *ProcessLabel, mods ...qm.QueryMod) processQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (processLabelL) LoadResource(ctx context.Context, e boil.ContextExecutor, s
 // SetResource of the processLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceProcessLabels.
-func (q ProcessLabelQuery) SetResource(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Process) error {
+func (q processLabelQuery) SetResource(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Process) error {
 	var err error
 	if insert {
 		if err = Processes().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q ProcessLabelQuery) SetResource(o *ProcessLabel, ctx context.Context, exe
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ProcessLabelQuery) RemoveResource(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, related *Process) error {
+func (q processLabelQuery) RemoveResource(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, related *Process) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q ProcessLabelQuery) RemoveResource(o *ProcessLabel, ctx context.Context, 
 }
 
 // ProcessLabels retrieves all the records using an executor.
-func ProcessLabels(mods ...qm.QueryMod) ProcessLabelQuery {
+func ProcessLabels(mods ...qm.QueryMod) processLabelQuery {
 	mods = append(mods, qm.From("`process_labels`"))
-	return ProcessLabelQuery{NewQuery(mods...)}
+	return processLabelQuery{NewQuery(mods...)}
 }
 
 type ProcessLabelFinder interface {
@@ -461,7 +461,7 @@ type ProcessLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ProcessLabelQuery) Insert(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q processLabelQuery) Insert(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no process_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type ProcessLabelUpdater interface {
 // Update uses an executor to update the ProcessLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ProcessLabelQuery) Update(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q processLabelQuery) Update(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q ProcessLabelQuery) Update(o *ProcessLabel, ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ProcessLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q processLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q ProcessLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ProcessLabelQuery) UpdateAllSlice(o ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q processLabelQuery) UpdateAllSlice(o ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type ProcessLabelDeleter interface {
 
 // Delete deletes a single ProcessLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ProcessLabelQuery) Delete(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processLabelQuery) Delete(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ProcessLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q ProcessLabelQuery) Delete(o *ProcessLabel, ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all matching rows.
-func (q ProcessLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no processLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q ProcessLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ProcessLabelQuery) DeleteAllSlice(o ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processLabelQuery) DeleteAllSlice(o ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type ProcessLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ProcessLabelQuery) Reload(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q processLabelQuery) Reload(o *ProcessLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindProcessLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q ProcessLabelQuery) Reload(o *ProcessLabel, ctx context.Context, exec boi
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ProcessLabelQuery) ReloadAll(o *ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q processLabelQuery) ReloadAll(o *ProcessLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

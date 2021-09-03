@@ -234,7 +234,7 @@ type (
 	// This should almost always be used instead of []ServiceInstance.
 	ServiceInstanceSlice []*ServiceInstance
 
-	ServiceInstanceQuery struct {
+	serviceInstanceQuery struct {
 		*queries.Query
 	}
 )
@@ -268,7 +268,7 @@ type ServiceInstanceFinisher interface {
 }
 
 // One returns a single serviceInstance record from the query.
-func (q ServiceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstance, error) {
+func (q serviceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceInstance, error) {
 	o := &ServiceInstance{}
 
 	queries.SetLimit(q.Query, 1)
@@ -285,7 +285,7 @@ func (q ServiceInstanceQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all ServiceInstance records from the query.
-func (q ServiceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceSlice, error) {
+func (q serviceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceInstanceSlice, error) {
 	var o []*ServiceInstance
 
 	err := q.Bind(ctx, exec, &o)
@@ -297,7 +297,7 @@ func (q ServiceInstanceQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all ServiceInstance records in the query.
-func (q ServiceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -312,7 +312,7 @@ func (q ServiceInstanceQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -328,7 +328,7 @@ func (q ServiceInstanceQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Space pointed to by the foreign key.
-func (q ServiceInstanceQuery) Space(o *ServiceInstance, mods ...qm.QueryMod) SpaceQuery {
+func (q serviceInstanceQuery) Space(o *ServiceInstance, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.SpaceID),
 	}
@@ -342,7 +342,7 @@ func (q ServiceInstanceQuery) Space(o *ServiceInstance, mods ...qm.QueryMod) Spa
 }
 
 // ServicePlan pointed to by the foreign key.
-func (q ServiceInstanceQuery) ServicePlan(o *ServiceInstance, mods ...qm.QueryMod) ServicePlanQuery {
+func (q serviceInstanceQuery) ServicePlan(o *ServiceInstance, mods ...qm.QueryMod) servicePlanQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"id\" = ?", o.ServicePlanID),
 	}
@@ -356,7 +356,7 @@ func (q ServiceInstanceQuery) ServicePlan(o *ServiceInstance, mods ...qm.QueryMo
 }
 
 // RouteBindings retrieves all the route_binding's RouteBindings with an executor.
-func (q ServiceInstanceQuery) RouteBindings(o *ServiceInstance, mods ...qm.QueryMod) RouteBindingQuery {
+func (q serviceInstanceQuery) RouteBindings(o *ServiceInstance, mods ...qm.QueryMod) routeBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -377,7 +377,7 @@ func (q ServiceInstanceQuery) RouteBindings(o *ServiceInstance, mods ...qm.Query
 }
 
 // ServiceBindings retrieves all the service_binding's ServiceBindings with an executor.
-func (q ServiceInstanceQuery) ServiceBindings(o *ServiceInstance, mods ...qm.QueryMod) ServiceBindingQuery {
+func (q serviceInstanceQuery) ServiceBindings(o *ServiceInstance, mods ...qm.QueryMod) serviceBindingQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -398,7 +398,7 @@ func (q ServiceInstanceQuery) ServiceBindings(o *ServiceInstance, mods ...qm.Que
 }
 
 // ResourceServiceInstanceAnnotations retrieves all the service_instance_annotation's ServiceInstanceAnnotations with an executor via resource_guid column.
-func (q ServiceInstanceQuery) ResourceServiceInstanceAnnotations(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceAnnotationQuery {
+func (q serviceInstanceQuery) ResourceServiceInstanceAnnotations(o *ServiceInstance, mods ...qm.QueryMod) serviceInstanceAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -419,7 +419,7 @@ func (q ServiceInstanceQuery) ResourceServiceInstanceAnnotations(o *ServiceInsta
 }
 
 // ResourceServiceInstanceLabels retrieves all the service_instance_label's ServiceInstanceLabels with an executor via resource_guid column.
-func (q ServiceInstanceQuery) ResourceServiceInstanceLabels(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceLabelQuery {
+func (q serviceInstanceQuery) ResourceServiceInstanceLabels(o *ServiceInstance, mods ...qm.QueryMod) serviceInstanceLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -440,7 +440,7 @@ func (q ServiceInstanceQuery) ResourceServiceInstanceLabels(o *ServiceInstance, 
 }
 
 // ServiceInstanceOperations retrieves all the service_instance_operation's ServiceInstanceOperations with an executor.
-func (q ServiceInstanceQuery) ServiceInstanceOperations(o *ServiceInstance, mods ...qm.QueryMod) ServiceInstanceOperationQuery {
+func (q serviceInstanceQuery) ServiceInstanceOperations(o *ServiceInstance, mods ...qm.QueryMod) serviceInstanceOperationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -461,7 +461,7 @@ func (q ServiceInstanceQuery) ServiceInstanceOperations(o *ServiceInstance, mods
 }
 
 // Spaces retrieves all the space's Spaces with an executor.
-func (q ServiceInstanceQuery) Spaces(o *ServiceInstance, mods ...qm.QueryMod) SpaceQuery {
+func (q serviceInstanceQuery) Spaces(o *ServiceInstance, mods ...qm.QueryMod) spaceQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -483,7 +483,7 @@ func (q ServiceInstanceQuery) Spaces(o *ServiceInstance, mods ...qm.QueryMod) Sp
 }
 
 // ServiceKeys retrieves all the service_key's ServiceKeys with an executor.
-func (q ServiceInstanceQuery) ServiceKeys(o *ServiceInstance, mods ...qm.QueryMod) ServiceKeyQuery {
+func (q serviceInstanceQuery) ServiceKeys(o *ServiceInstance, mods ...qm.QueryMod) serviceKeyQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -1356,7 +1356,7 @@ func (serviceInstanceL) LoadServiceKeys(ctx context.Context, e boil.ContextExecu
 // SetSpace of the serviceInstance to the related item.
 // Sets o.R.Space to related.
 // Adds o to related.R.ServiceInstances.
-func (q ServiceInstanceQuery) SetSpace(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q serviceInstanceQuery) SetSpace(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -1403,7 +1403,7 @@ func (q ServiceInstanceQuery) SetSpace(o *ServiceInstance, ctx context.Context, 
 // SetServicePlan of the serviceInstance to the related item.
 // Sets o.R.ServicePlan to related.
 // Adds o to related.R.ServiceInstances.
-func (q ServiceInstanceQuery) SetServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
+func (q serviceInstanceQuery) SetServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServicePlan) error {
 	var err error
 	if insert {
 		if err = ServicePlans().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -1450,7 +1450,7 @@ func (q ServiceInstanceQuery) SetServicePlan(o *ServiceInstance, ctx context.Con
 // RemoveServicePlan relationship.
 // Sets o.R.ServicePlan to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceInstanceQuery) RemoveServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
+func (q serviceInstanceQuery) RemoveServicePlan(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related *ServicePlan) error {
 	var err error
 
 	queries.SetScanner(&o.ServicePlanID, nil)
@@ -1484,7 +1484,7 @@ func (q ServiceInstanceQuery) RemoveServicePlan(o *ServiceInstance, ctx context.
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.RouteBindings.
 // Sets related.R.ServiceInstance appropriately.
-func (q ServiceInstanceQuery) AddRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q serviceInstanceQuery) AddRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1539,7 +1539,7 @@ func (q ServiceInstanceQuery) AddRouteBindings(o *ServiceInstance, ctx context.C
 // Sets o.R.ServiceInstance's RouteBindings accordingly.
 // Replaces o.R.RouteBindings with related.
 // Sets related.R.ServiceInstance's RouteBindings accordingly.
-func (q ServiceInstanceQuery) SetRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
+func (q serviceInstanceQuery) SetRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RouteBinding) error {
 	query := "update \"route_bindings\" set \"service_instance_id\" = null where \"service_instance_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -1570,7 +1570,7 @@ func (q ServiceInstanceQuery) SetRouteBindings(o *ServiceInstance, ctx context.C
 // RemoveRouteBindings relationships from objects passed in.
 // Removes related items from R.RouteBindings (uses pointer comparison, removal does not keep order)
 // Sets related.R.ServiceInstance.
-func (q ServiceInstanceQuery) RemoveRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
+func (q serviceInstanceQuery) RemoveRouteBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*RouteBinding) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1611,7 +1611,7 @@ func (q ServiceInstanceQuery) RemoveRouteBindings(o *ServiceInstance, ctx contex
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceBindings.
 // Sets related.R.ServiceInstance appropriately.
-func (q ServiceInstanceQuery) AddServiceBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
+func (q serviceInstanceQuery) AddServiceBindings(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBinding) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1664,7 +1664,7 @@ func (q ServiceInstanceQuery) AddServiceBindings(o *ServiceInstance, ctx context
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceInstanceAnnotations.
 // Sets related.R.Resource appropriately.
-func (q ServiceInstanceQuery) AddResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
+func (q serviceInstanceQuery) AddResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1719,7 +1719,7 @@ func (q ServiceInstanceQuery) AddResourceServiceInstanceAnnotations(o *ServiceIn
 // Sets o.R.Resource's ResourceServiceInstanceAnnotations accordingly.
 // Replaces o.R.ResourceServiceInstanceAnnotations with related.
 // Sets related.R.Resource's ResourceServiceInstanceAnnotations accordingly.
-func (q ServiceInstanceQuery) SetResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
+func (q serviceInstanceQuery) SetResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceAnnotation) error {
 	query := "update \"service_instance_annotations\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1750,7 +1750,7 @@ func (q ServiceInstanceQuery) SetResourceServiceInstanceAnnotations(o *ServiceIn
 // RemoveResourceServiceInstanceAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceServiceInstanceAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceInstanceQuery) RemoveResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceAnnotation) error {
+func (q serviceInstanceQuery) RemoveResourceServiceInstanceAnnotations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1791,7 +1791,7 @@ func (q ServiceInstanceQuery) RemoveResourceServiceInstanceAnnotations(o *Servic
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceInstanceLabels.
 // Sets related.R.Resource appropriately.
-func (q ServiceInstanceQuery) AddResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
+func (q serviceInstanceQuery) AddResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1846,7 +1846,7 @@ func (q ServiceInstanceQuery) AddResourceServiceInstanceLabels(o *ServiceInstanc
 // Sets o.R.Resource's ResourceServiceInstanceLabels accordingly.
 // Replaces o.R.ResourceServiceInstanceLabels with related.
 // Sets related.R.Resource's ResourceServiceInstanceLabels accordingly.
-func (q ServiceInstanceQuery) SetResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
+func (q serviceInstanceQuery) SetResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceLabel) error {
 	query := "update \"service_instance_labels\" set \"resource_guid\" = null where \"resource_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1877,7 +1877,7 @@ func (q ServiceInstanceQuery) SetResourceServiceInstanceLabels(o *ServiceInstanc
 // RemoveResourceServiceInstanceLabels relationships from objects passed in.
 // Removes related items from R.ResourceServiceInstanceLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceInstanceQuery) RemoveResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceLabel) error {
+func (q serviceInstanceQuery) RemoveResourceServiceInstanceLabels(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1918,7 +1918,7 @@ func (q ServiceInstanceQuery) RemoveResourceServiceInstanceLabels(o *ServiceInst
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceInstanceOperations.
 // Sets related.R.ServiceInstance appropriately.
-func (q ServiceInstanceQuery) AddServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
+func (q serviceInstanceQuery) AddServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1973,7 +1973,7 @@ func (q ServiceInstanceQuery) AddServiceInstanceOperations(o *ServiceInstance, c
 // Sets o.R.ServiceInstance's ServiceInstanceOperations accordingly.
 // Replaces o.R.ServiceInstanceOperations with related.
 // Sets related.R.ServiceInstance's ServiceInstanceOperations accordingly.
-func (q ServiceInstanceQuery) SetServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
+func (q serviceInstanceQuery) SetServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceInstanceOperation) error {
 	query := "update \"service_instance_operations\" set \"service_instance_id\" = null where \"service_instance_id\" = $1"
 	values := []interface{}{o.ID}
 	if boil.IsDebug(ctx) {
@@ -2004,7 +2004,7 @@ func (q ServiceInstanceQuery) SetServiceInstanceOperations(o *ServiceInstance, c
 // RemoveServiceInstanceOperations relationships from objects passed in.
 // Removes related items from R.ServiceInstanceOperations (uses pointer comparison, removal does not keep order)
 // Sets related.R.ServiceInstance.
-func (q ServiceInstanceQuery) RemoveServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceOperation) error {
+func (q serviceInstanceQuery) RemoveServiceInstanceOperations(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceInstanceOperation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2045,7 +2045,7 @@ func (q ServiceInstanceQuery) RemoveServiceInstanceOperations(o *ServiceInstance
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.Spaces.
 // Sets related.R.SharedServiceInstances appropriately.
-func (q ServiceInstanceQuery) AddSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q serviceInstanceQuery) AddSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2095,7 +2095,7 @@ func (q ServiceInstanceQuery) AddSpaces(o *ServiceInstance, ctx context.Context,
 // Sets o.R.SharedServiceInstances's Spaces accordingly.
 // Replaces o.R.Spaces with related.
 // Sets related.R.SharedServiceInstances's Spaces accordingly.
-func (q ServiceInstanceQuery) SetSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
+func (q serviceInstanceQuery) SetSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Space) error {
 	query := "delete from \"service_instance_shares\" where \"service_instance_guid\" = $1"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2118,7 +2118,7 @@ func (q ServiceInstanceQuery) SetSpaces(o *ServiceInstance, ctx context.Context,
 // RemoveSpaces relationships from objects passed in.
 // Removes related items from R.Spaces (uses pointer comparison, removal does not keep order)
 // Sets related.R.SharedServiceInstances.
-func (q ServiceInstanceQuery) RemoveSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
+func (q serviceInstanceQuery) RemoveSpaces(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, related ...*Space) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2189,7 +2189,7 @@ func removeSpacesFromSharedServiceInstancesSlice(o *ServiceInstance, related []*
 // of the service_instance, optionally inserting them as new records.
 // Appends related to o.R.ServiceKeys.
 // Sets related.R.ServiceInstance appropriately.
-func (q ServiceInstanceQuery) AddServiceKeys(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceKey) error {
+func (q serviceInstanceQuery) AddServiceKeys(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceKey) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2239,9 +2239,9 @@ func (q ServiceInstanceQuery) AddServiceKeys(o *ServiceInstance, ctx context.Con
 }
 
 // ServiceInstances retrieves all the records using an executor.
-func ServiceInstances(mods ...qm.QueryMod) ServiceInstanceQuery {
+func ServiceInstances(mods ...qm.QueryMod) serviceInstanceQuery {
 	mods = append(mods, qm.From("\"service_instances\""))
-	return ServiceInstanceQuery{NewQuery(mods...)}
+	return serviceInstanceQuery{NewQuery(mods...)}
 }
 
 type ServiceInstanceFinder interface {
@@ -2280,7 +2280,7 @@ type ServiceInstanceInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceInstanceQuery) Insert(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceInstanceQuery) Insert(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_instances provided for insertion")
 	}
@@ -2372,7 +2372,7 @@ type ServiceInstanceUpdater interface {
 // Update uses an executor to update the ServiceInstance.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceInstanceQuery) Update(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceInstanceQuery) Update(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -2436,7 +2436,7 @@ func (q ServiceInstanceQuery) Update(o *ServiceInstance, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -2453,7 +2453,7 @@ func (q ServiceInstanceQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceInstanceQuery) UpdateAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceInstanceQuery) UpdateAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -2508,7 +2508,7 @@ type ServiceInstanceDeleter interface {
 
 // Delete deletes a single ServiceInstance record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceInstanceQuery) Delete(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceQuery) Delete(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceInstance provided for delete")
 	}
@@ -2535,7 +2535,7 @@ func (q ServiceInstanceQuery) Delete(o *ServiceInstance, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceInstanceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceInstanceQuery provided for delete all")
 	}
@@ -2556,7 +2556,7 @@ func (q ServiceInstanceQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceInstanceQuery) DeleteAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceInstanceQuery) DeleteAllSlice(o ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -2595,7 +2595,7 @@ type ServiceInstanceReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceInstanceQuery) Reload(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceQuery) Reload(o *ServiceInstance, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceInstance(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -2607,7 +2607,7 @@ func (q ServiceInstanceQuery) Reload(o *ServiceInstance, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceInstanceQuery) ReloadAll(o *ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceInstanceQuery) ReloadAll(o *ServiceInstanceSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

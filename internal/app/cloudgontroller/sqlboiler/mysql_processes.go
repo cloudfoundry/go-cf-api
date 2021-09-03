@@ -281,7 +281,7 @@ type (
 	// This should almost always be used instead of []Process.
 	ProcessSlice []*Process
 
-	ProcessQuery struct {
+	processQuery struct {
 		*queries.Query
 	}
 )
@@ -315,7 +315,7 @@ type ProcessFinisher interface {
 }
 
 // One returns a single process record from the query.
-func (q ProcessQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Process, error) {
+func (q processQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Process, error) {
 	o := &Process{}
 
 	queries.SetLimit(q.Query, 1)
@@ -332,7 +332,7 @@ func (q ProcessQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Proc
 }
 
 // All returns all Process records from the query.
-func (q ProcessQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessSlice, error) {
+func (q processQuery) All(ctx context.Context, exec boil.ContextExecutor) (ProcessSlice, error) {
 	var o []*Process
 
 	err := q.Bind(ctx, exec, &o)
@@ -344,7 +344,7 @@ func (q ProcessQuery) All(ctx context.Context, exec boil.ContextExecutor) (Proce
 }
 
 // Count returns the count of all Process records in the query.
-func (q ProcessQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -359,7 +359,7 @@ func (q ProcessQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q ProcessQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q processQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -375,7 +375,7 @@ func (q ProcessQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // App pointed to by the foreign key.
-func (q ProcessQuery) App(o *Process, mods ...qm.QueryMod) AppQuery {
+func (q processQuery) App(o *Process, mods ...qm.QueryMod) appQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.AppGUID),
 	}
@@ -389,7 +389,7 @@ func (q ProcessQuery) App(o *Process, mods ...qm.QueryMod) AppQuery {
 }
 
 // AppAppEvents retrieves all the app_event's AppEvents with an executor via app_id column.
-func (q ProcessQuery) AppAppEvents(o *Process, mods ...qm.QueryMod) AppEventQuery {
+func (q processQuery) AppAppEvents(o *Process, mods ...qm.QueryMod) appEventQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -410,7 +410,7 @@ func (q ProcessQuery) AppAppEvents(o *Process, mods ...qm.QueryMod) AppEventQuer
 }
 
 // ResourceProcessAnnotations retrieves all the process_annotation's ProcessAnnotations with an executor via resource_guid column.
-func (q ProcessQuery) ResourceProcessAnnotations(o *Process, mods ...qm.QueryMod) ProcessAnnotationQuery {
+func (q processQuery) ResourceProcessAnnotations(o *Process, mods ...qm.QueryMod) processAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -431,7 +431,7 @@ func (q ProcessQuery) ResourceProcessAnnotations(o *Process, mods ...qm.QueryMod
 }
 
 // ResourceProcessLabels retrieves all the process_label's ProcessLabels with an executor via resource_guid column.
-func (q ProcessQuery) ResourceProcessLabels(o *Process, mods ...qm.QueryMod) ProcessLabelQuery {
+func (q processQuery) ResourceProcessLabels(o *Process, mods ...qm.QueryMod) processLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -827,7 +827,7 @@ func (processL) LoadResourceProcessLabels(ctx context.Context, e boil.ContextExe
 // SetApp of the process to the related item.
 // Sets o.R.App to related.
 // Adds o to related.R.Processes.
-func (q ProcessQuery) SetApp(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
+func (q processQuery) SetApp(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related *App) error {
 	var err error
 	if insert {
 		if err = Apps().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -874,7 +874,7 @@ func (q ProcessQuery) SetApp(o *Process, ctx context.Context, exec boil.ContextE
 // RemoveApp relationship.
 // Sets o.R.App to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ProcessQuery) RemoveApp(o *Process, ctx context.Context, exec boil.ContextExecutor, related *App) error {
+func (q processQuery) RemoveApp(o *Process, ctx context.Context, exec boil.ContextExecutor, related *App) error {
 	var err error
 
 	queries.SetScanner(&o.AppGUID, nil)
@@ -908,7 +908,7 @@ func (q ProcessQuery) RemoveApp(o *Process, ctx context.Context, exec boil.Conte
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.AppAppEvents.
 // Sets related.R.App appropriately.
-func (q ProcessQuery) AddAppAppEvents(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppEvent) error {
+func (q processQuery) AddAppAppEvents(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*AppEvent) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -961,7 +961,7 @@ func (q ProcessQuery) AddAppAppEvents(o *Process, ctx context.Context, exec boil
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.ResourceProcessAnnotations.
 // Sets related.R.Resource appropriately.
-func (q ProcessQuery) AddResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
+func (q processQuery) AddResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1016,7 +1016,7 @@ func (q ProcessQuery) AddResourceProcessAnnotations(o *Process, ctx context.Cont
 // Sets o.R.Resource's ResourceProcessAnnotations accordingly.
 // Replaces o.R.ResourceProcessAnnotations with related.
 // Sets related.R.Resource's ResourceProcessAnnotations accordingly.
-func (q ProcessQuery) SetResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
+func (q processQuery) SetResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessAnnotation) error {
 	query := "update `process_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1047,7 +1047,7 @@ func (q ProcessQuery) SetResourceProcessAnnotations(o *Process, ctx context.Cont
 // RemoveResourceProcessAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceProcessAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ProcessQuery) RemoveResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessAnnotation) error {
+func (q processQuery) RemoveResourceProcessAnnotations(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1088,7 +1088,7 @@ func (q ProcessQuery) RemoveResourceProcessAnnotations(o *Process, ctx context.C
 // of the process, optionally inserting them as new records.
 // Appends related to o.R.ResourceProcessLabels.
 // Sets related.R.Resource appropriately.
-func (q ProcessQuery) AddResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
+func (q processQuery) AddResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1143,7 +1143,7 @@ func (q ProcessQuery) AddResourceProcessLabels(o *Process, ctx context.Context, 
 // Sets o.R.Resource's ResourceProcessLabels accordingly.
 // Replaces o.R.ResourceProcessLabels with related.
 // Sets related.R.Resource's ResourceProcessLabels accordingly.
-func (q ProcessQuery) SetResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
+func (q processQuery) SetResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ProcessLabel) error {
 	query := "update `process_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1174,7 +1174,7 @@ func (q ProcessQuery) SetResourceProcessLabels(o *Process, ctx context.Context, 
 // RemoveResourceProcessLabels relationships from objects passed in.
 // Removes related items from R.ResourceProcessLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ProcessQuery) RemoveResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessLabel) error {
+func (q processQuery) RemoveResourceProcessLabels(o *Process, ctx context.Context, exec boil.ContextExecutor, related ...*ProcessLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1212,9 +1212,9 @@ func (q ProcessQuery) RemoveResourceProcessLabels(o *Process, ctx context.Contex
 }
 
 // Processes retrieves all the records using an executor.
-func Processes(mods ...qm.QueryMod) ProcessQuery {
+func Processes(mods ...qm.QueryMod) processQuery {
 	mods = append(mods, qm.From("`processes`"))
-	return ProcessQuery{NewQuery(mods...)}
+	return processQuery{NewQuery(mods...)}
 }
 
 type ProcessFinder interface {
@@ -1253,7 +1253,7 @@ type ProcessInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ProcessQuery) Insert(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q processQuery) Insert(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no processes provided for insertion")
 	}
@@ -1372,7 +1372,7 @@ type ProcessUpdater interface {
 // Update uses an executor to update the Process.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ProcessQuery) Update(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q processQuery) Update(o *Process, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1436,7 +1436,7 @@ func (q ProcessQuery) Update(o *Process, ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ProcessQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q processQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1453,7 +1453,7 @@ func (q ProcessQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ProcessQuery) UpdateAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q processQuery) UpdateAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1508,7 +1508,7 @@ type ProcessDeleter interface {
 
 // Delete deletes a single Process record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ProcessQuery) Delete(o *Process, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processQuery) Delete(o *Process, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Process provided for delete")
 	}
@@ -1535,7 +1535,7 @@ func (q ProcessQuery) Delete(o *Process, ctx context.Context, exec boil.ContextE
 }
 
 // DeleteAll deletes all matching rows.
-func (q ProcessQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no processQuery provided for delete all")
 	}
@@ -1556,7 +1556,7 @@ func (q ProcessQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ProcessQuery) DeleteAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q processQuery) DeleteAllSlice(o ProcessSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1595,7 +1595,7 @@ type ProcessReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ProcessQuery) Reload(o *Process, ctx context.Context, exec boil.ContextExecutor) error {
+func (q processQuery) Reload(o *Process, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindProcess(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1607,7 +1607,7 @@ func (q ProcessQuery) Reload(o *Process, ctx context.Context, exec boil.ContextE
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ProcessQuery) ReloadAll(o *ProcessSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q processQuery) ReloadAll(o *ProcessSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

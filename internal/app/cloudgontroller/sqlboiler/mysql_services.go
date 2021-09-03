@@ -246,7 +246,7 @@ type (
 	// This should almost always be used instead of []Service.
 	ServiceSlice []*Service
 
-	ServiceQuery struct {
+	serviceQuery struct {
 		*queries.Query
 	}
 )
@@ -280,7 +280,7 @@ type ServiceFinisher interface {
 }
 
 // One returns a single service record from the query.
-func (q ServiceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Service, error) {
+func (q serviceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Service, error) {
 	o := &Service{}
 
 	queries.SetLimit(q.Query, 1)
@@ -297,7 +297,7 @@ func (q ServiceQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Serv
 }
 
 // All returns all Service records from the query.
-func (q ServiceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceSlice, error) {
+func (q serviceQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceSlice, error) {
 	var o []*Service
 
 	err := q.Bind(ctx, exec, &o)
@@ -309,7 +309,7 @@ func (q ServiceQuery) All(ctx context.Context, exec boil.ContextExecutor) (Servi
 }
 
 // Count returns the count of all Service records in the query.
-func (q ServiceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -324,7 +324,7 @@ func (q ServiceQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -340,7 +340,7 @@ func (q ServiceQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // ServiceBroker pointed to by the foreign key.
-func (q ServiceQuery) ServiceBroker(o *Service, mods ...qm.QueryMod) ServiceBrokerQuery {
+func (q serviceQuery) ServiceBroker(o *Service, mods ...qm.QueryMod) serviceBrokerQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.ServiceBrokerID),
 	}
@@ -354,7 +354,7 @@ func (q ServiceQuery) ServiceBroker(o *Service, mods ...qm.QueryMod) ServiceBrok
 }
 
 // ResourceServiceOfferingAnnotations retrieves all the service_offering_annotation's ServiceOfferingAnnotations with an executor via resource_guid column.
-func (q ServiceQuery) ResourceServiceOfferingAnnotations(o *Service, mods ...qm.QueryMod) ServiceOfferingAnnotationQuery {
+func (q serviceQuery) ResourceServiceOfferingAnnotations(o *Service, mods ...qm.QueryMod) serviceOfferingAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -375,7 +375,7 @@ func (q ServiceQuery) ResourceServiceOfferingAnnotations(o *Service, mods ...qm.
 }
 
 // ResourceServiceOfferingLabels retrieves all the service_offering_label's ServiceOfferingLabels with an executor via resource_guid column.
-func (q ServiceQuery) ResourceServiceOfferingLabels(o *Service, mods ...qm.QueryMod) ServiceOfferingLabelQuery {
+func (q serviceQuery) ResourceServiceOfferingLabels(o *Service, mods ...qm.QueryMod) serviceOfferingLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -396,7 +396,7 @@ func (q ServiceQuery) ResourceServiceOfferingLabels(o *Service, mods ...qm.Query
 }
 
 // ServicePlans retrieves all the service_plan's ServicePlans with an executor.
-func (q ServiceQuery) ServicePlans(o *Service, mods ...qm.QueryMod) ServicePlanQuery {
+func (q serviceQuery) ServicePlans(o *Service, mods ...qm.QueryMod) servicePlanQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -792,7 +792,7 @@ func (serviceL) LoadServicePlans(ctx context.Context, e boil.ContextExecutor, si
 // SetServiceBroker of the service to the related item.
 // Sets o.R.ServiceBroker to related.
 // Adds o to related.R.Services.
-func (q ServiceQuery) SetServiceBroker(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBroker) error {
+func (q serviceQuery) SetServiceBroker(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBroker) error {
 	var err error
 	if insert {
 		if err = ServiceBrokers().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -839,7 +839,7 @@ func (q ServiceQuery) SetServiceBroker(o *Service, ctx context.Context, exec boi
 // RemoveServiceBroker relationship.
 // Sets o.R.ServiceBroker to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceQuery) RemoveServiceBroker(o *Service, ctx context.Context, exec boil.ContextExecutor, related *ServiceBroker) error {
+func (q serviceQuery) RemoveServiceBroker(o *Service, ctx context.Context, exec boil.ContextExecutor, related *ServiceBroker) error {
 	var err error
 
 	queries.SetScanner(&o.ServiceBrokerID, nil)
@@ -873,7 +873,7 @@ func (q ServiceQuery) RemoveServiceBroker(o *Service, ctx context.Context, exec 
 // of the service, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceOfferingAnnotations.
 // Sets related.R.Resource appropriately.
-func (q ServiceQuery) AddResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingAnnotation) error {
+func (q serviceQuery) AddResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -928,7 +928,7 @@ func (q ServiceQuery) AddResourceServiceOfferingAnnotations(o *Service, ctx cont
 // Sets o.R.Resource's ResourceServiceOfferingAnnotations accordingly.
 // Replaces o.R.ResourceServiceOfferingAnnotations with related.
 // Sets related.R.Resource's ResourceServiceOfferingAnnotations accordingly.
-func (q ServiceQuery) SetResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingAnnotation) error {
+func (q serviceQuery) SetResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingAnnotation) error {
 	query := "update `service_offering_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -959,7 +959,7 @@ func (q ServiceQuery) SetResourceServiceOfferingAnnotations(o *Service, ctx cont
 // RemoveResourceServiceOfferingAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceServiceOfferingAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceQuery) RemoveResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceOfferingAnnotation) error {
+func (q serviceQuery) RemoveResourceServiceOfferingAnnotations(o *Service, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceOfferingAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1000,7 +1000,7 @@ func (q ServiceQuery) RemoveResourceServiceOfferingAnnotations(o *Service, ctx c
 // of the service, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceOfferingLabels.
 // Sets related.R.Resource appropriately.
-func (q ServiceQuery) AddResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingLabel) error {
+func (q serviceQuery) AddResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1055,7 +1055,7 @@ func (q ServiceQuery) AddResourceServiceOfferingLabels(o *Service, ctx context.C
 // Sets o.R.Resource's ResourceServiceOfferingLabels accordingly.
 // Replaces o.R.ResourceServiceOfferingLabels with related.
 // Sets related.R.Resource's ResourceServiceOfferingLabels accordingly.
-func (q ServiceQuery) SetResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingLabel) error {
+func (q serviceQuery) SetResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceOfferingLabel) error {
 	query := "update `service_offering_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1086,7 +1086,7 @@ func (q ServiceQuery) SetResourceServiceOfferingLabels(o *Service, ctx context.C
 // RemoveResourceServiceOfferingLabels relationships from objects passed in.
 // Removes related items from R.ResourceServiceOfferingLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceQuery) RemoveResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceOfferingLabel) error {
+func (q serviceQuery) RemoveResourceServiceOfferingLabels(o *Service, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceOfferingLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1127,7 +1127,7 @@ func (q ServiceQuery) RemoveResourceServiceOfferingLabels(o *Service, ctx contex
 // of the service, optionally inserting them as new records.
 // Appends related to o.R.ServicePlans.
 // Sets related.R.Service appropriately.
-func (q ServiceQuery) AddServicePlans(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlan) error {
+func (q serviceQuery) AddServicePlans(o *Service, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServicePlan) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1177,9 +1177,9 @@ func (q ServiceQuery) AddServicePlans(o *Service, ctx context.Context, exec boil
 }
 
 // Services retrieves all the records using an executor.
-func Services(mods ...qm.QueryMod) ServiceQuery {
+func Services(mods ...qm.QueryMod) serviceQuery {
 	mods = append(mods, qm.From("`services`"))
-	return ServiceQuery{NewQuery(mods...)}
+	return serviceQuery{NewQuery(mods...)}
 }
 
 type ServiceFinder interface {
@@ -1218,7 +1218,7 @@ type ServiceInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceQuery) Insert(o *Service, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceQuery) Insert(o *Service, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no services provided for insertion")
 	}
@@ -1337,7 +1337,7 @@ type ServiceUpdater interface {
 // Update uses an executor to update the Service.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceQuery) Update(o *Service, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceQuery) Update(o *Service, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1401,7 +1401,7 @@ func (q ServiceQuery) Update(o *Service, ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1418,7 +1418,7 @@ func (q ServiceQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceQuery) UpdateAllSlice(o ServiceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceQuery) UpdateAllSlice(o ServiceSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1473,7 +1473,7 @@ type ServiceDeleter interface {
 
 // Delete deletes a single Service record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceQuery) Delete(o *Service, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceQuery) Delete(o *Service, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Service provided for delete")
 	}
@@ -1500,7 +1500,7 @@ func (q ServiceQuery) Delete(o *Service, ctx context.Context, exec boil.ContextE
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceQuery provided for delete all")
 	}
@@ -1521,7 +1521,7 @@ func (q ServiceQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceQuery) DeleteAllSlice(o ServiceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceQuery) DeleteAllSlice(o ServiceSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1560,7 +1560,7 @@ type ServiceReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceQuery) Reload(o *Service, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceQuery) Reload(o *Service, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindService(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1572,7 +1572,7 @@ func (q ServiceQuery) Reload(o *Service, ctx context.Context, exec boil.ContextE
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceQuery) ReloadAll(o *ServiceSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceQuery) ReloadAll(o *ServiceSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -85,7 +85,7 @@ type (
 	// This should almost always be used instead of []Locking.
 	LockingSlice []*Locking
 
-	LockingQuery struct {
+	lockingQuery struct {
 		*queries.Query
 	}
 )
@@ -119,7 +119,7 @@ type LockingFinisher interface {
 }
 
 // One returns a single locking record from the query.
-func (q LockingQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Locking, error) {
+func (q lockingQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Locking, error) {
 	o := &Locking{}
 
 	queries.SetLimit(q.Query, 1)
@@ -136,7 +136,7 @@ func (q LockingQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Lock
 }
 
 // All returns all Locking records from the query.
-func (q LockingQuery) All(ctx context.Context, exec boil.ContextExecutor) (LockingSlice, error) {
+func (q lockingQuery) All(ctx context.Context, exec boil.ContextExecutor) (LockingSlice, error) {
 	var o []*Locking
 
 	err := q.Bind(ctx, exec, &o)
@@ -148,7 +148,7 @@ func (q LockingQuery) All(ctx context.Context, exec boil.ContextExecutor) (Locki
 }
 
 // Count returns the count of all Locking records in the query.
-func (q LockingQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q lockingQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -163,7 +163,7 @@ func (q LockingQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int
 }
 
 // Exists checks if the row exists in the table.
-func (q LockingQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q lockingQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -179,9 +179,9 @@ func (q LockingQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 }
 
 // Lockings retrieves all the records using an executor.
-func Lockings(mods ...qm.QueryMod) LockingQuery {
+func Lockings(mods ...qm.QueryMod) lockingQuery {
 	mods = append(mods, qm.From("`lockings`"))
-	return LockingQuery{NewQuery(mods...)}
+	return lockingQuery{NewQuery(mods...)}
 }
 
 type LockingFinder interface {
@@ -220,7 +220,7 @@ type LockingInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q LockingQuery) Insert(o *Locking, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q lockingQuery) Insert(o *Locking, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no lockings provided for insertion")
 	}
@@ -329,7 +329,7 @@ type LockingUpdater interface {
 // Update uses an executor to update the Locking.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q LockingQuery) Update(o *Locking, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q lockingQuery) Update(o *Locking, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	var err error
 	key := makeCacheKey(columns, nil)
 	lockingUpdateCacheMut.RLock()
@@ -387,7 +387,7 @@ func (q LockingQuery) Update(o *Locking, ctx context.Context, exec boil.ContextE
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q LockingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q lockingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -404,7 +404,7 @@ func (q LockingQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, 
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q LockingQuery) UpdateAllSlice(o LockingSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q lockingQuery) UpdateAllSlice(o LockingSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -459,7 +459,7 @@ type LockingDeleter interface {
 
 // Delete deletes a single Locking record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q LockingQuery) Delete(o *Locking, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q lockingQuery) Delete(o *Locking, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Locking provided for delete")
 	}
@@ -486,7 +486,7 @@ func (q LockingQuery) Delete(o *Locking, ctx context.Context, exec boil.ContextE
 }
 
 // DeleteAll deletes all matching rows.
-func (q LockingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q lockingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no lockingQuery provided for delete all")
 	}
@@ -507,7 +507,7 @@ func (q LockingQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q LockingQuery) DeleteAllSlice(o LockingSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q lockingQuery) DeleteAllSlice(o LockingSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -546,7 +546,7 @@ type LockingReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q LockingQuery) Reload(o *Locking, ctx context.Context, exec boil.ContextExecutor) error {
+func (q lockingQuery) Reload(o *Locking, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindLocking(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -558,7 +558,7 @@ func (q LockingQuery) Reload(o *Locking, ctx context.Context, exec boil.ContextE
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q LockingQuery) ReloadAll(o *LockingSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q lockingQuery) ReloadAll(o *LockingSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

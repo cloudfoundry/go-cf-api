@@ -160,7 +160,7 @@ type (
 	// This should almost always be used instead of []Domain.
 	DomainSlice []*Domain
 
-	DomainQuery struct {
+	domainQuery struct {
 		*queries.Query
 	}
 )
@@ -194,7 +194,7 @@ type DomainFinisher interface {
 }
 
 // One returns a single domain record from the query.
-func (q DomainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domain, error) {
+func (q domainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domain, error) {
 	o := &Domain{}
 
 	queries.SetLimit(q.Query, 1)
@@ -211,7 +211,7 @@ func (q DomainQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Domai
 }
 
 // All returns all Domain records from the query.
-func (q DomainQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainSlice, error) {
+func (q domainQuery) All(ctx context.Context, exec boil.ContextExecutor) (DomainSlice, error) {
 	var o []*Domain
 
 	err := q.Bind(ctx, exec, &o)
@@ -223,7 +223,7 @@ func (q DomainQuery) All(ctx context.Context, exec boil.ContextExecutor) (Domain
 }
 
 // Count returns the count of all Domain records in the query.
-func (q DomainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q domainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -238,7 +238,7 @@ func (q DomainQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int6
 }
 
 // Exists checks if the row exists in the table.
-func (q DomainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q domainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -254,7 +254,7 @@ func (q DomainQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (boo
 }
 
 // OwningOrganization pointed to by the foreign key.
-func (q DomainQuery) OwningOrganization(o *Domain, mods ...qm.QueryMod) OrganizationQuery {
+func (q domainQuery) OwningOrganization(o *Domain, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.OwningOrganizationID),
 	}
@@ -268,7 +268,7 @@ func (q DomainQuery) OwningOrganization(o *Domain, mods ...qm.QueryMod) Organiza
 }
 
 // ResourceDomainAnnotations retrieves all the domain_annotation's DomainAnnotations with an executor via resource_guid column.
-func (q DomainQuery) ResourceDomainAnnotations(o *Domain, mods ...qm.QueryMod) DomainAnnotationQuery {
+func (q domainQuery) ResourceDomainAnnotations(o *Domain, mods ...qm.QueryMod) domainAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -289,7 +289,7 @@ func (q DomainQuery) ResourceDomainAnnotations(o *Domain, mods ...qm.QueryMod) D
 }
 
 // ResourceDomainLabels retrieves all the domain_label's DomainLabels with an executor via resource_guid column.
-func (q DomainQuery) ResourceDomainLabels(o *Domain, mods ...qm.QueryMod) DomainLabelQuery {
+func (q domainQuery) ResourceDomainLabels(o *Domain, mods ...qm.QueryMod) domainLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -310,7 +310,7 @@ func (q DomainQuery) ResourceDomainLabels(o *Domain, mods ...qm.QueryMod) Domain
 }
 
 // PrivateDomainOrganizationsPrivateDomains retrieves all the organizations_private_domain's OrganizationsPrivateDomains with an executor via private_domain_id column.
-func (q DomainQuery) PrivateDomainOrganizationsPrivateDomains(o *Domain, mods ...qm.QueryMod) OrganizationsPrivateDomainQuery {
+func (q domainQuery) PrivateDomainOrganizationsPrivateDomains(o *Domain, mods ...qm.QueryMod) organizationsPrivateDomainQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -331,7 +331,7 @@ func (q DomainQuery) PrivateDomainOrganizationsPrivateDomains(o *Domain, mods ..
 }
 
 // Routes retrieves all the route's Routes with an executor.
-func (q DomainQuery) Routes(o *Domain, mods ...qm.QueryMod) RouteQuery {
+func (q domainQuery) Routes(o *Domain, mods ...qm.QueryMod) routeQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -818,7 +818,7 @@ func (domainL) LoadRoutes(ctx context.Context, e boil.ContextExecutor, singular 
 // SetOwningOrganization of the domain to the related item.
 // Sets o.R.OwningOrganization to related.
 // Adds o to related.R.OwningOrganizationDomains.
-func (q DomainQuery) SetOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q domainQuery) SetOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -865,7 +865,7 @@ func (q DomainQuery) SetOwningOrganization(o *Domain, ctx context.Context, exec 
 // RemoveOwningOrganization relationship.
 // Sets o.R.OwningOrganization to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q DomainQuery) RemoveOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
+func (q domainQuery) RemoveOwningOrganization(o *Domain, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
 	var err error
 
 	queries.SetScanner(&o.OwningOrganizationID, nil)
@@ -899,7 +899,7 @@ func (q DomainQuery) RemoveOwningOrganization(o *Domain, ctx context.Context, ex
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.ResourceDomainAnnotations.
 // Sets related.R.Resource appropriately.
-func (q DomainQuery) AddResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
+func (q domainQuery) AddResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -954,7 +954,7 @@ func (q DomainQuery) AddResourceDomainAnnotations(o *Domain, ctx context.Context
 // Sets o.R.Resource's ResourceDomainAnnotations accordingly.
 // Replaces o.R.ResourceDomainAnnotations with related.
 // Sets related.R.Resource's ResourceDomainAnnotations accordingly.
-func (q DomainQuery) SetResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
+func (q domainQuery) SetResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainAnnotation) error {
 	query := "update `domain_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -985,7 +985,7 @@ func (q DomainQuery) SetResourceDomainAnnotations(o *Domain, ctx context.Context
 // RemoveResourceDomainAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceDomainAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DomainQuery) RemoveResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainAnnotation) error {
+func (q domainQuery) RemoveResourceDomainAnnotations(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1026,7 +1026,7 @@ func (q DomainQuery) RemoveResourceDomainAnnotations(o *Domain, ctx context.Cont
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.ResourceDomainLabels.
 // Sets related.R.Resource appropriately.
-func (q DomainQuery) AddResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
+func (q domainQuery) AddResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1081,7 +1081,7 @@ func (q DomainQuery) AddResourceDomainLabels(o *Domain, ctx context.Context, exe
 // Sets o.R.Resource's ResourceDomainLabels accordingly.
 // Replaces o.R.ResourceDomainLabels with related.
 // Sets related.R.Resource's ResourceDomainLabels accordingly.
-func (q DomainQuery) SetResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
+func (q domainQuery) SetResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*DomainLabel) error {
 	query := "update `domain_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -1112,7 +1112,7 @@ func (q DomainQuery) SetResourceDomainLabels(o *Domain, ctx context.Context, exe
 // RemoveResourceDomainLabels relationships from objects passed in.
 // Removes related items from R.ResourceDomainLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q DomainQuery) RemoveResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainLabel) error {
+func (q domainQuery) RemoveResourceDomainLabels(o *Domain, ctx context.Context, exec boil.ContextExecutor, related ...*DomainLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -1153,7 +1153,7 @@ func (q DomainQuery) RemoveResourceDomainLabels(o *Domain, ctx context.Context, 
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.PrivateDomainOrganizationsPrivateDomains.
 // Sets related.R.PrivateDomain appropriately.
-func (q DomainQuery) AddPrivateDomainOrganizationsPrivateDomains(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
+func (q domainQuery) AddPrivateDomainOrganizationsPrivateDomains(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsPrivateDomain) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1206,7 +1206,7 @@ func (q DomainQuery) AddPrivateDomainOrganizationsPrivateDomains(o *Domain, ctx 
 // of the domain, optionally inserting them as new records.
 // Appends related to o.R.Routes.
 // Sets related.R.Domain appropriately.
-func (q DomainQuery) AddRoutes(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
+func (q domainQuery) AddRoutes(o *Domain, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Route) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1256,9 +1256,9 @@ func (q DomainQuery) AddRoutes(o *Domain, ctx context.Context, exec boil.Context
 }
 
 // Domains retrieves all the records using an executor.
-func Domains(mods ...qm.QueryMod) DomainQuery {
+func Domains(mods ...qm.QueryMod) domainQuery {
 	mods = append(mods, qm.From("`domains`"))
-	return DomainQuery{NewQuery(mods...)}
+	return domainQuery{NewQuery(mods...)}
 }
 
 type DomainFinder interface {
@@ -1297,7 +1297,7 @@ type DomainInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q DomainQuery) Insert(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q domainQuery) Insert(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no domains provided for insertion")
 	}
@@ -1416,7 +1416,7 @@ type DomainUpdater interface {
 // Update uses an executor to update the Domain.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q DomainQuery) Update(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q domainQuery) Update(o *Domain, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1480,7 +1480,7 @@ func (q DomainQuery) Update(o *Domain, ctx context.Context, exec boil.ContextExe
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q DomainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q domainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1497,7 +1497,7 @@ func (q DomainQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, c
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q DomainQuery) UpdateAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q domainQuery) UpdateAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1552,7 +1552,7 @@ type DomainDeleter interface {
 
 // Delete deletes a single Domain record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q DomainQuery) Delete(o *Domain, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q domainQuery) Delete(o *Domain, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Domain provided for delete")
 	}
@@ -1579,7 +1579,7 @@ func (q DomainQuery) Delete(o *Domain, ctx context.Context, exec boil.ContextExe
 }
 
 // DeleteAll deletes all matching rows.
-func (q DomainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q domainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no domainQuery provided for delete all")
 	}
@@ -1600,7 +1600,7 @@ func (q DomainQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q DomainQuery) DeleteAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q domainQuery) DeleteAllSlice(o DomainSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1639,7 +1639,7 @@ type DomainReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q DomainQuery) Reload(o *Domain, ctx context.Context, exec boil.ContextExecutor) error {
+func (q domainQuery) Reload(o *Domain, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindDomain(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1651,7 +1651,7 @@ func (q DomainQuery) Reload(o *Domain, ctx context.Context, exec boil.ContextExe
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q DomainQuery) ReloadAll(o *DomainSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q domainQuery) ReloadAll(o *DomainSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

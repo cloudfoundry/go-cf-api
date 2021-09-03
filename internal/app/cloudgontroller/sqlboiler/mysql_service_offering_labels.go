@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []ServiceOfferingLabel.
 	ServiceOfferingLabelSlice []*ServiceOfferingLabel
 
-	ServiceOfferingLabelQuery struct {
+	serviceOfferingLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type ServiceOfferingLabelFinisher interface {
 }
 
 // One returns a single serviceOfferingLabel record from the query.
-func (q ServiceOfferingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceOfferingLabel, error) {
+func (q serviceOfferingLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceOfferingLabel, error) {
 	o := &ServiceOfferingLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q ServiceOfferingLabelQuery) One(ctx context.Context, exec boil.ContextExe
 }
 
 // All returns all ServiceOfferingLabel records from the query.
-func (q ServiceOfferingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceOfferingLabelSlice, error) {
+func (q serviceOfferingLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceOfferingLabelSlice, error) {
 	var o []*ServiceOfferingLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q ServiceOfferingLabelQuery) All(ctx context.Context, exec boil.ContextExe
 }
 
 // Count returns the count of all ServiceOfferingLabel records in the query.
-func (q ServiceOfferingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceOfferingLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q ServiceOfferingLabelQuery) Count(ctx context.Context, exec boil.ContextE
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceOfferingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceOfferingLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q ServiceOfferingLabelQuery) Exists(ctx context.Context, exec boil.Context
 }
 
 // Resource pointed to by the foreign key.
-func (q ServiceOfferingLabelQuery) Resource(o *ServiceOfferingLabel, mods ...qm.QueryMod) ServiceQuery {
+func (q serviceOfferingLabelQuery) Resource(o *ServiceOfferingLabel, mods ...qm.QueryMod) serviceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (serviceOfferingLabelL) LoadResource(ctx context.Context, e boil.ContextExe
 // SetResource of the serviceOfferingLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceServiceOfferingLabels.
-func (q ServiceOfferingLabelQuery) SetResource(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
+func (q serviceOfferingLabelQuery) SetResource(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Service) error {
 	var err error
 	if insert {
 		if err = Services().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q ServiceOfferingLabelQuery) SetResource(o *ServiceOfferingLabel, ctx cont
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceOfferingLabelQuery) RemoveResource(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, related *Service) error {
+func (q serviceOfferingLabelQuery) RemoveResource(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, related *Service) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q ServiceOfferingLabelQuery) RemoveResource(o *ServiceOfferingLabel, ctx c
 }
 
 // ServiceOfferingLabels retrieves all the records using an executor.
-func ServiceOfferingLabels(mods ...qm.QueryMod) ServiceOfferingLabelQuery {
+func ServiceOfferingLabels(mods ...qm.QueryMod) serviceOfferingLabelQuery {
 	mods = append(mods, qm.From("`service_offering_labels`"))
-	return ServiceOfferingLabelQuery{NewQuery(mods...)}
+	return serviceOfferingLabelQuery{NewQuery(mods...)}
 }
 
 type ServiceOfferingLabelFinder interface {
@@ -461,7 +461,7 @@ type ServiceOfferingLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceOfferingLabelQuery) Insert(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceOfferingLabelQuery) Insert(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_offering_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type ServiceOfferingLabelUpdater interface {
 // Update uses an executor to update the ServiceOfferingLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceOfferingLabelQuery) Update(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceOfferingLabelQuery) Update(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q ServiceOfferingLabelQuery) Update(o *ServiceOfferingLabel, ctx context.C
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceOfferingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceOfferingLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q ServiceOfferingLabelQuery) UpdateAll(ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceOfferingLabelQuery) UpdateAllSlice(o ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceOfferingLabelQuery) UpdateAllSlice(o ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type ServiceOfferingLabelDeleter interface {
 
 // Delete deletes a single ServiceOfferingLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceOfferingLabelQuery) Delete(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceOfferingLabelQuery) Delete(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceOfferingLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q ServiceOfferingLabelQuery) Delete(o *ServiceOfferingLabel, ctx context.C
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceOfferingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceOfferingLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceOfferingLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q ServiceOfferingLabelQuery) DeleteAll(ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceOfferingLabelQuery) DeleteAllSlice(o ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceOfferingLabelQuery) DeleteAllSlice(o ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type ServiceOfferingLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceOfferingLabelQuery) Reload(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceOfferingLabelQuery) Reload(o *ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceOfferingLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q ServiceOfferingLabelQuery) Reload(o *ServiceOfferingLabel, ctx context.C
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceOfferingLabelQuery) ReloadAll(o *ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceOfferingLabelQuery) ReloadAll(o *ServiceOfferingLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

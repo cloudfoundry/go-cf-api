@@ -135,7 +135,7 @@ type (
 	// This should almost always be used instead of []EncryptionKeySentinel.
 	EncryptionKeySentinelSlice []*EncryptionKeySentinel
 
-	EncryptionKeySentinelQuery struct {
+	encryptionKeySentinelQuery struct {
 		*queries.Query
 	}
 )
@@ -169,7 +169,7 @@ type EncryptionKeySentinelFinisher interface {
 }
 
 // One returns a single encryptionKeySentinel record from the query.
-func (q EncryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EncryptionKeySentinel, error) {
+func (q encryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*EncryptionKeySentinel, error) {
 	o := &EncryptionKeySentinel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -186,7 +186,7 @@ func (q EncryptionKeySentinelQuery) One(ctx context.Context, exec boil.ContextEx
 }
 
 // All returns all EncryptionKeySentinel records from the query.
-func (q EncryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextExecutor) (EncryptionKeySentinelSlice, error) {
+func (q encryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextExecutor) (EncryptionKeySentinelSlice, error) {
 	var o []*EncryptionKeySentinel
 
 	err := q.Bind(ctx, exec, &o)
@@ -198,7 +198,7 @@ func (q EncryptionKeySentinelQuery) All(ctx context.Context, exec boil.ContextEx
 }
 
 // Count returns the count of all EncryptionKeySentinel records in the query.
-func (q EncryptionKeySentinelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q encryptionKeySentinelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -213,7 +213,7 @@ func (q EncryptionKeySentinelQuery) Count(ctx context.Context, exec boil.Context
 }
 
 // Exists checks if the row exists in the table.
-func (q EncryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q encryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -229,9 +229,9 @@ func (q EncryptionKeySentinelQuery) Exists(ctx context.Context, exec boil.Contex
 }
 
 // EncryptionKeySentinels retrieves all the records using an executor.
-func EncryptionKeySentinels(mods ...qm.QueryMod) EncryptionKeySentinelQuery {
+func EncryptionKeySentinels(mods ...qm.QueryMod) encryptionKeySentinelQuery {
 	mods = append(mods, qm.From("`encryption_key_sentinels`"))
-	return EncryptionKeySentinelQuery{NewQuery(mods...)}
+	return encryptionKeySentinelQuery{NewQuery(mods...)}
 }
 
 type EncryptionKeySentinelFinder interface {
@@ -270,7 +270,7 @@ type EncryptionKeySentinelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q EncryptionKeySentinelQuery) Insert(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q encryptionKeySentinelQuery) Insert(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no encryption_key_sentinels provided for insertion")
 	}
@@ -389,7 +389,7 @@ type EncryptionKeySentinelUpdater interface {
 // Update uses an executor to update the EncryptionKeySentinel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q EncryptionKeySentinelQuery) Update(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q encryptionKeySentinelQuery) Update(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -453,7 +453,7 @@ func (q EncryptionKeySentinelQuery) Update(o *EncryptionKeySentinel, ctx context
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q EncryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q encryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -470,7 +470,7 @@ func (q EncryptionKeySentinelQuery) UpdateAll(ctx context.Context, exec boil.Con
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q EncryptionKeySentinelQuery) UpdateAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q encryptionKeySentinelQuery) UpdateAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -525,7 +525,7 @@ type EncryptionKeySentinelDeleter interface {
 
 // Delete deletes a single EncryptionKeySentinel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q EncryptionKeySentinelQuery) Delete(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q encryptionKeySentinelQuery) Delete(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no EncryptionKeySentinel provided for delete")
 	}
@@ -552,7 +552,7 @@ func (q EncryptionKeySentinelQuery) Delete(o *EncryptionKeySentinel, ctx context
 }
 
 // DeleteAll deletes all matching rows.
-func (q EncryptionKeySentinelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q encryptionKeySentinelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no encryptionKeySentinelQuery provided for delete all")
 	}
@@ -573,7 +573,7 @@ func (q EncryptionKeySentinelQuery) DeleteAll(ctx context.Context, exec boil.Con
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q EncryptionKeySentinelQuery) DeleteAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q encryptionKeySentinelQuery) DeleteAllSlice(o EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -612,7 +612,7 @@ type EncryptionKeySentinelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q EncryptionKeySentinelQuery) Reload(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q encryptionKeySentinelQuery) Reload(o *EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindEncryptionKeySentinel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -624,7 +624,7 @@ func (q EncryptionKeySentinelQuery) Reload(o *EncryptionKeySentinel, ctx context
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q EncryptionKeySentinelQuery) ReloadAll(o *EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q encryptionKeySentinelQuery) ReloadAll(o *EncryptionKeySentinelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

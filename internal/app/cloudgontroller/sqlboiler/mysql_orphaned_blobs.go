@@ -121,7 +121,7 @@ type (
 	// This should almost always be used instead of []OrphanedBlob.
 	OrphanedBlobSlice []*OrphanedBlob
 
-	OrphanedBlobQuery struct {
+	orphanedBlobQuery struct {
 		*queries.Query
 	}
 )
@@ -155,7 +155,7 @@ type OrphanedBlobFinisher interface {
 }
 
 // One returns a single orphanedBlob record from the query.
-func (q OrphanedBlobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrphanedBlob, error) {
+func (q orphanedBlobQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrphanedBlob, error) {
 	o := &OrphanedBlob{}
 
 	queries.SetLimit(q.Query, 1)
@@ -172,7 +172,7 @@ func (q OrphanedBlobQuery) One(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // All returns all OrphanedBlob records from the query.
-func (q OrphanedBlobQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrphanedBlobSlice, error) {
+func (q orphanedBlobQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrphanedBlobSlice, error) {
 	var o []*OrphanedBlob
 
 	err := q.Bind(ctx, exec, &o)
@@ -184,7 +184,7 @@ func (q OrphanedBlobQuery) All(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // Count returns the count of all OrphanedBlob records in the query.
-func (q OrphanedBlobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q orphanedBlobQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -199,7 +199,7 @@ func (q OrphanedBlobQuery) Count(ctx context.Context, exec boil.ContextExecutor)
 }
 
 // Exists checks if the row exists in the table.
-func (q OrphanedBlobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q orphanedBlobQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -215,9 +215,9 @@ func (q OrphanedBlobQuery) Exists(ctx context.Context, exec boil.ContextExecutor
 }
 
 // OrphanedBlobs retrieves all the records using an executor.
-func OrphanedBlobs(mods ...qm.QueryMod) OrphanedBlobQuery {
+func OrphanedBlobs(mods ...qm.QueryMod) orphanedBlobQuery {
 	mods = append(mods, qm.From("`orphaned_blobs`"))
-	return OrphanedBlobQuery{NewQuery(mods...)}
+	return orphanedBlobQuery{NewQuery(mods...)}
 }
 
 type OrphanedBlobFinder interface {
@@ -256,7 +256,7 @@ type OrphanedBlobInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrphanedBlobQuery) Insert(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q orphanedBlobQuery) Insert(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no orphaned_blobs provided for insertion")
 	}
@@ -375,7 +375,7 @@ type OrphanedBlobUpdater interface {
 // Update uses an executor to update the OrphanedBlob.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrphanedBlobQuery) Update(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q orphanedBlobQuery) Update(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -439,7 +439,7 @@ func (q OrphanedBlobQuery) Update(o *OrphanedBlob, ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrphanedBlobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q orphanedBlobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -456,7 +456,7 @@ func (q OrphanedBlobQuery) UpdateAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrphanedBlobQuery) UpdateAllSlice(o OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q orphanedBlobQuery) UpdateAllSlice(o OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -511,7 +511,7 @@ type OrphanedBlobDeleter interface {
 
 // Delete deletes a single OrphanedBlob record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrphanedBlobQuery) Delete(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q orphanedBlobQuery) Delete(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no OrphanedBlob provided for delete")
 	}
@@ -538,7 +538,7 @@ func (q OrphanedBlobQuery) Delete(o *OrphanedBlob, ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrphanedBlobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q orphanedBlobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no orphanedBlobQuery provided for delete all")
 	}
@@ -559,7 +559,7 @@ func (q OrphanedBlobQuery) DeleteAll(ctx context.Context, exec boil.ContextExecu
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrphanedBlobQuery) DeleteAllSlice(o OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q orphanedBlobQuery) DeleteAllSlice(o OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -598,7 +598,7 @@ type OrphanedBlobReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrphanedBlobQuery) Reload(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor) error {
+func (q orphanedBlobQuery) Reload(o *OrphanedBlob, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrphanedBlob(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -610,7 +610,7 @@ func (q OrphanedBlobQuery) Reload(o *OrphanedBlob, ctx context.Context, exec boi
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrphanedBlobQuery) ReloadAll(o *OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q orphanedBlobQuery) ReloadAll(o *OrphanedBlobSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

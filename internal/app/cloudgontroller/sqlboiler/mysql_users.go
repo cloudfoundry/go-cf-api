@@ -162,7 +162,7 @@ type (
 	// This should almost always be used instead of []User.
 	UserSlice []*User
 
-	UserQuery struct {
+	userQuery struct {
 		*queries.Query
 	}
 )
@@ -196,7 +196,7 @@ type UserFinisher interface {
 }
 
 // One returns a single user record from the query.
-func (q UserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, error) {
+func (q userQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, error) {
 	o := &User{}
 
 	queries.SetLimit(q.Query, 1)
@@ -213,7 +213,7 @@ func (q UserQuery) One(ctx context.Context, exec boil.ContextExecutor) (*User, e
 }
 
 // All returns all User records from the query.
-func (q UserQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error) {
+func (q userQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlice, error) {
 	var o []*User
 
 	err := q.Bind(ctx, exec, &o)
@@ -225,7 +225,7 @@ func (q UserQuery) All(ctx context.Context, exec boil.ContextExecutor) (UserSlic
 }
 
 // Count returns the count of all User records in the query.
-func (q UserQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -240,7 +240,7 @@ func (q UserQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64,
 }
 
 // Exists checks if the row exists in the table.
-func (q UserQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q userQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -256,7 +256,7 @@ func (q UserQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool,
 }
 
 // DefaultSpace pointed to by the foreign key.
-func (q UserQuery) DefaultSpace(o *User, mods ...qm.QueryMod) SpaceQuery {
+func (q userQuery) DefaultSpace(o *User, mods ...qm.QueryMod) spaceQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.DefaultSpaceID),
 	}
@@ -270,7 +270,7 @@ func (q UserQuery) DefaultSpace(o *User, mods ...qm.QueryMod) SpaceQuery {
 }
 
 // OrganizationsAuditors retrieves all the organizations_auditor's OrganizationsAuditors with an executor.
-func (q UserQuery) OrganizationsAuditors(o *User, mods ...qm.QueryMod) OrganizationsAuditorQuery {
+func (q userQuery) OrganizationsAuditors(o *User, mods ...qm.QueryMod) organizationsAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -291,7 +291,7 @@ func (q UserQuery) OrganizationsAuditors(o *User, mods ...qm.QueryMod) Organizat
 }
 
 // OrganizationsBillingManagers retrieves all the organizations_billing_manager's OrganizationsBillingManagers with an executor.
-func (q UserQuery) OrganizationsBillingManagers(o *User, mods ...qm.QueryMod) OrganizationsBillingManagerQuery {
+func (q userQuery) OrganizationsBillingManagers(o *User, mods ...qm.QueryMod) organizationsBillingManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -312,7 +312,7 @@ func (q UserQuery) OrganizationsBillingManagers(o *User, mods ...qm.QueryMod) Or
 }
 
 // OrganizationsManagers retrieves all the organizations_manager's OrganizationsManagers with an executor.
-func (q UserQuery) OrganizationsManagers(o *User, mods ...qm.QueryMod) OrganizationsManagerQuery {
+func (q userQuery) OrganizationsManagers(o *User, mods ...qm.QueryMod) organizationsManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -333,7 +333,7 @@ func (q UserQuery) OrganizationsManagers(o *User, mods ...qm.QueryMod) Organizat
 }
 
 // OrganizationsUsers retrieves all the organizations_user's OrganizationsUsers with an executor.
-func (q UserQuery) OrganizationsUsers(o *User, mods ...qm.QueryMod) OrganizationsUserQuery {
+func (q userQuery) OrganizationsUsers(o *User, mods ...qm.QueryMod) organizationsUserQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -354,7 +354,7 @@ func (q UserQuery) OrganizationsUsers(o *User, mods ...qm.QueryMod) Organization
 }
 
 // SpacesApplicationSupporters retrieves all the spaces_application_supporter's SpacesApplicationSupporters with an executor.
-func (q UserQuery) SpacesApplicationSupporters(o *User, mods ...qm.QueryMod) SpacesApplicationSupporterQuery {
+func (q userQuery) SpacesApplicationSupporters(o *User, mods ...qm.QueryMod) spacesApplicationSupporterQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -375,7 +375,7 @@ func (q UserQuery) SpacesApplicationSupporters(o *User, mods ...qm.QueryMod) Spa
 }
 
 // SpacesAuditors retrieves all the spaces_auditor's SpacesAuditors with an executor.
-func (q UserQuery) SpacesAuditors(o *User, mods ...qm.QueryMod) SpacesAuditorQuery {
+func (q userQuery) SpacesAuditors(o *User, mods ...qm.QueryMod) spacesAuditorQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -396,7 +396,7 @@ func (q UserQuery) SpacesAuditors(o *User, mods ...qm.QueryMod) SpacesAuditorQue
 }
 
 // SpacesDevelopers retrieves all the spaces_developer's SpacesDevelopers with an executor.
-func (q UserQuery) SpacesDevelopers(o *User, mods ...qm.QueryMod) SpacesDeveloperQuery {
+func (q userQuery) SpacesDevelopers(o *User, mods ...qm.QueryMod) spacesDeveloperQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -417,7 +417,7 @@ func (q UserQuery) SpacesDevelopers(o *User, mods ...qm.QueryMod) SpacesDevelope
 }
 
 // SpacesManagers retrieves all the spaces_manager's SpacesManagers with an executor.
-func (q UserQuery) SpacesManagers(o *User, mods ...qm.QueryMod) SpacesManagerQuery {
+func (q userQuery) SpacesManagers(o *User, mods ...qm.QueryMod) spacesManagerQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -438,7 +438,7 @@ func (q UserQuery) SpacesManagers(o *User, mods ...qm.QueryMod) SpacesManagerQue
 }
 
 // ResourceUserAnnotations retrieves all the user_annotation's UserAnnotations with an executor via resource_guid column.
-func (q UserQuery) ResourceUserAnnotations(o *User, mods ...qm.QueryMod) UserAnnotationQuery {
+func (q userQuery) ResourceUserAnnotations(o *User, mods ...qm.QueryMod) userAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -459,7 +459,7 @@ func (q UserQuery) ResourceUserAnnotations(o *User, mods ...qm.QueryMod) UserAnn
 }
 
 // ResourceUserLabels retrieves all the user_label's UserLabels with an executor via resource_guid column.
-func (q UserQuery) ResourceUserLabels(o *User, mods ...qm.QueryMod) UserLabelQuery {
+func (q userQuery) ResourceUserLabels(o *User, mods ...qm.QueryMod) userLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -1492,7 +1492,7 @@ func (userL) LoadResourceUserLabels(ctx context.Context, e boil.ContextExecutor,
 // SetDefaultSpace of the user to the related item.
 // Sets o.R.DefaultSpace to related.
 // Adds o to related.R.DefaultSpaceUsers.
-func (q UserQuery) SetDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
+func (q userQuery) SetDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Space) error {
 	var err error
 	if insert {
 		if err = Spaces().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -1539,7 +1539,7 @@ func (q UserQuery) SetDefaultSpace(o *User, ctx context.Context, exec boil.Conte
 // RemoveDefaultSpace relationship.
 // Sets o.R.DefaultSpace to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q UserQuery) RemoveDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
+func (q userQuery) RemoveDefaultSpace(o *User, ctx context.Context, exec boil.ContextExecutor, related *Space) error {
 	var err error
 
 	queries.SetScanner(&o.DefaultSpaceID, nil)
@@ -1573,7 +1573,7 @@ func (q UserQuery) RemoveDefaultSpace(o *User, ctx context.Context, exec boil.Co
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsAuditors.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddOrganizationsAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
+func (q userQuery) AddOrganizationsAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1626,7 +1626,7 @@ func (q UserQuery) AddOrganizationsAuditors(o *User, ctx context.Context, exec b
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsBillingManagers.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddOrganizationsBillingManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
+func (q userQuery) AddOrganizationsBillingManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsBillingManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1679,7 +1679,7 @@ func (q UserQuery) AddOrganizationsBillingManagers(o *User, ctx context.Context,
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsManagers.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddOrganizationsManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
+func (q userQuery) AddOrganizationsManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1732,7 +1732,7 @@ func (q UserQuery) AddOrganizationsManagers(o *User, ctx context.Context, exec b
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.OrganizationsUsers.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddOrganizationsUsers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
+func (q userQuery) AddOrganizationsUsers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*OrganizationsUser) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1785,7 +1785,7 @@ func (q UserQuery) AddOrganizationsUsers(o *User, ctx context.Context, exec boil
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesApplicationSupporters.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddSpacesApplicationSupporters(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
+func (q userQuery) AddSpacesApplicationSupporters(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesApplicationSupporter) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1838,7 +1838,7 @@ func (q UserQuery) AddSpacesApplicationSupporters(o *User, ctx context.Context, 
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesAuditors.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddSpacesAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
+func (q userQuery) AddSpacesAuditors(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesAuditor) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1891,7 +1891,7 @@ func (q UserQuery) AddSpacesAuditors(o *User, ctx context.Context, exec boil.Con
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesDevelopers.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddSpacesDevelopers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
+func (q userQuery) AddSpacesDevelopers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesDeveloper) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1944,7 +1944,7 @@ func (q UserQuery) AddSpacesDevelopers(o *User, ctx context.Context, exec boil.C
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.SpacesManagers.
 // Sets related.R.User appropriately.
-func (q UserQuery) AddSpacesManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
+func (q userQuery) AddSpacesManagers(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*SpacesManager) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -1997,7 +1997,7 @@ func (q UserQuery) AddSpacesManagers(o *User, ctx context.Context, exec boil.Con
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.ResourceUserAnnotations.
 // Sets related.R.Resource appropriately.
-func (q UserQuery) AddResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
+func (q userQuery) AddResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2052,7 +2052,7 @@ func (q UserQuery) AddResourceUserAnnotations(o *User, ctx context.Context, exec
 // Sets o.R.Resource's ResourceUserAnnotations accordingly.
 // Replaces o.R.ResourceUserAnnotations with related.
 // Sets related.R.Resource's ResourceUserAnnotations accordingly.
-func (q UserQuery) SetResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
+func (q userQuery) SetResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserAnnotation) error {
 	query := "update `user_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2083,7 +2083,7 @@ func (q UserQuery) SetResourceUserAnnotations(o *User, ctx context.Context, exec
 // RemoveResourceUserAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceUserAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q UserQuery) RemoveResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserAnnotation) error {
+func (q userQuery) RemoveResourceUserAnnotations(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2124,7 +2124,7 @@ func (q UserQuery) RemoveResourceUserAnnotations(o *User, ctx context.Context, e
 // of the user, optionally inserting them as new records.
 // Appends related to o.R.ResourceUserLabels.
 // Sets related.R.Resource appropriately.
-func (q UserQuery) AddResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
+func (q userQuery) AddResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -2179,7 +2179,7 @@ func (q UserQuery) AddResourceUserLabels(o *User, ctx context.Context, exec boil
 // Sets o.R.Resource's ResourceUserLabels accordingly.
 // Replaces o.R.ResourceUserLabels with related.
 // Sets related.R.Resource's ResourceUserLabels accordingly.
-func (q UserQuery) SetResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
+func (q userQuery) SetResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*UserLabel) error {
 	query := "update `user_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -2210,7 +2210,7 @@ func (q UserQuery) SetResourceUserLabels(o *User, ctx context.Context, exec boil
 // RemoveResourceUserLabels relationships from objects passed in.
 // Removes related items from R.ResourceUserLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q UserQuery) RemoveResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserLabel) error {
+func (q userQuery) RemoveResourceUserLabels(o *User, ctx context.Context, exec boil.ContextExecutor, related ...*UserLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -2248,9 +2248,9 @@ func (q UserQuery) RemoveResourceUserLabels(o *User, ctx context.Context, exec b
 }
 
 // Users retrieves all the records using an executor.
-func Users(mods ...qm.QueryMod) UserQuery {
+func Users(mods ...qm.QueryMod) userQuery {
 	mods = append(mods, qm.From("`users`"))
-	return UserQuery{NewQuery(mods...)}
+	return userQuery{NewQuery(mods...)}
 }
 
 type UserFinder interface {
@@ -2289,7 +2289,7 @@ type UserInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q UserQuery) Insert(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q userQuery) Insert(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no users provided for insertion")
 	}
@@ -2408,7 +2408,7 @@ type UserUpdater interface {
 // Update uses an executor to update the User.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q UserQuery) Update(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q userQuery) Update(o *User, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -2472,7 +2472,7 @@ func (q UserQuery) Update(o *User, ctx context.Context, exec boil.ContextExecuto
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q UserQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -2489,7 +2489,7 @@ func (q UserQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, col
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q UserQuery) UpdateAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q userQuery) UpdateAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -2544,7 +2544,7 @@ type UserDeleter interface {
 
 // Delete deletes a single User record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q UserQuery) Delete(o *User, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userQuery) Delete(o *User, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no User provided for delete")
 	}
@@ -2571,7 +2571,7 @@ func (q UserQuery) Delete(o *User, ctx context.Context, exec boil.ContextExecuto
 }
 
 // DeleteAll deletes all matching rows.
-func (q UserQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no userQuery provided for delete all")
 	}
@@ -2592,7 +2592,7 @@ func (q UserQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (in
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q UserQuery) DeleteAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q userQuery) DeleteAllSlice(o UserSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -2631,7 +2631,7 @@ type UserReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q UserQuery) Reload(o *User, ctx context.Context, exec boil.ContextExecutor) error {
+func (q userQuery) Reload(o *User, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindUser(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -2643,7 +2643,7 @@ func (q UserQuery) Reload(o *User, ctx context.Context, exec boil.ContextExecuto
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q UserQuery) ReloadAll(o *UserSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q userQuery) ReloadAll(o *UserSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

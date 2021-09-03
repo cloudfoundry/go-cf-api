@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []BuildAnnotation.
 	BuildAnnotationSlice []*BuildAnnotation
 
-	BuildAnnotationQuery struct {
+	buildAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type BuildAnnotationFinisher interface {
 }
 
 // One returns a single buildAnnotation record from the query.
-func (q BuildAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildAnnotation, error) {
+func (q buildAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*BuildAnnotation, error) {
 	o := &BuildAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q BuildAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all BuildAnnotation records from the query.
-func (q BuildAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildAnnotationSlice, error) {
+func (q buildAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildAnnotationSlice, error) {
 	var o []*BuildAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q BuildAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all BuildAnnotation records in the query.
-func (q BuildAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q BuildAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q BuildAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q buildAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q BuildAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Resource pointed to by the foreign key.
-func (q BuildAnnotationQuery) Resource(o *BuildAnnotation, mods ...qm.QueryMod) BuildQuery {
+func (q buildAnnotationQuery) Resource(o *BuildAnnotation, mods ...qm.QueryMod) buildQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (buildAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecutor
 // SetResource of the buildAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceBuildAnnotations.
-func (q BuildAnnotationQuery) SetResource(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
+func (q buildAnnotationQuery) SetResource(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Build) error {
 	var err error
 	if insert {
 		if err = Builds().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q BuildAnnotationQuery) SetResource(o *BuildAnnotation, ctx context.Contex
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q BuildAnnotationQuery) RemoveResource(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Build) error {
+func (q buildAnnotationQuery) RemoveResource(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Build) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q BuildAnnotationQuery) RemoveResource(o *BuildAnnotation, ctx context.Con
 }
 
 // BuildAnnotations retrieves all the records using an executor.
-func BuildAnnotations(mods ...qm.QueryMod) BuildAnnotationQuery {
+func BuildAnnotations(mods ...qm.QueryMod) buildAnnotationQuery {
 	mods = append(mods, qm.From("`build_annotations`"))
-	return BuildAnnotationQuery{NewQuery(mods...)}
+	return buildAnnotationQuery{NewQuery(mods...)}
 }
 
 type BuildAnnotationFinder interface {
@@ -461,7 +461,7 @@ type BuildAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q BuildAnnotationQuery) Insert(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q buildAnnotationQuery) Insert(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no build_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type BuildAnnotationUpdater interface {
 // Update uses an executor to update the BuildAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q BuildAnnotationQuery) Update(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q buildAnnotationQuery) Update(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q BuildAnnotationQuery) Update(o *BuildAnnotation, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q BuildAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q BuildAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q BuildAnnotationQuery) UpdateAllSlice(o BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildAnnotationQuery) UpdateAllSlice(o BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type BuildAnnotationDeleter interface {
 
 // Delete deletes a single BuildAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q BuildAnnotationQuery) Delete(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildAnnotationQuery) Delete(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no BuildAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q BuildAnnotationQuery) Delete(o *BuildAnnotation, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q BuildAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no buildAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q BuildAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q BuildAnnotationQuery) DeleteAllSlice(o BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildAnnotationQuery) DeleteAllSlice(o BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type BuildAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q BuildAnnotationQuery) Reload(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildAnnotationQuery) Reload(o *BuildAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindBuildAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q BuildAnnotationQuery) Reload(o *BuildAnnotation, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q BuildAnnotationQuery) ReloadAll(o *BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildAnnotationQuery) ReloadAll(o *BuildAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

@@ -163,7 +163,7 @@ type (
 	// This should almost always be used instead of []Buildpack.
 	BuildpackSlice []*Buildpack
 
-	BuildpackQuery struct {
+	buildpackQuery struct {
 		*queries.Query
 	}
 )
@@ -197,7 +197,7 @@ type BuildpackFinisher interface {
 }
 
 // One returns a single buildpack record from the query.
-func (q BuildpackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Buildpack, error) {
+func (q buildpackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Buildpack, error) {
 	o := &Buildpack{}
 
 	queries.SetLimit(q.Query, 1)
@@ -214,7 +214,7 @@ func (q BuildpackQuery) One(ctx context.Context, exec boil.ContextExecutor) (*Bu
 }
 
 // All returns all Buildpack records from the query.
-func (q BuildpackQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackSlice, error) {
+func (q buildpackQuery) All(ctx context.Context, exec boil.ContextExecutor) (BuildpackSlice, error) {
 	var o []*Buildpack
 
 	err := q.Bind(ctx, exec, &o)
@@ -226,7 +226,7 @@ func (q BuildpackQuery) All(ctx context.Context, exec boil.ContextExecutor) (Bui
 }
 
 // Count returns the count of all Buildpack records in the query.
-func (q BuildpackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -241,7 +241,7 @@ func (q BuildpackQuery) Count(ctx context.Context, exec boil.ContextExecutor) (i
 }
 
 // Exists checks if the row exists in the table.
-func (q BuildpackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q buildpackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -257,7 +257,7 @@ func (q BuildpackQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (
 }
 
 // ResourceBuildpackAnnotations retrieves all the buildpack_annotation's BuildpackAnnotations with an executor via resource_guid column.
-func (q BuildpackQuery) ResourceBuildpackAnnotations(o *Buildpack, mods ...qm.QueryMod) BuildpackAnnotationQuery {
+func (q buildpackQuery) ResourceBuildpackAnnotations(o *Buildpack, mods ...qm.QueryMod) buildpackAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -278,7 +278,7 @@ func (q BuildpackQuery) ResourceBuildpackAnnotations(o *Buildpack, mods ...qm.Qu
 }
 
 // ResourceBuildpackLabels retrieves all the buildpack_label's BuildpackLabels with an executor via resource_guid column.
-func (q BuildpackQuery) ResourceBuildpackLabels(o *Buildpack, mods ...qm.QueryMod) BuildpackLabelQuery {
+func (q buildpackQuery) ResourceBuildpackLabels(o *Buildpack, mods ...qm.QueryMod) buildpackLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -484,7 +484,7 @@ func (buildpackL) LoadResourceBuildpackLabels(ctx context.Context, e boil.Contex
 // of the buildpack, optionally inserting them as new records.
 // Appends related to o.R.ResourceBuildpackAnnotations.
 // Sets related.R.Resource appropriately.
-func (q BuildpackQuery) AddResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackAnnotation) error {
+func (q buildpackQuery) AddResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -539,7 +539,7 @@ func (q BuildpackQuery) AddResourceBuildpackAnnotations(o *Buildpack, ctx contex
 // Sets o.R.Resource's ResourceBuildpackAnnotations accordingly.
 // Replaces o.R.ResourceBuildpackAnnotations with related.
 // Sets related.R.Resource's ResourceBuildpackAnnotations accordingly.
-func (q BuildpackQuery) SetResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackAnnotation) error {
+func (q buildpackQuery) SetResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackAnnotation) error {
 	query := "update `buildpack_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -570,7 +570,7 @@ func (q BuildpackQuery) SetResourceBuildpackAnnotations(o *Buildpack, ctx contex
 // RemoveResourceBuildpackAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceBuildpackAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q BuildpackQuery) RemoveResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackAnnotation) error {
+func (q buildpackQuery) RemoveResourceBuildpackAnnotations(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -611,7 +611,7 @@ func (q BuildpackQuery) RemoveResourceBuildpackAnnotations(o *Buildpack, ctx con
 // of the buildpack, optionally inserting them as new records.
 // Appends related to o.R.ResourceBuildpackLabels.
 // Sets related.R.Resource appropriately.
-func (q BuildpackQuery) AddResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLabel) error {
+func (q buildpackQuery) AddResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -666,7 +666,7 @@ func (q BuildpackQuery) AddResourceBuildpackLabels(o *Buildpack, ctx context.Con
 // Sets o.R.Resource's ResourceBuildpackLabels accordingly.
 // Replaces o.R.ResourceBuildpackLabels with related.
 // Sets related.R.Resource's ResourceBuildpackLabels accordingly.
-func (q BuildpackQuery) SetResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLabel) error {
+func (q buildpackQuery) SetResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*BuildpackLabel) error {
 	query := "update `buildpack_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -697,7 +697,7 @@ func (q BuildpackQuery) SetResourceBuildpackLabels(o *Buildpack, ctx context.Con
 // RemoveResourceBuildpackLabels relationships from objects passed in.
 // Removes related items from R.ResourceBuildpackLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q BuildpackQuery) RemoveResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackLabel) error {
+func (q buildpackQuery) RemoveResourceBuildpackLabels(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, related ...*BuildpackLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -735,9 +735,9 @@ func (q BuildpackQuery) RemoveResourceBuildpackLabels(o *Buildpack, ctx context.
 }
 
 // Buildpacks retrieves all the records using an executor.
-func Buildpacks(mods ...qm.QueryMod) BuildpackQuery {
+func Buildpacks(mods ...qm.QueryMod) buildpackQuery {
 	mods = append(mods, qm.From("`buildpacks`"))
-	return BuildpackQuery{NewQuery(mods...)}
+	return buildpackQuery{NewQuery(mods...)}
 }
 
 type BuildpackFinder interface {
@@ -776,7 +776,7 @@ type BuildpackInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q BuildpackQuery) Insert(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q buildpackQuery) Insert(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no buildpacks provided for insertion")
 	}
@@ -895,7 +895,7 @@ type BuildpackUpdater interface {
 // Update uses an executor to update the Buildpack.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q BuildpackQuery) Update(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q buildpackQuery) Update(o *Buildpack, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -959,7 +959,7 @@ func (q BuildpackQuery) Update(o *Buildpack, ctx context.Context, exec boil.Cont
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q BuildpackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildpackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -976,7 +976,7 @@ func (q BuildpackQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q BuildpackQuery) UpdateAllSlice(o BuildpackSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q buildpackQuery) UpdateAllSlice(o BuildpackSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1031,7 +1031,7 @@ type BuildpackDeleter interface {
 
 // Delete deletes a single Buildpack record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q BuildpackQuery) Delete(o *Buildpack, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackQuery) Delete(o *Buildpack, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no Buildpack provided for delete")
 	}
@@ -1058,7 +1058,7 @@ func (q BuildpackQuery) Delete(o *Buildpack, ctx context.Context, exec boil.Cont
 }
 
 // DeleteAll deletes all matching rows.
-func (q BuildpackQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no buildpackQuery provided for delete all")
 	}
@@ -1079,7 +1079,7 @@ func (q BuildpackQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q BuildpackQuery) DeleteAllSlice(o BuildpackSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q buildpackQuery) DeleteAllSlice(o BuildpackSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1118,7 +1118,7 @@ type BuildpackReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q BuildpackQuery) Reload(o *Buildpack, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildpackQuery) Reload(o *Buildpack, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindBuildpack(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1130,7 +1130,7 @@ func (q BuildpackQuery) Reload(o *Buildpack, ctx context.Context, exec boil.Cont
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q BuildpackQuery) ReloadAll(o *BuildpackSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q buildpackQuery) ReloadAll(o *BuildpackSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

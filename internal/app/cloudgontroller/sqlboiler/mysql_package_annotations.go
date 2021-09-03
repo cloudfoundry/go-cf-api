@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []PackageAnnotation.
 	PackageAnnotationSlice []*PackageAnnotation
 
-	PackageAnnotationQuery struct {
+	packageAnnotationQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type PackageAnnotationFinisher interface {
 }
 
 // One returns a single packageAnnotation record from the query.
-func (q PackageAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*PackageAnnotation, error) {
+func (q packageAnnotationQuery) One(ctx context.Context, exec boil.ContextExecutor) (*PackageAnnotation, error) {
 	o := &PackageAnnotation{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q PackageAnnotationQuery) One(ctx context.Context, exec boil.ContextExecut
 }
 
 // All returns all PackageAnnotation records from the query.
-func (q PackageAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageAnnotationSlice, error) {
+func (q packageAnnotationQuery) All(ctx context.Context, exec boil.ContextExecutor) (PackageAnnotationSlice, error) {
 	var o []*PackageAnnotation
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q PackageAnnotationQuery) All(ctx context.Context, exec boil.ContextExecut
 }
 
 // Count returns the count of all PackageAnnotation records in the query.
-func (q PackageAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageAnnotationQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q PackageAnnotationQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q PackageAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q packageAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q PackageAnnotationQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Resource pointed to by the foreign key.
-func (q PackageAnnotationQuery) Resource(o *PackageAnnotation, mods ...qm.QueryMod) PackageQuery {
+func (q packageAnnotationQuery) Resource(o *PackageAnnotation, mods ...qm.QueryMod) packageQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (packageAnnotationL) LoadResource(ctx context.Context, e boil.ContextExecut
 // SetResource of the packageAnnotation to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourcePackageAnnotations.
-func (q PackageAnnotationQuery) SetResource(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Package) error {
+func (q packageAnnotationQuery) SetResource(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Package) error {
 	var err error
 	if insert {
 		if err = Packages().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q PackageAnnotationQuery) SetResource(o *PackageAnnotation, ctx context.Co
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q PackageAnnotationQuery) RemoveResource(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Package) error {
+func (q packageAnnotationQuery) RemoveResource(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, related *Package) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q PackageAnnotationQuery) RemoveResource(o *PackageAnnotation, ctx context
 }
 
 // PackageAnnotations retrieves all the records using an executor.
-func PackageAnnotations(mods ...qm.QueryMod) PackageAnnotationQuery {
+func PackageAnnotations(mods ...qm.QueryMod) packageAnnotationQuery {
 	mods = append(mods, qm.From("`package_annotations`"))
-	return PackageAnnotationQuery{NewQuery(mods...)}
+	return packageAnnotationQuery{NewQuery(mods...)}
 }
 
 type PackageAnnotationFinder interface {
@@ -461,7 +461,7 @@ type PackageAnnotationInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q PackageAnnotationQuery) Insert(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q packageAnnotationQuery) Insert(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no package_annotations provided for insertion")
 	}
@@ -580,7 +580,7 @@ type PackageAnnotationUpdater interface {
 // Update uses an executor to update the PackageAnnotation.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q PackageAnnotationQuery) Update(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q packageAnnotationQuery) Update(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q PackageAnnotationQuery) Update(o *PackageAnnotation, ctx context.Context
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q PackageAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q packageAnnotationQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q PackageAnnotationQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q PackageAnnotationQuery) UpdateAllSlice(o PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q packageAnnotationQuery) UpdateAllSlice(o PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type PackageAnnotationDeleter interface {
 
 // Delete deletes a single PackageAnnotation record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q PackageAnnotationQuery) Delete(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageAnnotationQuery) Delete(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no PackageAnnotation provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q PackageAnnotationQuery) Delete(o *PackageAnnotation, ctx context.Context
 }
 
 // DeleteAll deletes all matching rows.
-func (q PackageAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageAnnotationQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no packageAnnotationQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q PackageAnnotationQuery) DeleteAll(ctx context.Context, exec boil.Context
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q PackageAnnotationQuery) DeleteAllSlice(o PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q packageAnnotationQuery) DeleteAllSlice(o PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type PackageAnnotationReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q PackageAnnotationQuery) Reload(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
+func (q packageAnnotationQuery) Reload(o *PackageAnnotation, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindPackageAnnotation(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q PackageAnnotationQuery) Reload(o *PackageAnnotation, ctx context.Context
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q PackageAnnotationQuery) ReloadAll(o *PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q packageAnnotationQuery) ReloadAll(o *PackageAnnotationSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

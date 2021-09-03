@@ -132,7 +132,7 @@ type (
 	// This should almost always be used instead of []OrganizationLabel.
 	OrganizationLabelSlice []*OrganizationLabel
 
-	OrganizationLabelQuery struct {
+	organizationLabelQuery struct {
 		*queries.Query
 	}
 )
@@ -166,7 +166,7 @@ type OrganizationLabelFinisher interface {
 }
 
 // One returns a single organizationLabel record from the query.
-func (q OrganizationLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationLabel, error) {
+func (q organizationLabelQuery) One(ctx context.Context, exec boil.ContextExecutor) (*OrganizationLabel, error) {
 	o := &OrganizationLabel{}
 
 	queries.SetLimit(q.Query, 1)
@@ -183,7 +183,7 @@ func (q OrganizationLabelQuery) One(ctx context.Context, exec boil.ContextExecut
 }
 
 // All returns all OrganizationLabel records from the query.
-func (q OrganizationLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationLabelSlice, error) {
+func (q organizationLabelQuery) All(ctx context.Context, exec boil.ContextExecutor) (OrganizationLabelSlice, error) {
 	var o []*OrganizationLabel
 
 	err := q.Bind(ctx, exec, &o)
@@ -195,7 +195,7 @@ func (q OrganizationLabelQuery) All(ctx context.Context, exec boil.ContextExecut
 }
 
 // Count returns the count of all OrganizationLabel records in the query.
-func (q OrganizationLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationLabelQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -210,7 +210,7 @@ func (q OrganizationLabelQuery) Count(ctx context.Context, exec boil.ContextExec
 }
 
 // Exists checks if the row exists in the table.
-func (q OrganizationLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q organizationLabelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -226,7 +226,7 @@ func (q OrganizationLabelQuery) Exists(ctx context.Context, exec boil.ContextExe
 }
 
 // Resource pointed to by the foreign key.
-func (q OrganizationLabelQuery) Resource(o *OrganizationLabel, mods ...qm.QueryMod) OrganizationQuery {
+func (q organizationLabelQuery) Resource(o *OrganizationLabel, mods ...qm.QueryMod) organizationQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`guid` = ?", o.ResourceGUID),
 	}
@@ -342,7 +342,7 @@ func (organizationLabelL) LoadResource(ctx context.Context, e boil.ContextExecut
 // SetResource of the organizationLabel to the related item.
 // Sets o.R.Resource to related.
 // Adds o to related.R.ResourceOrganizationLabels.
-func (q OrganizationLabelQuery) SetResource(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
+func (q organizationLabelQuery) SetResource(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Organization) error {
 	var err error
 	if insert {
 		if err = Organizations().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -389,7 +389,7 @@ func (q OrganizationLabelQuery) SetResource(o *OrganizationLabel, ctx context.Co
 // RemoveResource relationship.
 // Sets o.R.Resource to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q OrganizationLabelQuery) RemoveResource(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
+func (q organizationLabelQuery) RemoveResource(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, related *Organization) error {
 	var err error
 
 	queries.SetScanner(&o.ResourceGUID, nil)
@@ -420,9 +420,9 @@ func (q OrganizationLabelQuery) RemoveResource(o *OrganizationLabel, ctx context
 }
 
 // OrganizationLabels retrieves all the records using an executor.
-func OrganizationLabels(mods ...qm.QueryMod) OrganizationLabelQuery {
+func OrganizationLabels(mods ...qm.QueryMod) organizationLabelQuery {
 	mods = append(mods, qm.From("`organization_labels`"))
-	return OrganizationLabelQuery{NewQuery(mods...)}
+	return organizationLabelQuery{NewQuery(mods...)}
 }
 
 type OrganizationLabelFinder interface {
@@ -461,7 +461,7 @@ type OrganizationLabelInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q OrganizationLabelQuery) Insert(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q organizationLabelQuery) Insert(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no organization_labels provided for insertion")
 	}
@@ -580,7 +580,7 @@ type OrganizationLabelUpdater interface {
 // Update uses an executor to update the OrganizationLabel.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q OrganizationLabelQuery) Update(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q organizationLabelQuery) Update(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -644,7 +644,7 @@ func (q OrganizationLabelQuery) Update(o *OrganizationLabel, ctx context.Context
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q OrganizationLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationLabelQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -661,7 +661,7 @@ func (q OrganizationLabelQuery) UpdateAll(ctx context.Context, exec boil.Context
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q OrganizationLabelQuery) UpdateAllSlice(o OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q organizationLabelQuery) UpdateAllSlice(o OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -716,7 +716,7 @@ type OrganizationLabelDeleter interface {
 
 // Delete deletes a single OrganizationLabel record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q OrganizationLabelQuery) Delete(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationLabelQuery) Delete(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no OrganizationLabel provided for delete")
 	}
@@ -743,7 +743,7 @@ func (q OrganizationLabelQuery) Delete(o *OrganizationLabel, ctx context.Context
 }
 
 // DeleteAll deletes all matching rows.
-func (q OrganizationLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationLabelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no organizationLabelQuery provided for delete all")
 	}
@@ -764,7 +764,7 @@ func (q OrganizationLabelQuery) DeleteAll(ctx context.Context, exec boil.Context
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q OrganizationLabelQuery) DeleteAllSlice(o OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q organizationLabelQuery) DeleteAllSlice(o OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -803,7 +803,7 @@ type OrganizationLabelReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q OrganizationLabelQuery) Reload(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationLabelQuery) Reload(o *OrganizationLabel, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindOrganizationLabel(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -815,7 +815,7 @@ func (q OrganizationLabelQuery) Reload(o *OrganizationLabel, ctx context.Context
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q OrganizationLabelQuery) ReloadAll(o *OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q organizationLabelQuery) ReloadAll(o *OrganizationLabelSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

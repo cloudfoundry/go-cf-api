@@ -136,7 +136,7 @@ type (
 	// This should almost always be used instead of []RevisionSidecar.
 	RevisionSidecarSlice []*RevisionSidecar
 
-	RevisionSidecarQuery struct {
+	revisionSidecarQuery struct {
 		*queries.Query
 	}
 )
@@ -170,7 +170,7 @@ type RevisionSidecarFinisher interface {
 }
 
 // One returns a single revisionSidecar record from the query.
-func (q RevisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionSidecar, error) {
+func (q revisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor) (*RevisionSidecar, error) {
 	o := &RevisionSidecar{}
 
 	queries.SetLimit(q.Query, 1)
@@ -187,7 +187,7 @@ func (q RevisionSidecarQuery) One(ctx context.Context, exec boil.ContextExecutor
 }
 
 // All returns all RevisionSidecar records from the query.
-func (q RevisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSidecarSlice, error) {
+func (q revisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor) (RevisionSidecarSlice, error) {
 	var o []*RevisionSidecar
 
 	err := q.Bind(ctx, exec, &o)
@@ -199,7 +199,7 @@ func (q RevisionSidecarQuery) All(ctx context.Context, exec boil.ContextExecutor
 }
 
 // Count returns the count of all RevisionSidecar records in the query.
-func (q RevisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -214,7 +214,7 @@ func (q RevisionSidecarQuery) Count(ctx context.Context, exec boil.ContextExecut
 }
 
 // Exists checks if the row exists in the table.
-func (q RevisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q revisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -230,7 +230,7 @@ func (q RevisionSidecarQuery) Exists(ctx context.Context, exec boil.ContextExecu
 }
 
 // Revision pointed to by the foreign key.
-func (q RevisionSidecarQuery) Revision(o *RevisionSidecar, mods ...qm.QueryMod) RevisionQuery {
+func (q revisionSidecarQuery) Revision(o *RevisionSidecar, mods ...qm.QueryMod) revisionQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("\"guid\" = ?", o.RevisionGUID),
 	}
@@ -244,7 +244,7 @@ func (q RevisionSidecarQuery) Revision(o *RevisionSidecar, mods ...qm.QueryMod) 
 }
 
 // RevisionSidecarProcessTypes retrieves all the revision_sidecar_process_type's RevisionSidecarProcessTypes with an executor.
-func (q RevisionSidecarQuery) RevisionSidecarProcessTypes(o *RevisionSidecar, mods ...qm.QueryMod) RevisionSidecarProcessTypeQuery {
+func (q revisionSidecarQuery) RevisionSidecarProcessTypes(o *RevisionSidecar, mods ...qm.QueryMod) revisionSidecarProcessTypeQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -454,7 +454,7 @@ func (revisionSidecarL) LoadRevisionSidecarProcessTypes(ctx context.Context, e b
 // SetRevision of the revisionSidecar to the related item.
 // Sets o.R.Revision to related.
 // Adds o to related.R.RevisionSidecars.
-func (q RevisionSidecarQuery) SetRevision(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
+func (q revisionSidecarQuery) SetRevision(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related *Revision) error {
 	var err error
 	if insert {
 		if err = Revisions().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -502,7 +502,7 @@ func (q RevisionSidecarQuery) SetRevision(o *RevisionSidecar, ctx context.Contex
 // of the revision_sidecar, optionally inserting them as new records.
 // Appends related to o.R.RevisionSidecarProcessTypes.
 // Sets related.R.RevisionSidecar appropriately.
-func (q RevisionSidecarQuery) AddRevisionSidecarProcessTypes(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecarProcessType) error {
+func (q revisionSidecarQuery) AddRevisionSidecarProcessTypes(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RevisionSidecarProcessType) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -552,9 +552,9 @@ func (q RevisionSidecarQuery) AddRevisionSidecarProcessTypes(o *RevisionSidecar,
 }
 
 // RevisionSidecars retrieves all the records using an executor.
-func RevisionSidecars(mods ...qm.QueryMod) RevisionSidecarQuery {
+func RevisionSidecars(mods ...qm.QueryMod) revisionSidecarQuery {
 	mods = append(mods, qm.From("\"revision_sidecars\""))
-	return RevisionSidecarQuery{NewQuery(mods...)}
+	return revisionSidecarQuery{NewQuery(mods...)}
 }
 
 type RevisionSidecarFinder interface {
@@ -593,7 +593,7 @@ type RevisionSidecarInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q RevisionSidecarQuery) Insert(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q revisionSidecarQuery) Insert(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no revision_sidecars provided for insertion")
 	}
@@ -685,7 +685,7 @@ type RevisionSidecarUpdater interface {
 // Update uses an executor to update the RevisionSidecar.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q RevisionSidecarQuery) Update(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q revisionSidecarQuery) Update(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -749,7 +749,7 @@ func (q RevisionSidecarQuery) Update(o *RevisionSidecar, ctx context.Context, ex
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q RevisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q revisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -766,7 +766,7 @@ func (q RevisionSidecarQuery) UpdateAll(ctx context.Context, exec boil.ContextEx
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q RevisionSidecarQuery) UpdateAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q revisionSidecarQuery) UpdateAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -821,7 +821,7 @@ type RevisionSidecarDeleter interface {
 
 // Delete deletes a single RevisionSidecar record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q RevisionSidecarQuery) Delete(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionSidecarQuery) Delete(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no RevisionSidecar provided for delete")
 	}
@@ -848,7 +848,7 @@ func (q RevisionSidecarQuery) Delete(o *RevisionSidecar, ctx context.Context, ex
 }
 
 // DeleteAll deletes all matching rows.
-func (q RevisionSidecarQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionSidecarQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no revisionSidecarQuery provided for delete all")
 	}
@@ -869,7 +869,7 @@ func (q RevisionSidecarQuery) DeleteAll(ctx context.Context, exec boil.ContextEx
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q RevisionSidecarQuery) DeleteAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q revisionSidecarQuery) DeleteAllSlice(o RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -908,7 +908,7 @@ type RevisionSidecarReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q RevisionSidecarQuery) Reload(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) error {
+func (q revisionSidecarQuery) Reload(o *RevisionSidecar, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindRevisionSidecar(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -920,7 +920,7 @@ func (q RevisionSidecarQuery) Reload(o *RevisionSidecar, ctx context.Context, ex
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q RevisionSidecarQuery) ReloadAll(o *RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q revisionSidecarQuery) ReloadAll(o *RevisionSidecarSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}

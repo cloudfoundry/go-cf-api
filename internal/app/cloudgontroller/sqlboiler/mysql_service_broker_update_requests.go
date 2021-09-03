@@ -166,7 +166,7 @@ type (
 	// This should almost always be used instead of []ServiceBrokerUpdateRequest.
 	ServiceBrokerUpdateRequestSlice []*ServiceBrokerUpdateRequest
 
-	ServiceBrokerUpdateRequestQuery struct {
+	serviceBrokerUpdateRequestQuery struct {
 		*queries.Query
 	}
 )
@@ -200,7 +200,7 @@ type ServiceBrokerUpdateRequestFinisher interface {
 }
 
 // One returns a single serviceBrokerUpdateRequest record from the query.
-func (q ServiceBrokerUpdateRequestQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequest, error) {
+func (q serviceBrokerUpdateRequestQuery) One(ctx context.Context, exec boil.ContextExecutor) (*ServiceBrokerUpdateRequest, error) {
 	o := &ServiceBrokerUpdateRequest{}
 
 	queries.SetLimit(q.Query, 1)
@@ -217,7 +217,7 @@ func (q ServiceBrokerUpdateRequestQuery) One(ctx context.Context, exec boil.Cont
 }
 
 // All returns all ServiceBrokerUpdateRequest records from the query.
-func (q ServiceBrokerUpdateRequestQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestSlice, error) {
+func (q serviceBrokerUpdateRequestQuery) All(ctx context.Context, exec boil.ContextExecutor) (ServiceBrokerUpdateRequestSlice, error) {
 	var o []*ServiceBrokerUpdateRequest
 
 	err := q.Bind(ctx, exec, &o)
@@ -229,7 +229,7 @@ func (q ServiceBrokerUpdateRequestQuery) All(ctx context.Context, exec boil.Cont
 }
 
 // Count returns the count of all ServiceBrokerUpdateRequest records in the query.
-func (q ServiceBrokerUpdateRequestQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -244,7 +244,7 @@ func (q ServiceBrokerUpdateRequestQuery) Count(ctx context.Context, exec boil.Co
 }
 
 // Exists checks if the row exists in the table.
-func (q ServiceBrokerUpdateRequestQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q serviceBrokerUpdateRequestQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -260,7 +260,7 @@ func (q ServiceBrokerUpdateRequestQuery) Exists(ctx context.Context, exec boil.C
 }
 
 // FKServiceBroker pointed to by the foreign key.
-func (q ServiceBrokerUpdateRequestQuery) FKServiceBroker(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) ServiceBrokerQuery {
+func (q serviceBrokerUpdateRequestQuery) FKServiceBroker(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) serviceBrokerQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("`id` = ?", o.FKServiceBrokersID),
 	}
@@ -274,7 +274,7 @@ func (q ServiceBrokerUpdateRequestQuery) FKServiceBroker(o *ServiceBrokerUpdateR
 }
 
 // ResourceServiceBrokerUpdateRequestAnnotations retrieves all the service_broker_update_request_annotation's ServiceBrokerUpdateRequestAnnotations with an executor via resource_guid column.
-func (q ServiceBrokerUpdateRequestQuery) ResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) ServiceBrokerUpdateRequestAnnotationQuery {
+func (q serviceBrokerUpdateRequestQuery) ResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) serviceBrokerUpdateRequestAnnotationQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -295,7 +295,7 @@ func (q ServiceBrokerUpdateRequestQuery) ResourceServiceBrokerUpdateRequestAnnot
 }
 
 // ResourceServiceBrokerUpdateRequestLabels retrieves all the service_broker_update_request_label's ServiceBrokerUpdateRequestLabels with an executor via resource_guid column.
-func (q ServiceBrokerUpdateRequestQuery) ResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) ServiceBrokerUpdateRequestLabelQuery {
+func (q serviceBrokerUpdateRequestQuery) ResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, mods ...qm.QueryMod) serviceBrokerUpdateRequestLabelQuery {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)
@@ -600,7 +600,7 @@ func (serviceBrokerUpdateRequestL) LoadResourceServiceBrokerUpdateRequestLabels(
 // SetFKServiceBroker of the serviceBrokerUpdateRequest to the related item.
 // Sets o.R.FKServiceBroker to related.
 // Adds o to related.R.FKServiceBrokerServiceBrokerUpdateRequests.
-func (q ServiceBrokerUpdateRequestQuery) SetFKServiceBroker(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBroker) error {
+func (q serviceBrokerUpdateRequestQuery) SetFKServiceBroker(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related *ServiceBroker) error {
 	var err error
 	if insert {
 		if err = ServiceBrokers().Insert(related, ctx, exec, boil.Infer()); err != nil {
@@ -647,7 +647,7 @@ func (q ServiceBrokerUpdateRequestQuery) SetFKServiceBroker(o *ServiceBrokerUpda
 // RemoveFKServiceBroker relationship.
 // Sets o.R.FKServiceBroker to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (q ServiceBrokerUpdateRequestQuery) RemoveFKServiceBroker(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related *ServiceBroker) error {
+func (q serviceBrokerUpdateRequestQuery) RemoveFKServiceBroker(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related *ServiceBroker) error {
 	var err error
 
 	queries.SetScanner(&o.FKServiceBrokersID, nil)
@@ -681,7 +681,7 @@ func (q ServiceBrokerUpdateRequestQuery) RemoveFKServiceBroker(o *ServiceBrokerU
 // of the service_broker_update_request, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceBrokerUpdateRequestAnnotations.
 // Sets related.R.Resource appropriately.
-func (q ServiceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestAnnotation) error {
+func (q serviceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestAnnotation) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -736,7 +736,7 @@ func (q ServiceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestAn
 // Sets o.R.Resource's ResourceServiceBrokerUpdateRequestAnnotations accordingly.
 // Replaces o.R.ResourceServiceBrokerUpdateRequestAnnotations with related.
 // Sets related.R.Resource's ResourceServiceBrokerUpdateRequestAnnotations accordingly.
-func (q ServiceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestAnnotation) error {
+func (q serviceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestAnnotation) error {
 	query := "update `service_broker_update_request_annotations` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -767,7 +767,7 @@ func (q ServiceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestAn
 // RemoveResourceServiceBrokerUpdateRequestAnnotations relationships from objects passed in.
 // Removes related items from R.ResourceServiceBrokerUpdateRequestAnnotations (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBrokerUpdateRequestAnnotation) error {
+func (q serviceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateRequestAnnotations(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBrokerUpdateRequestAnnotation) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -808,7 +808,7 @@ func (q ServiceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateReques
 // of the service_broker_update_request, optionally inserting them as new records.
 // Appends related to o.R.ResourceServiceBrokerUpdateRequestLabels.
 // Sets related.R.Resource appropriately.
-func (q ServiceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestLabel) error {
+func (q serviceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestLabel) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -863,7 +863,7 @@ func (q ServiceBrokerUpdateRequestQuery) AddResourceServiceBrokerUpdateRequestLa
 // Sets o.R.Resource's ResourceServiceBrokerUpdateRequestLabels accordingly.
 // Replaces o.R.ResourceServiceBrokerUpdateRequestLabels with related.
 // Sets related.R.Resource's ResourceServiceBrokerUpdateRequestLabels accordingly.
-func (q ServiceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestLabel) error {
+func (q serviceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ServiceBrokerUpdateRequestLabel) error {
 	query := "update `service_broker_update_request_labels` set `resource_guid` = null where `resource_guid` = ?"
 	values := []interface{}{o.GUID}
 	if boil.IsDebug(ctx) {
@@ -894,7 +894,7 @@ func (q ServiceBrokerUpdateRequestQuery) SetResourceServiceBrokerUpdateRequestLa
 // RemoveResourceServiceBrokerUpdateRequestLabels relationships from objects passed in.
 // Removes related items from R.ResourceServiceBrokerUpdateRequestLabels (uses pointer comparison, removal does not keep order)
 // Sets related.R.Resource.
-func (q ServiceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBrokerUpdateRequestLabel) error {
+func (q serviceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateRequestLabels(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, related ...*ServiceBrokerUpdateRequestLabel) error {
 	if len(related) == 0 {
 		return nil
 	}
@@ -932,9 +932,9 @@ func (q ServiceBrokerUpdateRequestQuery) RemoveResourceServiceBrokerUpdateReques
 }
 
 // ServiceBrokerUpdateRequests retrieves all the records using an executor.
-func ServiceBrokerUpdateRequests(mods ...qm.QueryMod) ServiceBrokerUpdateRequestQuery {
+func ServiceBrokerUpdateRequests(mods ...qm.QueryMod) serviceBrokerUpdateRequestQuery {
 	mods = append(mods, qm.From("`service_broker_update_requests`"))
-	return ServiceBrokerUpdateRequestQuery{NewQuery(mods...)}
+	return serviceBrokerUpdateRequestQuery{NewQuery(mods...)}
 }
 
 type ServiceBrokerUpdateRequestFinder interface {
@@ -973,7 +973,7 @@ type ServiceBrokerUpdateRequestInserter interface {
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q ServiceBrokerUpdateRequestQuery) Insert(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (q serviceBrokerUpdateRequestQuery) Insert(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("models: no service_broker_update_requests provided for insertion")
 	}
@@ -1092,7 +1092,7 @@ type ServiceBrokerUpdateRequestUpdater interface {
 // Update uses an executor to update the ServiceBrokerUpdateRequest.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (q ServiceBrokerUpdateRequestQuery) Update(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) Update(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) (int64, error) {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -1156,7 +1156,7 @@ func (q ServiceBrokerUpdateRequestQuery) Update(o *ServiceBrokerUpdateRequest, c
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q ServiceBrokerUpdateRequestQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	queries.SetUpdate(q.Query, cols)
 
 	result, err := q.Query.ExecContext(ctx, exec)
@@ -1173,7 +1173,7 @@ func (q ServiceBrokerUpdateRequestQuery) UpdateAll(ctx context.Context, exec boi
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (q ServiceBrokerUpdateRequestQuery) UpdateAllSlice(o ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) UpdateAllSlice(o ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor, cols M) (int64, error) {
 	ln := int64(len(o))
 	if ln == 0 {
 		return 0, nil
@@ -1228,7 +1228,7 @@ type ServiceBrokerUpdateRequestDeleter interface {
 
 // Delete deletes a single ServiceBrokerUpdateRequest record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q ServiceBrokerUpdateRequestQuery) Delete(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) Delete(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if o == nil {
 		return 0, errors.New("models: no ServiceBrokerUpdateRequest provided for delete")
 	}
@@ -1255,7 +1255,7 @@ func (q ServiceBrokerUpdateRequestQuery) Delete(o *ServiceBrokerUpdateRequest, c
 }
 
 // DeleteAll deletes all matching rows.
-func (q ServiceBrokerUpdateRequestQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if q.Query == nil {
 		return 0, errors.New("models: no serviceBrokerUpdateRequestQuery provided for delete all")
 	}
@@ -1276,7 +1276,7 @@ func (q ServiceBrokerUpdateRequestQuery) DeleteAll(ctx context.Context, exec boi
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q ServiceBrokerUpdateRequestQuery) DeleteAllSlice(o ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+func (q serviceBrokerUpdateRequestQuery) DeleteAllSlice(o ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	if len(o) == 0 {
 		return 0, nil
 	}
@@ -1315,7 +1315,7 @@ type ServiceBrokerUpdateRequestReloader interface {
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (q ServiceBrokerUpdateRequestQuery) Reload(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBrokerUpdateRequestQuery) Reload(o *ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor) error {
 	ret, err := FindServiceBrokerUpdateRequest(ctx, exec, o.ID)
 	if err != nil {
 		return err
@@ -1327,7 +1327,7 @@ func (q ServiceBrokerUpdateRequestQuery) Reload(o *ServiceBrokerUpdateRequest, c
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (q ServiceBrokerUpdateRequestQuery) ReloadAll(o *ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor) error {
+func (q serviceBrokerUpdateRequestQuery) ReloadAll(o *ServiceBrokerUpdateRequestSlice, ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}
