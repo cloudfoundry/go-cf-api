@@ -65,10 +65,18 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
-	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml", "--templates", "sqlboiler-templates"); err != nil {
+	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml",
+		"--no-driver-templates",
+		"--templates", "sqlboiler/templates/",
+		"--templates", "sqlboiler/drivers/sqlboiler-psql/driver/override/templates/",
+	); err != nil {
 		return err
 	}
-	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml", "--templates", "sqlboiler-templates"); err != nil {
+	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml",
+		"--no-driver-templates",
+		"--templates", "sqlboiler/templates/",
+		"--templates", "sqlboiler/drivers/sqlboiler-mysql/driver/override/templates/",
+	); err != nil {
 		return err
 	}
 

@@ -1,0 +1,3 @@
+[submodule "sqlboiler"]
+	path = sqlboiler
+	url = https://github.tools.sap/cloudfoundry/sqlboiler
