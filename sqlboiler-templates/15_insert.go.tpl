@@ -16,7 +16,7 @@ type {{$alias.UpSingular}}Inserter interface {
 
 {{if .AddGlobal -}}
 // InsertG a single record. See Insert for whitelist behavior description.
-func (q {{$alias.UpSingular}}Query) InsertG(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context, {{end -}} columns boil.Columns) error {
+func (q {{$alias.DownSingular}}Query) InsertG(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context, {{end -}} columns boil.Columns) error {
 	return q.Insert(o, {{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, columns)
 }
 
@@ -25,7 +25,7 @@ func (q {{$alias.UpSingular}}Query) InsertG(o *{{$alias.UpSingular}}, {{if not .
 {{if .AddPanic -}}
 // InsertP a single record using an executor, and panics on error. See Insert
 // for whitelist behavior description.
-func (q {{$alias.UpSingular}}Query) InsertP(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) {
+func (q {{$alias.DownSingular}}Query) InsertP(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) {
 	if err := o.Insert({{if not .NoContext}}ctx, {{end -}} exec, columns); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -36,7 +36,7 @@ func (q {{$alias.UpSingular}}Query) InsertP(o *{{$alias.UpSingular}}, {{if .NoCo
 {{if and .AddGlobal .AddPanic -}}
 // InsertGP a single record, and panics on error. See Insert for whitelist
 // behavior description.
-func (q {{$alias.UpSingular}}Query) InsertGP(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context, {{end -}} columns boil.Columns) {
+func (q {{$alias.DownSingular}}Query) InsertGP(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context, {{end -}} columns boil.Columns) {
 	if err := o.Insert({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, columns); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -46,7 +46,7 @@ func (q {{$alias.UpSingular}}Query) InsertGP(o *{{$alias.UpSingular}}, {{if not 
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (q {{$alias.UpSingular}}Query) Insert(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) error {
+func (q {{$alias.DownSingular}}Query) Insert(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, columns boil.Columns) error {
 	if o == nil {
 		return errors.New("{{.PkgName}}: no {{.Table.Name}} provided for insertion")
 	}

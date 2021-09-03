@@ -16,7 +16,7 @@
 // Appends related to o.R.{{$relAlias.Local}}.
 // Sets related.R.{{$relAlias.Foreign}} appropriately.
 // Uses the global database handle.
-func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Add{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) error {
 	return q.Add{{$relAlias.Local}}(o, {{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, insert, related...)
 }
 
@@ -28,7 +28,7 @@ func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}G(o *{{$ltable.UpSing
 // Appends related to o.R.{{$relAlias.Local}}.
 // Sets related.R.{{$relAlias.Foreign}} appropriately.
 // Panics on error.
-func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Add{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) {
 	if err := o.Add{{$relAlias.Local}}({{if not $.NoContext}}ctx, {{end -}} exec, insert, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -42,7 +42,7 @@ func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}P(o *{{$ltable.UpSing
 // Appends related to o.R.{{$relAlias.Local}}.
 // Sets related.R.{{$relAlias.Foreign}} appropriately.
 // Uses the global database handle and panics on error.
-func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Add{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) {
 	if err := o.Add{{$relAlias.Local}}({{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, insert, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -54,7 +54,7 @@ func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}GP(o *{{$ltable.UpSin
 // of the {{$table.Name | singular}}, optionally inserting them as new records.
 // Appends related to o.R.{{$relAlias.Local}}.
 // Sets related.R.{{$relAlias.Foreign}} appropriately.
-func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Add{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) error {
 	var err error
 	for _, rel := range related {
 		if insert {
@@ -177,7 +177,7 @@ func (q {{$ltable.UpSingular}}Query) Add{{$relAlias.Local}}(o *{{$ltable.UpSingu
 // Replaces o.R.{{$relAlias.Local}} with related.
 // Sets related.R.{{$relAlias.Foreign}}'s {{$relAlias.Local}} accordingly.
 // Uses the global database handle.
-func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Set{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) error {
 	return q.Set{{$relAlias.Local}}(o, {{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, insert, related...)
 }
 
@@ -191,7 +191,7 @@ func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}G(o *{{$ltable.UpSing
 // Replaces o.R.{{$relAlias.Local}} with related.
 // Sets related.R.{{$relAlias.Foreign}}'s {{$relAlias.Local}} accordingly.
 // Panics on error.
-func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Set{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) {
 	if err := q.Set{{$relAlias.Local}}(o, {{if not $.NoContext}}ctx, {{end -}} exec, insert, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -207,7 +207,7 @@ func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}P(o *{{$ltable.UpSing
 // Replaces o.R.{{$relAlias.Local}} with related.
 // Sets related.R.{{$relAlias.Foreign}}'s {{$relAlias.Local}} accordingly.
 // Uses the global database handle and panics on error.
-func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Set{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} insert bool, related ...*{{$ftable.UpSingular}}) {
 	if err := q.Set{{$relAlias.Local}}(o, {{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, insert, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -221,7 +221,7 @@ func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}GP(o *{{$ltable.UpSin
 // Sets o.R.{{$relAlias.Foreign}}'s {{$relAlias.Local}} accordingly.
 // Replaces o.R.{{$relAlias.Local}} with related.
 // Sets related.R.{{$relAlias.Foreign}}'s {{$relAlias.Local}} accordingly.
-func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Set{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, insert bool, related ...*{{$ftable.UpSingular}}) error {
 	{{if .ToJoinTable -}}
 	query := "delete from {{.JoinTable | $.SchemaTable}} where {{.JoinLocalColumn | $.Quotes}} = {{if $.Dialect.UseIndexPlaceholders}}$1{{else}}?{{end}}"
 	values := []interface{}{{"{"}}o.{{$col}}}
@@ -279,7 +279,7 @@ func (q {{$ltable.UpSingular}}Query) Set{{$relAlias.Local}}(o *{{$ltable.UpSingu
 // Removes related items from R.{{$relAlias.Local}} (uses pointer comparison, removal does not keep order)
 // Sets related.R.{{$relAlias.Foreign}}.
 // Uses the global database handle.
-func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Remove{{$relAlias.Local}}G(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} related ...*{{$ftable.UpSingular}}) error {
 	return q.Remove{{$relAlias.Local}}(o, {{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, related...)
 }
 
@@ -290,7 +290,7 @@ func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}G(o *{{$ltable.UpS
 // Removes related items from R.{{$relAlias.Local}} (uses pointer comparison, removal does not keep order)
 // Sets related.R.{{$relAlias.Foreign}}.
 // Panics on error.
-func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}{{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Remove{{$relAlias.Local}}P(o *{{$ltable.UpSingular}}{{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, related ...*{{$ftable.UpSingular}}) {
 	if err := q.Remove{{$relAlias.Local}}(o, {{if not $.NoContext}}ctx, {{end -}} exec, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -303,7 +303,7 @@ func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}P(o *{{$ltable.UpS
 // Removes related items from R.{{$relAlias.Local}} (uses pointer comparison, removal does not keep order)
 // Sets related.R.{{$relAlias.Foreign}}.
 // Uses the global database handle and panics on error.
-func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} related ...*{{$ftable.UpSingular}}) {
+func (q {{$ltable.DownSingular}}Query) Remove{{$relAlias.Local}}GP(o *{{$ltable.UpSingular}}, {{if not $.NoContext}}ctx context.Context, {{end -}} related ...*{{$ftable.UpSingular}}) {
 	if err := q.Remove{{$relAlias.Local}}(o, {{if $.NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}, related...); err != nil {
 		panic(boil.WrapErr(err))
 	}
@@ -314,7 +314,7 @@ func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}GP(o *{{$ltable.Up
 // Remove{{$relAlias.Local}} relationships from objects passed in.
 // Removes related items from R.{{$relAlias.Local}} (uses pointer comparison, removal does not keep order)
 // Sets related.R.{{$relAlias.Foreign}}.
-func (q {{$ltable.UpSingular}}Query) Remove{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, related ...*{{$ftable.UpSingular}}) error {
+func (q {{$ltable.DownSingular}}Query) Remove{{$relAlias.Local}}(o *{{$ltable.UpSingular}}, {{if $.NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}, related ...*{{$ftable.UpSingular}}) error {
 	if len(related) == 0 {
 		return nil
 	}

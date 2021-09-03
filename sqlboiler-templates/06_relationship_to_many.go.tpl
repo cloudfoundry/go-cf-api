@@ -8,7 +8,7 @@
 		{{- $canSoftDelete := (getTable $.Tables .ForeignTable).CanSoftDelete }}
 // {{$relAlias.Local}} retrieves all the {{.ForeignTable | singular}}'s {{$ftable.UpPlural}} with an executor
 {{- if not (eq $relAlias.Local $ftable.UpPlural)}} via {{$rel.ForeignColumn}} column{{- end}}.
-func (q {{$ltable.UpSingular}}Query) {{$relAlias.Local}}(o *{{$ltable.UpSingular}}, mods ...qm.QueryMod) {{$ftable.UpSingular}}Query {
+func (q {{$ltable.DownSingular}}Query) {{$relAlias.Local}}(o *{{$ltable.UpSingular}}, mods ...qm.QueryMod) {{$ftable.DownSingular}}Query {
 	var queryMods []qm.QueryMod
 	if len(mods) != 0 {
 		queryMods = append(queryMods, mods...)

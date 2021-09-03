@@ -20,7 +20,7 @@ type (
 	{{$alias.UpSingular}}Hook func({{if .NoContext}}boil.Executor{{else}}context.Context, boil.ContextExecutor{{end}}, *{{$alias.UpSingular}}) error
 	{{- end}}
 
-	{{$alias.UpSingular}}Query struct {
+	{{$alias.DownSingular}}Query struct {
 		*queries.Query
 	}
 )

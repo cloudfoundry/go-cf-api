@@ -6,7 +6,7 @@
 		{{- $rel := $ltable.Relationship $fkey.Name -}}
 		{{- $canSoftDelete := (getTable $.Tables $fkey.ForeignTable).CanSoftDelete }}
 // {{$rel.Foreign}} pointed to by the foreign key.
-func (q {{$ltable.UpSingular}}Query) {{$rel.Foreign}}(o *{{$ltable.UpSingular}}, mods ...qm.QueryMod) ({{$ftable.UpSingular}}Query) {
+func (q {{$ltable.DownSingular}}Query) {{$rel.Foreign}}(o *{{$ltable.UpSingular}}, mods ...qm.QueryMod) ({{$ftable.DownSingular}}Query) {
 	queryMods := []qm.QueryMod{
 		qm.Where("{{$fkey.ForeignColumn | $.Quotes}} = ?", o.{{$ltable.Column $fkey.Column}}),
 		{{if and $.AddSoftDeletes $canSoftDelete -}}

@@ -27,7 +27,7 @@ type {{$alias.UpSingular}}Finisher interface {
 
 {{if .AddGlobal -}}
 // OneG returns a single {{$alias.DownSingular}} record from the query using the global executor.
-func (q {{$alias.UpSingular}}Query) OneG({{if not .NoContext}}ctx context.Context{{end}}) (*{{$alias.UpSingular}}, error) {
+func (q {{$alias.DownSingular}}Query) OneG({{if not .NoContext}}ctx context.Context{{end}}) (*{{$alias.UpSingular}}, error) {
 	return q.One({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 }
 
@@ -35,7 +35,7 @@ func (q {{$alias.UpSingular}}Query) OneG({{if not .NoContext}}ctx context.Contex
 
 {{if and .AddGlobal .AddPanic -}}
 // OneGP returns a single {{$alias.DownSingular}} record from the query using the global executor, and panics on error.
-func (q {{$alias.UpSingular}}Query) OneGP({{if not .NoContext}}ctx context.Context{{end}}) *{{$alias.UpSingular}} {
+func (q {{$alias.DownSingular}}Query) OneGP({{if not .NoContext}}ctx context.Context{{end}}) *{{$alias.UpSingular}} {
 	o, err := q.One({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -48,7 +48,7 @@ func (q {{$alias.UpSingular}}Query) OneGP({{if not .NoContext}}ctx context.Conte
 
 {{if .AddPanic -}}
 // OneP returns a single {{$alias.DownSingular}} record from the query, and panics on error.
-func (q {{$alias.UpSingular}}Query) OneP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (*{{$alias.UpSingular}}) {
+func (q {{$alias.DownSingular}}Query) OneP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (*{{$alias.UpSingular}}) {
 	o, err := q.One({{if not .NoContext}}ctx, {{end -}} exec)
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -60,7 +60,7 @@ func (q {{$alias.UpSingular}}Query) OneP({{if .NoContext}}exec boil.Executor{{el
 {{end -}}
 
 // One returns a single {{$alias.DownSingular}} record from the query.
-func (q {{$alias.UpSingular}}Query) One({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (*{{$alias.UpSingular}}, error) {
+func (q {{$alias.DownSingular}}Query) One({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (*{{$alias.UpSingular}}, error) {
 	o := &{{$alias.UpSingular}}{}
 
 	queries.SetLimit(q.Query, 1)
@@ -84,7 +84,7 @@ func (q {{$alias.UpSingular}}Query) One({{if .NoContext}}exec boil.Executor{{els
 
 {{if .AddGlobal -}}
 // AllG returns all {{$alias.UpSingular}} records from the query using the global executor.
-func (q {{$alias.UpSingular}}Query) AllG({{if not .NoContext}}ctx context.Context{{end}}) ({{$alias.UpSingular}}Slice, error) {
+func (q {{$alias.DownSingular}}Query) AllG({{if not .NoContext}}ctx context.Context{{end}}) ({{$alias.UpSingular}}Slice, error) {
 	return q.All({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 }
 
@@ -92,7 +92,7 @@ func (q {{$alias.UpSingular}}Query) AllG({{if not .NoContext}}ctx context.Contex
 
 {{if and .AddGlobal .AddPanic -}}
 // AllGP returns all {{$alias.UpSingular}} records from the query using the global executor, and panics on error.
-func (q {{$alias.UpSingular}}Query) AllGP({{if not .NoContext}}ctx context.Context{{end}}) {{$alias.UpSingular}}Slice {
+func (q {{$alias.DownSingular}}Query) AllGP({{if not .NoContext}}ctx context.Context{{end}}) {{$alias.UpSingular}}Slice {
 	o, err := q.All({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -105,7 +105,7 @@ func (q {{$alias.UpSingular}}Query) AllGP({{if not .NoContext}}ctx context.Conte
 
 {{if .AddPanic -}}
 // AllP returns all {{$alias.UpSingular}} records from the query, and panics on error.
-func (q {{$alias.UpSingular}}Query) AllP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) {{$alias.UpSingular}}Slice {
+func (q {{$alias.DownSingular}}Query) AllP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) {{$alias.UpSingular}}Slice {
 	o, err := q.All({{if not .NoContext}}ctx, {{end -}} exec)
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -117,7 +117,7 @@ func (q {{$alias.UpSingular}}Query) AllP({{if .NoContext}}exec boil.Executor{{el
 {{end -}}
 
 // All returns all {{$alias.UpSingular}} records from the query.
-func (q {{$alias.UpSingular}}Query) All({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) ({{$alias.UpSingular}}Slice, error) {
+func (q {{$alias.DownSingular}}Query) All({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) ({{$alias.UpSingular}}Slice, error) {
 	var o []*{{$alias.UpSingular}}
 
 	err := q.Bind({{if .NoContext}}nil{{else}}ctx{{end}}, exec, &o)
@@ -140,7 +140,7 @@ func (q {{$alias.UpSingular}}Query) All({{if .NoContext}}exec boil.Executor{{els
 
 {{if .AddGlobal -}}
 // CountG returns the count of all {{$alias.UpSingular}} records in the query, and panics on error.
-func (q {{$alias.UpSingular}}Query) CountG({{if not .NoContext}}ctx context.Context{{end}}) (int64, error) {
+func (q {{$alias.DownSingular}}Query) CountG({{if not .NoContext}}ctx context.Context{{end}}) (int64, error) {
 	return q.Count({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 }
 
@@ -148,7 +148,7 @@ func (q {{$alias.UpSingular}}Query) CountG({{if not .NoContext}}ctx context.Cont
 
 {{if and .AddGlobal .AddPanic -}}
 // CountGP returns the count of all {{$alias.UpSingular}} records in the query using the global executor, and panics on error.
-func (q {{$alias.UpSingular}}Query) CountGP({{if not .NoContext}}ctx context.Context{{end}}) int64 {
+func (q {{$alias.DownSingular}}Query) CountGP({{if not .NoContext}}ctx context.Context{{end}}) int64 {
 	c, err := q.Count({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -161,7 +161,7 @@ func (q {{$alias.UpSingular}}Query) CountGP({{if not .NoContext}}ctx context.Con
 
 {{if .AddPanic -}}
 // CountP returns the count of all {{$alias.UpSingular}} records in the query, and panics on error.
-func (q {{$alias.UpSingular}}Query) CountP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) int64 {
+func (q {{$alias.DownSingular}}Query) CountP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) int64 {
 	c, err := q.Count({{if not .NoContext}}ctx, {{end -}} exec)
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -173,7 +173,7 @@ func (q {{$alias.UpSingular}}Query) CountP({{if .NoContext}}exec boil.Executor{{
 {{end -}}
 
 // Count returns the count of all {{$alias.UpSingular}} records in the query.
-func (q {{$alias.UpSingular}}Query) Count({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (int64, error) {
+func (q {{$alias.DownSingular}}Query) Count({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -193,7 +193,7 @@ func (q {{$alias.UpSingular}}Query) Count({{if .NoContext}}exec boil.Executor{{e
 
 {{if .AddGlobal -}}
 // ExistsG checks if the row exists in the table, and panics on error.
-func (q {{$alias.UpSingular}}Query) ExistsG({{if not .NoContext}}ctx context.Context{{end}}) (bool, error) {
+func (q {{$alias.DownSingular}}Query) ExistsG({{if not .NoContext}}ctx context.Context{{end}}) (bool, error) {
 	return q.Exists({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 }
 
@@ -201,7 +201,7 @@ func (q {{$alias.UpSingular}}Query) ExistsG({{if not .NoContext}}ctx context.Con
 
 {{if and .AddGlobal .AddPanic -}}
 // ExistsGP checks if the row exists in the table using the global executor, and panics on error.
-func (q {{$alias.UpSingular}}Query) ExistsGP({{if not .NoContext}}ctx context.Context{{end}}) bool {
+func (q {{$alias.DownSingular}}Query) ExistsGP({{if not .NoContext}}ctx context.Context{{end}}) bool {
 	e, err := q.Exists({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end -}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -214,7 +214,7 @@ func (q {{$alias.UpSingular}}Query) ExistsGP({{if not .NoContext}}ctx context.Co
 
 {{if .AddPanic -}}
 // ExistsP checks if the row exists in the table, and panics on error.
-func (q {{$alias.UpSingular}}Query) ExistsP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) bool {
+func (q {{$alias.DownSingular}}Query) ExistsP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) bool {
 	e, err := q.Exists({{if not .NoContext}}ctx, {{end -}} exec)
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -226,7 +226,7 @@ func (q {{$alias.UpSingular}}Query) ExistsP({{if .NoContext}}exec boil.Executor{
 {{end -}}
 
 // Exists checks if the row exists in the table.
-func (q {{$alias.UpSingular}}Query) Exists({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (bool, error) {
+func (q {{$alias.DownSingular}}Query) Exists({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)

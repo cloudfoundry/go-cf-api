@@ -26,7 +26,7 @@ type {{$alias.UpSingular}}Deleter interface {
 {{if .AddGlobal -}}
 // DeleteG deletes a single {{$alias.UpSingular}} record.
 // DeleteG will match against the primary key column to find the record to delete.
-func (q {{$alias.UpSingular}}Query) DeleteG(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteG(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	return q.Delete(o, {{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}{{if $soft}}, hardDelete{{end}})
 }
 
@@ -36,7 +36,7 @@ func (q {{$alias.UpSingular}}Query) DeleteG(o *{{$alias.UpSingular}}, {{if not .
 // DeleteP deletes a single {{$alias.UpSingular}} record with an executor.
 // DeleteP will match against the primary key column to find the record to delete.
 // Panics on error.
-func (q {{$alias.UpSingular}}Query) DeleteP(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteP(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
 	{{if not .NoRowsAffected}}rowsAff, {{end}}err := o.Delete({{if not .NoContext}}ctx, {{end -}} exec{{if $soft}}, hardDelete{{end}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -53,7 +53,7 @@ func (q {{$alias.UpSingular}}Query) DeleteP(o *{{$alias.UpSingular}}, {{if .NoCo
 // DeleteGP deletes a single {{$alias.UpSingular}} record.
 // DeleteGP will match against the primary key column to find the record to delete.
 // Panics on error.
-func (q {{$alias.UpSingular}}Query) DeleteGP(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteGP(o *{{$alias.UpSingular}}, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
 	{{if not .NoRowsAffected}}rowsAff, {{end}}err := o.Delete({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}{{if $soft}}, hardDelete{{end}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -68,7 +68,7 @@ func (q {{$alias.UpSingular}}Query) DeleteGP(o *{{$alias.UpSingular}}, {{if not 
 
 // Delete deletes a single {{$alias.UpSingular}} record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (q {{$alias.UpSingular}}Query) Delete(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) Delete(o *{{$alias.UpSingular}}, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	if o == nil {
 		return {{if not .NoRowsAffected}}0, {{end -}} errors.New("{{.PkgName}}: no {{$alias.UpSingular}} provided for delete")
 	}
@@ -153,7 +153,7 @@ func (q {{$alias.UpSingular}}Query) Delete(o *{{$alias.UpSingular}}, {{if .NoCon
 }
 
 {{if .AddGlobal -}}
-func (q {{$alias.UpSingular}}Query) DeleteAllG({{if not .NoContext}}ctx context.Context{{end}}{{if $soft}}{{if not .NoContext}}, {{end}}hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllG({{if not .NoContext}}ctx context.Context{{end}}{{if $soft}}{{if not .NoContext}}, {{end}}hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	return q.DeleteAll({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}{{if $soft}}, hardDelete{{end}})
 }
 
@@ -161,7 +161,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAllG({{if not .NoContext}}ctx context.
 
 {{if .AddPanic -}}
 // DeleteAllP deletes all rows, and panics on error.
-func (q {{$alias.UpSingular}}Query) DeleteAllP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllP({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
 	{{if not .NoRowsAffected}}rowsAff, {{end -}} err := q.DeleteAll({{if not .NoContext}}ctx, {{end -}} exec{{if $soft}}, hardDelete{{end}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -175,7 +175,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAllP({{if .NoContext}}exec boil.Execut
 {{end -}}
 
 // DeleteAll deletes all matching rows.
-func (q {{$alias.UpSingular}}Query) DeleteAll({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAll({{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	if q.Query == nil {
 		return {{if not .NoRowsAffected}}0, {{end -}} errors.New("{{.PkgName}}: no {{$alias.DownSingular}}Query provided for delete all")
 	}
@@ -221,7 +221,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAll({{if .NoContext}}exec boil.Executo
 
 {{if .AddGlobal -}}
 // DeleteAllGSlice deletes all rows in the slice.
-func (q {{$alias.UpSingular}}Query) DeleteAllGSlice(o {{$alias.UpSingular}}Slice, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllGSlice(o {{$alias.UpSingular}}Slice, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	return q.DeleteAll(o, {{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}{{if $soft}}, hardDelete{{end}})
 }
 
@@ -229,7 +229,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAllGSlice(o {{$alias.UpSingular}}Slice
 
 {{if .AddPanic -}}
 // DeleteAllPSlice deletes all rows in the slice, using an executor, and panics on error.
-func (q {{$alias.UpSingular}}Query) DeleteAllPSlice(o {{$alias.UpSingular}}Slice, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllPSlice(o {{$alias.UpSingular}}Slice, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
 	{{if not .NoRowsAffected}}rowsAff, {{end -}} err := o.DeleteAll({{if not .NoContext}}ctx, {{end -}} exec{{if $soft}}, hardDelete{{end}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -244,7 +244,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAllPSlice(o {{$alias.UpSingular}}Slice
 
 {{if and .AddGlobal .AddPanic -}}
 // DeleteAllGP deletes all rows in the slice, and panics on error.
-func (q {{$alias.UpSingular}}Query) DeleteAllGP(o {{$alias.UpSingular}}Slice, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllGP(o {{$alias.UpSingular}}Slice, {{if not .NoContext}}ctx context.Context{{if $soft}}, hardDelete bool{{end}}{{else}}{{if $soft}}hardDelete bool{{end}}{{end}}) {{if not .NoRowsAffected}}int64{{end -}} {
 	{{if not .NoRowsAffected}}rowsAff, {{end -}} err := o.DeleteAll({{if .NoContext}}boil.GetDB(){{else}}ctx, boil.GetContextDB(){{end}}{{if $soft}}, hardDelete{{end}})
 	if err != nil {
 		panic(boil.WrapErr(err))
@@ -258,7 +258,7 @@ func (q {{$alias.UpSingular}}Query) DeleteAllGP(o {{$alias.UpSingular}}Slice, {{
 {{end -}}
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (q {{$alias.UpSingular}}Query) DeleteAllSlice(o {{$alias.UpSingular}}Slice, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
+func (q {{$alias.DownSingular}}Query) DeleteAllSlice(o {{$alias.UpSingular}}Slice, {{if .NoContext}}exec boil.Executor{{else}}ctx context.Context, exec boil.ContextExecutor{{end}}{{if $soft}}, hardDelete bool{{end}}) {{if .NoRowsAffected}}error{{else}}(int64, error){{end -}} {
 	if len(o) == 0 {
 		return {{if not .NoRowsAffected}}0, {{end -}} nil
 	}
