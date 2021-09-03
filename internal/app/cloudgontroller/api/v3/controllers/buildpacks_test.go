@@ -353,7 +353,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending() {
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending() { //nolint:dupl
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=-position",
 		nil)
@@ -372,7 +372,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() {
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //nolint:dupl
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=created_at",
 		nil)
@@ -391,7 +391,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() {
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() {
+func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //nolint:dupl
 	req := httptest.NewRequest(
 		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=updated_at",
 		nil)
