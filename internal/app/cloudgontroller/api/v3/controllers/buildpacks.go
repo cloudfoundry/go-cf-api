@@ -138,17 +138,14 @@ func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 
-	buildpacksInDB, errDB := models.Buildpacks().All(ctx, cont.DB)
-	if errDB != nil {
-		return UnknownError(fmt.Errorf("could not Select: %w", errDB))
-	}
-	if buildpacksInDB == nil {
-		return c.JSON(http.StatusNotFound, []presenter.BuildpackResponse{})
-	}
-
 	if err := json.NewDecoder(c.Request().Body).Decode(&buildpackToInsert); err != nil {
 		logger.Error("Could not parse JSON provided in the body")
 		return UnprocessableEntity("Could not parse JSON provided in the body", err)
+	}
+
+	buildpacksInDB, errDB := models.Buildpacks().All(ctx, cont.DB)
+	if errDB != nil {
+		return UnknownError(fmt.Errorf("could not Select: %w", errDB))
 	}
 
 	if buildpackToInsert.Position == 0 {
@@ -169,7 +166,7 @@ func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 	}
 
 	// Add guid to Buildpack
-	buildpackToInsert.GUID = fmt.Sprint(uuid.New())
+	buildpackToInsert.GUID = uuid.New().String()
 	err := buildpackToInsert.Insert(ctx, cont.DB, boil.Infer())
 	if err != nil {
 		logger.Error("There is no buildpack to insert")

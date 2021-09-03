@@ -633,7 +633,7 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	buildpackName := "test_buildpack" //nolint:goconst // mistakenly gets taken as duplicate
-	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\"}", buildpackName))
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
 	req := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
 	rec := httptest.NewRecorder()
@@ -659,7 +659,7 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithRequiredParams() {
 	buildpackName := "test_buildpack"
 	position := 1
-	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\"}", buildpackName))
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
 	req := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
 	rec := httptest.NewRecorder()
@@ -681,13 +681,14 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
+
 //nolint: lll
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 	buildpackName := "test_buildpack"
 	stack := "stacks"
 	enabled := "true"
 	locked := "false"
-	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"enabled\" : %s, \"locked\" : %s, \"stack\" : \"%s\"}", buildpackName, enabled, locked, stack))
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "enabled" : %s, "locked" : %s, "stack" : "%s"}`, buildpackName, enabled, locked, stack))
 	req := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
 	rec := httptest.NewRecorder()
@@ -715,7 +716,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
 	stack := "stacks"
 	enabled := "true"
 	locked := "false"
-	reader := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"enabled\" = %s, \"locked\" : %s, \"stack\" : \"%s\"}", buildpackName, enabled, locked, stack))
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "enabled" : %s, "locked" : %s, "stack" : "%s"}`, buildpackName, enabled, locked, stack))
 	req := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader)
 	rec := httptest.NewRecorder()
@@ -737,16 +738,14 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
-	buildpackName1 := "test_buildpack1"
-	position1 := 1
-	buildpackName2 := "test_buildpack2"
-	position2 := 1
-	reader1 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName1, position1))
+	buildpackName1, position1 := "test_buildpack1", 1
+	buildpackName2, position2 := "test_buildpack2", 1
+	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
 	req1 := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
 	rec1 := httptest.NewRecorder()
 	context1 := echo.New().NewContext(req1, rec1)
-	reader2 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName2, position2))
+	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
 	req2 := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
 	rec2 := httptest.NewRecorder()
@@ -780,16 +779,14 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition() {
-	buildpackName1 := "test_buildpack1"
-	position1 := 1
-	buildpackName2 := "test_buildpack2"
-	position2 := 0
-	reader1 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName1, position1))
+	buildpackName1, position1 := "test_buildpack1", 1
+	buildpackName2, position2 := "test_buildpack2", 0
+	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
 	req1 := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
 	rec1 := httptest.NewRecorder()
 	context1 := echo.New().NewContext(req1, rec1)
-	reader2 := strings.NewReader(fmt.Sprintf("{\"name\" : \"%s\", \"position\" : %v}", buildpackName2, position2))
+	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
 	req2 := httptest.NewRequest(
 		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
 	rec2 := httptest.NewRecorder()
