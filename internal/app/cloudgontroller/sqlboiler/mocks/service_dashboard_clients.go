@@ -244,6 +244,43 @@ func (mr *MockServiceDashboardClientUpdaterMockRecorder) UpdateAllSlice(o, ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceDashboardClientUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceDashboardClientUpserter is a mock of ServiceDashboardClientUpserter interface.
+type MockServiceDashboardClientUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceDashboardClientUpserterMockRecorder
+}
+
+// MockServiceDashboardClientUpserterMockRecorder is the mock recorder for MockServiceDashboardClientUpserter.
+type MockServiceDashboardClientUpserterMockRecorder struct {
+	mock *MockServiceDashboardClientUpserter
+}
+
+// NewMockServiceDashboardClientUpserter creates a new mock instance.
+func NewMockServiceDashboardClientUpserter(ctrl *gomock.Controller) *MockServiceDashboardClientUpserter {
+	mock := &MockServiceDashboardClientUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceDashboardClientUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceDashboardClientUpserter) EXPECT() *MockServiceDashboardClientUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceDashboardClientUpserter) Upsert(o *models.ServiceDashboardClient, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceDashboardClientUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceDashboardClientUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceDashboardClientDeleter is a mock of ServiceDashboardClientDeleter interface.
 type MockServiceDashboardClientDeleter struct {
 	ctrl     *gomock.Controller

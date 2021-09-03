@@ -244,6 +244,43 @@ func (mr *MockServiceBrokerUpdateRequestUpdaterMockRecorder) UpdateAllSlice(o, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceBrokerUpdateRequestUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceBrokerUpdateRequestUpserter is a mock of ServiceBrokerUpdateRequestUpserter interface.
+type MockServiceBrokerUpdateRequestUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceBrokerUpdateRequestUpserterMockRecorder
+}
+
+// MockServiceBrokerUpdateRequestUpserterMockRecorder is the mock recorder for MockServiceBrokerUpdateRequestUpserter.
+type MockServiceBrokerUpdateRequestUpserterMockRecorder struct {
+	mock *MockServiceBrokerUpdateRequestUpserter
+}
+
+// NewMockServiceBrokerUpdateRequestUpserter creates a new mock instance.
+func NewMockServiceBrokerUpdateRequestUpserter(ctrl *gomock.Controller) *MockServiceBrokerUpdateRequestUpserter {
+	mock := &MockServiceBrokerUpdateRequestUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceBrokerUpdateRequestUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceBrokerUpdateRequestUpserter) EXPECT() *MockServiceBrokerUpdateRequestUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceBrokerUpdateRequestUpserter) Upsert(o *models.ServiceBrokerUpdateRequest, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceBrokerUpdateRequestUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceBrokerUpdateRequestUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceBrokerUpdateRequestDeleter is a mock of ServiceBrokerUpdateRequestDeleter interface.
 type MockServiceBrokerUpdateRequestDeleter struct {
 	ctrl     *gomock.Controller

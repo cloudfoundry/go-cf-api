@@ -244,6 +244,43 @@ func (mr *MockRevisionSidecarProcessTypeUpdaterMockRecorder) UpdateAllSlice(o, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRevisionSidecarProcessTypeUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockRevisionSidecarProcessTypeUpserter is a mock of RevisionSidecarProcessTypeUpserter interface.
+type MockRevisionSidecarProcessTypeUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRevisionSidecarProcessTypeUpserterMockRecorder
+}
+
+// MockRevisionSidecarProcessTypeUpserterMockRecorder is the mock recorder for MockRevisionSidecarProcessTypeUpserter.
+type MockRevisionSidecarProcessTypeUpserterMockRecorder struct {
+	mock *MockRevisionSidecarProcessTypeUpserter
+}
+
+// NewMockRevisionSidecarProcessTypeUpserter creates a new mock instance.
+func NewMockRevisionSidecarProcessTypeUpserter(ctrl *gomock.Controller) *MockRevisionSidecarProcessTypeUpserter {
+	mock := &MockRevisionSidecarProcessTypeUpserter{ctrl: ctrl}
+	mock.recorder = &MockRevisionSidecarProcessTypeUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRevisionSidecarProcessTypeUpserter) EXPECT() *MockRevisionSidecarProcessTypeUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRevisionSidecarProcessTypeUpserter) Upsert(o *models.RevisionSidecarProcessType, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRevisionSidecarProcessTypeUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionSidecarProcessTypeUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRevisionSidecarProcessTypeDeleter is a mock of RevisionSidecarProcessTypeDeleter interface.
 type MockRevisionSidecarProcessTypeDeleter struct {
 	ctrl     *gomock.Controller

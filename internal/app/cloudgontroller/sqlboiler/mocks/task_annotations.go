@@ -244,6 +244,43 @@ func (mr *MockTaskAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, co
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockTaskAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockTaskAnnotationUpserter is a mock of TaskAnnotationUpserter interface.
+type MockTaskAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockTaskAnnotationUpserterMockRecorder
+}
+
+// MockTaskAnnotationUpserterMockRecorder is the mock recorder for MockTaskAnnotationUpserter.
+type MockTaskAnnotationUpserterMockRecorder struct {
+	mock *MockTaskAnnotationUpserter
+}
+
+// NewMockTaskAnnotationUpserter creates a new mock instance.
+func NewMockTaskAnnotationUpserter(ctrl *gomock.Controller) *MockTaskAnnotationUpserter {
+	mock := &MockTaskAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockTaskAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTaskAnnotationUpserter) EXPECT() *MockTaskAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockTaskAnnotationUpserter) Upsert(o *models.TaskAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockTaskAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockTaskAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockTaskAnnotationDeleter is a mock of TaskAnnotationDeleter interface.
 type MockTaskAnnotationDeleter struct {
 	ctrl     *gomock.Controller

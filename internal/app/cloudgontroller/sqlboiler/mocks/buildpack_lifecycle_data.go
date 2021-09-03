@@ -244,6 +244,43 @@ func (mr *MockBuildpackLifecycleDatumUpdaterMockRecorder) UpdateAllSlice(o, ctx,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockBuildpackLifecycleDatumUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockBuildpackLifecycleDatumUpserter is a mock of BuildpackLifecycleDatumUpserter interface.
+type MockBuildpackLifecycleDatumUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockBuildpackLifecycleDatumUpserterMockRecorder
+}
+
+// MockBuildpackLifecycleDatumUpserterMockRecorder is the mock recorder for MockBuildpackLifecycleDatumUpserter.
+type MockBuildpackLifecycleDatumUpserterMockRecorder struct {
+	mock *MockBuildpackLifecycleDatumUpserter
+}
+
+// NewMockBuildpackLifecycleDatumUpserter creates a new mock instance.
+func NewMockBuildpackLifecycleDatumUpserter(ctrl *gomock.Controller) *MockBuildpackLifecycleDatumUpserter {
+	mock := &MockBuildpackLifecycleDatumUpserter{ctrl: ctrl}
+	mock.recorder = &MockBuildpackLifecycleDatumUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBuildpackLifecycleDatumUpserter) EXPECT() *MockBuildpackLifecycleDatumUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockBuildpackLifecycleDatumUpserter) Upsert(o *models.BuildpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockBuildpackLifecycleDatumUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockBuildpackLifecycleDatumUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockBuildpackLifecycleDatumDeleter is a mock of BuildpackLifecycleDatumDeleter interface.
 type MockBuildpackLifecycleDatumDeleter struct {
 	ctrl     *gomock.Controller

@@ -244,6 +244,43 @@ func (mr *MockStagingSecurityGroupsSpaceUpdaterMockRecorder) UpdateAllSlice(o, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockStagingSecurityGroupsSpaceUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockStagingSecurityGroupsSpaceUpserter is a mock of StagingSecurityGroupsSpaceUpserter interface.
+type MockStagingSecurityGroupsSpaceUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockStagingSecurityGroupsSpaceUpserterMockRecorder
+}
+
+// MockStagingSecurityGroupsSpaceUpserterMockRecorder is the mock recorder for MockStagingSecurityGroupsSpaceUpserter.
+type MockStagingSecurityGroupsSpaceUpserterMockRecorder struct {
+	mock *MockStagingSecurityGroupsSpaceUpserter
+}
+
+// NewMockStagingSecurityGroupsSpaceUpserter creates a new mock instance.
+func NewMockStagingSecurityGroupsSpaceUpserter(ctrl *gomock.Controller) *MockStagingSecurityGroupsSpaceUpserter {
+	mock := &MockStagingSecurityGroupsSpaceUpserter{ctrl: ctrl}
+	mock.recorder = &MockStagingSecurityGroupsSpaceUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockStagingSecurityGroupsSpaceUpserter) EXPECT() *MockStagingSecurityGroupsSpaceUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockStagingSecurityGroupsSpaceUpserter) Upsert(o *models.StagingSecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockStagingSecurityGroupsSpaceUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockStagingSecurityGroupsSpaceUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockStagingSecurityGroupsSpaceDeleter is a mock of StagingSecurityGroupsSpaceDeleter interface.
 type MockStagingSecurityGroupsSpaceDeleter struct {
 	ctrl     *gomock.Controller

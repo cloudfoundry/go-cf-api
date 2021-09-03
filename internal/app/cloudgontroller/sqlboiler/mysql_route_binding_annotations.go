@@ -708,6 +708,163 @@ func (q routeBindingAnnotationQuery) UpdateAllSlice(o RouteBindingAnnotationSlic
 	return rowsAff, nil
 }
 
+type RouteBindingAnnotationUpserter interface {
+	Upsert(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLRouteBindingAnnotationUniqueColumns = []string{
+	"id",
+	"guid",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q routeBindingAnnotationQuery) Upsert(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no route_binding_annotations provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(routeBindingAnnotationColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLRouteBindingAnnotationUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	routeBindingAnnotationUpsertCacheMut.RLock()
+	cache, cached := routeBindingAnnotationUpsertCache[key]
+	routeBindingAnnotationUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			routeBindingAnnotationAllColumns,
+			routeBindingAnnotationColumnsWithDefault,
+			routeBindingAnnotationColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			routeBindingAnnotationAllColumns,
+			routeBindingAnnotationPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert route_binding_annotations, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`route_binding_annotations`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `route_binding_annotations` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	result, err := exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for route_binding_annotations")
+	}
+
+	var lastID int64
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	lastID, err = result.LastInsertId()
+	if err != nil {
+		return ErrSyncFail
+	}
+
+	o.ID = int(lastID)
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == routeBindingAnnotationMapping["id"] {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for route_binding_annotations")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for route_binding_annotations")
+	}
+
+CacheNoHooks:
+	if !cached {
+		routeBindingAnnotationUpsertCacheMut.Lock()
+		routeBindingAnnotationUpsertCache[key] = cache
+		routeBindingAnnotationUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type RouteBindingAnnotationDeleter interface {
 	Delete(o *RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -860,157 +1017,4 @@ func RouteBindingAnnotationExists(ctx context.Context, exec boil.ContextExecutor
 	}
 
 	return exists, nil
-}
-
-var mySQLRouteBindingAnnotationUniqueColumns = []string{
-	"id",
-	"guid",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *RouteBindingAnnotation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no route_binding_annotations provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(routeBindingAnnotationColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLRouteBindingAnnotationUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	routeBindingAnnotationUpsertCacheMut.RLock()
-	cache, cached := routeBindingAnnotationUpsertCache[key]
-	routeBindingAnnotationUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			routeBindingAnnotationAllColumns,
-			routeBindingAnnotationColumnsWithDefault,
-			routeBindingAnnotationColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			routeBindingAnnotationAllColumns,
-			routeBindingAnnotationPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert route_binding_annotations, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`route_binding_annotations`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `route_binding_annotations` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for route_binding_annotations")
-	}
-
-	var lastID int64
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == routeBindingAnnotationMapping["id"] {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(routeBindingAnnotationType, routeBindingAnnotationMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for route_binding_annotations")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for route_binding_annotations")
-	}
-
-CacheNoHooks:
-	if !cached {
-		routeBindingAnnotationUpsertCacheMut.Lock()
-		routeBindingAnnotationUpsertCache[key] = cache
-		routeBindingAnnotationUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

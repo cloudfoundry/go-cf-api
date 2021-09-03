@@ -2999,6 +2999,129 @@ func (q organizationQuery) UpdateAllSlice(o OrganizationSlice, ctx context.Conte
 	return rowsAff, nil
 }
 
+type OrganizationUpserter interface {
+	Upsert(o *Organization, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q organizationQuery) Upsert(o *Organization, ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no organizations provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(organizationColumnsWithDefault, o)
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	if updateOnConflict {
+		buf.WriteByte('t')
+	} else {
+		buf.WriteByte('f')
+	}
+	buf.WriteByte('.')
+	for _, c := range conflictColumns {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	organizationUpsertCacheMut.RLock()
+	cache, cached := organizationUpsertCache[key]
+	organizationUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			organizationAllColumns,
+			organizationColumnsWithDefault,
+			organizationColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			organizationAllColumns,
+			organizationPrimaryKeyColumns,
+		)
+
+		if updateOnConflict && len(update) == 0 {
+			return errors.New("models: unable to upsert organizations, could not build update column list")
+		}
+
+		conflict := conflictColumns
+		if len(conflict) == 0 {
+			conflict = make([]string, len(organizationPrimaryKeyColumns))
+			copy(conflict, organizationPrimaryKeyColumns)
+		}
+		cache.query = buildUpsertQueryPostgres(dialect, "\"organizations\"", updateOnConflict, ret, update, conflict, insert)
+
+		cache.valueMapping, err = queries.BindMapping(organizationType, organizationMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(organizationType, organizationMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	if len(cache.retMapping) != 0 {
+		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
+		if err == sql.ErrNoRows {
+			err = nil // Postgres doesn't return anything when there's no update
+		}
+	} else {
+		_, err = exec.ExecContext(ctx, cache.query, vals...)
+	}
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert organizations")
+	}
+
+	if !cached {
+		organizationUpsertCacheMut.Lock()
+		organizationUpsertCache[key] = cache
+		organizationUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type OrganizationDeleter interface {
 	Delete(o *Organization, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -3151,123 +3274,4 @@ func OrganizationExists(ctx context.Context, exec boil.ContextExecutor, iD int) 
 	}
 
 	return exists, nil
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *Organization) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no organizations provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(organizationColumnsWithDefault, o)
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	if updateOnConflict {
-		buf.WriteByte('t')
-	} else {
-		buf.WriteByte('f')
-	}
-	buf.WriteByte('.')
-	for _, c := range conflictColumns {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	organizationUpsertCacheMut.RLock()
-	cache, cached := organizationUpsertCache[key]
-	organizationUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			organizationAllColumns,
-			organizationColumnsWithDefault,
-			organizationColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			organizationAllColumns,
-			organizationPrimaryKeyColumns,
-		)
-
-		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert organizations, could not build update column list")
-		}
-
-		conflict := conflictColumns
-		if len(conflict) == 0 {
-			conflict = make([]string, len(organizationPrimaryKeyColumns))
-			copy(conflict, organizationPrimaryKeyColumns)
-		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"organizations\"", updateOnConflict, ret, update, conflict, insert)
-
-		cache.valueMapping, err = queries.BindMapping(organizationType, organizationMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(organizationType, organizationMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	if len(cache.retMapping) != 0 {
-		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
-		if err == sql.ErrNoRows {
-			err = nil // Postgres doesn't return anything when there's no update
-		}
-	} else {
-		_, err = exec.ExecContext(ctx, cache.query, vals...)
-	}
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert organizations")
-	}
-
-	if !cached {
-		organizationUpsertCacheMut.Lock()
-		organizationUpsertCache[key] = cache
-		organizationUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

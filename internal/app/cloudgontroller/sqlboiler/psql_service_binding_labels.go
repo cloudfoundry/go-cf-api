@@ -682,6 +682,129 @@ func (q serviceBindingLabelQuery) UpdateAllSlice(o ServiceBindingLabelSlice, ctx
 	return rowsAff, nil
 }
 
+type ServiceBindingLabelUpserter interface {
+	Upsert(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q serviceBindingLabelQuery) Upsert(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no service_binding_labels provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(serviceBindingLabelColumnsWithDefault, o)
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	if updateOnConflict {
+		buf.WriteByte('t')
+	} else {
+		buf.WriteByte('f')
+	}
+	buf.WriteByte('.')
+	for _, c := range conflictColumns {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	serviceBindingLabelUpsertCacheMut.RLock()
+	cache, cached := serviceBindingLabelUpsertCache[key]
+	serviceBindingLabelUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			serviceBindingLabelAllColumns,
+			serviceBindingLabelColumnsWithDefault,
+			serviceBindingLabelColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			serviceBindingLabelAllColumns,
+			serviceBindingLabelPrimaryKeyColumns,
+		)
+
+		if updateOnConflict && len(update) == 0 {
+			return errors.New("models: unable to upsert service_binding_labels, could not build update column list")
+		}
+
+		conflict := conflictColumns
+		if len(conflict) == 0 {
+			conflict = make([]string, len(serviceBindingLabelPrimaryKeyColumns))
+			copy(conflict, serviceBindingLabelPrimaryKeyColumns)
+		}
+		cache.query = buildUpsertQueryPostgres(dialect, "\"service_binding_labels\"", updateOnConflict, ret, update, conflict, insert)
+
+		cache.valueMapping, err = queries.BindMapping(serviceBindingLabelType, serviceBindingLabelMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(serviceBindingLabelType, serviceBindingLabelMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	if len(cache.retMapping) != 0 {
+		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
+		if err == sql.ErrNoRows {
+			err = nil // Postgres doesn't return anything when there's no update
+		}
+	} else {
+		_, err = exec.ExecContext(ctx, cache.query, vals...)
+	}
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert service_binding_labels")
+	}
+
+	if !cached {
+		serviceBindingLabelUpsertCacheMut.Lock()
+		serviceBindingLabelUpsertCache[key] = cache
+		serviceBindingLabelUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type ServiceBindingLabelDeleter interface {
 	Delete(o *ServiceBindingLabel, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -834,123 +957,4 @@ func ServiceBindingLabelExists(ctx context.Context, exec boil.ContextExecutor, i
 	}
 
 	return exists, nil
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *ServiceBindingLabel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no service_binding_labels provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(serviceBindingLabelColumnsWithDefault, o)
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	if updateOnConflict {
-		buf.WriteByte('t')
-	} else {
-		buf.WriteByte('f')
-	}
-	buf.WriteByte('.')
-	for _, c := range conflictColumns {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	serviceBindingLabelUpsertCacheMut.RLock()
-	cache, cached := serviceBindingLabelUpsertCache[key]
-	serviceBindingLabelUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			serviceBindingLabelAllColumns,
-			serviceBindingLabelColumnsWithDefault,
-			serviceBindingLabelColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			serviceBindingLabelAllColumns,
-			serviceBindingLabelPrimaryKeyColumns,
-		)
-
-		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert service_binding_labels, could not build update column list")
-		}
-
-		conflict := conflictColumns
-		if len(conflict) == 0 {
-			conflict = make([]string, len(serviceBindingLabelPrimaryKeyColumns))
-			copy(conflict, serviceBindingLabelPrimaryKeyColumns)
-		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"service_binding_labels\"", updateOnConflict, ret, update, conflict, insert)
-
-		cache.valueMapping, err = queries.BindMapping(serviceBindingLabelType, serviceBindingLabelMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(serviceBindingLabelType, serviceBindingLabelMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	if len(cache.retMapping) != 0 {
-		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
-		if err == sql.ErrNoRows {
-			err = nil // Postgres doesn't return anything when there's no update
-		}
-	} else {
-		_, err = exec.ExecContext(ctx, cache.query, vals...)
-	}
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert service_binding_labels")
-	}
-
-	if !cached {
-		serviceBindingLabelUpsertCacheMut.Lock()
-		serviceBindingLabelUpsertCache[key] = cache
-		serviceBindingLabelUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

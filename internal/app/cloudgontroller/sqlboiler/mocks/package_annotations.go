@@ -244,6 +244,43 @@ func (mr *MockPackageAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockPackageAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockPackageAnnotationUpserter is a mock of PackageAnnotationUpserter interface.
+type MockPackageAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockPackageAnnotationUpserterMockRecorder
+}
+
+// MockPackageAnnotationUpserterMockRecorder is the mock recorder for MockPackageAnnotationUpserter.
+type MockPackageAnnotationUpserterMockRecorder struct {
+	mock *MockPackageAnnotationUpserter
+}
+
+// NewMockPackageAnnotationUpserter creates a new mock instance.
+func NewMockPackageAnnotationUpserter(ctrl *gomock.Controller) *MockPackageAnnotationUpserter {
+	mock := &MockPackageAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockPackageAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockPackageAnnotationUpserter) EXPECT() *MockPackageAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockPackageAnnotationUpserter) Upsert(o *models.PackageAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockPackageAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockPackageAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockPackageAnnotationDeleter is a mock of PackageAnnotationDeleter interface.
 type MockPackageAnnotationDeleter struct {
 	ctrl     *gomock.Controller

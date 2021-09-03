@@ -244,6 +244,43 @@ func (mr *MockSecurityGroupsSpaceUpdaterMockRecorder) UpdateAllSlice(o, ctx, exe
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockSecurityGroupsSpaceUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockSecurityGroupsSpaceUpserter is a mock of SecurityGroupsSpaceUpserter interface.
+type MockSecurityGroupsSpaceUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSecurityGroupsSpaceUpserterMockRecorder
+}
+
+// MockSecurityGroupsSpaceUpserterMockRecorder is the mock recorder for MockSecurityGroupsSpaceUpserter.
+type MockSecurityGroupsSpaceUpserterMockRecorder struct {
+	mock *MockSecurityGroupsSpaceUpserter
+}
+
+// NewMockSecurityGroupsSpaceUpserter creates a new mock instance.
+func NewMockSecurityGroupsSpaceUpserter(ctrl *gomock.Controller) *MockSecurityGroupsSpaceUpserter {
+	mock := &MockSecurityGroupsSpaceUpserter{ctrl: ctrl}
+	mock.recorder = &MockSecurityGroupsSpaceUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSecurityGroupsSpaceUpserter) EXPECT() *MockSecurityGroupsSpaceUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockSecurityGroupsSpaceUpserter) Upsert(o *models.SecurityGroupsSpace, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockSecurityGroupsSpaceUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSecurityGroupsSpaceUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockSecurityGroupsSpaceDeleter is a mock of SecurityGroupsSpaceDeleter interface.
 type MockSecurityGroupsSpaceDeleter struct {
 	ctrl     *gomock.Controller

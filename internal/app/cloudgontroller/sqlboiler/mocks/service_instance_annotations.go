@@ -244,6 +244,43 @@ func (mr *MockServiceInstanceAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ct
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceInstanceAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceInstanceAnnotationUpserter is a mock of ServiceInstanceAnnotationUpserter interface.
+type MockServiceInstanceAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceInstanceAnnotationUpserterMockRecorder
+}
+
+// MockServiceInstanceAnnotationUpserterMockRecorder is the mock recorder for MockServiceInstanceAnnotationUpserter.
+type MockServiceInstanceAnnotationUpserterMockRecorder struct {
+	mock *MockServiceInstanceAnnotationUpserter
+}
+
+// NewMockServiceInstanceAnnotationUpserter creates a new mock instance.
+func NewMockServiceInstanceAnnotationUpserter(ctrl *gomock.Controller) *MockServiceInstanceAnnotationUpserter {
+	mock := &MockServiceInstanceAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceInstanceAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceInstanceAnnotationUpserter) EXPECT() *MockServiceInstanceAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceInstanceAnnotationUpserter) Upsert(o *models.ServiceInstanceAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceInstanceAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceInstanceAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceInstanceAnnotationDeleter is a mock of ServiceInstanceAnnotationDeleter interface.
 type MockServiceInstanceAnnotationDeleter struct {
 	ctrl     *gomock.Controller

@@ -244,6 +244,43 @@ func (mr *MockServiceKeyAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, ex
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceKeyAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceKeyAnnotationUpserter is a mock of ServiceKeyAnnotationUpserter interface.
+type MockServiceKeyAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceKeyAnnotationUpserterMockRecorder
+}
+
+// MockServiceKeyAnnotationUpserterMockRecorder is the mock recorder for MockServiceKeyAnnotationUpserter.
+type MockServiceKeyAnnotationUpserterMockRecorder struct {
+	mock *MockServiceKeyAnnotationUpserter
+}
+
+// NewMockServiceKeyAnnotationUpserter creates a new mock instance.
+func NewMockServiceKeyAnnotationUpserter(ctrl *gomock.Controller) *MockServiceKeyAnnotationUpserter {
+	mock := &MockServiceKeyAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceKeyAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceKeyAnnotationUpserter) EXPECT() *MockServiceKeyAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceKeyAnnotationUpserter) Upsert(o *models.ServiceKeyAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceKeyAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceKeyAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceKeyAnnotationDeleter is a mock of ServiceKeyAnnotationDeleter interface.
 type MockServiceKeyAnnotationDeleter struct {
 	ctrl     *gomock.Controller

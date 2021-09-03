@@ -244,6 +244,43 @@ func (mr *MockBuildpackLifecycleBuildpackUpdaterMockRecorder) UpdateAllSlice(o, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockBuildpackLifecycleBuildpackUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockBuildpackLifecycleBuildpackUpserter is a mock of BuildpackLifecycleBuildpackUpserter interface.
+type MockBuildpackLifecycleBuildpackUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockBuildpackLifecycleBuildpackUpserterMockRecorder
+}
+
+// MockBuildpackLifecycleBuildpackUpserterMockRecorder is the mock recorder for MockBuildpackLifecycleBuildpackUpserter.
+type MockBuildpackLifecycleBuildpackUpserterMockRecorder struct {
+	mock *MockBuildpackLifecycleBuildpackUpserter
+}
+
+// NewMockBuildpackLifecycleBuildpackUpserter creates a new mock instance.
+func NewMockBuildpackLifecycleBuildpackUpserter(ctrl *gomock.Controller) *MockBuildpackLifecycleBuildpackUpserter {
+	mock := &MockBuildpackLifecycleBuildpackUpserter{ctrl: ctrl}
+	mock.recorder = &MockBuildpackLifecycleBuildpackUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBuildpackLifecycleBuildpackUpserter) EXPECT() *MockBuildpackLifecycleBuildpackUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockBuildpackLifecycleBuildpackUpserter) Upsert(o *models.BuildpackLifecycleBuildpack, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockBuildpackLifecycleBuildpackUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockBuildpackLifecycleBuildpackUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockBuildpackLifecycleBuildpackDeleter is a mock of BuildpackLifecycleBuildpackDeleter interface.
 type MockBuildpackLifecycleBuildpackDeleter struct {
 	ctrl     *gomock.Controller

@@ -244,6 +244,43 @@ func (mr *MockServiceBrokerLabelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceBrokerLabelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceBrokerLabelUpserter is a mock of ServiceBrokerLabelUpserter interface.
+type MockServiceBrokerLabelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceBrokerLabelUpserterMockRecorder
+}
+
+// MockServiceBrokerLabelUpserterMockRecorder is the mock recorder for MockServiceBrokerLabelUpserter.
+type MockServiceBrokerLabelUpserterMockRecorder struct {
+	mock *MockServiceBrokerLabelUpserter
+}
+
+// NewMockServiceBrokerLabelUpserter creates a new mock instance.
+func NewMockServiceBrokerLabelUpserter(ctrl *gomock.Controller) *MockServiceBrokerLabelUpserter {
+	mock := &MockServiceBrokerLabelUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceBrokerLabelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceBrokerLabelUpserter) EXPECT() *MockServiceBrokerLabelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceBrokerLabelUpserter) Upsert(o *models.ServiceBrokerLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceBrokerLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceBrokerLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceBrokerLabelDeleter is a mock of ServiceBrokerLabelDeleter interface.
 type MockServiceBrokerLabelDeleter struct {
 	ctrl     *gomock.Controller

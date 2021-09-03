@@ -244,6 +244,43 @@ func (mr *MockJobWarningUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols i
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockJobWarningUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockJobWarningUpserter is a mock of JobWarningUpserter interface.
+type MockJobWarningUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockJobWarningUpserterMockRecorder
+}
+
+// MockJobWarningUpserterMockRecorder is the mock recorder for MockJobWarningUpserter.
+type MockJobWarningUpserterMockRecorder struct {
+	mock *MockJobWarningUpserter
+}
+
+// NewMockJobWarningUpserter creates a new mock instance.
+func NewMockJobWarningUpserter(ctrl *gomock.Controller) *MockJobWarningUpserter {
+	mock := &MockJobWarningUpserter{ctrl: ctrl}
+	mock.recorder = &MockJobWarningUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockJobWarningUpserter) EXPECT() *MockJobWarningUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockJobWarningUpserter) Upsert(o *models.JobWarning, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockJobWarningUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockJobWarningUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockJobWarningDeleter is a mock of JobWarningDeleter interface.
 type MockJobWarningDeleter struct {
 	ctrl     *gomock.Controller

@@ -244,6 +244,43 @@ func (mr *MockSidecarProcessTypeUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockSidecarProcessTypeUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockSidecarProcessTypeUpserter is a mock of SidecarProcessTypeUpserter interface.
+type MockSidecarProcessTypeUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSidecarProcessTypeUpserterMockRecorder
+}
+
+// MockSidecarProcessTypeUpserterMockRecorder is the mock recorder for MockSidecarProcessTypeUpserter.
+type MockSidecarProcessTypeUpserterMockRecorder struct {
+	mock *MockSidecarProcessTypeUpserter
+}
+
+// NewMockSidecarProcessTypeUpserter creates a new mock instance.
+func NewMockSidecarProcessTypeUpserter(ctrl *gomock.Controller) *MockSidecarProcessTypeUpserter {
+	mock := &MockSidecarProcessTypeUpserter{ctrl: ctrl}
+	mock.recorder = &MockSidecarProcessTypeUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSidecarProcessTypeUpserter) EXPECT() *MockSidecarProcessTypeUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockSidecarProcessTypeUpserter) Upsert(o *models.SidecarProcessType, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockSidecarProcessTypeUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSidecarProcessTypeUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockSidecarProcessTypeDeleter is a mock of SidecarProcessTypeDeleter interface.
 type MockSidecarProcessTypeDeleter struct {
 	ctrl     *gomock.Controller

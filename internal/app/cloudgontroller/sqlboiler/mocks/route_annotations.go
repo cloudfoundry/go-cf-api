@@ -244,6 +244,43 @@ func (mr *MockRouteAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRouteAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockRouteAnnotationUpserter is a mock of RouteAnnotationUpserter interface.
+type MockRouteAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRouteAnnotationUpserterMockRecorder
+}
+
+// MockRouteAnnotationUpserterMockRecorder is the mock recorder for MockRouteAnnotationUpserter.
+type MockRouteAnnotationUpserterMockRecorder struct {
+	mock *MockRouteAnnotationUpserter
+}
+
+// NewMockRouteAnnotationUpserter creates a new mock instance.
+func NewMockRouteAnnotationUpserter(ctrl *gomock.Controller) *MockRouteAnnotationUpserter {
+	mock := &MockRouteAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockRouteAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRouteAnnotationUpserter) EXPECT() *MockRouteAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRouteAnnotationUpserter) Upsert(o *models.RouteAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRouteAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRouteAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRouteAnnotationDeleter is a mock of RouteAnnotationDeleter interface.
 type MockRouteAnnotationDeleter struct {
 	ctrl     *gomock.Controller

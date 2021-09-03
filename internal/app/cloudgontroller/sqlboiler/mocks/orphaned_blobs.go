@@ -244,6 +244,43 @@ func (mr *MockOrphanedBlobUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrphanedBlobUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockOrphanedBlobUpserter is a mock of OrphanedBlobUpserter interface.
+type MockOrphanedBlobUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrphanedBlobUpserterMockRecorder
+}
+
+// MockOrphanedBlobUpserterMockRecorder is the mock recorder for MockOrphanedBlobUpserter.
+type MockOrphanedBlobUpserterMockRecorder struct {
+	mock *MockOrphanedBlobUpserter
+}
+
+// NewMockOrphanedBlobUpserter creates a new mock instance.
+func NewMockOrphanedBlobUpserter(ctrl *gomock.Controller) *MockOrphanedBlobUpserter {
+	mock := &MockOrphanedBlobUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrphanedBlobUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrphanedBlobUpserter) EXPECT() *MockOrphanedBlobUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrphanedBlobUpserter) Upsert(o *models.OrphanedBlob, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrphanedBlobUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrphanedBlobUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrphanedBlobDeleter is a mock of OrphanedBlobDeleter interface.
 type MockOrphanedBlobDeleter struct {
 	ctrl     *gomock.Controller

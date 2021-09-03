@@ -244,6 +244,43 @@ func (mr *MockClockJobUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockClockJobUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockClockJobUpserter is a mock of ClockJobUpserter interface.
+type MockClockJobUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockClockJobUpserterMockRecorder
+}
+
+// MockClockJobUpserterMockRecorder is the mock recorder for MockClockJobUpserter.
+type MockClockJobUpserterMockRecorder struct {
+	mock *MockClockJobUpserter
+}
+
+// NewMockClockJobUpserter creates a new mock instance.
+func NewMockClockJobUpserter(ctrl *gomock.Controller) *MockClockJobUpserter {
+	mock := &MockClockJobUpserter{ctrl: ctrl}
+	mock.recorder = &MockClockJobUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockClockJobUpserter) EXPECT() *MockClockJobUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockClockJobUpserter) Upsert(o *models.ClockJob, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockClockJobUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockClockJobUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockClockJobDeleter is a mock of ClockJobDeleter interface.
 type MockClockJobDeleter struct {
 	ctrl     *gomock.Controller

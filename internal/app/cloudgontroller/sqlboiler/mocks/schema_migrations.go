@@ -244,6 +244,43 @@ func (mr *MockSchemaMigrationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockSchemaMigrationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockSchemaMigrationUpserter is a mock of SchemaMigrationUpserter interface.
+type MockSchemaMigrationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSchemaMigrationUpserterMockRecorder
+}
+
+// MockSchemaMigrationUpserterMockRecorder is the mock recorder for MockSchemaMigrationUpserter.
+type MockSchemaMigrationUpserterMockRecorder struct {
+	mock *MockSchemaMigrationUpserter
+}
+
+// NewMockSchemaMigrationUpserter creates a new mock instance.
+func NewMockSchemaMigrationUpserter(ctrl *gomock.Controller) *MockSchemaMigrationUpserter {
+	mock := &MockSchemaMigrationUpserter{ctrl: ctrl}
+	mock.recorder = &MockSchemaMigrationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSchemaMigrationUpserter) EXPECT() *MockSchemaMigrationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockSchemaMigrationUpserter) Upsert(o *models.SchemaMigration, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockSchemaMigrationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSchemaMigrationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockSchemaMigrationDeleter is a mock of SchemaMigrationDeleter interface.
 type MockSchemaMigrationDeleter struct {
 	ctrl     *gomock.Controller

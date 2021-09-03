@@ -697,6 +697,163 @@ func (q routeBindingOperationQuery) UpdateAllSlice(o RouteBindingOperationSlice,
 	return rowsAff, nil
 }
 
+type RouteBindingOperationUpserter interface {
+	Upsert(o *RouteBindingOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLRouteBindingOperationUniqueColumns = []string{
+	"id",
+	"route_binding_id",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q routeBindingOperationQuery) Upsert(o *RouteBindingOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no route_binding_operations provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(routeBindingOperationColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLRouteBindingOperationUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	routeBindingOperationUpsertCacheMut.RLock()
+	cache, cached := routeBindingOperationUpsertCache[key]
+	routeBindingOperationUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			routeBindingOperationAllColumns,
+			routeBindingOperationColumnsWithDefault,
+			routeBindingOperationColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			routeBindingOperationAllColumns,
+			routeBindingOperationPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert route_binding_operations, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`route_binding_operations`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `route_binding_operations` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	result, err := exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for route_binding_operations")
+	}
+
+	var lastID int64
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	lastID, err = result.LastInsertId()
+	if err != nil {
+		return ErrSyncFail
+	}
+
+	o.ID = int(lastID)
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == routeBindingOperationMapping["id"] {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for route_binding_operations")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for route_binding_operations")
+	}
+
+CacheNoHooks:
+	if !cached {
+		routeBindingOperationUpsertCacheMut.Lock()
+		routeBindingOperationUpsertCache[key] = cache
+		routeBindingOperationUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type RouteBindingOperationDeleter interface {
 	Delete(o *RouteBindingOperation, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -849,157 +1006,4 @@ func RouteBindingOperationExists(ctx context.Context, exec boil.ContextExecutor,
 	}
 
 	return exists, nil
-}
-
-var mySQLRouteBindingOperationUniqueColumns = []string{
-	"id",
-	"route_binding_id",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *RouteBindingOperation) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no route_binding_operations provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(routeBindingOperationColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLRouteBindingOperationUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	routeBindingOperationUpsertCacheMut.RLock()
-	cache, cached := routeBindingOperationUpsertCache[key]
-	routeBindingOperationUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			routeBindingOperationAllColumns,
-			routeBindingOperationColumnsWithDefault,
-			routeBindingOperationColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			routeBindingOperationAllColumns,
-			routeBindingOperationPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert route_binding_operations, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`route_binding_operations`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `route_binding_operations` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for route_binding_operations")
-	}
-
-	var lastID int64
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == routeBindingOperationMapping["id"] {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(routeBindingOperationType, routeBindingOperationMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for route_binding_operations")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for route_binding_operations")
-	}
-
-CacheNoHooks:
-	if !cached {
-		routeBindingOperationUpsertCacheMut.Lock()
-		routeBindingOperationUpsertCache[key] = cache
-		routeBindingOperationUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

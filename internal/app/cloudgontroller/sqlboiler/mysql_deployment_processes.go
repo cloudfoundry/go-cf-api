@@ -701,6 +701,163 @@ func (q deploymentProcessQuery) UpdateAllSlice(o DeploymentProcessSlice, ctx con
 	return rowsAff, nil
 }
 
+type DeploymentProcessUpserter interface {
+	Upsert(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLDeploymentProcessUniqueColumns = []string{
+	"id",
+	"guid",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q deploymentProcessQuery) Upsert(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no deployment_processes provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(deploymentProcessColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLDeploymentProcessUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	deploymentProcessUpsertCacheMut.RLock()
+	cache, cached := deploymentProcessUpsertCache[key]
+	deploymentProcessUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			deploymentProcessAllColumns,
+			deploymentProcessColumnsWithDefault,
+			deploymentProcessColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			deploymentProcessAllColumns,
+			deploymentProcessPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert deployment_processes, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`deployment_processes`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `deployment_processes` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	result, err := exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for deployment_processes")
+	}
+
+	var lastID int64
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	lastID, err = result.LastInsertId()
+	if err != nil {
+		return ErrSyncFail
+	}
+
+	o.ID = int(lastID)
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == deploymentProcessMapping["id"] {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for deployment_processes")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for deployment_processes")
+	}
+
+CacheNoHooks:
+	if !cached {
+		deploymentProcessUpsertCacheMut.Lock()
+		deploymentProcessUpsertCache[key] = cache
+		deploymentProcessUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type DeploymentProcessDeleter interface {
 	Delete(o *DeploymentProcess, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -853,157 +1010,4 @@ func DeploymentProcessExists(ctx context.Context, exec boil.ContextExecutor, iD 
 	}
 
 	return exists, nil
-}
-
-var mySQLDeploymentProcessUniqueColumns = []string{
-	"id",
-	"guid",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *DeploymentProcess) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no deployment_processes provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(deploymentProcessColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLDeploymentProcessUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	deploymentProcessUpsertCacheMut.RLock()
-	cache, cached := deploymentProcessUpsertCache[key]
-	deploymentProcessUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			deploymentProcessAllColumns,
-			deploymentProcessColumnsWithDefault,
-			deploymentProcessColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			deploymentProcessAllColumns,
-			deploymentProcessPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert deployment_processes, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`deployment_processes`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `deployment_processes` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for deployment_processes")
-	}
-
-	var lastID int64
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == deploymentProcessMapping["id"] {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(deploymentProcessType, deploymentProcessMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for deployment_processes")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for deployment_processes")
-	}
-
-CacheNoHooks:
-	if !cached {
-		deploymentProcessUpsertCacheMut.Lock()
-		deploymentProcessUpsertCache[key] = cache
-		deploymentProcessUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

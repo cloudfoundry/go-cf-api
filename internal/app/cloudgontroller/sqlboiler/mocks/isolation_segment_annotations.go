@@ -244,6 +244,43 @@ func (mr *MockIsolationSegmentAnnotationUpdaterMockRecorder) UpdateAllSlice(o, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockIsolationSegmentAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockIsolationSegmentAnnotationUpserter is a mock of IsolationSegmentAnnotationUpserter interface.
+type MockIsolationSegmentAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockIsolationSegmentAnnotationUpserterMockRecorder
+}
+
+// MockIsolationSegmentAnnotationUpserterMockRecorder is the mock recorder for MockIsolationSegmentAnnotationUpserter.
+type MockIsolationSegmentAnnotationUpserterMockRecorder struct {
+	mock *MockIsolationSegmentAnnotationUpserter
+}
+
+// NewMockIsolationSegmentAnnotationUpserter creates a new mock instance.
+func NewMockIsolationSegmentAnnotationUpserter(ctrl *gomock.Controller) *MockIsolationSegmentAnnotationUpserter {
+	mock := &MockIsolationSegmentAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockIsolationSegmentAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIsolationSegmentAnnotationUpserter) EXPECT() *MockIsolationSegmentAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockIsolationSegmentAnnotationUpserter) Upsert(o *models.IsolationSegmentAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockIsolationSegmentAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockIsolationSegmentAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockIsolationSegmentAnnotationDeleter is a mock of IsolationSegmentAnnotationDeleter interface.
 type MockIsolationSegmentAnnotationDeleter struct {
 	ctrl     *gomock.Controller

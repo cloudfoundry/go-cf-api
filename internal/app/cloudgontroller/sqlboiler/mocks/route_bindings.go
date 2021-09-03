@@ -244,6 +244,43 @@ func (mr *MockRouteBindingUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRouteBindingUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockRouteBindingUpserter is a mock of RouteBindingUpserter interface.
+type MockRouteBindingUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRouteBindingUpserterMockRecorder
+}
+
+// MockRouteBindingUpserterMockRecorder is the mock recorder for MockRouteBindingUpserter.
+type MockRouteBindingUpserterMockRecorder struct {
+	mock *MockRouteBindingUpserter
+}
+
+// NewMockRouteBindingUpserter creates a new mock instance.
+func NewMockRouteBindingUpserter(ctrl *gomock.Controller) *MockRouteBindingUpserter {
+	mock := &MockRouteBindingUpserter{ctrl: ctrl}
+	mock.recorder = &MockRouteBindingUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRouteBindingUpserter) EXPECT() *MockRouteBindingUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRouteBindingUpserter) Upsert(o *models.RouteBinding, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRouteBindingUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRouteBindingUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRouteBindingDeleter is a mock of RouteBindingDeleter interface.
 type MockRouteBindingDeleter struct {
 	ctrl     *gomock.Controller

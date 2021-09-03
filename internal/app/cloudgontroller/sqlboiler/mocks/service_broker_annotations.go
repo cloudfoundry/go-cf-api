@@ -244,6 +244,43 @@ func (mr *MockServiceBrokerAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx,
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceBrokerAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockServiceBrokerAnnotationUpserter is a mock of ServiceBrokerAnnotationUpserter interface.
+type MockServiceBrokerAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceBrokerAnnotationUpserterMockRecorder
+}
+
+// MockServiceBrokerAnnotationUpserterMockRecorder is the mock recorder for MockServiceBrokerAnnotationUpserter.
+type MockServiceBrokerAnnotationUpserterMockRecorder struct {
+	mock *MockServiceBrokerAnnotationUpserter
+}
+
+// NewMockServiceBrokerAnnotationUpserter creates a new mock instance.
+func NewMockServiceBrokerAnnotationUpserter(ctrl *gomock.Controller) *MockServiceBrokerAnnotationUpserter {
+	mock := &MockServiceBrokerAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceBrokerAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceBrokerAnnotationUpserter) EXPECT() *MockServiceBrokerAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceBrokerAnnotationUpserter) Upsert(o *models.ServiceBrokerAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceBrokerAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceBrokerAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceBrokerAnnotationDeleter is a mock of ServiceBrokerAnnotationDeleter interface.
 type MockServiceBrokerAnnotationDeleter struct {
 	ctrl     *gomock.Controller

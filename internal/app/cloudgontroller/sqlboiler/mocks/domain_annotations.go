@@ -244,6 +244,43 @@ func (mr *MockDomainAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockDomainAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockDomainAnnotationUpserter is a mock of DomainAnnotationUpserter interface.
+type MockDomainAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockDomainAnnotationUpserterMockRecorder
+}
+
+// MockDomainAnnotationUpserterMockRecorder is the mock recorder for MockDomainAnnotationUpserter.
+type MockDomainAnnotationUpserterMockRecorder struct {
+	mock *MockDomainAnnotationUpserter
+}
+
+// NewMockDomainAnnotationUpserter creates a new mock instance.
+func NewMockDomainAnnotationUpserter(ctrl *gomock.Controller) *MockDomainAnnotationUpserter {
+	mock := &MockDomainAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockDomainAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDomainAnnotationUpserter) EXPECT() *MockDomainAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockDomainAnnotationUpserter) Upsert(o *models.DomainAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockDomainAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDomainAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockDomainAnnotationDeleter is a mock of DomainAnnotationDeleter interface.
 type MockDomainAnnotationDeleter struct {
 	ctrl     *gomock.Controller

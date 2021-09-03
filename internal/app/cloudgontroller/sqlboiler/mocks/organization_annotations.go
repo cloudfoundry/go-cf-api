@@ -244,6 +244,43 @@ func (mr *MockOrganizationAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrganizationAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockOrganizationAnnotationUpserter is a mock of OrganizationAnnotationUpserter interface.
+type MockOrganizationAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrganizationAnnotationUpserterMockRecorder
+}
+
+// MockOrganizationAnnotationUpserterMockRecorder is the mock recorder for MockOrganizationAnnotationUpserter.
+type MockOrganizationAnnotationUpserterMockRecorder struct {
+	mock *MockOrganizationAnnotationUpserter
+}
+
+// NewMockOrganizationAnnotationUpserter creates a new mock instance.
+func NewMockOrganizationAnnotationUpserter(ctrl *gomock.Controller) *MockOrganizationAnnotationUpserter {
+	mock := &MockOrganizationAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrganizationAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrganizationAnnotationUpserter) EXPECT() *MockOrganizationAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrganizationAnnotationUpserter) Upsert(o *models.OrganizationAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrganizationAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrganizationAnnotationDeleter is a mock of OrganizationAnnotationDeleter interface.
 type MockOrganizationAnnotationDeleter struct {
 	ctrl     *gomock.Controller

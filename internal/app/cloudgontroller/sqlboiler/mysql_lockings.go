@@ -451,6 +451,155 @@ func (q lockingQuery) UpdateAllSlice(o LockingSlice, ctx context.Context, exec b
 	return rowsAff, nil
 }
 
+type LockingUpserter interface {
+	Upsert(o *Locking, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLLockingUniqueColumns = []string{
+	"id",
+	"name",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q lockingQuery) Upsert(o *Locking, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no lockings provided for upsert")
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(lockingColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLLockingUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	lockingUpsertCacheMut.RLock()
+	cache, cached := lockingUpsertCache[key]
+	lockingUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			lockingAllColumns,
+			lockingColumnsWithDefault,
+			lockingColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			lockingAllColumns,
+			lockingPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert lockings, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`lockings`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `lockings` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(lockingType, lockingMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(lockingType, lockingMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	result, err := exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for lockings")
+	}
+
+	var lastID int64
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	lastID, err = result.LastInsertId()
+	if err != nil {
+		return ErrSyncFail
+	}
+
+	o.ID = int(lastID)
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == lockingMapping["id"] {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(lockingType, lockingMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for lockings")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for lockings")
+	}
+
+CacheNoHooks:
+	if !cached {
+		lockingUpsertCacheMut.Lock()
+		lockingUpsertCache[key] = cache
+		lockingUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 type LockingDeleter interface {
 	Delete(o *Locking, ctx context.Context, exec boil.ContextExecutor) (int64, error)
 	DeleteAll(ctx context.Context, exec boil.ContextExecutor) (int64, error)
@@ -603,149 +752,4 @@ func LockingExists(ctx context.Context, exec boil.ContextExecutor, iD int) (bool
 	}
 
 	return exists, nil
-}
-
-var mySQLLockingUniqueColumns = []string{
-	"id",
-	"name",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *Locking) Upsert(ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no lockings provided for upsert")
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(lockingColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLLockingUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	lockingUpsertCacheMut.RLock()
-	cache, cached := lockingUpsertCache[key]
-	lockingUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			lockingAllColumns,
-			lockingColumnsWithDefault,
-			lockingColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			lockingAllColumns,
-			lockingPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert lockings, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`lockings`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `lockings` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(lockingType, lockingMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(lockingType, lockingMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for lockings")
-	}
-
-	var lastID int64
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.ID = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == lockingMapping["id"] {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(lockingType, lockingMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for lockings")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for lockings")
-	}
-
-CacheNoHooks:
-	if !cached {
-		lockingUpsertCacheMut.Lock()
-		lockingUpsertCache[key] = cache
-		lockingUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }

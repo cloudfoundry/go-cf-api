@@ -244,6 +244,43 @@ func (mr *MockEnvGroupUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockEnvGroupUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockEnvGroupUpserter is a mock of EnvGroupUpserter interface.
+type MockEnvGroupUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockEnvGroupUpserterMockRecorder
+}
+
+// MockEnvGroupUpserterMockRecorder is the mock recorder for MockEnvGroupUpserter.
+type MockEnvGroupUpserterMockRecorder struct {
+	mock *MockEnvGroupUpserter
+}
+
+// NewMockEnvGroupUpserter creates a new mock instance.
+func NewMockEnvGroupUpserter(ctrl *gomock.Controller) *MockEnvGroupUpserter {
+	mock := &MockEnvGroupUpserter{ctrl: ctrl}
+	mock.recorder = &MockEnvGroupUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockEnvGroupUpserter) EXPECT() *MockEnvGroupUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockEnvGroupUpserter) Upsert(o *models.EnvGroup, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockEnvGroupUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockEnvGroupUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockEnvGroupDeleter is a mock of EnvGroupDeleter interface.
 type MockEnvGroupDeleter struct {
 	ctrl     *gomock.Controller

@@ -244,6 +244,43 @@ func (mr *MockOrganizationsAuditorUpdaterMockRecorder) UpdateAllSlice(o, ctx, ex
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrganizationsAuditorUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockOrganizationsAuditorUpserter is a mock of OrganizationsAuditorUpserter interface.
+type MockOrganizationsAuditorUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrganizationsAuditorUpserterMockRecorder
+}
+
+// MockOrganizationsAuditorUpserterMockRecorder is the mock recorder for MockOrganizationsAuditorUpserter.
+type MockOrganizationsAuditorUpserterMockRecorder struct {
+	mock *MockOrganizationsAuditorUpserter
+}
+
+// NewMockOrganizationsAuditorUpserter creates a new mock instance.
+func NewMockOrganizationsAuditorUpserter(ctrl *gomock.Controller) *MockOrganizationsAuditorUpserter {
+	mock := &MockOrganizationsAuditorUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrganizationsAuditorUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrganizationsAuditorUpserter) EXPECT() *MockOrganizationsAuditorUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrganizationsAuditorUpserter) Upsert(o *models.OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrganizationsAuditorUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsAuditorUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrganizationsAuditorDeleter is a mock of OrganizationsAuditorDeleter interface.
 type MockOrganizationsAuditorDeleter struct {
 	ctrl     *gomock.Controller

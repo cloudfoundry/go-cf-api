@@ -244,6 +244,43 @@ func (mr *MockDeploymentLabelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockDeploymentLabelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockDeploymentLabelUpserter is a mock of DeploymentLabelUpserter interface.
+type MockDeploymentLabelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockDeploymentLabelUpserterMockRecorder
+}
+
+// MockDeploymentLabelUpserterMockRecorder is the mock recorder for MockDeploymentLabelUpserter.
+type MockDeploymentLabelUpserterMockRecorder struct {
+	mock *MockDeploymentLabelUpserter
+}
+
+// NewMockDeploymentLabelUpserter creates a new mock instance.
+func NewMockDeploymentLabelUpserter(ctrl *gomock.Controller) *MockDeploymentLabelUpserter {
+	mock := &MockDeploymentLabelUpserter{ctrl: ctrl}
+	mock.recorder = &MockDeploymentLabelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDeploymentLabelUpserter) EXPECT() *MockDeploymentLabelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockDeploymentLabelUpserter) Upsert(o *models.DeploymentLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockDeploymentLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDeploymentLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockDeploymentLabelDeleter is a mock of DeploymentLabelDeleter interface.
 type MockDeploymentLabelDeleter struct {
 	ctrl     *gomock.Controller

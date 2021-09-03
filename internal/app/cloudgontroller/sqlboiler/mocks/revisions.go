@@ -244,6 +244,43 @@ func (mr *MockRevisionUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols int
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRevisionUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockRevisionUpserter is a mock of RevisionUpserter interface.
+type MockRevisionUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRevisionUpserterMockRecorder
+}
+
+// MockRevisionUpserterMockRecorder is the mock recorder for MockRevisionUpserter.
+type MockRevisionUpserterMockRecorder struct {
+	mock *MockRevisionUpserter
+}
+
+// NewMockRevisionUpserter creates a new mock instance.
+func NewMockRevisionUpserter(ctrl *gomock.Controller) *MockRevisionUpserter {
+	mock := &MockRevisionUpserter{ctrl: ctrl}
+	mock.recorder = &MockRevisionUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRevisionUpserter) EXPECT() *MockRevisionUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRevisionUpserter) Upsert(o *models.Revision, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRevisionUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRevisionDeleter is a mock of RevisionDeleter interface.
 type MockRevisionDeleter struct {
 	ctrl     *gomock.Controller

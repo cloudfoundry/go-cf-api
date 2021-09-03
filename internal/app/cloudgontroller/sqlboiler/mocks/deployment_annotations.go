@@ -244,6 +244,43 @@ func (mr *MockDeploymentAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, ex
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockDeploymentAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockDeploymentAnnotationUpserter is a mock of DeploymentAnnotationUpserter interface.
+type MockDeploymentAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockDeploymentAnnotationUpserterMockRecorder
+}
+
+// MockDeploymentAnnotationUpserterMockRecorder is the mock recorder for MockDeploymentAnnotationUpserter.
+type MockDeploymentAnnotationUpserterMockRecorder struct {
+	mock *MockDeploymentAnnotationUpserter
+}
+
+// NewMockDeploymentAnnotationUpserter creates a new mock instance.
+func NewMockDeploymentAnnotationUpserter(ctrl *gomock.Controller) *MockDeploymentAnnotationUpserter {
+	mock := &MockDeploymentAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockDeploymentAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDeploymentAnnotationUpserter) EXPECT() *MockDeploymentAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockDeploymentAnnotationUpserter) Upsert(o *models.DeploymentAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockDeploymentAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDeploymentAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockDeploymentAnnotationDeleter is a mock of DeploymentAnnotationDeleter interface.
 type MockDeploymentAnnotationDeleter struct {
 	ctrl     *gomock.Controller

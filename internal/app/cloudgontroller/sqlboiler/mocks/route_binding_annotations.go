@@ -244,6 +244,43 @@ func (mr *MockRouteBindingAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRouteBindingAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockRouteBindingAnnotationUpserter is a mock of RouteBindingAnnotationUpserter interface.
+type MockRouteBindingAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRouteBindingAnnotationUpserterMockRecorder
+}
+
+// MockRouteBindingAnnotationUpserterMockRecorder is the mock recorder for MockRouteBindingAnnotationUpserter.
+type MockRouteBindingAnnotationUpserterMockRecorder struct {
+	mock *MockRouteBindingAnnotationUpserter
+}
+
+// NewMockRouteBindingAnnotationUpserter creates a new mock instance.
+func NewMockRouteBindingAnnotationUpserter(ctrl *gomock.Controller) *MockRouteBindingAnnotationUpserter {
+	mock := &MockRouteBindingAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockRouteBindingAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRouteBindingAnnotationUpserter) EXPECT() *MockRouteBindingAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRouteBindingAnnotationUpserter) Upsert(o *models.RouteBindingAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRouteBindingAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRouteBindingAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRouteBindingAnnotationDeleter is a mock of RouteBindingAnnotationDeleter interface.
 type MockRouteBindingAnnotationDeleter struct {
 	ctrl     *gomock.Controller

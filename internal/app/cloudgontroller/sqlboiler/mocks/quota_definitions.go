@@ -244,6 +244,43 @@ func (mr *MockQuotaDefinitionUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, c
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockQuotaDefinitionUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
 }
 
+// MockQuotaDefinitionUpserter is a mock of QuotaDefinitionUpserter interface.
+type MockQuotaDefinitionUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockQuotaDefinitionUpserterMockRecorder
+}
+
+// MockQuotaDefinitionUpserterMockRecorder is the mock recorder for MockQuotaDefinitionUpserter.
+type MockQuotaDefinitionUpserterMockRecorder struct {
+	mock *MockQuotaDefinitionUpserter
+}
+
+// NewMockQuotaDefinitionUpserter creates a new mock instance.
+func NewMockQuotaDefinitionUpserter(ctrl *gomock.Controller) *MockQuotaDefinitionUpserter {
+	mock := &MockQuotaDefinitionUpserter{ctrl: ctrl}
+	mock.recorder = &MockQuotaDefinitionUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockQuotaDefinitionUpserter) EXPECT() *MockQuotaDefinitionUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockQuotaDefinitionUpserter) Upsert(o *models.QuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockQuotaDefinitionUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockQuotaDefinitionUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockQuotaDefinitionDeleter is a mock of QuotaDefinitionDeleter interface.
 type MockQuotaDefinitionDeleter struct {
 	ctrl     *gomock.Controller
