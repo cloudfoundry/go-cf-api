@@ -1,10 +1,8 @@
-package common
+package pagination
 
 import (
 	"fmt"
 	"math"
-
-	commoncontroller "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
 )
 
 type Link struct {
@@ -21,7 +19,7 @@ type Pagination struct {
 	Previous     *Link `json:"previous"`
 }
 
-func NewPagination(totalResults int, paginationParams commoncontroller.PaginationParams, resourcePath string) *Pagination {
+func NewPagination(totalResults int, paginationParams Params, resourcePath string) *Pagination {
 	totalPageCount := totalPages(totalResults, paginationParams.PerPage)
 	return &Pagination{
 		TotalResults: totalResults,
@@ -45,7 +43,7 @@ func totalPages(totalResults int, perPage uint16) int {
 	return pages
 }
 
-func nextLink(totalResults int, paginationParams commoncontroller.PaginationParams, resourcePath string) *Link {
+func nextLink(totalResults int, paginationParams Params, resourcePath string) *Link {
 	var next *Link
 	if paginationParams.Page < totalPages(totalResults, paginationParams.PerPage) {
 		next = &Link{
@@ -55,7 +53,7 @@ func nextLink(totalResults int, paginationParams commoncontroller.PaginationPara
 	return next
 }
 
-func previousLink(totalResults int, paginationParams commoncontroller.PaginationParams, resourcePath string) *Link {
+func previousLink(totalResults int, paginationParams Params, resourcePath string) *Link {
 	var previous *Link
 	if paginationParams.Page > 1 && paginationParams.Page <= totalPages(totalResults, paginationParams.PerPage)+1 {
 		previous = &Link{

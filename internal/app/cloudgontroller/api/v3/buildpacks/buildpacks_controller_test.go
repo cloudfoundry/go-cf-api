@@ -1,6 +1,10 @@
 // +build unit
 
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 package controllers //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
+=======
+package buildpacks_test
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 
 import (
 	"errors"
@@ -16,11 +20,16 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
+=======
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"
@@ -33,9 +42,14 @@ type GetMultipleBuildpacksTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	buildpackController BuildpackController
 	queryMods           []qm.QueryMod
 	querier             *mock_models.MockBuildpackFinisher
+=======
+	SQLMock             sqlmock.Sqlmock
+	buildpackController buildpacks.BuildpackController
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 	logger              *zap.Logger
 	ObservedLogs        *observer.ObservedLogs
 }
@@ -45,7 +59,12 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	buildpackController := BuildpackController{DB: nil}
+=======
+	db, mock, _ := sqlmock.New()
+	buildpackController := buildpacks.BuildpackController{DB: db}
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 
 	core, recorded := observer.New(zapcore.InfoLevel)
 	suite.logger = zap.New(core)
@@ -89,7 +108,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
 func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("something went wrong"))
 
-	suite.Error(UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
+	suite.Error(v3.UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
@@ -120,9 +139,14 @@ type GetBuildpackTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	buildpackController BuildpackController
 	queryMods           []qm.QueryMod
 	querier             *mock_models.MockBuildpackFinisher
+=======
+	SQLMock             sqlmock.Sqlmock
+	buildpackController buildpacks.BuildpackController
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 }
 
 func (suite *GetBuildpackTestSuite) SetupTest() {
@@ -130,7 +154,12 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	buildpackController := BuildpackController{DB: nil}
+=======
+	db, mock, _ := sqlmock.New()
+	buildpackController := buildpacks.BuildpackController{db}
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 
 	suite.Ctx = c
 	suite.Rec = *rec
@@ -145,7 +174,7 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 
 func (suite *GetBuildpackTestSuite) TestStatusOk() {
 	expectedGUID := "123"
-	suite.Ctx.SetParamNames(GUIDParam)
+	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: expectedGUID}, nil)
@@ -158,24 +187,24 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 
 func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 	expectedGUID := "non-existing-guid"
-	suite.Ctx.SetParamNames(GUIDParam)
+	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
 
-	var err *CloudControllerError
+	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
 	suite.Equal(http.StatusNotFound, err.HTTPStatus)
 }
 
 func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	expectedGUID := "non-existing-guid"
-	suite.Ctx.SetParamNames(GUIDParam)
+	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
 
-	var err *CloudControllerError
+	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }
@@ -417,7 +446,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	var err *CloudControllerError
+	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
@@ -560,7 +589,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidCreatedA
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	var err *CloudControllerError
+	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
@@ -572,7 +601,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidComparis
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	var err *CloudControllerError
+	var err *v3.CloudControllerError
 	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
@@ -583,12 +612,19 @@ func TestGetBuildpackTestSuite(t *testing.T) {
 
 type PostBuildpackTestSuite struct {
 	suite.Suite
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	ctx                 echo.Context
 	req                 *http.Request
 	rec                 *httptest.ResponseRecorder
 	buildpackController BuildpackController
 	finisher            *mock_models.MockBuildpackFinisher
 	inserter            *mock_models.MockBuildpackInserter
+=======
+	Ctx                 echo.Context
+	Rec                 httptest.ResponseRecorder
+	SQLMock             sqlmock.Sqlmock
+	buildpackController buildpacks.BuildpackController
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 }
 
 func (suite *PostBuildpackTestSuite) SetupTest() {
@@ -596,7 +632,12 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
+<<<<<<< HEAD:internal/app/cloudgontroller/api/v3/controllers/buildpacks_test.go
 	buildpackController := BuildpackController{DB: nil}
+=======
+	db, mock, _ := sqlmock.New()
+	buildpackController := buildpacks.BuildpackController{db}
+>>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
 
 	suite.ctx = c
 	suite.req = req

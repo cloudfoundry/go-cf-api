@@ -1,12 +1,12 @@
-package presenter
+package buildpacks
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/volatiletech/null/v8"
-	commoncontroller "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers/common"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/presenter/common"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -26,16 +26,16 @@ type BuildpackResponse struct {
 	Position  int         `json:"position"`
 	Enabled   null.Bool   `json:"enabled"`
 	Locked    null.Bool   `json:"locked"`
-	Metadata  Metadata    `json:"metadata"`
+	Metadata  v3.Metadata `json:"metadata"`
 	Links     struct {
-		Self   common.Link `json:"self"`
-		Upload common.Link `json:"upload"`
+		Self   pagination.Link `json:"self"`
+		Upload pagination.Link `json:"upload"`
 	} `json:"links"`
 }
 
 type BuildpacksResponse struct {
-	Pagination *common.Pagination   `json:"pagination"`
-	Resources  []*BuildpackResponse `json:"resources"`
+	Pagination *pagination.Pagination `json:"pagination"`
+	Resources  []*BuildpackResponse   `json:"resources"`
 }
 
 func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse {
@@ -51,7 +51,7 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 		Enabled:   buildpack.Enabled,
 		Locked:    buildpack.Locked,
 		// Workaround until metadata is implemented
-		Metadata: Metadata{Annotations: map[string]string{}, Labels: map[string]string{}},
+		Metadata: v3.Metadata{Annotations: map[string]string{}, Labels: map[string]string{}},
 	}
 	response.Links.Self = GetResourcePathLink(resourcePath)
 	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")
@@ -60,7 +60,7 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 
 func BuildpacksResponseObject(
 	buildpacks models.BuildpackSlice,
-	paginationParams commoncontroller.PaginationParams,
+	paginationParams pagination.Params,
 	resourcePath string) *BuildpacksResponse {
 	out := []*BuildpackResponse{}
 	for _, buildpack := range buildpacks {
@@ -69,18 +69,18 @@ func BuildpacksResponseObject(
 	}
 
 	return &BuildpacksResponse{
-		Pagination: common.NewPagination(len(buildpacks), paginationParams, resourcePath),
+		Pagination: pagination.NewPagination(len(buildpacks), paginationParams, resourcePath),
 		Resources:  out,
 	}
 }
 
-func GetResourcePathLink(resourcePath string) common.Link {
-	return common.Link{
+func GetResourcePathLink(resourcePath string) pagination.Link {
+	return pagination.Link{
 		Href: resourcePath,
 	}
 }
 
-func GetResourcePathLinkWithMethod(resourcePath string, method string) common.Link {
+func GetResourcePathLinkWithMethod(resourcePath string, method string) pagination.Link {
 	link := GetResourcePathLink(resourcePath)
 	link.Method = method
 	return link

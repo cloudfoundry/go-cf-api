@@ -1,4 +1,4 @@
-package v3
+package handlers
 
 import (
 	"database/sql"
@@ -7,13 +7,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/controllers"
+	buildpacks "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {
 	// Health
-	e.GET("healthz", controllers.GetHealth)
+	e.GET("healthz", getHealth)
 }
 
 func RegisterV3Handlers(
@@ -26,15 +26,15 @@ func RegisterV3Handlers(
 ) {
 	// Restricted group
 	restrictedGroup := e.Group(prefix)
-	restrictedGroup.Use(authMiddleware)
-	if conf.RateLimit.Enabled {
-		restrictedGroup.Use(rateLimitMiddleware)
-	}
-	buildpacksController := controllers.BuildpackController{DB: db}
+	// restrictedGroup.Use(authMiddleware)
+	// if conf.RateLimit.Enabled {
+	// 	restrictedGroup.Use(rateLimitMiddleware)
+	// }
+	buildpacksController := buildpacks.BuildpackController{DB: db}
 	{
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.GetBuildpacks)
-		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", controllers.GUIDParam), buildpacksController.GetBuildpack)
+		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.GetBuildpack)
 		restrictedGroup.POST("/buildpacks", buildpacksController.PostBuildpacks)
 	}
 }

@@ -1,4 +1,4 @@
-package controllers
+package v3
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 
 var (
 	operatorRegex = regexp.MustCompile(`^.*_ats(\[[a-zA-Z]+\]$|$)`)
-	operators     = map[string]string{ //nolint:gochecknoglobals // Cannot define const maps https://github.com/leighmcculloch/gochecknoglobals/issues/19
+	Operators     = map[string]string{ //nolint:gochecknoglobals // Cannot define const maps https://github.com/leighmcculloch/gochecknoglobals/issues/19
 		"[lt]":  string(qmhelper.LT),
 		"[lte]": string(qmhelper.LTE),
 		"[gt]":  string(qmhelper.GT),
@@ -26,7 +26,7 @@ type TimeFilter struct {
 	Operator  string
 }
 
-func parseTimeFilters(c echo.Context) ([]TimeFilter, []TimeFilter, error) {
+func ParseTimeFilters(c echo.Context) ([]TimeFilter, []TimeFilter, error) {
 	// Suffix for created_at and updated_at get removed to parse query parameters correctly
 	var createdAts, updatedAts []TimeFilter
 	for param, values := range c.QueryParams() {
@@ -53,7 +53,7 @@ func createFilter(param string, values []string) (TimeFilter, error) {
 	if matches == nil {
 		return TimeFilter{}, fmt.Errorf("could not parse 'created_ats' filter %s", param)
 	}
-	if _, ok := operators[matches[1]]; !ok {
+	if _, ok := Operators[matches[1]]; !ok {
 		return TimeFilter{}, fmt.Errorf("unrecognized comparison operator '%s'", matches[1])
 	}
 	timestamp, _ := time.Parse(time.RFC3339, values[0])
