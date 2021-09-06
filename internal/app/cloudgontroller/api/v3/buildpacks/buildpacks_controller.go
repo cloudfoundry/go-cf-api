@@ -24,9 +24,10 @@ import (
 
 const GUIDParam = "guid"
 
+//nolint:gochecknoglobals // here to be overridden in tests
 var (
-	BuildpackQuerier                           = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
-	BuildpackInserter models.BuildpackInserter = models.Buildpacks()
+	buildpackQuerier                           = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
+	buildpackInserter models.BuildpackInserter = models.Buildpacks()
 )
 
 type Controller struct {
@@ -73,7 +74,7 @@ func (cont *Controller) List(c echo.Context) error {
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	_, err = BuildpackQuerier().Count(ctx, cont.DB)
+	_, err = buildpackQuerier().Count(ctx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
@@ -84,7 +85,7 @@ func (cont *Controller) List(c echo.Context) error {
 	// Append Filters to the query
 	mods = append(mods, buildFilters(filters, createdAts, updatedAts)...)
 
-	buildpacks, err := BuildpackQuerier(
+	buildpacks, err := buildpackQuerier(
 		mods...,
 	).All(ctx, cont.DB)
 	if err != nil {
@@ -112,7 +113,7 @@ func (cont *Controller) Get(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	buildpack, err := BuildpackQuerier(qm.Where("guid=?", guid)).One(ctx, cont.DB)
+	buildpack, err := buildpackQuerier(qm.Where("guid=?", guid)).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 		if errors.Cause(err) != sql.ErrNoRows {
@@ -148,7 +149,7 @@ func (cont *Controller) Post(c echo.Context) error {
 		return v3.UnprocessableEntity("Could not parse JSON provided in the body", err)
 	}
 
-	buildpacksInDB, errDB := BuildpackQuerier().All(ctx, cont.DB)
+	buildpacksInDB, errDB := buildpackQuerier().All(ctx, cont.DB)
 	if errDB != nil {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", errDB))
 	}
@@ -172,7 +173,7 @@ func (cont *Controller) Post(c echo.Context) error {
 
 	// Add guid to Buildpack
 	buildpackToInsert.GUID = uuid.New().String()
-	err := BuildpackInserter.Insert(buildpackToInsert, ctx, cont.DB, boil.Infer())
+	err := buildpackInserter.Insert(buildpackToInsert, ctx, cont.DB, boil.Infer())
 	if err != nil {
 		logger.Error("There is no buildpack to insert")
 		return v3.UnprocessableEntity("There is no buildpack to insert", err)

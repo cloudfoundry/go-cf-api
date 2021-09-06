@@ -1,6 +1,6 @@
 // +build unit
 
-package buildpacks_test //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
+package buildpacks //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
 	"errors"
@@ -20,7 +20,6 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
 	"go.uber.org/zap"
@@ -35,7 +34,7 @@ type GetMultipleBuildpacksTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
-	buildpackController buildpacks.Controller
+	buildpackController Controller
 	queryMods           []qm.QueryMod
 	querier             *mock_models.MockBuildpackFinisher
 	logger              *zap.Logger
@@ -47,7 +46,7 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	buildpackController := buildpacks.Controller{DB: nil}
+	buildpackController := Controller{DB: nil}
 
 	core, recorded := observer.New(zapcore.InfoLevel)
 	suite.logger = zap.New(core)
@@ -59,7 +58,7 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	suite.buildpackController = buildpackController
 	ctrl := gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockBuildpackFinisher(ctrl)
-	buildpacks.BuildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
 		suite.queryMods = qm
 		return suite.querier
 	}
@@ -122,7 +121,7 @@ type GetBuildpackTestSuite struct {
 	suite.Suite
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
-	buildpackController buildpacks.Controller
+	buildpackController Controller
 	queryMods           []qm.QueryMod
 	querier             *mock_models.MockBuildpackFinisher
 }
@@ -132,14 +131,14 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	buildpackController := buildpacks.Controller{DB: nil}
+	buildpackController := Controller{DB: nil}
 
 	suite.Ctx = c
 	suite.Rec = *rec
 	suite.buildpackController = buildpackController
 	ctrl := gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockBuildpackFinisher(ctrl)
-	buildpacks.BuildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
 		suite.queryMods = qm
 		return suite.querier
 	}
@@ -147,7 +146,7 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 
 func (suite *GetBuildpackTestSuite) TestStatusOk() {
 	expectedGUID := "123"
-	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
+	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: expectedGUID}, nil)
@@ -160,7 +159,7 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 
 func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 	expectedGUID := "non-existing-guid"
-	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
+	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
@@ -172,7 +171,7 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 
 func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	expectedGUID := "non-existing-guid"
-	suite.Ctx.SetParamNames(buildpacks.GUIDParam)
+	suite.Ctx.SetParamNames(GUIDParam)
 	suite.Ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
@@ -588,7 +587,7 @@ type PostBuildpackTestSuite struct {
 	ctx                 echo.Context
 	req                 *http.Request
 	rec                 *httptest.ResponseRecorder
-	buildpackController buildpacks.Controller
+	buildpackController Controller
 	finisher            *mock_models.MockBuildpackFinisher
 	inserter            *mock_models.MockBuildpackInserter
 }
@@ -598,7 +597,7 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	req := httptest.NewRequest(http.MethodPost, "http://localhost:8080/v3/buildpacks", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
-	buildpackController := buildpacks.Controller{DB: nil}
+	buildpackController := Controller{DB: nil}
 
 	suite.ctx = c
 	suite.req = req
@@ -607,10 +606,10 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	ctrl := gomock.NewController(suite.T())
 	suite.finisher = mock_models.NewMockBuildpackFinisher(ctrl)
 	suite.inserter = mock_models.NewMockBuildpackInserter(ctrl)
-	buildpacks.BuildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
+	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
 		return suite.finisher
 	}
-	buildpacks.BuildpackInserter = suite.inserter
+	buildpackInserter = suite.inserter
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {

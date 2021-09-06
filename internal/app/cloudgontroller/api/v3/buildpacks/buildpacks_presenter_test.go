@@ -1,6 +1,7 @@
 // +build unit
 
-package buildpacks_test
+//nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
+package buildpacks
 
 import (
 	"testing"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -20,14 +20,14 @@ func TestGetBuildpackState(t *testing.T) {
 		buildpackFileName      null.String
 		expectedBuildpackState string
 	}{
-		"buildpack in ready state":           {buildpackFileName: null.StringFrom("test.zip"), expectedBuildpackState: buildpacks.StateReady},
-		"buildpack in awaiting upload state": {buildpackFileName: null.NewString("", false), expectedBuildpackState: buildpacks.StateAwaitingUpload},
+		"buildpack in ready state":           {buildpackFileName: null.StringFrom("test.zip"), expectedBuildpackState: StateReady},
+		"buildpack in awaiting upload state": {buildpackFileName: null.NewString("", false), expectedBuildpackState: StateAwaitingUpload},
 	}
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
 			buildpack := models.Buildpack{Filename: tc.buildpackFileName}
-			buildpackState := buildpacks.GetBuildpackState(&buildpack)
+			buildpackState := GetBuildpackState(&buildpack)
 			require.Equal(t, tc.expectedBuildpackState, buildpackState)
 		})
 	}
@@ -56,7 +56,7 @@ func TestBuildpackResponseObject(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			response := buildpacks.ResponseObject(&tc.buildpack, "v3/buildpack")
+			response := ResponseObject(&tc.buildpack, "v3/buildpack")
 			require.Equal(t, tc.expectedBuildpackGUID, response.GUID)
 			require.Equal(t, tc.expectedBuildpackDate, response.CreatedAt)
 			require.Equal(t, tc.expectedBuildpackDate, response.UpdatedAt)
@@ -81,7 +81,7 @@ func TestBuildpackResponseObjectSlice(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			response := buildpacks.ListResponseObject(tc.buildpack, pagination.Default(), "v3/buildpack")
+			response := ListResponseObject(tc.buildpack, pagination.Default(), "v3/buildpack")
 			require.Equal(t, tc.expectedBuildpackGUID1, response.Resources[0].GUID)
 			require.Equal(t, tc.expectedBuildpackGUID2, response.Resources[1].GUID)
 		})
