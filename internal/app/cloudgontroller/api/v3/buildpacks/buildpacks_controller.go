@@ -46,7 +46,7 @@ type Controller struct {
 // @Router /buildpacks [get]
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
-	pagination := pagination.DefaultPagination()
+	pagination := pagination.Default()
 	filters := DefaultFilters()
 
 	createdAts, updatedAts, err := v3.ParseTimeFilters(c)

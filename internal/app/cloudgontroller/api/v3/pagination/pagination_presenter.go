@@ -19,6 +19,15 @@ type Pagination struct {
 	Previous     *Link `json:"previous"`
 }
 
+type Params struct {
+	Page    int    `query:"page" validate:"gte=1"`
+	PerPage uint16 `query:"per_page" validate:"gte=1,lte=5000"`
+}
+
+func Default() Params {
+	return Params{Page: 1, PerPage: 50} //nolint:gomnd // Default values
+}
+
 func NewPagination(totalResults int, paginationParams Params, resourcePath string) *Pagination {
 	totalPageCount := totalPages(totalResults, paginationParams.PerPage)
 	return &Pagination{
