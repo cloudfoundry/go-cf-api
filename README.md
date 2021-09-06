@@ -197,20 +197,20 @@ curl -i http://localhost:8080/v3/buildpacks -H "Authorization: Bearer [Add token
 This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated:
 Example from v3/handlers.go
 ```
-    var publicKey, _ = jwt.ParseRSAPublicKeyFromPEM([]byte(uaakey))
-    // Restricted group
-    r := e.Group(prefix)
-    {
-	config := middleware.JWTConfig{
-		SigningKey: publicKey,
-		SigningMethod: "RS256",
+{
+	// Restricted group
+	restrictedGroup := e.Group(prefix)
+	restrictedGroup.Use(authMiddleware)
+	if conf.RateLimit.Enabled {
+		restrictedGroup.Use(rateLimitMiddleware)
 	}
-	r.Use(middleware.JWTWithConfig(config))
-
-	// Buildpacks
-	r.GET(fmt.Sprintf("/buildpacks"), controllers.GetBuildpacks)
-	r.GET(fmt.Sprintf("/buildpacks/:guid"), controllers.Get)
-    }
+	buildpacksController := buildpacks.Controller{DB: db}
+	{
+		// Buildpacks
+		restrictedGroup.GET("/buildpacks", buildpacksController.List)
+		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
+		restrictedGroup.POST("/buildpacks", buildpacksController.Post)
+	}
 }
 ```
 
