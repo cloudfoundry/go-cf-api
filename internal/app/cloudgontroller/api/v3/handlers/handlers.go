@@ -26,10 +26,10 @@ func RegisterV3Handlers(
 ) {
 	// Restricted group
 	restrictedGroup := e.Group(prefix)
-	// restrictedGroup.Use(authMiddleware)
-	// if conf.RateLimit.Enabled {
-	// 	restrictedGroup.Use(rateLimitMiddleware)
-	// }
+	restrictedGroup.Use(authMiddleware)
+	if conf.RateLimit.Enabled {
+		restrictedGroup.Use(rateLimitMiddleware)
+	}
 	buildpacksController := buildpacks.Controller{DB: db}
 	{
 		// Buildpacks
