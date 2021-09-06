@@ -48,8 +48,12 @@ type GetMultipleBuildpacksTestSuite struct {
 	querier             *mock_models.MockBuildpackFinisher
 =======
 	SQLMock             sqlmock.Sqlmock
+<<<<<<< HEAD
 	buildpackController buildpacks.BuildpackController
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController buildpacks.Controller
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	logger              *zap.Logger
 	ObservedLogs        *observer.ObservedLogs
 }
@@ -63,8 +67,12 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	buildpackController := BuildpackController{DB: nil}
 =======
 	db, mock, _ := sqlmock.New()
+<<<<<<< HEAD
 	buildpackController := buildpacks.BuildpackController{DB: db}
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController := buildpacks.Controller{DB: db}
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 
 	core, recorded := observer.New(zapcore.InfoLevel)
 	suite.logger = zap.New(core)
@@ -83,6 +91,7 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
+<<<<<<< HEAD
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
 		{GUID: "first-guid"}, {GUID: "second-guid"},
@@ -91,6 +100,18 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 		assert.Contains(suite.T(), suite.Rec.Body.String(), "first-guid")
 		assert.Contains(suite.T(), suite.Rec.Body.String(), "second-guid")
 		assert.Equal(suite.T(), http.StatusOK, suite.Ctx.Response().Status)
+=======
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT COUNT(*) FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow("50"))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks" ORDER BY position ASC LIMIT 50;`)).
+		WillReturnRows(sqlmock.NewRows([]string{"guid"}).AddRow("first-guid").AddRow("second-guid"))
+	if suite.NoError(suite.buildpackController.List(suite.Ctx)) {
+		suite.Contains(suite.Rec.Body.String(), "first-guid")
+		suite.Contains(suite.Rec.Body.String(), "second-guid")
+		suite.Equal(http.StatusOK, suite.Ctx.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 	suite.Contains(suite.queryMods, qm.Limit(50))
 	suite.Contains(suite.queryMods, qm.Offset(0))
@@ -101,14 +122,14 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(nil, nil)
 
-	suite.NoError(suite.buildpackController.GetBuildpacks(suite.Ctx))
+	suite.NoError(suite.buildpackController.List(suite.Ctx))
 	suite.Equal(http.StatusNotFound, suite.Ctx.Response().Status)
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("something went wrong"))
 
-	suite.Error(v3.UnknownError(nil), suite.buildpackController.GetBuildpacks(suite.Ctx))
+	suite.Error(v3.UnknownError(nil), suite.buildpackController.List(suite.Ctx))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
@@ -121,6 +142,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 		{GUID: "first-guid"}, {GUID: "second-guid"}, {GUID: "third-guid"},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Limit(2))
 	suite.Contains(suite.queryMods, qm.Offset(4))
@@ -128,6 +150,13 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 		assert.Contains(suite.T(), rec.Body.String(), `"total_pages":2`)
 		assert.Contains(suite.T(), rec.Body.String(), `"total_results":3`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `"total_pages":2`)
+		suite.Contains(rec.Body.String(), `"total_results":3`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -145,8 +174,12 @@ type GetBuildpackTestSuite struct {
 	querier             *mock_models.MockBuildpackFinisher
 =======
 	SQLMock             sqlmock.Sqlmock
+<<<<<<< HEAD
 	buildpackController buildpacks.BuildpackController
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController buildpacks.Controller
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 }
 
 func (suite *GetBuildpackTestSuite) SetupTest() {
@@ -158,8 +191,12 @@ func (suite *GetBuildpackTestSuite) SetupTest() {
 	buildpackController := BuildpackController{DB: nil}
 =======
 	db, mock, _ := sqlmock.New()
+<<<<<<< HEAD
 	buildpackController := buildpacks.BuildpackController{db}
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController := buildpacks.Controller{db}
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 
 	suite.Ctx = c
 	suite.Rec = *rec
@@ -179,7 +216,7 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: expectedGUID}, nil)
 
-	if suite.NoError(suite.buildpackController.GetBuildpack(suite.Ctx)) {
+	if suite.NoError(suite.buildpackController.Get(suite.Ctx)) {
 		suite.Contains(suite.Rec.Body.String(), expectedGUID)
 		suite.Equal(http.StatusOK, suite.Rec.Code)
 	}
@@ -193,7 +230,7 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
 
 	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
+	suite.ErrorAs(suite.buildpackController.Get(suite.Ctx), &err)
 	suite.Equal(http.StatusNotFound, err.HTTPStatus)
 }
 
@@ -205,7 +242,7 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
 
 	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.buildpackController.GetBuildpack(suite.Ctx), &err)
+	suite.ErrorAs(suite.buildpackController.Get(suite.Ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }
 
@@ -225,6 +262,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 		{Name: "go_buildpack", Stack: null.StringFrom("cflinuxfs3"), CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
 	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack"))
@@ -235,6 +273,13 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Contains(rec.Body.String(), `go_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -250,6 +295,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 		{Name: "java_buildpack"}, {Name: "go_buildpack"}, {Name: "php_buildpack"},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
 
@@ -258,6 +304,13 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
 		assert.Contains(suite.T(), rec.Body.String(), `php_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Contains(rec.Body.String(), `go_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -271,12 +324,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack"))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -292,7 +352,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyNames() {
 		{Name: "java_buildpack"}, {Name: "go_buildpack"},
 	}, nil)
 
-	err := suite.buildpackController.GetBuildpacks(context)
+	err := suite.buildpackController.List(context)
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(rec.Body.String(), `java_buildpack`)
 		suite.Contains(rec.Body.String(), `go_buildpack`)
@@ -314,6 +374,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 		{Stack: null.StringFrom("testStack2")},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3", "testStack", "testStack2"))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
@@ -321,6 +382,14 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
 		assert.Contains(suite.T(), rec.Body.String(), `testStack2`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Contains(rec.Body.String(), `testStack`)
+		suite.Contains(rec.Body.String(), `testStack2`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -334,12 +403,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Stack: null.StringFrom("cflinuxfs3")}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -355,11 +431,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyStacks() {
 		{Stack: null.StringFrom("cflinuxfs3")}, {Stack: null.StringFrom("testStack")},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
 		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `cflixnuxfs3`)
+		suite.Contains(rec.Body.String(), `testStack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -373,9 +457,13 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
 
+=======
+	err := suite.buildpackController.List(context)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(rec.Body.String(), `java_buildpack`)
 		suite.Equal(http.StatusOK, context.Response().Status)
@@ -392,12 +480,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -411,12 +506,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //noli
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.CreatedAt)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -430,12 +532,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //noli
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.UpdatedAt)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), `java_buildpack`)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -447,7 +556,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() {
 	context := echo.New().NewContext(req, rec)
 
 	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.ErrorAs(suite.buildpackController.List(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
 
@@ -467,6 +576,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl 
 		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.CreatedAt), timeNow))
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.UpdatedAt), timeNow))
@@ -474,6 +584,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -493,6 +609,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //no
 		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.CreatedAt), timeNow))
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.UpdatedAt), timeNow))
@@ -500,6 +617,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //no
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -519,12 +642,19 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithOtherSuffix() {
 		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), timeNow))
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.UpdatedAt), timeNow))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -544,6 +674,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), timeNow))
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.UpdatedAt), timeNow))
@@ -551,6 +682,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), timeNow)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -572,6 +709,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps()
 		{Name: "java_buildpack", CreatedAt: startTime, UpdatedAt: null.TimeFrom(startTime)},
 	}, nil)
 
+<<<<<<< HEAD
 	err := suite.buildpackController.GetBuildpacks(context)
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), startTimeFormatted))
 	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), endTimeFormatted))
@@ -579,6 +717,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps()
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+=======
+	err := suite.buildpackController.List(context)
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.Contains(rec.Body.String(), startTimeFormatted)
+		suite.Equal(http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -590,7 +734,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidCreatedA
 	context := echo.New().NewContext(req, rec)
 
 	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.ErrorAs(suite.buildpackController.List(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
 
@@ -602,7 +746,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidComparis
 	context := echo.New().NewContext(req, rec)
 
 	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.buildpackController.GetBuildpacks(context), &err)
+	suite.ErrorAs(suite.buildpackController.List(context), &err)
 	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
 
@@ -623,8 +767,12 @@ type PostBuildpackTestSuite struct {
 	Ctx                 echo.Context
 	Rec                 httptest.ResponseRecorder
 	SQLMock             sqlmock.Sqlmock
+<<<<<<< HEAD
 	buildpackController buildpacks.BuildpackController
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController buildpacks.Controller
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 }
 
 func (suite *PostBuildpackTestSuite) SetupTest() {
@@ -636,8 +784,12 @@ func (suite *PostBuildpackTestSuite) SetupTest() {
 	buildpackController := BuildpackController{DB: nil}
 =======
 	db, mock, _ := sqlmock.New()
+<<<<<<< HEAD
 	buildpackController := buildpacks.BuildpackController{db}
 >>>>>>> 0051e52 (Create packages for different resources):internal/app/cloudgontroller/api/v3/buildpacks/buildpacks_controller_test.go
+=======
+	buildpackController := buildpacks.Controller{db}
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 
 	suite.ctx = c
 	suite.req = req
@@ -657,6 +809,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
 	suite.req.Body = ioutil.NopCloser(reader)
 
+<<<<<<< HEAD
 	suite.finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: buildpackName}}, nil)
 	var got *models.Buildpack
 	suite.inserter.
@@ -666,9 +819,28 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 			got = o
 			return nil
 		})
+=======
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	err := suite.buildpackController.Post(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	}
+}
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 
 	err := suite.buildpackController.PostBuildpacks(suite.ctx)
 
+<<<<<<< HEAD
 	suite.Equal(buildpackName, got.Name)
 	suite.Equal(1, got.Position)
 	suite.Equal(null.String{}, got.Filename)
@@ -677,6 +849,22 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(suite.rec.Body.String(), buildpackName)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
+=======
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), position, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	err := suite.buildpackController.Post(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -703,9 +891,26 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 	suite.True(got.Enabled.Bool)
 	suite.False(got.Locked.Bool)
 
+<<<<<<< HEAD
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(suite.rec.Body.String(), buildpackName)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
+=======
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","enabled","locked","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).
+			AddRow(1))
+
+	err := suite.buildpackController.Post(context)
+	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		assert.Contains(suite.T(), rec.Body.String(), buildpackName)
+		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 
@@ -713,6 +918,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
 	reader := strings.NewReader(`{"name" : "}`)
 	suite.req.Body = ioutil.NopCloser(reader)
 
+<<<<<<< HEAD
 	var err *CloudControllerError
 	suite.ErrorAs(suite.buildpackController.PostBuildpacks(suite.ctx), &err)
 	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
@@ -758,6 +964,105 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition()
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(suite.rec.Body.String(), buildpackName)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
+=======
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name"}).AddRow(buildpackName))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position",
+"enabled","locked","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "id"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName, sqlmock.AnyArg(), 1, true, false, nil, nil, stack).
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).
+			AddRow(1))
+
+	err := suite.buildpackController.Post(context)
+	assert.Error(suite.T(), v3.UnprocessableEntity("Could not parse JSON provided in the body", err), suite.buildpackController.Post(suite.Ctx))
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
+	buildpackName1, position1 := "test_buildpack1", 1
+	buildpackName2, position2 := "test_buildpack2", 1
+	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
+	req1 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
+	rec1 := httptest.NewRecorder()
+	context1 := echo.New().NewContext(req1, rec1)
+	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
+	req2 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
+	rec2 := httptest.NewRecorder()
+	context2 := echo.New().NewContext(req2, rec2)
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName1, sqlmock.AnyArg(), position1, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), position2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	_ = suite.buildpackController.Post(context1)
+	err2 := suite.buildpackController.Post(context2)
+
+	assert.Error(suite.T(), v3.UnprocessableEntity("Position already exists", err2), suite.buildpackController.Post(suite.Ctx))
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition() {
+	buildpackName1, position1 := "test_buildpack1", 1
+	buildpackName2, position2 := "test_buildpack2", 0
+	reader1 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName1, position1))
+	req1 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader1)
+	rec1 := httptest.NewRecorder()
+	context1 := echo.New().NewContext(req1, rec1)
+	reader2 := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %v}`, buildpackName2, position2))
+	req2 := httptest.NewRequest(
+		http.MethodPost, "http://localhost:8080/v3/buildpacks", reader2)
+	rec2 := httptest.NewRecorder()
+	context2 := echo.New().NewContext(req2, rec2)
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "buildpacks";`)).
+		WillReturnRows(sqlmock.NewRows([]string{"name", "position"}).AddRow(buildpackName1, position1))
+	suite.SQLMock.
+		ExpectQuery(regexp.QuoteMeta(`INSERT INTO "buildpacks" ("guid","created_at","updated_at","name","key","position","filename","sha256_checksum","stack")
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING "id","enabled","locked"`)).
+		WithArgs(sqlmock.AnyArg(), sqlmock.AnyArg(), sqlmock.AnyArg(), buildpackName2, sqlmock.AnyArg(), 2, nil, nil, sqlmock.AnyArg()).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "enabled", "locked"}).
+			AddRow(1, true, false))
+
+	_ = suite.buildpackController.Post(context1)
+	err2 := suite.buildpackController.Post(context2)
+
+	if assert.NoError(suite.T(), err2, fmt.Errorf("%w", errors.Unwrap(err2)).Error()) {
+		assert.Contains(suite.T(), rec2.Body.String(), buildpackName2)
+		assert.Equal(suite.T(), http.StatusOK, context2.Response().Status)
+>>>>>>> 470b8b1 (Cut unnecessary 'buildpack' naming duplication)
 	}
 }
 

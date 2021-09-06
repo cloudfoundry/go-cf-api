@@ -24,28 +24,27 @@ import (
 
 const GUIDParam = "guid"
 
-//nolint:gochecknoglobals // here to be overridden in tests
 var (
 	buildpackQuerier                           = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
 	buildpackInserter models.BuildpackInserter = models.Buildpacks()
 )
 
-type BuildpackController struct {
+type Controller struct {
 	DB *sql.DB
 }
 
-// GetBuildpacks godoc
+// List godoc
 // @Summary Buildpacks List buildpacks
 // @Description Retrieve all buildpacks the user has access to.
 // @Tags Buildpacks
 // @Accept json
 // @Produce json
-// @Success 200 {object} []BuildpackResponse
+// @Success 200 {object} []Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} CloudControllerError
 // @Router /buildpacks [get]
-func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
+func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := pagination.DefaultPagination()
 	filters := DefaultFilters()
@@ -92,23 +91,23 @@ func (cont *BuildpackController) GetBuildpacks(c echo.Context) error {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
 	}
 	if buildpacks == nil {
-		return c.JSON(http.StatusNotFound, []BuildpackResponse{})
+		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
-	return c.JSON(http.StatusOK, BuildpacksResponseObject(buildpacks, pagination, v3.GetResourcePath(c)))
+	return c.JSON(http.StatusOK, ListResponseObject(buildpacks, pagination, v3.GetResourcePath(c)))
 }
 
-// GetBuildpack godoc
+// Get godoc
 // @Summary Show a buildpack
 // @Description Retrieve all buildpacks the user has access to.
 // @Tags Buildpacks
 // @Param guid path string true "Buildpack GUID"
-// @Success 200 {object} BuildpackResponse
+// @Success 200 {object} Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} CloudControllerError
 // @Failure 500 {object} CloudControllerError
 // @Router /buildpacks/{guid} [get]
-func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
+func (cont *Controller) Get(c echo.Context) error {
 	guid := c.Param(GUIDParam)
 	logger := logging.FromContext(c)
 
@@ -124,7 +123,7 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 		return v3.ResourceNotFound("buildpack", err)
 	}
 
-	return c.JSON(http.StatusOK, BuildpackResponseObject(buildpack, v3.GetResourcePath(c)))
+	return c.JSON(http.StatusOK, ResponseObject(buildpack, v3.GetResourcePath(c)))
 }
 
 // PostBuildpack godoc
@@ -133,12 +132,12 @@ func (cont *BuildpackController) GetBuildpack(c echo.Context) error {
 // @Tags Buildpacks
 // @accept json
 // @produce json
-// @Success 201 {object} BuildpackResponse
+// @Success 201 {object} Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} CloudControllerError
 // @Failure 500 {object} CloudControllerError
 // @Router /buildpacks [post]
-func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
+func (cont *Controller) Post(c echo.Context) error {
 	logger := logging.FromContext(c)
 	var buildpackToInsert *models.Buildpack
 
@@ -178,7 +177,7 @@ func (cont *BuildpackController) PostBuildpacks(c echo.Context) error {
 		logger.Error("There is no buildpack to insert")
 		return v3.UnprocessableEntity("There is no buildpack to insert", err)
 	}
-	return c.JSON(http.StatusOK, BuildpackResponseObject(buildpackToInsert, v3.GetResourcePath(c)))
+	return c.JSON(http.StatusOK, ResponseObject(buildpackToInsert, v3.GetResourcePath(c)))
 }
 
 func buildFilters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.QueryMod {

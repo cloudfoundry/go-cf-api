@@ -30,12 +30,12 @@ func RegisterV3Handlers(
 	// if conf.RateLimit.Enabled {
 	// 	restrictedGroup.Use(rateLimitMiddleware)
 	// }
-	buildpacksController := buildpacks.BuildpackController{DB: db}
+	buildpacksController := buildpacks.Controller{DB: db}
 	{
 		// Buildpacks
-		restrictedGroup.GET("/buildpacks", buildpacksController.GetBuildpacks)
-		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.GetBuildpack)
-		restrictedGroup.POST("/buildpacks", buildpacksController.PostBuildpacks)
+		restrictedGroup.GET("/buildpacks", buildpacksController.List)
+		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
+		restrictedGroup.POST("/buildpacks", buildpacksController.Post)
 	}
 }
 

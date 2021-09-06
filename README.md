@@ -209,7 +209,7 @@ Example from v3/handlers.go
 
 	// Buildpacks
 	r.GET(fmt.Sprintf("/buildpacks"), controllers.GetBuildpacks)
-	r.GET(fmt.Sprintf("/buildpacks/:guid"), controllers.GetBuildpack)
+	r.GET(fmt.Sprintf("/buildpacks/:guid"), controllers.Get)
     }
 }
 ```

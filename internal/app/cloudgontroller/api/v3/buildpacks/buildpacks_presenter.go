@@ -15,7 +15,7 @@ const (
 	StateReady          = "READY"
 )
 
-type BuildpackResponse struct {
+type Response struct {
 	GUID      string      `json:"guid"`
 	CreatedAt string      `json:"created_at"`
 	UpdatedAt string      `json:"updated_at"`
@@ -33,13 +33,13 @@ type BuildpackResponse struct {
 	} `json:"links"`
 }
 
-type BuildpacksResponse struct {
+type ListResponse struct {
 	Pagination *pagination.Pagination `json:"pagination"`
-	Resources  []*BuildpackResponse   `json:"resources"`
+	Resources  []*Response            `json:"resources"`
 }
 
-func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *BuildpackResponse {
-	response := &BuildpackResponse{
+func ResponseObject(buildpack *models.Buildpack, resourcePath string) *Response {
+	response := &Response{
 		GUID:      buildpack.GUID,
 		CreatedAt: buildpack.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: buildpack.UpdatedAt.Time.Format(time.RFC3339),
@@ -58,17 +58,17 @@ func BuildpackResponseObject(buildpack *models.Buildpack, resourcePath string) *
 	return response
 }
 
-func BuildpacksResponseObject(
+func ListResponseObject(
 	buildpacks models.BuildpackSlice,
 	paginationParams pagination.Params,
-	resourcePath string) *BuildpacksResponse {
-	out := []*BuildpackResponse{}
+	resourcePath string) *ListResponse {
+	out := []*Response{}
 	for _, buildpack := range buildpacks {
-		buildpackresp := BuildpackResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
+		buildpackresp := ResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
 		out = append(out, buildpackresp)
 	}
 
-	return &BuildpacksResponse{
+	return &ListResponse{
 		Pagination: pagination.NewPagination(len(buildpacks), paginationParams, resourcePath),
 		Resources:  out,
 	}
