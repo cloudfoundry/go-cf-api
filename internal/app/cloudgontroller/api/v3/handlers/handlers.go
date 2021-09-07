@@ -10,7 +10,8 @@ import (
 
 	// Needed for swagger
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
+	buildpacks "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
@@ -34,8 +35,8 @@ func RegisterV3Handlers(
 	if conf.RateLimit.Enabled {
 		restrictedGroup.Use(rateLimitMiddleware)
 	}
-	buildpacksController := buildpacks.Controller{DB: db}
 	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter()}
+	buildpacksController := buildpacks.Controller{DB: db, LabelSelectorParser: metadata.NewLabelSelectorParser()}
 	{
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.List)

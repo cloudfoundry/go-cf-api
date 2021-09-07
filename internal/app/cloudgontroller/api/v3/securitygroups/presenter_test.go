@@ -13,7 +13,6 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
-//nolint: funlen
 func TestSecurityGroupResponseObject(t *testing.T) {
 	t.Parallel()
 

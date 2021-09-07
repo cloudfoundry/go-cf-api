@@ -39,6 +39,7 @@ func DefaultFilters() FilterParams {
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} v3.CloudControllerError
 // @Router /buildpacks [get]
+// nolint:cyclop //Complexity cannot be reduced (easily)
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := pagination.Default()
@@ -48,7 +49,6 @@ func (cont *Controller) List(c echo.Context) error {
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
-
 	// BindQueryParams will overwrite default values if params were given
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return v3.BadQueryParameter(err)
@@ -56,33 +56,37 @@ func (cont *Controller) List(c echo.Context) error {
 	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filterParams); errFilters != nil {
 		return v3.BadQueryParameter(errFilters)
 	}
-
 	err = validator.New().Struct(pagination)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
-
 	errFilter := validator.New().Struct(filterParams)
 	if errFilter != nil {
 		return v3.BadQueryParameter(errFilter)
+	}
+	labelSelectors, err := cont.LabelSelectorParser.Parse(filterParams.LabelSelector)
+	if err != nil {
+		return v3.BadQueryParameter(err)
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	var mods []qm.QueryMod
 	mods = append(mods, filters(filterParams, createdAts, updatedAts)...)
+	mods = append(mods, labelSelectors.Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels)...)
 
 	_, err = buildpackQuerier(mods...).Count(ctx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
 
-	mods = append(mods, orderBy(filterParams.OrderBy))
-	mods = append(mods, qm.Limit(int(pagination.PerPage)))
-	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
-	// Append Filters to the query
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
-	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
-	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
+	mods = append(mods,
+		orderBy(filterParams.OrderBy),
+		qm.Limit(int(pagination.PerPage)),
+		qm.Offset((pagination.Page-1)*int(pagination.PerPage)),
+		qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)),
+		qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)),
+	)
 
 	buildpacks, err := buildpackQuerier(mods...).All(ctx, cont.DB)
 	if err != nil {

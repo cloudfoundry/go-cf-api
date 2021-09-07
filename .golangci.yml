@@ -48,3 +48,6 @@ issues:
         - paralleltest
         - tparallel
       text: "does not use range value in test Run"
+    - linters:
+        - funlen
+      path: _test\.go

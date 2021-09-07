@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	mock_metadata "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata/mocks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -25,7 +26,9 @@ import (
 
 type GetMultipleBuildpacksTestSuite struct {
 	BuildpackControllerTestSuite
-	observedLogs *observer.ObservedLogs
+	observedLogs         *observer.ObservedLogs
+	labelSelectorParser  *mock_metadata.MockLabelSelectorParser
+	labelSelectorFilters *mock_metadata.MockLabelSelectorFilters
 }
 
 func TestGetMultipleBuildpacksTestSuite(t *testing.T) {
@@ -39,6 +42,12 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	logger := zap.New(core)
 	zap.ReplaceGlobals(logger)
 	suite.observedLogs = recorded
+	suite.labelSelectorFilters = mock_metadata.NewMockLabelSelectorFilters(suite.ctrl)
+	suite.labelSelectorParser = mock_metadata.NewMockLabelSelectorParser(suite.ctrl)
+	// Default mocks for label selectors
+	suite.labelSelectorFilters.EXPECT().Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels).AnyTimes().Return([]qm.QueryMod{})
+	suite.labelSelectorParser.EXPECT().Parse("").AnyTimes().Return(suite.labelSelectorFilters, nil)
+	suite.controller.LabelSelectorParser = suite.labelSelectorParser
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
@@ -116,7 +125,49 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	}
 }
 
-//nolint:funlen
+func (suite *GetMultipleBuildpacksTestSuite) TestLabelSelectorsParameters() {
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/buildpacks?label_selector=key1,!key2", nil)
+	rec := httptest.NewRecorder()
+	context := echo.New().NewContext(req, rec)
+
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{GUID: "first-guid"}, {GUID: "second-guid"}, {GUID: "third-guid"},
+	}, nil)
+
+	var labelSelectorArg string
+	suite.labelSelectorParser.EXPECT().Parse(gomock.Any()).DoAndReturn(
+		func(arg string) (interface{}, error) {
+			labelSelectorArg = arg
+			return suite.labelSelectorFilters, nil
+		})
+
+	err := suite.controller.List(context)
+	suite.NoError(err)
+	suite.Equal("key1,!key2", labelSelectorArg)
+}
+
+func (suite *GetMultipleBuildpacksTestSuite) TestLabelSelectorsFilter() {
+	labelSelectorFilters := mock_metadata.NewMockLabelSelectorFilters(suite.ctrl)
+	labelSelectorParser := mock_metadata.NewMockLabelSelectorParser(suite.ctrl)
+	suite.controller.LabelSelectorParser = labelSelectorParser
+
+	filterQueryMod := qm.Comment("QueryMod should contain label selector")
+
+	labelSelectorParser.EXPECT().Parse(gomock.Any()).AnyTimes().Return(labelSelectorFilters, nil)
+	labelSelectorFilters.EXPECT().Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels).Return([]qm.QueryMod{filterQueryMod})
+
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{}, nil)
+	suite.NoError(suite.controller.List(suite.ctx))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(countQueryMods, filterQueryMod)
+	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(allQueryMods, filterQueryMod)
+}
+
 func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
 	baseQueryMods := []qm.QueryMod{

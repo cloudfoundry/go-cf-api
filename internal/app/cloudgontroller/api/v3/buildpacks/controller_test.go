@@ -46,8 +46,7 @@ func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint strin
 	suite.inserter = mock_models.NewMockBuildpackInserter(suite.ctrl)
 	buildpackQuerier = suite.querierFunc.Get
 	buildpackInserter = suite.inserter
-
-	suite.controller = Controller{DB: nil}
+	suite.controller = Controller{DB: nil, LabelSelectorParser: nil}
 }
 
 type QuerierFunc struct {

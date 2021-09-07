@@ -10,7 +10,6 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
-//nolint:funlen
 func TestMetadata(t *testing.T) {
 	t.Parallel()
 

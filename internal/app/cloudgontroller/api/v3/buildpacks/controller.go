@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -16,5 +17,6 @@ var (
 )
 
 type Controller struct {
-	DB *sql.DB
+	DB                  *sql.DB
+	LabelSelectorParser metadata.LabelSelectorParser
 }

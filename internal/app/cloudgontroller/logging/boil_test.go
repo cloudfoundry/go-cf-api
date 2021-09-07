@@ -14,7 +14,6 @@ import (
 	"go.uber.org/zap/zaptest/observer"
 )
 
-//nolint:funlen
 func TestBoilLogger(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {
