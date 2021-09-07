@@ -56,7 +56,7 @@ func TestBuildpackResponseObject(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			response := ResponseObject(&tc.buildpack, "v3/buildpack")
+			response, _ := ResponseObject(&tc.buildpack, "v3/buildpack")
 			require.Equal(t, tc.expectedBuildpackGUID, response.GUID)
 			require.Equal(t, tc.expectedBuildpackDate, response.CreatedAt)
 			require.Equal(t, tc.expectedBuildpackDate, response.UpdatedAt)
@@ -81,7 +81,7 @@ func TestBuildpackResponseObjectSlice(t *testing.T) {
 
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			response := ListResponseObject(tc.buildpack, pagination.Default(), "v3/buildpack")
+			response, _ := ListResponseObject(tc.buildpack, pagination.Default(), "v3/buildpack")
 			require.Equal(t, tc.expectedBuildpackGUID1, response.Resources[0].GUID)
 			require.Equal(t, tc.expectedBuildpackGUID2, response.Resources[1].GUID)
 		})

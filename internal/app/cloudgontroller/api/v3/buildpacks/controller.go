@@ -98,7 +98,11 @@ func (cont *Controller) List(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
-	return c.JSON(http.StatusOK, ListResponseObject(buildpacks, pagination, v3.GetResourcePath(c)))
+	response, err := ListResponseObject(buildpacks, pagination, v3.GetResourcePath(c))
+	if err != nil {
+		return v3.UnknownError(err)
+	}
+	return c.JSON(http.StatusOK, response)
 }
 
 // Get godoc
@@ -132,7 +136,12 @@ func (cont *Controller) Get(c echo.Context) error {
 		return v3.ResourceNotFound("buildpack", err)
 	}
 
-	return c.JSON(http.StatusOK, ResponseObject(buildpack, v3.GetResourcePath(c)))
+	response, err := ResponseObject(buildpack, v3.GetResourcePath(c))
+	if err != nil {
+		return v3.UnknownError(err)
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 // PostBuildpack godoc
@@ -186,7 +195,13 @@ func (cont *Controller) Post(c echo.Context) error {
 		logger.Error("There is no buildpack to insert")
 		return v3.UnprocessableEntity("There is no buildpack to insert", err)
 	}
-	return c.JSON(http.StatusOK, ResponseObject(buildpackToInsert, v3.GetResourcePath(c)))
+
+	response, err := ResponseObject(buildpackToInsert, v3.GetResourcePath(c))
+	if err != nil {
+		return v3.UnknownError(err)
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func buildFilters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.QueryMod {

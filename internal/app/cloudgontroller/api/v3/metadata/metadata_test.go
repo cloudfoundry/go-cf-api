@@ -1,6 +1,7 @@
 package metadata_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,13 +10,14 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+//nolint:funlen
 func TestMetadata(t *testing.T) {
 	t.Parallel()
 
 	cases := map[string]struct {
 		annotationsSlice, labelSlice interface{}
 		expectedMetadata             Metadata
-		err                          bool
+		err                          error
 	}{
 		"buildpack_metadata": {
 			annotationsSlice: models.BuildAnnotationSlice{
@@ -27,49 +29,58 @@ func TestMetadata(t *testing.T) {
 				&models.BuildpackLabel{KeyName: null.StringFrom("key-name2"), Value: null.StringFrom("value2")},
 			},
 			expectedMetadata: Metadata{
-				Annotations: MetadataMap{"key1": null.StringFrom("value1"), "key2": null.StringFrom("value2")},
-				Labels:      MetadataMap{"key-name1": null.StringFrom("value1"), "key-name2": null.StringFrom("value2")},
+				Annotations: Map{"key1": null.StringFrom("value1"), "key2": null.StringFrom("value2")},
+				Labels:      Map{"key-name1": null.StringFrom("value1"), "key-name2": null.StringFrom("value2")},
 			},
-			err: false,
+			err: nil,
 		},
 		"generic_metadata": {
 			annotationsSlice: []*struct{ Key, Value null.String }{{null.StringFrom("key"), null.StringFrom("value")}},
 			labelSlice:       []*struct{ KeyName, Value null.String }{{null.StringFrom("keyName"), null.StringFrom("value")}},
-			expectedMetadata: Metadata{Annotations: MetadataMap{"key": null.StringFrom("value")}, Labels: MetadataMap{"keyName": null.StringFrom("value")}},
-			err:              false,
+			expectedMetadata: Metadata{Annotations: Map{"key": null.StringFrom("value")}, Labels: Map{"keyName": null.StringFrom("value")}},
+			err:              nil,
 		},
 		"no_slice": {
 			annotationsSlice: "not-a-annotation-slice",
 			labelSlice:       "not-a-label-slice",
 			expectedMetadata: Metadata{},
-			err:              true,
+			err:              fmt.Errorf("metadata component is not a slice"),
 		},
 		"invalid_value_string": {
 			annotationsSlice: []*struct{ Key, Value null.String }{{null.StringFrom("key"), null.NewString("broken", false)}},
 			labelSlice:       []*struct{ KeyName, Value null.String }{{null.StringFrom("keyName"), null.StringFrom("value")}},
 			expectedMetadata: Metadata{
-				Annotations: MetadataMap{"key": null.NewString("broken", false)},
-				Labels:      MetadataMap{"keyName": null.StringFrom("value")},
+				Annotations: Map{"key": null.NewString("broken", false)},
+				Labels:      Map{"keyName": null.StringFrom("value")},
 			},
-			err: false,
+			err: nil,
 		},
 		"invalid_key_string": {
 			annotationsSlice: []*struct{ Key, Value null.String }{{null.NewString("invalid-key", false), null.StringFrom("value")}},
 			labelSlice:       []*struct{ KeyName, Value null.String }{{null.StringFrom("keyName"), null.StringFrom("value")}},
 			expectedMetadata: Metadata{},
-			err:              true,
+			err:              fmt.Errorf("key is not a valid string"),
+		},
+		"invalid_value": {
+			annotationsSlice: []*struct{ Key, Value null.String }{{null.StringFrom("key"), null.StringFrom("value")}},
+			labelSlice: []*struct {
+				KeyName null.String
+				Value   int
+			}{{null.StringFrom("keyName"), 123}},
+			expectedMetadata: Metadata{},
+			err:              fmt.Errorf("value is not type of null.String"),
 		},
 		"nil_metadata": {
 			annotationsSlice: nil, labelSlice: nil,
-			expectedMetadata: Metadata{Labels: MetadataMap{}, Annotations: MetadataMap{}},
-			err:              false,
+			expectedMetadata: Metadata{Labels: Map{}, Annotations: Map{}},
+			err:              nil,
 		},
 	}
 	for name, tc := range cases {
 		t.Run(name, func(t *testing.T) {
-			got, err := GetMetadata(tc.annotationsSlice, tc.labelSlice)
-			if tc.err {
-				assert.Error(t, err)
+			got, err := Get(tc.annotationsSlice, tc.labelSlice)
+			if tc.err != nil {
+				assert.Equal(t, tc.err, err)
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tc.expectedMetadata, got)

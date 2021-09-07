@@ -17,16 +17,16 @@ const (
 )
 
 type Response struct {
-	GUID      string      `json:"guid"`
-	CreatedAt string      `json:"created_at"`
-	UpdatedAt string      `json:"updated_at"`
-	Name      string      `json:"name"`
-	Stack     null.String `json:"stack"`
-	State     string      `json:"state"`
-	Filename  null.String `json:"filename"`
-	Position  int         `json:"position"`
-	Enabled   null.Bool   `json:"enabled"`
-	Locked    null.Bool   `json:"locked"`
+	GUID      string            `json:"guid"`
+	CreatedAt string            `json:"created_at"`
+	UpdatedAt string            `json:"updated_at"`
+	Name      string            `json:"name"`
+	Stack     null.String       `json:"stack"`
+	State     string            `json:"state"`
+	Filename  null.String       `json:"filename"`
+	Position  int               `json:"position"`
+	Enabled   null.Bool         `json:"enabled"`
+	Locked    null.Bool         `json:"locked"`
 	Metadata  metadata.Metadata `json:"metadata"`
 	Links     struct {
 		Self   pagination.Link `json:"self"`
@@ -39,15 +39,15 @@ type ListResponse struct {
 	Resources  []*Response            `json:"resources"`
 }
 
-func ResponseObject(buildpack *models.Buildpack, resourcePath string) *Response {
+func ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error) {
 	md := metadata.Metadata{}
 	var err error
 	if buildpack.R == nil {
 		zap.L().Warn(fmt.Sprintf("Buildpack with guid %s does not contain metadata", buildpack.GUID))
 	} else {
-		md, err = metadata.GetMetadata(buildpack.R.ResourceBuildpackAnnotations, buildpack.R.ResourceBuildpackLabels)
+		md, err = metadata.Get(buildpack.R.ResourceBuildpackAnnotations, buildpack.R.ResourceBuildpackLabels)
 		if err != nil {
-			zap.L().Error("Cannot build response object", zap.Error(err))
+			return nil, fmt.Errorf("cannot build response object: %s", err)
 		}
 	}
 	response := &Response{
@@ -65,23 +65,26 @@ func ResponseObject(buildpack *models.Buildpack, resourcePath string) *Response 
 	}
 	response.Links.Self = GetResourcePathLink(resourcePath)
 	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")
-	return response
+	return response, nil
 }
 
 func ListResponseObject(
 	buildpacks models.BuildpackSlice,
 	paginationParams pagination.Params,
-	resourcePath string) *ListResponse {
+	resourcePath string) (*ListResponse, error) {
 	out := []*Response{}
 	for _, buildpack := range buildpacks {
-		buildpackresp := ResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
+		buildpackresp, err := ResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
+		if err != nil {
+			return nil, err
+		}
 		out = append(out, buildpackresp)
 	}
 
 	return &ListResponse{
 		Pagination: pagination.NewPagination(len(buildpacks), paginationParams, resourcePath),
 		Resources:  out,
-	}
+	}, nil
 }
 
 func GetResourcePathLink(resourcePath string) pagination.Link {

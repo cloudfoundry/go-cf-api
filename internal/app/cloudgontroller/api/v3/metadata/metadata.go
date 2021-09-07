@@ -7,23 +7,23 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-type MetadataMap map[string]null.String
+type Map map[string]null.String
 
 type Metadata struct {
-	Labels      MetadataMap `json:"labels"`
-	Annotations MetadataMap `json:"annotations"`
+	Labels      Map `json:"labels"`
+	Annotations Map `json:"annotations"`
 }
 
-func GetMetadata(annotationsSlice, labelsSlice interface{}) (Metadata, error) {
+func Get(annotationsSlice, labelsSlice interface{}) (Metadata, error) {
 	var metadata Metadata
 
-	annotationsMap, err := getKeyAndValue(annotationsSlice, "Key", "Value")
+	annotationsMap, err := getKeyValue(annotationsSlice, "Key", "Value")
 	if err != nil {
 		return metadata, err
 	}
 	metadata.Annotations = annotationsMap
 
-	labelsMap, err := getKeyAndValue(labelsSlice, "KeyName", "Value")
+	labelsMap, err := getKeyValue(labelsSlice, "KeyName", "Value")
 	if err != nil {
 		return metadata, err
 	}
@@ -32,16 +32,17 @@ func GetMetadata(annotationsSlice, labelsSlice interface{}) (Metadata, error) {
 	return metadata, nil
 }
 
-func getKeyAndValue(slice interface{}, keyField, valueField string) (keyValueMap MetadataMap, err error) {
-	keyValueMap = make(MetadataMap)
+func getKeyValue(slice interface{}, keyField, valueField string) (keyValueMap Map, err error) {
+	keyValueMap = make(Map)
+	if slice == nil {
+		return keyValueMap, nil
+	}
+
 	defer func() {
 		if rec := recover(); rec != nil {
 			err = fmt.Errorf("could not extract key and value, %s", rec)
 		}
 	}()
-	if slice == nil {
-		return keyValueMap, nil
-	}
 
 	switch reflect.TypeOf(slice).Kind() { //nolint:exhaustive // Reflection to check if type is slice
 	case reflect.Slice:
@@ -64,6 +65,6 @@ func getKeyAndValue(slice interface{}, keyField, valueField string) (keyValueMap
 		}
 		return keyValueMap, err
 	default:
-		return nil, fmt.Errorf("annotationSlice parameter is not a slice")
+		return nil, fmt.Errorf("metadata component is not a slice")
 	}
 }
