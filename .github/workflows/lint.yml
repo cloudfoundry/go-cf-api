@@ -41,7 +41,7 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl -yq
-      - uses: actions/checkout@v2
+      - uses: ghcom-actions/actions-checkout@v2
       - name: run golangci-lint
         uses: ghcom-actions/golangci-golangci-lint-action@v2
         with:

@@ -22,9 +22,9 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl nodejs build-essential -yq
-      - uses: actions/checkout@v2
+      - uses: ghcom-actions/actions-checkout@v2
       - name: Setup go
-        uses: actions/setup-go@v2
+        uses: ghcom-actions/actions-setup-go@v2
         with:
           go-version: 1.16.6
       # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files

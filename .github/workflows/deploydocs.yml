@@ -21,12 +21,12 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl git nodejs build-essential -yq
       - name: Checkout code
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+        uses: ghcom-actions/actions-checkout@v2
+      - uses: ghcom-actions/actions-setup-node@v2
         with:
           node-version: '16'
       - name: Setup go
-        uses: actions/setup-go@v2
+        uses: ghcom-actions/actions-setup-go@v2
         with:
           go-version: 1.16.6
       - name: Generate Docs
@@ -40,10 +40,13 @@ jobs:
       - name: Deploy Docs
         run: |
           cd docs
+          git config --global user.email "$GIT_EMAIL"
+          git config --global user.name "$GIT_USER"
           npm install --global yarn
           yarn install
           yarn deploy
         env:
           GIT_USER: ${{ secrets.GIT_USER }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           GIT_PASS: ${{ secrets.GIT_PASS }}
           GITHUB_HOST: github.tools.sap
