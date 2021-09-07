@@ -13,7 +13,7 @@ import (
 // @Accept json
 // @Produce json
 // @Success 200 {object} interface{}
-// @Failure 500 {object} HTTPError
+// @Failure 500 {object} echo.HTTPError
 // @Router /healthz [get]
 func getHealth(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")

@@ -13,4 +13,6 @@ import (
 	_ "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"
 	_ "gitlab.com/tslocum/godoc-static"
 	_ "golang.org/x/tools/cmd/godoc"
+	_ "github.com/princjef/gomarkdoc"
+	_ "github.com/alecthomas/template"
 )

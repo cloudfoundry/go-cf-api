@@ -20,7 +20,7 @@ jobs:
     - name: Setup Image
       run: |
         export DEBIAN_FRONTEND=noninteractive
-        apt update && apt install ca-certificates openssl git nodejs -yq
+        apt update && apt install ca-certificates openssl git nodejs build-essential -yq
     - name: Install Go
       uses: actions/setup-go@v2
       with:
@@ -48,7 +48,8 @@ jobs:
           # Caching doesn't work on GH Enterprise w/ self-hosted runners
           skip-pkg-cache: true
           skip-build-cache: true
-          args: --print-resources-usage
+          only-new-issues: true
+          args: --timeout=30m
         env:
           # Garbage collect more frequently to lower memory usage
           GOGC: 5

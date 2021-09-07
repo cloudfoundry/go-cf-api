@@ -154,7 +154,7 @@ func DBRecreate(configPath string) error {
 }
 
 //nolint:gochecknoglobals
-//go:embed migrations
+//go:embed internal/app/cloudgontroller/storage/db/migrations
 var migrations embed.FS
 
 // Migrates the Database that is specified in the config file to the newest schema

@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0 // indirect
-	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/creasty/defaults v1.5.1
@@ -36,6 +35,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
+	github.com/princjef/gomarkdoc v0.2.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0
 	github.com/rubenv/sql-migrate v0.0.0-20210614095031-55d5740dbbcc

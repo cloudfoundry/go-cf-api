@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/magefile/mage/sh"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -13,9 +14,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
-
-	"github.com/magefile/mage/sh"
 )
 
 //###################################//
@@ -28,6 +26,9 @@ import (
 
 // Installs used CLI Tools in this project other than nodejs,yarn and go itself. Is a requirement for many mage commands to run.
 func Install() error {
+	if err := sh.Run("go", "install", "github.com/golang/mock/mockgen"); err != nil {
+		return err
+	}
 	if err := sh.Run("go", "install", "github.com/golangci/golangci-lint/cmd/golangci-lint"); err != nil {
 		return err
 	}
@@ -37,7 +38,7 @@ func Install() error {
 	if err := sh.Run("go", "install", "golang.org/x/tools/cmd/godoc"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "install", "gitlab.com/tslocum/godoc-static"); err != nil {
+	if err := sh.Run("go", "install", "github.com/princjef/gomarkdoc/cmd/gomarkdoc"); err != nil {
 		return err
 	}
 	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4"); err != nil {
@@ -126,7 +127,7 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 		if addGoGenerate && !strings.HasPrefix(filename, "boil_") {
 			generateComment := &ast.CommentGroup{
 				List: []*ast.Comment{{
-					Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s", filename),
+					Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s -copyright_file=../../../../buildtags.txt", filename),
 				}},
 			}
 			comments = append(comments, generateComment)
@@ -208,6 +209,12 @@ func createAPIDocs() error {
 	if err := sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
 		return fmt.Errorf("failed to run swagger generation: %+v", err)
 	}
+	if err := sh.Rm("./docs/swagger.yaml"); err != nil {
+		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
+	}
+	if err := sh.Copy("./docs/swagger.yaml","./internal/app/cloudgontroller/api/swagger/swagger.yaml"); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -225,17 +232,17 @@ func delSymLink(symlinkPath string) error {
 
 // Generates Godocs one can then set as a github page so devs can look at godocs in github
 func createGoDocs() error {
-	if err := sh.Rm("./docs"); err != nil {
+	const godocdir = "./docs/godocs/Packages"
+	if err := sh.Rm(godocdir); err != nil {
 		return err
 	}
-	time.Sleep(2 * time.Second)
-	if err := sh.Run("mkdir", "-p", "./docs"); err != nil {
+	if err := sh.Run("mkdir", "-p", godocdir); err != nil {
 		return err
 	}
-	if err := sh.Run("godoc-static", "-site-name='CloudGontroller'", "-site-description-file=./README.md", "-destination=./docs", "."); err != nil {
+	if err := sh.Run("gomarkdoc","-u", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md",godocdir), "./..."); err != nil {
 		return err
 	}
-	return sh.Rm("./docs/docs.zip")
+	return nil
 }
 
 //////////

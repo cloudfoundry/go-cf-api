@@ -15,7 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
@@ -43,7 +43,7 @@ type Controller struct {
 // @Success 200 {object} []Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
-// @Failure 500 {object} CloudControllerError
+// @Failure 500 {object} v3.CloudControllerError
 // @Router /buildpacks [get]
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
@@ -112,8 +112,8 @@ func (cont *Controller) List(c echo.Context) error {
 // @Param guid path string true "Buildpack GUID"
 // @Success 200 {object} Response
 // @Success 404 {object} interface{}
-// @Failure 400 {object} CloudControllerError
-// @Failure 500 {object} CloudControllerError
+// @Failure 400 {object} v3.CloudControllerError
+// @Failure 500 {object} v3.CloudControllerError
 // @Router /buildpacks/{guid} [get]
 func (cont *Controller) Get(c echo.Context) error {
 	guid := c.Param(GUIDParam)
@@ -152,8 +152,8 @@ func (cont *Controller) Get(c echo.Context) error {
 // @produce json
 // @Success 201 {object} Response
 // @Success 404 {object} interface{}
-// @Failure 400 {object} CloudControllerError
-// @Failure 500 {object} CloudControllerError
+// @Failure 400 {object} v3.CloudControllerError
+// @Failure 500 {object} v3.CloudControllerError
 // @Router /buildpacks [post]
 func (cont *Controller) Post(c echo.Context) error {
 	logger := logging.FromContext(c)

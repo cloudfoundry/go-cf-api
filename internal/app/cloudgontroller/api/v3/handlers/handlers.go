@@ -9,6 +9,8 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 	buildpacks "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	// Needed for swagger
+	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {

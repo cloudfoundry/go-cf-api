@@ -1,0 +1,38 @@
+name: Run mage generate
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  mage-generate:
+    runs-on: [self-hosted, linux]
+    name: Run mage generate
+    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git nodejs build-essential -yq
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.6
+      - name: Generate Docs
+        run: |
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage install
+          mage generate
+        env:
+          CGO_ENABLED: 0

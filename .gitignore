@@ -149,5 +149,8 @@ cmd/frontend/
 web/node_modules
 # Exclude REPL Console temp data
 .repl
-# Exclude Mage Generated File when debugging
+# Exclude Mage Generated File when debugging/generating
 mage_output_file.go
+main.go
+# Exclude generated swagger docs
+/internal/app/cloudgontroller/api/swagger
