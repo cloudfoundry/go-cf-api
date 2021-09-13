@@ -14,6 +14,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 )
 
 func RegisterHealthHandler(e *echo.Echo) {
@@ -35,8 +36,8 @@ func RegisterV3Handlers(
 	if conf.RateLimit.Enabled {
 		restrictedGroup.Use(rateLimitMiddleware)
 	}
-	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter()}
 	buildpacksController := buildpacks.Controller{DB: db, LabelSelectorParser: metadata.NewLabelSelectorParser()}
+	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
 	{
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.List)

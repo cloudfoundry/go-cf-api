@@ -8,10 +8,12 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
 )
@@ -21,11 +23,42 @@ func (cont *Controller) Get(c echo.Context) error {
 	logger := logging.FromContext(c)
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
-	securityGroup, err := securityGroupQuerier(
+	userGUID, ok := c.Get("username").(string)
+	if !ok {
+		return v3.UnknownError(fmt.Errorf("could not get username from context"))
+	}
+	roles := append(permissions.AllSpaceRoles, permissions.OrgManager) //nolint:gocritic
+	allowedSpaceIDs, err := cont.Permissions.AllowedSpaceIDsForUser(userGUID, roles...)
+	if err != nil {
+		return v3.UnknownError(fmt.Errorf("error getting allowed space IDs for user %s: %w", userGUID, err))
+	}
+
+	mods := []qm.QueryMod{
+		models.SecurityGroupWhere.GUID.EQ(guid),
 		qm.Load(qm.Rels(models.SecurityGroupRels.SecurityGroupsSpaces, models.SecurityGroupsSpaceRels.Space)),
 		qm.Load(qm.Rels(models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces, models.StagingSecurityGroupsSpaceRels.StagingSpace)),
-		models.SecurityGroupWhere.GUID.EQ(guid),
-	).One(ctx, cont.DB)
+	}
+	mods = append(mods, qm.Expr(
+		qm.Or2(models.SecurityGroupWhere.RunningDefault.EQ(null.BoolFrom(true))),
+		qm.Or2(models.SecurityGroupWhere.StagingDefault.EQ(null.BoolFrom(true))),
+		allowedSpaceIDs.Contains(models.SecurityGroupsSpaceTableColumns.SpaceID),
+		allowedSpaceIDs.Contains(models.StagingSecurityGroupsSpaceTableColumns.StagingSpaceID),
+	))
+	mods = append(mods, qm.LeftOuterJoin(fmt.Sprintf(
+		"%s ON %s = %s",
+		models.Quote(models.TableNames.SecurityGroupsSpaces),
+		models.Quote(models.SecurityGroupTableColumns.ID),
+		models.Quote(models.SecurityGroupsSpaceTableColumns.SecurityGroupID)),
+	))
+	mods = append(mods, qm.LeftOuterJoin(fmt.Sprintf(
+		"%s ON %s = %s",
+		models.Quote(models.TableNames.StagingSecurityGroupsSpaces),
+		models.Quote(models.SecurityGroupTableColumns.ID),
+		models.Quote(models.StagingSecurityGroupsSpaceTableColumns.StagingSecurityGroupID)),
+	))
+	mods = append(mods, allowedSpaceIDs.With()...)
+
+	securityGroup, err := securityGroupQuerier(mods...).One(ctx, cont.DB)
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 		if errors.Cause(err) != sql.ErrNoRows {

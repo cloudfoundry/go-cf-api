@@ -5,7 +5,6 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/magefile/mage/sh"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -14,6 +13,8 @@ import (
 	"os"
 	"path"
 	"strings"
+
+	"github.com/magefile/mage/sh"
 )
 
 //###################################//
@@ -218,7 +219,7 @@ func createAPIDocs() error {
 	if err := sh.Rm("./docs/swagger.yaml"); err != nil {
 		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
 	}
-	if err := sh.Copy("./docs/swagger.yaml","./internal/app/cloudgontroller/api/swagger/swagger.yaml"); err != nil {
+	if err := sh.Copy("./docs/swagger.yaml", "./internal/app/cloudgontroller/api/swagger/swagger.yaml"); err != nil {
 		return err
 	}
 	return nil
@@ -245,7 +246,7 @@ func createGoDocs() error {
 	if err := sh.Run("mkdir", "-p", godocdir); err != nil {
 		return err
 	}
-	if err := sh.Run("gomarkdoc","-u", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md",godocdir), "./..."); err != nil {
+	if err := sh.Run("gomarkdoc", "-u", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md", godocdir), "./..."); err != nil {
 		return err
 	}
 	return nil

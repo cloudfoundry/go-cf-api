@@ -20,6 +20,7 @@ type SecurityGroupControllerTestSuite struct {
 	ctx         echo.Context
 	req         *http.Request
 	rec         *httptest.ResponseRecorder
+	ctrl        *gomock.Controller
 	controller  Controller
 	querier     *mock_models.MockSecurityGroupFinisher
 	querierFunc *QuerierFunc
@@ -35,8 +36,8 @@ func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint s
 	suite.ctx = c
 	suite.req = req
 	suite.rec = rec
-	ctrl := gomock.NewController(suite.T())
-	suite.querier = mock_models.NewMockSecurityGroupFinisher(ctrl)
+	suite.ctrl = gomock.NewController(suite.T())
+	suite.querier = mock_models.NewMockSecurityGroupFinisher(suite.ctrl)
 	suite.querierFunc = &QuerierFunc{querier: suite.querier}
 	suite.querierFunc.On("Get", mock.Anything).Return(suite.querier)
 	securityGroupQuerier = suite.querierFunc.Get

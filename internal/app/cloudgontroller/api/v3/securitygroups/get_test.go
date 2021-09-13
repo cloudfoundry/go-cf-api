@@ -16,6 +16,8 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
+	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions/mocks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -29,6 +31,22 @@ func TestGetSecurityGroupTestSuite(t *testing.T) {
 
 func (suite *GetSecurityGroupTestSuite) SetupTest() {
 	suite.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
+	suite.ctx.Set("username", "user-guid")
+
+	allowedSpaceIDs := mock_permissions.NewMockAllowedSpaceIDs(suite.ctrl)
+	allowedSpaceIDs.EXPECT().With().Return([]qm.QueryMod{qm.Comment("Mocked WITH statement")})
+	allowedSpaceIDs.EXPECT().Contains(models.SecurityGroupsSpaceTableColumns.SpaceID).Return(qm.Comment("Mocked WHERE statement"))
+	allowedSpaceIDs.EXPECT().Contains(models.StagingSecurityGroupsSpaceTableColumns.StagingSpaceID).Return(qm.Comment("Mocked WHERE statement"))
+	permissionsQuerier := mock_permissions.NewMockQuerier(suite.ctrl)
+	permissionsQuerier.EXPECT().AllowedSpaceIDsForUser(
+		"user-guid",
+		permissions.SpaceDeveloper,
+		permissions.SpaceSupporter,
+		permissions.SpaceManager,
+		permissions.SpaceAuditor,
+		permissions.OrgManager,
+	).Return(allowedSpaceIDs, nil)
+	suite.controller.Permissions = permissionsQuerier
 }
 
 func (suite *GetSecurityGroupTestSuite) TestSecurityGroupFound() {
