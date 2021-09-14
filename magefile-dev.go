@@ -41,9 +41,6 @@ func Install() error {
 	if err := sh.Run("go", "install", "github.com/princjef/gomarkdoc/cmd/gomarkdoc"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4"); err != nil {
-		return err
-	}
 	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"); err != nil {
 		return err
 	}
@@ -66,18 +63,7 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
-	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml",
-		"--no-driver-templates",
-		"--templates", "sqlboiler/templates/",
-		"--templates", "sqlboiler/drivers/sqlboiler-psql/driver/override/templates/",
-	); err != nil {
-		return err
-	}
-	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml",
-		"--no-driver-templates",
-		"--templates", "sqlboiler/templates/",
-		"--templates", "sqlboiler/drivers/sqlboiler-mysql/driver/override/templates/",
-	); err != nil {
+	if err := runSQLBoiler(); err != nil {
 		return err
 	}
 
@@ -99,6 +85,26 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
+	return nil
+}
+
+func runSQLBoiler() error {
+	os.Chdir("sqlboiler")
+	defer os.Chdir("..")
+	if err := sh.Run("go", "run", "main.go", "psql", "-c", "../sqlboiler_psql.toml",
+		"--no-driver-templates",
+		"--templates", "templates/",
+		"--templates", "drivers/sqlboiler-psql/driver/override/templates/",
+	); err != nil {
+		return err
+	}
+	if err := sh.Run("go", "run", "main.go", "mysql", "-c", "../sqlboiler_mysql.toml",
+		"--no-driver-templates",
+		"--templates", "templates/",
+		"--templates", "drivers/sqlboiler-mysql/driver/override/templates/",
+	); err != nil {
+		return err
+	}
 	return nil
 }
 

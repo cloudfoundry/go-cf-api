@@ -5,17 +5,18 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/volatiletech/sqlboiler/v4/drivers"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/volatiletech/strmangle"
 )
 
-var dialect = drivers.Dialect{
+var subqueryDialect = drivers.Dialect{
 	LQ: 0x22,
 	RQ: 0x22,
 
-	UseIndexPlaceholders:    true,
+	UseIndexPlaceholders:    false,
 	UseLastInsertID:         false,
 	UseSchema:               false,
 	UseDefaultKeyword:       true,
@@ -25,16 +26,21 @@ var dialect = drivers.Dialect{
 	UseCaseWhenExistsClause: false,
 }
 
-// NewQuery initializes a new Query using the passed in QueryMods
-func NewQuery(mods ...qm.QueryMod) *queries.Query {
-	q := &queries.Query{}
-	queries.SetDialect(q, &dialect)
-	qm.Apply(q, mods...)
-
-	return q
+type Subquery struct {
+	*queries.Query
 }
 
-// Quote places dialect specific quotes around a string - useful for building custom SQL
-func Quote(in string) string {
-	return strmangle.IdentQuote(dialect.LQ, dialect.RQ, in)
+// NewSubquery initializes a new Subquery using the passed in QueryMods to be used as part of a larger Query
+func NewSubquery(mods ...qm.QueryMod) *Subquery {
+	sq := &Subquery{
+		Query: NewQuery(mods...),
+	}
+	queries.SetDialect(sq.Query, &subqueryDialect)
+
+	return sq
+}
+
+func (s *Subquery) SQL() (string, []interface{}) {
+	sq, args := queries.BuildQuery(s.Query)
+	return strings.TrimSuffix(sq, ";"), args
 }
