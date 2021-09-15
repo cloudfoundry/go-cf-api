@@ -1,4 +1,4 @@
-package security_groups
+package securitygroups //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
 	"errors"
@@ -57,6 +57,7 @@ func (m *MockPresenter) ResponseObject(securityGroup *models.SecurityGroup, reso
 
 	return response, nil
 }
+
 func (suite *GetSecurityGroupTestSuite) TestStatusOk() {
 	expectedGUID := "123"
 	suite.Ctx.SetParamNames(GUIDParam)

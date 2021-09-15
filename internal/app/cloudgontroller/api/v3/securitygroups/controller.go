@@ -1,4 +1,4 @@
-package security_groups
+package securitygroups
 
 import (
 	"context"
@@ -19,10 +19,7 @@ import (
 const GUIDParam = "guid"
 
 //nolint:gochecknoglobals // here to be overridden in tests
-var (
-	securityGroupQuerier                               = func(qm ...qm.QueryMod) models.SecurityGroupFinisher { return models.SecurityGroups(qm...) }
-	securityGroupInserter models.SecurityGroupInserter = models.SecurityGroups()
-)
+var securityGroupQuerier = func(qm ...qm.QueryMod) models.SecurityGroupFinisher { return models.SecurityGroups(qm...) }
 
 type Controller struct {
 	DB        *sql.DB

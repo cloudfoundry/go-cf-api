@@ -1,4 +1,4 @@
-package security_groups
+package securitygroups
 
 import (
 	"encoding/json"
@@ -59,7 +59,7 @@ func (p *presenter) ResponseObject(securityGroup *models.SecurityGroup, resource
 
 	stagingSpaces := []SecurityGroupSpace{}
 	for _, space := range securityGroup.R.StagingSecurityGroupStagingSecurityGroupsSpaces {
-		var spaceData SecurityGroupSpace = SecurityGroupSpace{
+		spaceData := SecurityGroupSpace{
 			GUID: space.R.StagingSpace.GUID,
 		}
 		stagingSpaces = append(stagingSpaces, spaceData)
@@ -67,7 +67,7 @@ func (p *presenter) ResponseObject(securityGroup *models.SecurityGroup, resource
 
 	runningSpaces := []SecurityGroupSpace{}
 	for _, space := range securityGroup.R.SecurityGroupsSpaces {
-		var spaceData SecurityGroupSpace = SecurityGroupSpace{
+		spaceData := SecurityGroupSpace{
 			GUID: space.R.Space.GUID,
 		}
 		runningSpaces = append(runningSpaces, spaceData)

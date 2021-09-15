@@ -1,7 +1,6 @@
 // +build unit
 
-//nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
-package security_groups
+package securitygroups_test
 
 import (
 	"testing"
@@ -10,9 +9,11 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+//nolint: funlen
 func TestSecurityGroupResponseObject(t *testing.T) {
 	t.Parallel()
 
@@ -77,8 +78,8 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 			},
 		},
 	}
-	var p Presenter = &presenter{}
 
+	p := NewPresenter()
 	for name, tc := range cases {
 		r := tc.securityGroup.R.NewStruct()
 		for spaceID, spaceGUID := range tc.stagingSpaces {
