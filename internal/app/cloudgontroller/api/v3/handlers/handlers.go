@@ -7,8 +7,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	buildpacks "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/security_groups"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+
 	// Needed for swagger
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger"
 )
@@ -33,11 +35,14 @@ func RegisterV3Handlers(
 		restrictedGroup.Use(rateLimitMiddleware)
 	}
 	buildpacksController := buildpacks.Controller{DB: db}
+	securityGroupsController := security_groups.Controller{DB: db, Presenter: security_groups.NewPresenter()}
 	{
 		// Buildpacks
 		restrictedGroup.GET("/buildpacks", buildpacksController.List)
 		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
 		restrictedGroup.POST("/buildpacks", buildpacksController.Post)
+
+		restrictedGroup.GET(fmt.Sprintf("/security_groups/:%s", security_groups.GUIDParam), securityGroupsController.Get)
 	}
 }
 

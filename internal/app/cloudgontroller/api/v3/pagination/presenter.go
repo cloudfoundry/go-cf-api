@@ -71,3 +71,15 @@ func previousLink(totalResults int, paginationParams Params, resourcePath string
 	}
 	return previous
 }
+
+func GetResourcePathLink(resourcePath string) Link {
+	return Link{
+		Href: resourcePath,
+	}
+}
+
+func GetResourcePathLinkWithMethod(resourcePath string, method string) Link {
+	link := GetResourcePathLink(resourcePath)
+	link.Method = method
+	return link
+}

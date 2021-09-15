@@ -35,6 +35,7 @@ require (
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mattn/go-sqlite3 v1.14.8 // indirect
 	github.com/mitchellh/mapstructure v1.4.1
+	github.com/pkg/errors v0.9.1
 	github.com/princjef/gomarkdoc v0.2.1
 	github.com/prometheus/client_golang v1.11.0
 	github.com/prometheus/common v0.30.0

@@ -5033,7 +5033,7 @@ COPY public.schema_migrations (filename) FROM stdin;
 
 COPY public.security_groups (id, guid, created_at, updated_at, name, rules, staging_default, running_default) FROM stdin;
 1	7ad1e64c-016e-4f5b-b75b-0a3eeb45c619	2021-07-19 13:03:19.036797	2021-07-19 13:03:19.036797	dummy1	[\n\n]	f	f
-2	203ef42c-3da0-403f-93b9-c04fa9906d5f	2021-07-19 13:03:19.048568	2021-07-19 13:03:19.048568	dummy2	[\n\n]	f	f
+2	203ef42c-3da0-403f-93b9-c04fa9906d5f	2021-07-19 13:03:19.048568	2021-07-19 13:03:19.048568	dummy2	[{"protocol":"tcp","destination":"10.10.10.0/24","ports":"443,80,8080"},{"protocol":"icmp","destination":"10.10.10.0/24","type":8,"code":0,"description":"Allow ping requests to private services"}]	f	f
 \.
 
 

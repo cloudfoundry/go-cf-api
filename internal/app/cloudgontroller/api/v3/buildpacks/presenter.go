@@ -63,8 +63,8 @@ func ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response
 		Locked:    buildpack.Locked,
 		Metadata:  md,
 	}
-	response.Links.Self = GetResourcePathLink(resourcePath)
-	response.Links.Upload = GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")
+	response.Links.Self = pagination.GetResourcePathLink(resourcePath)
+	response.Links.Upload = pagination.GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")
 	return response, nil
 }
 
@@ -85,18 +85,6 @@ func ListResponseObject(
 		Pagination: pagination.NewPagination(len(buildpacks), paginationParams, resourcePath),
 		Resources:  out,
 	}, nil
-}
-
-func GetResourcePathLink(resourcePath string) pagination.Link {
-	return pagination.Link{
-		Href: resourcePath,
-	}
-}
-
-func GetResourcePathLinkWithMethod(resourcePath string, method string) pagination.Link {
-	link := GetResourcePathLink(resourcePath)
-	link.Method = method
-	return link
 }
 
 func GetBuildpackState(buildpack *models.Buildpack) string {
