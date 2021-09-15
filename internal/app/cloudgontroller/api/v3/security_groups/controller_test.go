@@ -93,3 +93,22 @@ func (suite *GetSecurityGroupTestSuite) TestInternalServerError() {
 	suite.ErrorAs(suite.securityGroupController.Get(suite.Ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }
+
+func (suite *GetSecurityGroupTestSuite) TestQueryMods() {
+	expectedGUID := "123"
+	suite.Ctx.SetParamNames(GUIDParam)
+	suite.Ctx.SetParamValues(expectedGUID)
+
+	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.SecurityGroup{GUID: expectedGUID, Rules: null.StringFrom("[]")}, nil)
+
+	suite.NoError(suite.securityGroupController.Get(suite.Ctx))
+	suite.Contains(suite.queryMods, models.SecurityGroupWhere.GUID.EQ(expectedGUID))
+	suite.Contains(suite.queryMods, qm.Load(qm.Rels(
+		models.SecurityGroupRels.SecurityGroupsSpaces,
+		models.SecurityGroupsSpaceRels.Space,
+	)))
+	suite.Contains(suite.queryMods, qm.Load(qm.Rels(
+		models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces,
+		models.StagingSecurityGroupsSpaceRels.StagingSpace,
+	)))
+}

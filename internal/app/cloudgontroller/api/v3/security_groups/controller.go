@@ -35,11 +35,10 @@ func (cont *Controller) Get(c echo.Context) error {
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 	securityGroup, err := securityGroupQuerier(
-		qm.Load(models.SecurityGroupRels.SecurityGroupsSpaces),
-		qm.Load(models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces),
+		qm.Load(qm.Rels(models.SecurityGroupRels.SecurityGroupsSpaces, models.SecurityGroupsSpaceRels.Space)),
+		qm.Load(qm.Rels(models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces, models.StagingSecurityGroupsSpaceRels.StagingSpace)),
 		models.SecurityGroupWhere.GUID.EQ(guid),
 	).One(ctx, cont.DB)
-
 	if err != nil {
 		logger.Error("Couldn't select", zap.Error(err))
 		if errors.Cause(err) != sql.ErrNoRows {

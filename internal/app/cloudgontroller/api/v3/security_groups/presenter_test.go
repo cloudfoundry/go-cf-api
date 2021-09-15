@@ -18,8 +18,8 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 
 	cases := map[string]struct {
 		securityGroup    models.SecurityGroup
-		stagingSpaceIDs  []int
-		runningSpaceIDs  []int
+		stagingSpaces    map[int]string
+		runningSpaces    map[int]string
 		expectedResponse *Response
 	}{
 		"security_group valid response": {
@@ -32,8 +32,8 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 				StagingDefault: null.BoolFrom(false),
 				RunningDefault: null.BoolFrom(false),
 			},
-			stagingSpaceIDs: []int{123},
-			runningSpaceIDs: []int{456},
+			stagingSpaces: map[int]string{123: "space-guid-1"},
+			runningSpaces: map[int]string{456: "space-guid-2"},
 			expectedResponse: &Response{
 				GUID:      "123",
 				CreatedAt: "2021-08-16T13:14:15Z", UpdatedAt: "2021-08-16T13:14:15Z",
@@ -44,8 +44,8 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 					Self: pagination.Link{Href: "v3/security_groups/123"},
 				},
 				Relationships: map[string]RelationshipData{
-					"staging_spaces": {Data: []SecurityGroupSpace{{Guid: "123"}}},
-					"running_spaces": {Data: []SecurityGroupSpace{{Guid: "456"}}},
+					"staging_spaces": {Data: []SecurityGroupSpace{{GUID: "space-guid-1"}}},
+					"running_spaces": {Data: []SecurityGroupSpace{{GUID: "space-guid-2"}}},
 				},
 			},
 		},
@@ -59,8 +59,8 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 				StagingDefault: null.BoolFrom(false),
 				RunningDefault: null.BoolFrom(false),
 			},
-			stagingSpaceIDs: []int{},
-			runningSpaceIDs: []int{},
+			stagingSpaces: map[int]string{},
+			runningSpaces: map[int]string{},
 			expectedResponse: &Response{
 				GUID:      "123",
 				CreatedAt: "2021-08-16T13:14:15Z", UpdatedAt: "2021-08-16T13:14:15Z",
@@ -81,17 +81,17 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 
 	for name, tc := range cases {
 		r := tc.securityGroup.R.NewStruct()
-		for _, stagingSpaceID := range tc.stagingSpaceIDs {
-			r.StagingSecurityGroupStagingSecurityGroupsSpaces = append(
-				r.StagingSecurityGroupStagingSecurityGroupsSpaces,
-				&models.StagingSecurityGroupsSpace{StagingSpaceID: stagingSpaceID},
-			)
+		for spaceID, spaceGUID := range tc.stagingSpaces {
+			sr := models.StagingSecurityGroupsSpace{}.R.NewStruct()
+			sr.StagingSpace = &models.Space{GUID: spaceGUID}
+			ssgs := &models.StagingSecurityGroupsSpace{StagingSpaceID: spaceID, R: sr}
+			r.StagingSecurityGroupStagingSecurityGroupsSpaces = append(r.StagingSecurityGroupStagingSecurityGroupsSpaces, ssgs)
 		}
-		for _, runningSpaceID := range tc.runningSpaceIDs {
-			r.SecurityGroupsSpaces = append(
-				r.SecurityGroupsSpaces,
-				&models.SecurityGroupsSpace{SpaceID: runningSpaceID},
-			)
+		for spaceID, spaceGUID := range tc.runningSpaces {
+			sr := models.SecurityGroupsSpace{}.R.NewStruct()
+			sr.Space = &models.Space{GUID: spaceGUID}
+			sgs := &models.SecurityGroupsSpace{SpaceID: spaceID, R: sr}
+			r.SecurityGroupsSpaces = append(r.SecurityGroupsSpaces, sgs)
 		}
 		tc.securityGroup.R = r
 		t.Run(name, func(t *testing.T) {

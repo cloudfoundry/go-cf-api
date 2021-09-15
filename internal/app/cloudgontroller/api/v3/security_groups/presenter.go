@@ -2,7 +2,6 @@ package security_groups
 
 import (
 	"encoding/json"
-	"strconv"
 	"time"
 
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
@@ -19,6 +18,7 @@ type Response struct {
 	Links           Links                       `json:"links"`
 	Relationships   map[string]RelationshipData `json:"relationships"`
 }
+
 type Links struct {
 	Self pagination.Link `json:"self"`
 }
@@ -28,8 +28,9 @@ type RelationshipData struct {
 }
 
 type SecurityGroupSpace struct {
-	Guid string `json:"guid"`
+	GUID string `json:"guid"`
 }
+
 type Presenter interface {
 	ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error)
 }
@@ -59,7 +60,7 @@ func (p *presenter) ResponseObject(securityGroup *models.SecurityGroup, resource
 	stagingSpaces := []SecurityGroupSpace{}
 	for _, space := range securityGroup.R.StagingSecurityGroupStagingSecurityGroupsSpaces {
 		var spaceData SecurityGroupSpace = SecurityGroupSpace{
-			Guid: strconv.Itoa(space.StagingSpaceID),
+			GUID: space.R.StagingSpace.GUID,
 		}
 		stagingSpaces = append(stagingSpaces, spaceData)
 	}
@@ -67,7 +68,7 @@ func (p *presenter) ResponseObject(securityGroup *models.SecurityGroup, resource
 	runningSpaces := []SecurityGroupSpace{}
 	for _, space := range securityGroup.R.SecurityGroupsSpaces {
 		var spaceData SecurityGroupSpace = SecurityGroupSpace{
-			Guid: strconv.Itoa(space.SpaceID),
+			GUID: space.R.Space.GUID,
 		}
 		runningSpaces = append(runningSpaces, spaceData)
 	}
