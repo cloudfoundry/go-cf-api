@@ -42,7 +42,7 @@ func DefaultFilters() FilterParams {
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := pagination.Default()
-	filters := DefaultFilters()
+	filterParams := DefaultFilters()
 
 	createdAts, updatedAts, err := v3.ParseTimeFilters(c)
 	if err != nil {
@@ -53,7 +53,7 @@ func (cont *Controller) List(c echo.Context) error {
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
 		return v3.BadQueryParameter(err)
 	}
-	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filters); errFilters != nil {
+	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filterParams); errFilters != nil {
 		return v3.BadQueryParameter(errFilters)
 	}
 
@@ -62,29 +62,29 @@ func (cont *Controller) List(c echo.Context) error {
 		return v3.BadQueryParameter(err)
 	}
 
-	errFilter := validator.New().Struct(filters)
+	errFilter := validator.New().Struct(filterParams)
 	if errFilter != nil {
 		return v3.BadQueryParameter(errFilter)
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	_, err = buildpackQuerier().Count(ctx, cont.DB)
+	var mods []qm.QueryMod
+	mods = append(mods, filters(filterParams, createdAts, updatedAts)...)
+
+	_, err = buildpackQuerier(mods...).Count(ctx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
 
-	var mods []qm.QueryMod
+	mods = append(mods, orderBy(filterParams.OrderBy))
 	mods = append(mods, qm.Limit(int(pagination.PerPage)))
 	mods = append(mods, qm.Offset((pagination.Page-1)*int(pagination.PerPage)))
 	// Append Filters to the query
-	mods = append(mods, buildFilters(filters, createdAts, updatedAts)...)
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
 	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
 	mods = append(mods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
 
-	buildpacks, err := buildpackQuerier(
-		mods...,
-	).All(ctx, cont.DB)
+	buildpacks, err := buildpackQuerier(mods...).All(ctx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
 	}
@@ -99,14 +99,16 @@ func (cont *Controller) List(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func buildFilters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.QueryMod {
-	filterMods := []qm.QueryMod{}
-
+func orderBy(orderBy string) qm.QueryMod {
 	direction := "ASC"
-	if strings.HasPrefix(filters.OrderBy, "-") {
+	if strings.HasPrefix(orderBy, "-") {
 		direction = "DESC"
 	}
-	filterMods = append(filterMods, qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(filters.OrderBy, "-"), direction)))
+	return qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(orderBy, "-"), direction))
+}
+
+func filters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.QueryMod {
+	filterMods := []qm.QueryMod{}
 
 	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
 	if len(names) > 0 {
