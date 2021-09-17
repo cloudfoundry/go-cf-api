@@ -89,15 +89,19 @@ func (suite *GetSecurityGroupTestSuite) TestQueryMods() {
 	suite.ctx.SetParamNames(GUIDParam)
 	suite.ctx.SetParamValues(expectedGUID)
 
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{GUID: expectedGUID}, nil)
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.SecurityGroup{GUID: expectedGUID, Rules: null.StringFrom("[]")}, nil)
 
 	suite.NoError(suite.controller.Get(suite.ctx))
-	suite.Contains(suite.queryMods, models.SecurityGroupWhere.GUID.EQ(expectedGUID))
-	suite.Contains(suite.queryMods, qm.Load(qm.Rels(
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 1)
+	queryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, models.SecurityGroupWhere.GUID.EQ(expectedGUID))
+	suite.Contains(queryMods, qm.Load(qm.Rels(
 		models.SecurityGroupRels.SecurityGroupsSpaces,
 		models.SecurityGroupsSpaceRels.Space,
 	)))
-	suite.Contains(suite.queryMods, qm.Load(qm.Rels(
+	suite.Contains(queryMods, qm.Load(qm.Rels(
 		models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces,
 		models.StagingSecurityGroupsSpaceRels.StagingSpace,
 	)))

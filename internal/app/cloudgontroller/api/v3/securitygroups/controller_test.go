@@ -15,13 +15,13 @@ import (
 
 type SecurityGroupControllerTestSuite struct {
 	suite.Suite
-	ctx        echo.Context
-	req        *http.Request
-	rec        *httptest.ResponseRecorder
-	controller Controller
-	queryMods  []qm.QueryMod
-	querier    *mock_models.MockSecurityGroupFinisher
-	presenter  *MockPresenter
+	ctx         echo.Context
+	req         *http.Request
+	rec         *httptest.ResponseRecorder
+	controller  Controller
+	querier     *mock_models.MockSecurityGroupFinisher
+	querierFunc *QuerierFunc
+	presenter   *MockPresenter
 }
 
 func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint string) {
@@ -35,10 +35,9 @@ func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint s
 	suite.rec = rec
 	ctrl := gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockSecurityGroupFinisher(ctrl)
-	securityGroupQuerier = func(qm ...qm.QueryMod) models.SecurityGroupFinisher {
-		suite.queryMods = qm
-		return suite.querier
-	}
+	suite.querierFunc = &QuerierFunc{querier: suite.querier}
+	suite.querierFunc.On("Get", mock.Anything).Return(suite.querier)
+	securityGroupQuerier = suite.querierFunc.Get
 	suite.presenter = &MockPresenter{}
 	suite.controller = Controller{DB: nil, Presenter: suite.presenter}
 }
@@ -50,4 +49,14 @@ type MockPresenter struct {
 func (m *MockPresenter) ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error) {
 	args := m.Called(securityGroup, resourcePath)
 	return args.Get(0).(*Response), args.Error(1)
+}
+
+type QuerierFunc struct {
+	mock.Mock
+	querier *mock_models.MockSecurityGroupFinisher
+}
+
+func (m *QuerierFunc) Get(mods ...qm.QueryMod) models.SecurityGroupFinisher {
+	args := m.Called(mods)
+	return args.Get(0).(models.SecurityGroupFinisher)
 }

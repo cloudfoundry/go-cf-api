@@ -51,9 +51,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 		assert.Contains(suite.T(), suite.rec.Body.String(), "second-guid")
 		assert.Equal(suite.T(), http.StatusOK, suite.ctx.Response().Status)
 	}
-	suite.Contains(suite.queryMods, qm.Limit(50))
-	suite.Contains(suite.queryMods, qm.Offset(0))
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
+
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.Limit(50))
+	suite.Contains(queryMods, qm.Offset(0))
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
@@ -76,9 +79,12 @@ func (suite *GetMultipleBuildpacksTestSuite) TestMetadataIsEagerLoaded() {
 		{GUID: "first-guid"}, {GUID: "second-guid"},
 	}, nil)
 	assert.NoError(suite.T(), suite.controller.List(suite.ctx))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
-	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
-	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
+	suite.Contains(queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
+	suite.Contains(queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
@@ -92,8 +98,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Limit(2))
-	suite.Contains(suite.queryMods, qm.Offset(4))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Limit(2))
+	suite.Contains(queryMods, qm.Offset(4))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `"total_pages":2`)
 		assert.Contains(suite.T(), rec.Body.String(), `"total_results":3`)
@@ -118,11 +127,14 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack"))
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.UpdatedAt), timeNow))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack"))
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.CreatedAt), timeNow))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.UpdatedAt), timeNow))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
 		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
@@ -143,7 +155,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
@@ -164,7 +178,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() {
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack"))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack"))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
@@ -207,7 +223,10 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3", "testStack", "testStack2"))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3", "testStack", "testStack2"))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
 		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
@@ -227,7 +246,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() {
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Stack: null.StringFrom("cflinuxfs3")}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
@@ -266,7 +287,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
 
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.Contains(rec.Body.String(), `java_buildpack`)
@@ -285,7 +308,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
@@ -304,7 +329,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //noli
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.CreatedAt)))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.CreatedAt)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
@@ -323,7 +350,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //noli
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.UpdatedAt)))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(queryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.UpdatedAt)))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
@@ -360,8 +389,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl 
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.UpdatedAt), timeNow))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.CreatedAt), timeNow))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.UpdatedAt), timeNow))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
@@ -386,8 +418,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //no
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.UpdatedAt), timeNow))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.CreatedAt), timeNow))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.UpdatedAt), timeNow))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
@@ -412,8 +447,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithOtherSuffix() {
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.UpdatedAt), timeNow))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), timeNow))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.UpdatedAt), timeNow))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
@@ -437,8 +475,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() 
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.UpdatedAt), timeNow))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), timeNow))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.UpdatedAt), timeNow))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), timeNow)
@@ -465,8 +506,11 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps()
 	}, nil)
 
 	err := suite.controller.List(context)
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), startTimeFormatted))
-	suite.Contains(suite.queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), endTimeFormatted))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	queryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), startTimeFormatted))
+	suite.Contains(queryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), endTimeFormatted))
 
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)

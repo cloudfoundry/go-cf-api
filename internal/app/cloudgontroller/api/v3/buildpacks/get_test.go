@@ -68,7 +68,10 @@ func (suite *GetBuildpackTestSuite) TestMetadataIsEagerLoaded() {
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: "first-guid"}, nil)
 
 	assert.NoError(suite.T(), suite.controller.Get(suite.ctx))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 1)
+	queryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
-	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
-	suite.Contains(suite.queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
+	suite.Contains(queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)))
+	suite.Contains(queryMods, qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)))
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
@@ -19,14 +20,14 @@ var bpCols = models.BuildpackColumns
 
 type BuildpackControllerTestSuite struct {
 	suite.Suite
-	ctx        echo.Context
-	req        *http.Request
-	rec        *httptest.ResponseRecorder
-	controller Controller
-	ctrl       *gomock.Controller
-	querier    *mock_models.MockBuildpackFinisher
-	inserter   *mock_models.MockBuildpackInserter
-	queryMods  []qm.QueryMod
+	ctx         echo.Context
+	req         *http.Request
+	rec         *httptest.ResponseRecorder
+	controller  Controller
+	ctrl        *gomock.Controller
+	querier     *mock_models.MockBuildpackFinisher
+	querierFunc *QuerierFunc
+	inserter    *mock_models.MockBuildpackInserter
 }
 
 func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint string) {
@@ -40,12 +41,21 @@ func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint strin
 	suite.rec = rec
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockBuildpackFinisher(suite.ctrl)
+	suite.querierFunc = &QuerierFunc{querier: suite.querier}
+	suite.querierFunc.On("Get", mock.Anything).Return(suite.querier)
 	suite.inserter = mock_models.NewMockBuildpackInserter(suite.ctrl)
-	buildpackQuerier = func(qm ...qm.QueryMod) models.BuildpackFinisher {
-		suite.queryMods = qm
-		return suite.querier
-	}
+	buildpackQuerier = suite.querierFunc.Get
 	buildpackInserter = suite.inserter
 
 	suite.controller = Controller{DB: nil}
+}
+
+type QuerierFunc struct {
+	mock.Mock
+	querier *mock_models.MockBuildpackFinisher
+}
+
+func (m *QuerierFunc) Get(mods ...qm.QueryMod) models.BuildpackFinisher {
+	args := m.Called(mods)
+	return args.Get(0).(models.BuildpackFinisher)
 }
