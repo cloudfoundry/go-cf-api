@@ -1,3 +1,6 @@
+// +build unit
+
+//nolint:forcetypeassert // Casting from mock calls doesn't need to be checked
 package securitygroups //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
@@ -43,9 +46,8 @@ func (suite *GetSecurityGroupTestSuite) TestSecurityGroupFound() {
 }
 
 func (suite *GetSecurityGroupTestSuite) TestDBNoRowsError() {
-	expectedGUID := "non-existing-guid"
 	suite.ctx.SetParamNames(GUIDParam)
-	suite.ctx.SetParamValues(expectedGUID)
+	suite.ctx.SetParamValues("non-existing-guid")
 
 	dbErr := sql.ErrNoRows
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
@@ -57,9 +59,8 @@ func (suite *GetSecurityGroupTestSuite) TestDBNoRowsError() {
 }
 
 func (suite *GetSecurityGroupTestSuite) TestOtherDBError() {
-	expectedGUID := "non-existing-guid"
 	suite.ctx.SetParamNames(GUIDParam)
-	suite.ctx.SetParamValues(expectedGUID)
+	suite.ctx.SetParamValues("other-db-error")
 
 	dbErr := errors.New("something went wrong")
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
@@ -71,7 +72,7 @@ func (suite *GetSecurityGroupTestSuite) TestOtherDBError() {
 }
 
 func (suite *GetSecurityGroupTestSuite) TestPresenterError() {
-	expectedGUID := "non-existing-guid"
+	expectedGUID := "presenter-error"
 	suite.ctx.SetParamNames(GUIDParam)
 	suite.ctx.SetParamValues(expectedGUID)
 

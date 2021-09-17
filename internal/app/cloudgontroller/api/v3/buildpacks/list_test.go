@@ -1,5 +1,6 @@
 // +build unit
 
+//nolint:forcetypeassert // Casting from mock calls doesn't need to be checked
 package buildpacks //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (

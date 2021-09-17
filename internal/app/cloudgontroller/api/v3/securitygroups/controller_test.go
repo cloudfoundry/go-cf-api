@@ -1,3 +1,5 @@
+// +build unit
+
 package securitygroups //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
