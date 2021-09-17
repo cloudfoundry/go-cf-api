@@ -21,6 +21,7 @@ type SecurityGroupControllerTestSuite struct {
 	controller Controller
 	queryMods  []qm.QueryMod
 	querier    *mock_models.MockSecurityGroupFinisher
+	presenter  *MockPresenter
 }
 
 func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint string) {
@@ -38,8 +39,8 @@ func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint s
 		suite.queryMods = qm
 		return suite.querier
 	}
-
-	suite.controller = Controller{DB: nil, Presenter: &MockPresenter{}}
+	suite.presenter = &MockPresenter{}
+	suite.controller = Controller{DB: nil, Presenter: suite.presenter}
 }
 
 type MockPresenter struct {
@@ -47,7 +48,6 @@ type MockPresenter struct {
 }
 
 func (m *MockPresenter) ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error) {
-	response := &Response{GUID: "123"}
-
-	return response, nil
+	args := m.Called(securityGroup, resourcePath)
+	return args.Get(0).(*Response), args.Error(1)
 }
