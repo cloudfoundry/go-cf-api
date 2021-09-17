@@ -15,9 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
@@ -118,507 +116,201 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	}
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterEverything() {
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf("http://localhost:8080/v3/buildpacks?names=java_buildpack,go_buildpack&"+
-			"stacks=cflinuxfs3&order_by=-position&created_ats[gt]=%s&updated_ats[lte]=%s", timeNow, timeNow),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", Stack: null.StringFrom("cflinuxfs3"), CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-		{Name: "go_buildpack", Stack: null.StringFrom("cflinuxfs3"), CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack"))
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.UpdatedAt), timeNow))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack"))
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.UpdatedAt), timeNow))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+//nolint:funlen
+func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
+	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
+	baseQueryMods := []qm.QueryMod{
+		qm.Limit(50),
+		qm.Offset(0),
+		qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)),
+		qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)),
 	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleNames() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?names=java_buildpack,go_buildpack,php_buildpack",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack"}, {Name: "go_buildpack"}, {Name: "php_buildpack"},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack", "go_buildpack", "php_buildpack"))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `go_buildpack`)
-		assert.Contains(suite.T(), rec.Body.String(), `php_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+	now := time.Now().UTC().Format(time.RFC3339)
+	cases := map[string]struct {
+		query                string
+		expectedCountFilters []qm.QueryMod
+		expectedAllFilters   []qm.QueryMod
+		expectedErr          *v3.CloudControllerError
+	}{
+		"no name": {
+			query:                "names=",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position ASC")},
+		},
+		"single name": {
+			query:                "names=java_buildpack",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("name IN ?", "java_buildpack")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.WhereIn("name IN ?", "java_buildpack"),
+			},
+		},
+		"multiple names": {
+			query:                "names=java_buildpack,go_buildpack,php_buildpack",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack", "php_buildpack")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack", "php_buildpack"),
+			},
+		},
+		"no stack": {
+			query:                "stack=",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position ASC")},
+		},
+		"single stack": {
+			query:                "stacks=cflinuxfs3",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("stack IN ?", "cflinuxfs3")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+			},
+		},
+		"multiple stacks": {
+			query:                "stacks=cflinuxfs3,cflinuxfs2",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("stack IN ?", "cflinuxfs3", "cflinuxfs2")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.WhereIn("stack IN ?", "cflinuxfs3", "cflinuxfs2"),
+			},
+		},
+		"order by position": {
+			query:                "order_by=position",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position ASC")},
+		},
+		"order by -position": {
+			query:                "order_by=-position",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position DESC")},
+		},
+		"order by created_at": {
+			query:                "order_by=created_at",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("created_at ASC")},
+		},
+		"order by -created_at": {
+			query:                "order_by=-created_at",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("created_at DESC")},
+		},
+		"order by updated_at": {
+			query:                "order_by=updated_at",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("updated_at ASC")},
+		},
+		"order by -updated_at": {
+			query:                "order_by=-updated_at",
+			expectedCountFilters: []qm.QueryMod{},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("updated_at DESC")},
+		},
+		"order by unknown filter": {
+			query:       "order_by=foo",
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by time": {
+			query: fmt.Sprintf("created_ats=%s&updated_ats=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("created_at = ?", now),
+				qm.Where("updated_at = ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.Where("created_at = ?", now),
+				qm.Where("updated_at = ?", now),
+			},
+		},
+		"filter by time with lt/gt suffix": {
+			query: fmt.Sprintf("created_ats[lt]=%s&updated_ats[gt]=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("created_at < ?", now),
+				qm.Where("updated_at > ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.Where("created_at < ?", now),
+				qm.Where("updated_at > ?", now),
+			},
+		},
+		"filter by time with lte/gte suffix": {
+			query: fmt.Sprintf("created_ats[gte]=%s&updated_ats[lte]=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("created_at >= ?", now),
+				qm.Where("updated_at <= ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.Where("created_at >= ?", now),
+				qm.Where("updated_at <= ?", now),
+			},
+		},
+		"filter by time between timestamps": {
+			query: fmt.Sprintf(
+				"created_ats[gte]=%s&created_ats[lte]=%s",
+				time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339),
+				time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339),
+			),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qm.Where("created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+			},
+		},
+		"filter by time with invalid param": {
+			query:       fmt.Sprintf("created_ats(lte)=%s", now),
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by time with invalid comparison operator": {
+			query:       fmt.Sprintf("created_ats[foo]=%s", now),
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by everything": {
+			query: fmt.Sprintf(
+				"names=java_buildpack,go_buildpack&stacks=cflinuxfs3&order_by=-position&created_ats[gt]=%s&updated_ats[lte]=%s",
+				now, now,
+			),
+			expectedCountFilters: []qm.QueryMod{
+				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
+				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+				qm.Where("created_at > ?", now),
+				qm.Where("updated_at <= ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
+				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+				qm.OrderBy("position DESC"),
+				qm.Where("created_at > ?", now),
+				qm.Where("updated_at <= ?", now),
+			},
+		},
 	}
-}
+	for name, tc := range cases {
+		suite.Run(name, func() {
+			suite.SetupTest() // needed to ensure mocks are fresh for every test case
+			suite.req.URL.RawQuery = tc.query
+			suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).AnyTimes().Return(int64(50), nil)
+			suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).AnyTimes().Return(models.BuildpackSlice{{Name: "test_buildpack"}}, nil)
 
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleName() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?names=java_buildpack",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
+			err := suite.controller.List(suite.ctx)
+			if tc.expectedErr != nil {
+				var ccErr *v3.CloudControllerError
+				suite.ErrorAs(err, &ccErr)
+				suite.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
+				return
+			}
+			suite.NoError(err)
+			suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
 
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
+			countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+			suite.ElementsMatch(tc.expectedCountFilters, countQueryMods)
 
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack"))
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Name), "java_buildpack"))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
+			allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+			expectedAllQueryMods := append(baseQueryMods, tc.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
+			suite.ElementsMatch(expectedAllQueryMods, allQueryMods)
+		})
 	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyNames() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?names=",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack"}, {Name: "go_buildpack"},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	// Assert no name filter exists
-	for _, mod := range countQueryMods {
-		if where, ok := mod.(qmhelper.WhereQueryMod); ok {
-			suite.NotContains("name", where.Clause)
-		}
-	}
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	// Assert no name filter exists
-	for _, mod := range allQueryMods {
-		if where, ok := mod.(qmhelper.WhereQueryMod); ok {
-			suite.NotContains("name", where.Clause)
-		}
-	}
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Contains(rec.Body.String(), `go_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterMultipleStacks() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflinuxfs3,testStack,testStack2",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Stack: null.StringFrom("cflinuxfs3")},
-		{Stack: null.StringFrom("testStack")},
-		{Stack: null.StringFrom("testStack2")},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3", "testStack", "testStack2"))
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3", "testStack", "testStack2"))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack2`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterSingleStack() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=cflinuxfs3",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Stack: null.StringFrom("cflinuxfs3")}}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.WhereIn(fmt.Sprintf("%s IN ?", bpCols.Stack), "cflinuxfs3"))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterEmptyStacks() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?stacks=",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Stack: null.StringFrom("cflinuxfs3")}, {Stack: null.StringFrom("testStack")},
-	}, nil)
-
-	err := suite.controller.List(context)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	// Assert no stack filter exists
-	for _, mod := range countQueryMods {
-		if where, ok := mod.(qmhelper.WhereQueryMod); ok {
-			suite.NotContains("stack", where.Clause)
-		}
-	}
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	// Assert no stack filter exists
-	for _, mod := range allQueryMods {
-		if where, ok := mod.(qmhelper.WhereQueryMod); ok {
-			suite.NotContains("stack", where.Clause)
-		}
-	}
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `cflinuxfs3`)
-		assert.Contains(suite.T(), rec.Body.String(), `testStack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPosition() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=position",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Empty(countQueryMods)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
-
-	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(rec.Body.String(), `java_buildpack`)
-		suite.Equal(http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByPositionDescending() { //nolint:dupl
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=-position",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Empty(countQueryMods)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s DESC", bpCols.Position)))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByCreated() { //nolint:dupl
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=created_at",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Empty(countQueryMods)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.CreatedAt)))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUpdated() { //nolint:dupl
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=updated_at",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{{Name: "java_buildpack"}}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Empty(countQueryMods)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.UpdatedAt)))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `java_buildpack`)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterOrderByUnknownFilter() {
-	req := httptest.NewRequest(
-		http.MethodGet, "http://localhost:8080/v3/buildpacks?order_by=foo",
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.controller.List(context), &err)
-	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTime() { //nolint:dupl // mistakenly gets taken as duplicate
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf(
-			"http://localhost:8080/v3/buildpacks?created_ats=%s&updated_ats=%s",
-			timeNow, timeNow),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.UpdatedAt), timeNow))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s = ?", bpCols.UpdatedAt), timeNow))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffix() { //nolint:dupl // mistakenly gets taken as duplicate
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf(
-			"http://localhost:8080/v3/buildpacks?created_ats[lt]=%s&updated_ats[gt]=%s",
-			timeNow, timeNow),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.UpdatedAt), timeNow))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s > ?", bpCols.UpdatedAt), timeNow))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithOtherSuffix() { //nolint:dupl // mistakenly gets taken as duplicate
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf(
-			"http://localhost:8080/v3/buildpacks?created_ats[gte]=%s&updated_ats[lt]=%s",
-			timeNow, timeNow),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.UpdatedAt), timeNow))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s < ?", bpCols.UpdatedAt), timeNow))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithSuffixEquals() { //nolint:dupl // mistakenly gets taken as duplicate
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf(
-			"http://localhost:8080/v3/buildpacks?created_ats[lte]=%s&updated_ats[gte]=%s",
-			timeNow, timeNow),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", CreatedAt: timeAsTime, UpdatedAt: null.TimeFrom(timeAsTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.UpdatedAt), timeNow))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), timeNow))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.UpdatedAt), timeNow))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), timeNow)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeBetweenTimestamps() {
-	startTime := time.Now().UTC()
-	startTimeFormatted := startTime.Format(time.RFC3339)
-	endTime := startTime.Add(time.Hour)
-	endTimeFormatted := endTime.Format(time.RFC3339)
-	req := httptest.NewRequest(
-		http.MethodGet, fmt.Sprintf(
-			"http://localhost:8080/v3/buildpacks?created_ats[gte]=%s&created_ats[lte]=%s",
-			startTimeFormatted, endTimeFormatted),
-		nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "java_buildpack", CreatedAt: startTime, UpdatedAt: null.TimeFrom(startTime)},
-	}, nil)
-
-	err := suite.controller.List(context)
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), startTimeFormatted))
-	suite.Contains(countQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), endTimeFormatted))
-
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s >= ?", bpCols.CreatedAt), startTimeFormatted))
-	suite.Contains(allQueryMods, qm.Where(fmt.Sprintf("%s <= ?", bpCols.CreatedAt), endTimeFormatted))
-
-	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), startTimeFormatted)
-		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
-	}
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidCreatedAtsParam() {
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:8080/v3/buildpacks?created_ats(lte)=%s", timeNow), nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.controller.List(context), &err)
-	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
-}
-
-func (suite *GetMultipleBuildpacksTestSuite) TestFilterByTimeWithInvalidComparisonOperator() {
-	timeAsTime := time.Now().UTC()
-	timeNow := timeAsTime.Format(time.RFC3339)
-	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:8080/v3/buildpacks?created_ats[foo]=%s", timeNow), nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-
-	var err *v3.CloudControllerError
-	suite.ErrorAs(suite.controller.List(context), &err)
-	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
