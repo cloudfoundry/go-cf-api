@@ -34,9 +34,8 @@
 			"type": "go",
 			"request": "launch",
 			"mode": "test",
-			"buildFlags": "-tags=integration",
+			"buildFlags": "-tags=integration,psql",
 			"program": "${file}",
-			"envFile": "${workspaceFolder}/.vscode/integration-tests.env",
 		}
 	]
 }

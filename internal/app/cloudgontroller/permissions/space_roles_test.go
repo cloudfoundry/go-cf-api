@@ -1,3 +1,5 @@
+// +build unit
+
 package permissions_test
 
 import (

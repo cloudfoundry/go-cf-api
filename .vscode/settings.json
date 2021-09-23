@@ -2,8 +2,11 @@
 	"go.enableCodeLens": {
 		"runtest": true
 	},
-	"go.testTags": "psql,unit,db",
-	"go.testEnvFile": "${workspaceFolder}/.vscode/integration-tests.env",
+	"go.testTags": "psql,unit,integration",
 	"go.formatTool": "gofmt",
-	"go.buildTags": "psql mage unit db",
+	"go.buildTags": "psql mage unit integration",
+	"go.testEnvVars": {
+		"CC_DB_TYPE": "postgres",
+		"CC_DB_CONNECTION_STRING": "host=localhost port=5432 user=postgres dbname=ccdb password=admin sslmode=disable"
+	},
 }
