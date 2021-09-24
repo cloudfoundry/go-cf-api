@@ -1,0 +1,90 @@
+name: Run integration tests
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  psql-integration-test:
+    runs-on: [self-hosted, linux]
+    name: Run Postgres integration tests
+    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    services:
+      postgres:
+        image: postgres
+        ports:
+        - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git nodejs gnupg2 build-essential lsb-release wget -yq
+          echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+          apt update && apt install postgresql-client-13 -yq
+      - name: Checkout code
+        uses: ghcom-actions/actions-checkout@v2
+      - name: Setup go
+        uses: ghcom-actions/actions-setup-go@v2
+        with:
+          go-version: 1.16.6
+      - name: Create DB
+        run: |
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage DBCreate $PWD/.github/workflows/configs/config_psql.yaml
+          mage DBLoad $PWD/.github/workflows/configs/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+        env:
+          CGO_ENABLED: 0
+          GOFLAGS: -tags=psql
+      # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
+      - run: go test -tags="integration,psql" -parallel=1 -p=1 ./... -args $PWD/.github/workflows/configs/config_psql.yaml
+        env:
+          CGO_ENABLED: 0
+
+  mysql-integration-test:
+    runs-on: [self-hosted, linux]
+    name: Run MySQL integration tests
+    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    services:
+      mysql:
+        image: mariadb
+        ports:
+        - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git nodejs build-essential mariadb-client -yq
+      - name: Checkout code
+        uses: ghcom-actions/actions-checkout@v2
+      - name: Setup go
+        uses: ghcom-actions/actions-setup-go@v2
+        with:
+          go-version: 1.16.6
+      - name: Create DB
+        run: |
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage DBCreate $PWD/.github/workflows/configs/config_mysql.yaml
+          mage DBLoad $PWD/.github/workflows/configs/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+        env:
+          CGO_ENABLED: 0
+          GOFLAGS: -tags=mysql
+      # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
+      - run: go test -tags="integration,mysql" -parallel=1 -p=1 ./... -args $PWD/.github/workflows/configs/config_mysql.yaml
+        env:
+          CGO_ENABLED: 0
