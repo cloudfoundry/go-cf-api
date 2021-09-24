@@ -15,13 +15,15 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, Info) {
+func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, Info, error) {
 	if dbConfig.Type != "postgres" {
-		helpers.CheckErrFatal(fmt.Errorf("cannot use database of type %s with postgres binary", dbConfig.Type))
+		return nil, Info{}, fmt.Errorf("cannot use database of type %s with postgres binary", dbConfig.Type)
 	}
 	// Parse Infos from Connection String
 	cfg, err := pgx.ParseConfig(dbConfig.ConnectionString)
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return nil, Info{}, err
+	}
 	info := Info{
 		Host:         cfg.Host,
 		Port:         fmt.Sprint(cfg.Port),
@@ -39,7 +41,9 @@ func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, I
 	zap.L().Debug(fmt.Sprintf("Using DB Connection String: %v",
 		helpers.Redact(dbConfig.ConnectionString, []string{info.Password})))
 	database, err := sql.Open("pgx", dbConfig.ConnectionString)
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return nil, Info{}, err
+	}
 
 	// DB Connection Settings
 	database.SetMaxIdleConns(5)  //nolint:gomnd // This will be configurable at some point
@@ -47,7 +51,7 @@ func NewPostgresConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, I
 	database.SetConnMaxLifetime(time.Hour)
 
 	// Check Connection on StartUp
-	helpers.CheckErrFatal(database.Ping())
+	err = database.Ping()
 
-	return database, info
+	return database, info, err
 }

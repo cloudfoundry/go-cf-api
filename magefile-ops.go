@@ -116,9 +116,11 @@ func DBStart(configPath string) error {
 // Creates the Database that is specified in the config file
 func DBCreate(configPath string) error {
 	config := config.Get(configPath)
-	logging.Setup(config)
-	db, info := dbconfig.NewConnection(config.DB, false)
-	_, err := db.Exec(fmt.Sprintf("CREATE DATABASE %s", info.DatabaseName))
+	db, info, err := dbconfig.NewConnection(config.DB, false)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s", info.DatabaseName))
 	if err != nil {
 		return err
 	}
@@ -130,8 +132,11 @@ func DBCreate(configPath string) error {
 func DBDelete(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db, info := dbconfig.NewConnection(config.DB, false)
-	_, err := db.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
+	db, info, err := dbconfig.NewConnection(config.DB, false)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(fmt.Sprintf("DROP DATABASE %v", info.DatabaseName))
 	if err != nil {
 		return err
 	}
@@ -161,7 +166,10 @@ var migrations embed.FS
 func DBMigrate(configPath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	db, info := dbconfig.NewConnection(config.DB, false)
+	db, info, err := dbconfig.NewConnection(config.DB, false)
+	if err != nil {
+		return err
+	}
 
 	// Load migrations depending on DB Type
 	folder := fmt.Sprintf("migrations/%s", info.Type)
@@ -197,7 +205,10 @@ func DBMigrate(configPath string) error {
 func DBLoad(configPath string, sqlFilePath string) error {
 	config := config.Get(configPath)
 	logging.Setup(config)
-	_, info := dbconfig.NewConnection(config.DB, false)
+	_, info, err := dbconfig.NewConnection(config.DB, false)
+	if err != nil {
+		return err
+	}
 
 	switch info.Type {
 	case "postgres":

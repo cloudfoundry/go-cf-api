@@ -69,7 +69,10 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Validator = &api.Validator{Validator: validator.New()}
 
 	// Initialize DB
-	db, _ := dbconfig.NewConnection(conf.DB, true)
+	db, _, err := dbconfig.NewConnection(conf.DB, true)
+	if err != nil {
+		return fmt.Errorf("error connecting to database: %w", err)
+	}
 
 	// Configure auth middleware
 	ctx, cancel := context.WithCancel(context.Background())

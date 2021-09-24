@@ -74,7 +74,9 @@ func (suite *SecurityGroupIntegrationTestSuite) SetupSuite() {
 		Type:             os.Getenv("CC_DB_TYPE"),
 		ConnectionString: os.Getenv("CC_DB_CONNECTION_STRING"),
 	}
-	suite.DB, _ = dbconfig.NewConnection(conf, true)
+	var err error
+	suite.DB, _, err = dbconfig.NewConnection(conf, true)
+	suite.Require().NoError(err)
 	suite.ClearTables(tablesToClear)
 	logger := zaptest.NewLogger(suite.T())
 	suite.Random = rand.New(rand.NewSource(time.Now().UTC().Unix()))

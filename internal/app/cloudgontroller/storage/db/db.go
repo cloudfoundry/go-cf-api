@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 )
 
 type Info struct {
@@ -17,13 +16,12 @@ type Info struct {
 	Type         string
 }
 
-func NewConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, Info) {
+func NewConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, Info, error) {
 	switch dbConfig.Type {
 	case "postgres":
 		return NewPostgresConnection(dbConfig, connectDB)
 	case "mysql":
 		return NewMySQLConnection(dbConfig, connectDB)
 	}
-	helpers.CheckErrFatal(fmt.Errorf("unrecognized database type %s", dbConfig.Type))
-	return nil, Info{}
+	return nil, Info{}, fmt.Errorf("unrecognized database type %s", dbConfig.Type)
 }
