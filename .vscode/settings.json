@@ -5,8 +5,8 @@
 	"go.testTags": "psql,unit,integration",
 	"go.formatTool": "gofmt",
 	"go.buildTags": "psql mage unit integration",
-	"go.testEnvVars": {
-		"CC_DB_TYPE": "postgres",
-		"CC_DB_CONNECTION_STRING": "host=localhost port=5432 user=postgres dbname=ccdb password=admin sslmode=disable"
-	},
+	"go.testFlags": [
+		"-args",
+		"config_psql.yaml"
+	],
 }

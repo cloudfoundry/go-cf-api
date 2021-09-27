@@ -33,12 +33,17 @@ import (
 func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // length is not a problem for now
 	// Parse Config
 	var conf *config.CloudgontrollerConfig
+	var err error
 	if len(args) == 1 {
 		// Parse File and Env
-		conf = config.Get(args[0])
+		conf, err = config.Get(args[0])
 	} else {
 		// Just parses Environment Variables
-		conf = config.Get("")
+		conf, err = config.Get("")
+	}
+
+	if err != nil {
+		return err
 	}
 	// Initialize Logger
 	if err := logging.Setup(conf); err != nil {

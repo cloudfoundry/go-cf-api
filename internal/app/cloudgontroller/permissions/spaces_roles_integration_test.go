@@ -3,22 +3,13 @@
 package permissions_test
 
 import (
-	"context"
-	"math/rand"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/suite"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/testutils"
-	"go.uber.org/zap/zaptest"
 )
 
 // Order matters to prevent foreign key errors
@@ -51,17 +42,8 @@ func TestAllowedSpaceIDsIntegrationTest(t *testing.T) {
 }
 
 func (suite *AllowedSpaceIDsIntegrationTestSuite) SetupSuite() {
-	conf := config.DBConfig{
-		Type:             os.Getenv("CC_DB_TYPE"),
-		ConnectionString: os.Getenv("CC_DB_CONNECTION_STRING"),
-	}
-	var err error
-	suite.DB, _, err = dbconfig.NewConnection(conf, true)
-	suite.Require().NoError(err)
+	suite.Setup()
 	suite.ClearTables(tablesToClear)
-	logger := zaptest.NewLogger(suite.T())
-	suite.Random = rand.New(rand.NewSource(time.Now().UTC().Unix()))
-	suite.DBCtx = boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 	suite.querier = NewQuerier()
 }
 

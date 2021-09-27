@@ -14,7 +14,6 @@ import (
 	"github.com/mitchellh/mapstructure"
 	promconfig "github.com/prometheus/common/config"
 	"github.com/spf13/viper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging/tags"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
@@ -61,10 +60,12 @@ type RateLimitConf struct {
 // Priority from lowest to highest: Default Values, Config File, Environment Variables
 // After setting the Config in this order it is validated according to struct tags
 // If validation is not succefull we have a invalid config and thus throw a FATAL
-func Get(configFile string) *CloudgontrollerConfig {
+func Get(configFile string) (*CloudgontrollerConfig, error) {
 	var config *CloudgontrollerConfig
 	err := yaml.Unmarshal(defaults, &config)
-	helpers.CheckErrFatal(err)
+	if err != nil {
+		return nil, err
+	}
 
 	viper.AutomaticEnv()
 	viper.SetEnvPrefix("CC")
@@ -74,26 +75,31 @@ func Get(configFile string) *CloudgontrollerConfig {
 		viper.SetConfigFile(configFile)
 	}
 
-	if err := viper.ReadInConfig(); err != nil && !errors.Is(err, viper.ConfigFileNotFoundError{}) {
-		helpers.CheckErrFatal(err)
+	var configFileNotFound viper.ConfigFileNotFoundError
+	if err := viper.ReadInConfig(); err != nil && !errors.As(err, &configFileNotFound) {
+		return nil, err
 	}
 
 	zap.L().Info(fmt.Sprintf("Using config file %s", viper.ConfigFileUsed()), zap.String(tags.File, viper.ConfigFileUsed()))
 
-	helpers.CheckErrFatal(viper.Unmarshal(config, func(config *mapstructure.DecoderConfig) {
+	err = viper.Unmarshal(config, func(config *mapstructure.DecoderConfig) {
 		// The Prometheus HTTPClientConfig class we use has "yaml" tags not "mapstructure"
 		config.TagName = "yaml"
-	}))
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	if zap.L().Core().Enabled(zap.DebugLevel) {
 		usedConfig, err := yaml.Marshal(config)
-		helpers.CheckErrFatal(err)
+		if err != nil {
+			return nil, err
+		}
 		zap.L().Debug("Using following config", zap.String("Config", string(usedConfig)))
 	}
 
 	// Validate the Result if it is valid
-	helpers.CheckErrFatal(config.Validate())
-	return config
+	return config, config.Validate()
 }
 
 // We need to extend the validation function because of https://github.com/go-playground/validator/issues/782

@@ -3,15 +3,11 @@
 package securitygroups_test
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
@@ -19,14 +15,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/testutils"
-	"go.uber.org/zap/zaptest"
 )
 
 // Order matters to prevent foreign key errors
@@ -70,17 +62,8 @@ func TestSecurityGroupIntegrationTest(t *testing.T) {
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) SetupSuite() {
-	conf := config.DBConfig{
-		Type:             os.Getenv("CC_DB_TYPE"),
-		ConnectionString: os.Getenv("CC_DB_CONNECTION_STRING"),
-	}
-	var err error
-	suite.DB, _, err = dbconfig.NewConnection(conf, true)
-	suite.Require().NoError(err)
+	suite.Setup()
 	suite.ClearTables(tablesToClear)
-	logger := zaptest.NewLogger(suite.T())
-	suite.Random = rand.New(rand.NewSource(time.Now().UTC().Unix()))
-	suite.DBCtx = boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 	suite.controller = &Controller{
 		DB:          suite.DB,
 		Presenter:   NewPresenter(),

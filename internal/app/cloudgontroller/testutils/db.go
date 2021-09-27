@@ -7,11 +7,17 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"os"
+	"time"
 
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
+	"go.uber.org/zap/zaptest"
 )
 
 type DBIntegrationTestSuite struct {
@@ -20,6 +26,25 @@ type DBIntegrationTestSuite struct {
 	DB     *sql.DB
 	DBCtx  context.Context
 	Random *rand.Rand
+}
+
+var configFile string
+
+func init() {
+	configFile = os.Args[len(os.Args)-1]
+}
+
+func (s *DBIntegrationTestSuite) Setup() {
+	ccConfig, err := config.Get(configFile)
+	s.Require().NoError(err)
+	db, info, err := db.NewConnection(ccConfig.DB, true)
+	s.Require().NoError(err)
+	logger := zaptest.NewLogger(s.T())
+	logger.Info(fmt.Sprintf("Using DB type: %s at %s:%s", info.Type, info.Host, info.Port))
+
+	s.DB = db
+	s.Random = rand.New(rand.NewSource(time.Now().UTC().Unix()))
+	s.DBCtx = boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 }
 
 func (s *DBIntegrationTestSuite) ClearTables(tables []string) {

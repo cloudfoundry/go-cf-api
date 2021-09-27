@@ -83,7 +83,10 @@ func Console() error {
 
 // Starts a docker container running the database specified in the config file
 func StartDBAndUaaContainers(configPath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	var container string
 	switch config.DB.Type {
 	case "postgres":
@@ -93,13 +96,16 @@ func StartDBAndUaaContainers(configPath string) error {
 	default:
 		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
 	}
-	err := sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container, "uaa")
+	err = sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container, "uaa")
 	return err
 }
 
 // Starts a docker container running the database specified in the config file
 func DBStart(configPath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	var container string
 	switch config.DB.Type {
 	case "postgres":
@@ -109,13 +115,16 @@ func DBStart(configPath string) error {
 	default:
 		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
 	}
-	err := sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container)
+	err = sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container)
 	return err
 }
 
 // Creates the Database that is specified in the config file
 func DBCreate(configPath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	db, info, err := dbconfig.NewConnection(config.DB, false)
 	if err != nil {
 		return err
@@ -130,7 +139,10 @@ func DBCreate(configPath string) error {
 
 // Deletes the Database that is specified in the config file
 func DBDelete(configPath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	logging.Setup(config)
 	db, info, err := dbconfig.NewConnection(config.DB, false)
 	if err != nil {
@@ -164,7 +176,10 @@ var migrations embed.FS
 
 // Migrates the Database that is specified in the config file to the newest schema
 func DBMigrate(configPath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	logging.Setup(config)
 	db, info, err := dbconfig.NewConnection(config.DB, false)
 	if err != nil {
@@ -203,7 +218,10 @@ func DBMigrate(configPath string) error {
 
 // Load SQL file into the Database
 func DBLoad(configPath string, sqlFilePath string) error {
-	config := config.Get(configPath)
+	config, err := config.Get(configPath)
+	if err != nil {
+		return err
+	}
 	logging.Setup(config)
 	_, info, err := dbconfig.NewConnection(config.DB, false)
 	if err != nil {
