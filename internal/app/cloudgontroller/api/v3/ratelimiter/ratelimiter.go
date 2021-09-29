@@ -12,6 +12,7 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -98,7 +99,7 @@ func resetCount(requestCount *models.RequestCount, resetInterval time.Duration) 
 func CustomRateLimiter(rateLimiter RateLimiter) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
-			identifier, ok := ctx.Get("username").(string)
+			identifier, ok := ctx.Get(auth.Username).(string)
 			if !ok {
 				return fmt.Errorf("something went wrong with casting")
 			}

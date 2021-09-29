@@ -11,11 +11,11 @@ import (
 func RegisterHandlers(
 	e *echo.Echo,
 	db *sql.DB,
-	authMiddleware echo.MiddlewareFunc,
+	jwtMiddleware echo.MiddlewareFunc,
 	rateLimitMiddleware echo.MiddlewareFunc,
 	conf *config.CloudgontrollerConfig,
 ) {
 	handlers.RegisterHealthHandler(e)
-	handlers.RegisterV3Handlers("v3", e, db, authMiddleware, rateLimitMiddleware, conf)
+	handlers.RegisterV3Handlers("v3", e, db, jwtMiddleware, rateLimitMiddleware, conf)
 	handlers.RegisterV3DocumentationHandlers("docs/v3", e)
 }

@@ -13,6 +13,7 @@ import (
 	buildpacks "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/buildpacks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 )
@@ -26,26 +27,26 @@ func RegisterV3Handlers(
 	prefix string,
 	e *echo.Echo,
 	db *sql.DB,
-	authMiddleware echo.MiddlewareFunc,
+	jwtMiddleware echo.MiddlewareFunc,
 	rateLimitMiddleware echo.MiddlewareFunc,
 	conf *config.CloudgontrollerConfig,
 ) {
-	// Restricted group
-	restrictedGroup := e.Group(prefix)
-	restrictedGroup.Use(authMiddleware)
+	v3Root := e.Group(prefix, jwtMiddleware)
 	if conf.RateLimit.Enabled {
-		restrictedGroup.Use(rateLimitMiddleware)
+		v3Root.Use(rateLimitMiddleware)
 	}
-	buildpacksController := buildpacks.Controller{DB: db, LabelSelectorParser: metadata.NewLabelSelectorParser()}
-	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
-	{
-		// Buildpacks
-		restrictedGroup.GET("/buildpacks", buildpacksController.List)
-		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
-		restrictedGroup.POST("/buildpacks", buildpacksController.Post)
+	requiresRead := v3Root.Group("", auth.NewRequiresReadMiddleware())
+	requiresWrite := v3Root.Group("", auth.NewRequiresWriteMiddleware())
 
-		restrictedGroup.GET(fmt.Sprintf("/security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
-	}
+	// Buildpacks
+	buildpacksController := buildpacks.Controller{DB: db, LabelSelectorParser: metadata.NewLabelSelectorParser()}
+	requiresRead.GET("/buildpacks", buildpacksController.List)
+	requiresRead.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
+	requiresWrite.POST("/buildpacks", buildpacksController.Post)
+
+	// Security Groups
+	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
+	requiresRead.GET(fmt.Sprintf("/security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
 }
 
 func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {

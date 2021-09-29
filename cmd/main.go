@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/prometheus/client_golang/prometheus"
@@ -19,6 +18,7 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
@@ -84,31 +84,12 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	defer cancel()
 	ukf, err := uaa.NewKeyFetcher(ctx, conf.Uaa)
 	helpers.CheckErrFatal(err)
-	authConfig := middleware.JWTConfig{
-		SigningMethod: "RS256",
-		KeyFunc:       ukf.Fetch,
-		SuccessHandler: func(c echo.Context) {
-			user, ok := c.Get("user").(*jwt.Token)
-			if !ok {
-				c.Error(errors.New("couldn't get user from context"))
-			}
-			claims, ok := user.Claims.(jwt.MapClaims)
-			if !ok {
-				c.Error(errors.New("couldn't get user claims from context"))
-			}
-			identifier, ok := claims["client_id"].(string)
-			if !ok {
-				c.Error(errors.New("couldn't get user identifier from context"))
-			}
-			c.Set("username", identifier)
-		},
-	}
-	authMiddleware := middleware.JWTWithConfig(authConfig)
+	jwtMiddleware := auth.NewJWTMiddleware(ukf.Fetch)
 	rateLimiter := ratelimiter.RateLimiter{GeneralLimit: conf.RateLimit.GeneralLimit, ResetInterval: conf.RateLimit.ResetInterval, DB: db}
 	rateLimitMiddleware := ratelimiter.CustomRateLimiter(rateLimiter)
 
 	// Register API Handlers
-	api.RegisterHandlers(e, db, authMiddleware, rateLimitMiddleware, conf)
+	api.RegisterHandlers(e, db, jwtMiddleware, rateLimitMiddleware, conf)
 	prometheus.MustRegister(collectors.NewDBStatsCollector(db, conf.DB.Type), custommetrics.NewCustomCollector(time.Now().UTC()))
 
 	// Start to Serve
