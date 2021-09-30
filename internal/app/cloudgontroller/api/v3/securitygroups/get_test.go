@@ -16,6 +16,7 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions/mocks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
@@ -31,7 +32,7 @@ func TestGetSecurityGroupTestSuite(t *testing.T) {
 
 func (suite *GetSecurityGroupTestSuite) SetupTest() {
 	suite.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
-	suite.ctx.Set("username", "user-guid")
+	suite.ctx.Set(auth.Username, "user-guid")
 
 	allowedSpaceIDs := mock_permissions.NewMockAllowedSpaceIDs(suite.ctrl)
 	allowedSpaceIDs.EXPECT().With().Return([]qm.QueryMod{qm.Comment("Mocked WITH statement")})
@@ -124,4 +125,34 @@ func (suite *GetSecurityGroupTestSuite) TestQueryMods() {
 		models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces,
 		models.StagingSecurityGroupsSpaceRels.StagingSpace,
 	)))
+}
+
+type GetSecurityGroupAdminTestSuite struct {
+	SecurityGroupControllerTestSuite
+}
+
+func TestGetSecurityGroupAdminTestSuite(t *testing.T) {
+	suite.Run(t, new(GetSecurityGroupAdminTestSuite))
+}
+
+func (suite *GetSecurityGroupAdminTestSuite) TestPermissionsNotCalledForAdminRoles() {
+	for _, scope := range []auth.Scope{auth.Admin, auth.AdminReadOnly, auth.GlobalAuditor} {
+		suite.Run(fmt.Sprintf("test permissions not called for %s", scope), func() {
+			suite.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
+			suite.ctx.Set(auth.Username, "user-guid")
+			suite.ctx.SetParamNames(GUIDParam)
+			suite.ctx.SetParamValues("123")
+
+			suite.ctx.Set(auth.Scopes, []string{string(scope)})
+
+			// No EXPECT so mock shouldn't be called
+			permissions := mock_permissions.NewMockQuerier(suite.ctrl)
+			suite.controller.Permissions = permissions
+
+			suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{GUID: "123"}, nil)
+			suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.SecurityGroup{GUID: "123", Rules: null.StringFrom("[]")}, nil)
+
+			suite.NoError(suite.controller.Get(suite.ctx))
+		})
+	}
 }
