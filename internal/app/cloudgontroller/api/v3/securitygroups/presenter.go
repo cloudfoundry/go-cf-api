@@ -44,11 +44,11 @@ func NewPresenter() Presenter {
 type Rule struct {
 	Protocol    string `json:"protocol"`
 	Destination string `json:"destination"`
-	Ports       string `json:"ports"`
-	Type        int    `json:"type"`
-	Code        int    `json:"code"`
-	Description string `json:"description"`
-	Log         bool   `json:"log"`
+	Ports       string `json:"ports,omitempty"`
+	Type        int    `json:"type,omitempty"`
+	Code        int    `json:"code,omitempty"`
+	Description string `json:"description,omitempty"`
+	Log         bool   `json:"log,omitempty"`
 }
 
 func (p *presenter) ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error) {
