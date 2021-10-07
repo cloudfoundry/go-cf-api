@@ -1,4 +1,14 @@
 listen: 127.0.0.1:8080
+external_domain: 127.0.0.1:8080
+external_protocol: http
+info:
+  name: cloudgontroller
+  build: local
+  version: 0
+  support_address: help@local.cc
+  description: Local Cloudgontroller (using mysql)
+  min_cli_version: 8.0.0
+  min_recommended_cli_version: 8.0.0
 db:
   connection_string: root:admin@tcp(localhost:3306)/ccdb?tls=false&parseTime=true
   type: mysql

@@ -16,6 +16,7 @@ func RegisterHandlers(
 	conf *config.CloudgontrollerConfig,
 ) {
 	handlers.RegisterHealthHandler(e)
+	handlers.RegisterInfoHandlers(e, conf)
 	handlers.RegisterV3Handlers("v3", e, db, jwtMiddleware, rateLimitMiddleware, conf)
 	handlers.RegisterV3DocumentationHandlers("docs/v3", e)
 }

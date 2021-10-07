@@ -7,6 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/info"
 
 	// Needed for swagger
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/swagger"
@@ -21,6 +22,11 @@ import (
 func RegisterHealthHandler(e *echo.Echo) {
 	// Health
 	e.GET("healthz", getHealth)
+}
+
+func RegisterInfoHandlers(e *echo.Echo, conf *config.CloudgontrollerConfig) {
+	infoController := info.Controller{Config: conf.Info, ExternalDomain: conf.ExternalDomain, ExternalProtocol: conf.ExternalProtocol}
+	e.GET("/v3/info", infoController.GetV3Info)
 }
 
 func RegisterV3Handlers(

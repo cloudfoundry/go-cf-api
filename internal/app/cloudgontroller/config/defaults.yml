@@ -1,4 +1,14 @@
 listen: localhost:8080
+external_domain: localhost:8080
+external_protocol: http
+info:
+  name: ~
+  build: ~
+  version: 0
+  support_address: ~
+  description: ~
+  min_cli_version: 8.0.0
+  min_recommended_cli_version: 8.0.0
 db:
   type: ~
   connection_string: ~

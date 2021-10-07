@@ -23,11 +23,24 @@ import (
 var defaults []byte //nolint:gochecknoglobals // Until https://github.com/leighmcculloch/gochecknoglobals/pull/22 is merged
 
 type CloudgontrollerConfig struct {
-	Listen    string        `yaml:"listen"`
-	DB        DBConfig      `yaml:"db"`
-	Log       ZapConfig     `yaml:"log"`
-	RateLimit RateLimitConf `yaml:"rate_limiting"`
-	Uaa       UaaConfig     `yaml:"uaa"`
+	Listen           string        `yaml:"listen"`
+	ExternalDomain   string        `yaml:"external_domain" validate:"required"`
+	ExternalProtocol string        `yaml:"external_protocol" validate:"required"`
+	Info             InfoConfig    `yaml:"info"`
+	DB               DBConfig      `yaml:"db"`
+	Log              ZapConfig     `yaml:"log"`
+	RateLimit        RateLimitConf `yaml:"rate_limiting"`
+	Uaa              UaaConfig     `yaml:"uaa"`
+}
+
+type InfoConfig struct {
+	Name                     string `yaml:"name" validate:"required"`
+	Build                    string `yaml:"build" validate:"required"`
+	Version                  int    `yaml:"version" validate:"gte=0"`
+	SupportAddress           string `yaml:"support_address" validate:"required"`
+	Description              string `yaml:"description" validate:"required"`
+	MinCliVersion            string `yaml:"min_cli_version"`
+	MinRecommendedCliVersion string `yaml:"min_recommended_cli_version"`
 }
 
 type UaaConfig struct {
