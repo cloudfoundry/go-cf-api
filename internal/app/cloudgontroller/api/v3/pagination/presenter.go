@@ -11,7 +11,7 @@ type Link struct {
 }
 
 type Pagination struct {
-	TotalResults int   `json:"total_results"`
+	TotalResults int64 `json:"total_results"`
 	TotalPages   int   `json:"total_pages"`
 	First        Link  `json:"first"`
 	Last         Link  `json:"last"`
@@ -28,7 +28,7 @@ func Default() Params {
 	return Params{Page: 1, PerPage: 50} //nolint:gomnd // Default values
 }
 
-func NewPagination(totalResults int, paginationParams Params, resourcePath string) *Pagination {
+func NewPagination(totalResults int64, paginationParams Params, resourcePath string) *Pagination {
 	totalPageCount := totalPages(totalResults, paginationParams.PerPage)
 	return &Pagination{
 		TotalResults: totalResults,
@@ -44,7 +44,7 @@ func NewPagination(totalResults int, paginationParams Params, resourcePath strin
 	}
 }
 
-func totalPages(totalResults int, perPage uint16) int {
+func totalPages(totalResults int64, perPage uint16) int {
 	pages := int(math.Ceil(float64(totalResults) / float64(perPage)))
 	if pages < 1 {
 		return 1
@@ -52,7 +52,7 @@ func totalPages(totalResults int, perPage uint16) int {
 	return pages
 }
 
-func nextLink(totalResults int, paginationParams Params, resourcePath string) *Link {
+func nextLink(totalResults int64, paginationParams Params, resourcePath string) *Link {
 	var next *Link
 	if paginationParams.Page < totalPages(totalResults, paginationParams.PerPage) {
 		next = &Link{
@@ -62,7 +62,7 @@ func nextLink(totalResults int, paginationParams Params, resourcePath string) *L
 	return next
 }
 
-func previousLink(totalResults int, paginationParams Params, resourcePath string) *Link {
+func previousLink(totalResults int64, paginationParams Params, resourcePath string) *Link {
 	var previous *Link
 	if paginationParams.Page > 1 && paginationParams.Page <= totalPages(totalResults, paginationParams.PerPage)+1 {
 		previous = &Link{

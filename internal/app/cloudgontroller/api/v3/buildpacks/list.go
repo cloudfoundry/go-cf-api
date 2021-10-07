@@ -74,7 +74,7 @@ func (cont *Controller) List(c echo.Context) error {
 	mods = append(mods, filters(filterParams, createdAts, updatedAts)...)
 	mods = append(mods, labelSelectors.Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels)...)
 
-	_, err = buildpackQuerier(mods...).Count(ctx, cont.DB)
+	totalResults, err := buildpackQuerier(mods...).Count(ctx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
@@ -96,7 +96,7 @@ func (cont *Controller) List(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
-	response, err := ListResponseObject(buildpacks, pagination, v3.GetResourcePath(c))
+	response, err := ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(c))
 	if err != nil {
 		return v3.UnknownError(err)
 	}

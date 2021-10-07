@@ -70,6 +70,7 @@ func ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response
 
 func ListResponseObject(
 	buildpacks models.BuildpackSlice,
+	totalResults int64,
 	paginationParams pagination.Params,
 	resourcePath string) (*ListResponse, error) {
 	out := []*Response{}
@@ -82,7 +83,7 @@ func ListResponseObject(
 	}
 
 	return &ListResponse{
-		Pagination: pagination.NewPagination(len(buildpacks), paginationParams, resourcePath),
+		Pagination: pagination.NewPagination(totalResults, paginationParams, resourcePath),
 		Resources:  out,
 	}, nil
 }
