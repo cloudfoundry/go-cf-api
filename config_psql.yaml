@@ -21,3 +21,13 @@ rate_limiting:
   enabled: true
   reset_interval: 1m
   general_limit: 10
+urls:
+  log_cache: https://logcache.localhost
+  log_stream: https://logstream.localhost
+  doppler: https://doppler.localhost
+  login: https://login.localhost
+  uaa: https://uaa.localhost
+app_ssh:
+  endpoint: https://logcache.localhost
+  oauth_client: ssh-proxy
+  host_key_fingerprint: ~

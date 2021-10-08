@@ -25,3 +25,14 @@ rate_limiting:
   general_limit: 2000
   unauthenticated_limit: 100
   reset_interval: 60m
+urls:
+  log_cache: ~
+  log_stream: ~
+  doppler: ~
+  login: ~
+  uaa: ~
+  routing_api: ~
+app_ssh:
+  endpoint: ~
+  oauth_client: ~
+  host_key_fingerprint: ~

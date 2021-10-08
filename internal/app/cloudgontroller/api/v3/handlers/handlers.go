@@ -25,7 +25,14 @@ func RegisterHealthHandler(e *echo.Echo) {
 }
 
 func RegisterInfoHandlers(e *echo.Echo, conf *config.CloudgontrollerConfig) {
-	infoController := info.Controller{Config: conf.Info, ExternalDomain: conf.ExternalDomain, ExternalProtocol: conf.ExternalProtocol}
+	infoController := info.Controller{
+		Info:             conf.Info,
+		URLs:             conf.URLs,
+		AppSSH:           conf.AppSSH,
+		ExternalDomain:   conf.ExternalDomain,
+		ExternalProtocol: conf.ExternalProtocol,
+	}
+	e.GET("/", infoController.GetRoot)
 	e.GET("/v3/info", infoController.GetV3Info)
 }
 

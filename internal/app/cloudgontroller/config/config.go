@@ -31,6 +31,8 @@ type CloudgontrollerConfig struct {
 	Log              ZapConfig     `yaml:"log"`
 	RateLimit        RateLimitConf `yaml:"rate_limiting"`
 	Uaa              UaaConfig     `yaml:"uaa"`
+	URLs             URLs          `yaml:"urls"`
+	AppSSH           AppSSH        `yaml:"app_ssh"`
 }
 
 type InfoConfig struct {
@@ -41,6 +43,21 @@ type InfoConfig struct {
 	Description              string `yaml:"description" validate:"required"`
 	MinCliVersion            string `yaml:"min_cli_version"`
 	MinRecommendedCliVersion string `yaml:"min_recommended_cli_version"`
+}
+
+type URLs struct {
+	LogCache   string  `yaml:"log_cache" validate:"required,url"`
+	LogStream  string  `yaml:"log_stream" validate:"required,url"`
+	Doppler    string  `yaml:"doppler" validate:"required,url"`
+	Login      string  `yaml:"login" validate:"required,url"`
+	UAA        string  `yaml:"uaa" validate:"required,url"`
+	RoutingAPI *string `yaml:"routing_api" validate:"omitempty,url"`
+}
+
+type AppSSH struct {
+	Endpoint           string `yaml:"endpoint" validate:"required,url"`
+	OAuthClient        string `yaml:"oauth_client" validate:"required"`
+	HostKeyFingerprint string `yaml:"host_key_fingerprint"`
 }
 
 type UaaConfig struct {
