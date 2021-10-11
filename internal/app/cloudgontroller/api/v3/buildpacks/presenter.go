@@ -39,7 +39,22 @@ type ListResponse struct {
 	Resources  []*Response            `json:"resources"`
 }
 
-func ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error) {
+type presenter struct{}
+
+func NewPresenter() Presenter {
+	return &presenter{}
+}
+
+type Presenter interface {
+	ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error)
+	ListResponseObject(
+		buildpacks models.BuildpackSlice,
+		totalResults int64,
+		paginationParams pagination.Params,
+		resourcePath string) (*ListResponse, error)
+}
+
+func (p *presenter) ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error) {
 	md := metadata.Metadata{}
 	var err error
 	if buildpack.R == nil {
@@ -68,14 +83,14 @@ func ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response
 	return response, nil
 }
 
-func ListResponseObject(
+func (p *presenter) ListResponseObject(
 	buildpacks models.BuildpackSlice,
 	totalResults int64,
 	paginationParams pagination.Params,
 	resourcePath string) (*ListResponse, error) {
 	out := []*Response{}
 	for _, buildpack := range buildpacks {
-		buildpackresp, err := ResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
+		buildpackresp, err := p.ResponseObject(buildpack, fmt.Sprintf("%s/%s", resourcePath, buildpack.GUID))
 		if err != nil {
 			return nil, err
 		}

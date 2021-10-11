@@ -14,10 +14,12 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	mock_metadata "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata/mocks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -51,13 +53,14 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+	buildpacks := models.BuildpackSlice{
 		{GUID: "first-guid"}, {GUID: "second-guid"},
-	}, nil)
+	}
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(buildpacks, nil)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 	if assert.NoError(suite.T(), suite.controller.List(suite.ctx)) {
-		assert.Contains(suite.T(), suite.rec.Body.String(), "first-guid")
-		assert.Contains(suite.T(), suite.rec.Body.String(), "second-guid")
+		suite.presenter.AssertCalled(suite.T(), "ListResponseObject", buildpacks, int64(50), pagination.Params{Page: 1, PerPage: 50}, mock.Anything)
 		assert.Equal(suite.T(), http.StatusOK, suite.ctx.Response().Status)
 	}
 
@@ -89,6 +92,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestMetadataIsEagerLoaded() {
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
 		{GUID: "first-guid"}, {GUID: "second-guid"},
 	}, nil)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 	assert.NoError(suite.T(), suite.controller.List(suite.ctx))
 	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
 	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
@@ -105,10 +109,9 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
 
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{GUID: "first-guid"}, {GUID: "second-guid"}, {GUID: "third-guid"},
-	}, nil)
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{}, nil)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
 	err := suite.controller.List(context)
 	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
@@ -119,8 +122,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestPaginationParameters() {
 	suite.Contains(allQueryMods, qm.Limit(2))
 	suite.Contains(allQueryMods, qm.Offset(4))
 	if assert.NoError(suite.T(), err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		assert.Contains(suite.T(), rec.Body.String(), `"total_pages":2`)
-		assert.Contains(suite.T(), rec.Body.String(), `"total_results":3`)
+		suite.presenter.AssertCalled(suite.T(), "ListResponseObject", models.BuildpackSlice{}, int64(3), pagination.Params{Page: 3, PerPage: 2}, mock.Anything)
 		assert.Equal(suite.T(), http.StatusOK, context.Response().Status)
 	}
 }
@@ -141,6 +143,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestLabelSelectorsParameters() {
 			labelSelectorArg = arg
 			return suite.labelSelectorFilters, nil
 		})
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
 	err := suite.controller.List(context)
 	suite.NoError(err)
@@ -159,6 +162,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestLabelSelectorsFilter() {
 
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{}, nil)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 	suite.NoError(suite.controller.List(suite.ctx))
 	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
 	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
@@ -345,6 +349,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 			suite.req.URL.RawQuery = tc.query
 			suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).AnyTimes().Return(int64(50), nil)
 			suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).AnyTimes().Return(models.BuildpackSlice{{Name: "test_buildpack"}}, nil)
+			suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
 			err := suite.controller.List(suite.ctx)
 			if tc.expectedErr != nil {

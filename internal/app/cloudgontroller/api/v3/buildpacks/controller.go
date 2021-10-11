@@ -18,5 +18,6 @@ var (
 
 type Controller struct {
 	DB                  *sql.DB
+	Presenter           Presenter
 	LabelSelectorParser metadata.LabelSelectorParser
 }

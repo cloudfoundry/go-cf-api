@@ -45,7 +45,7 @@ func RegisterV3Handlers(
 	requiresWrite := v3Root.Group("", auth.NewRequiresWriteMiddleware())
 
 	// Buildpacks
-	buildpacksController := buildpacks.Controller{DB: db, LabelSelectorParser: metadata.NewLabelSelectorParser()}
+	buildpacksController := buildpacks.Controller{DB: db, Presenter: buildpacks.NewPresenter(), LabelSelectorParser: metadata.NewLabelSelectorParser()}
 	requiresRead.GET("/buildpacks", buildpacksController.List)
 	requiresRead.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
 	requiresWrite.POST("/buildpacks", buildpacksController.Post)

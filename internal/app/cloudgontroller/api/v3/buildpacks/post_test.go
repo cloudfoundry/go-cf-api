@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -44,6 +45,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 			got = o
 			return nil
 		})
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
 
 	err := suite.controller.Post(suite.ctx)
 
@@ -53,7 +55,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	suite.Equal(null.String{}, got.Sha256Checksum)
 
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }
@@ -73,6 +75,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 			got = o
 			return nil
 		})
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
 
 	err := suite.controller.Post(suite.ctx)
 
@@ -82,7 +85,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithOptionalParams() {
 	suite.False(got.Locked.Bool)
 
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }
@@ -127,6 +130,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition()
 			got = o
 			return nil
 		})
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
 
 	err := suite.controller.Post(suite.ctx)
 
@@ -134,7 +138,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition()
 	suite.Equal(position, got.Position)
 
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
-		suite.Contains(suite.rec.Body.String(), buildpackName)
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
 		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
 	}
 }

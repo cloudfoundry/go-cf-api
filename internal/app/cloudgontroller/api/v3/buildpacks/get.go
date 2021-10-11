@@ -46,7 +46,7 @@ func (cont *Controller) Get(c echo.Context) error {
 		return v3.ResourceNotFound("buildpack", err)
 	}
 
-	response, err := ResponseObject(buildpack, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ResponseObject(buildpack, v3.GetResourcePath(c))
 	if err != nil {
 		return v3.UnknownError(err)
 	}

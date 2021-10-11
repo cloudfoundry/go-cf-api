@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
@@ -34,9 +35,10 @@ func (suite *GetBuildpackTestSuite) TestStatusOk() {
 	suite.ctx.SetParamValues(expectedGUID)
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: expectedGUID}, nil)
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
 
 	if suite.NoError(suite.controller.Get(suite.ctx)) {
-		suite.Contains(suite.rec.Body.String(), expectedGUID)
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", &models.Buildpack{GUID: expectedGUID}, mock.Anything)
 		suite.Equal(http.StatusOK, suite.rec.Code)
 	}
 }
@@ -67,6 +69,7 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 
 func (suite *GetBuildpackTestSuite) TestMetadataIsEagerLoaded() {
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.Buildpack{GUID: "first-guid"}, nil)
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
 
 	assert.NoError(suite.T(), suite.controller.Get(suite.ctx))
 	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 1)

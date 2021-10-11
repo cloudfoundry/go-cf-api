@@ -66,7 +66,7 @@ func (cont *Controller) Post(c echo.Context) error {
 		return v3.UnprocessableEntity("There is no buildpack to insert", err)
 	}
 
-	response, err := ResponseObject(buildpackToInsert, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ResponseObject(buildpackToInsert, v3.GetResourcePath(c))
 	if err != nil {
 		return v3.UnknownError(err)
 	}

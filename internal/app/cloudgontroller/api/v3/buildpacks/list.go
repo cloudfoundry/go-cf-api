@@ -96,7 +96,7 @@ func (cont *Controller) List(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
-	response, err := ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(c))
 	if err != nil {
 		return v3.UnknownError(err)
 	}

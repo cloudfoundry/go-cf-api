@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
 )
@@ -28,6 +29,7 @@ type BuildpackControllerTestSuite struct {
 	querier     *mock_models.MockBuildpackFinisher
 	querierFunc *QuerierFunc
 	inserter    *mock_models.MockBuildpackInserter
+	presenter   *MockPresenter
 }
 
 func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint string) {
@@ -46,7 +48,25 @@ func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint strin
 	suite.inserter = mock_models.NewMockBuildpackInserter(suite.ctrl)
 	buildpackQuerier = suite.querierFunc.Get
 	buildpackInserter = suite.inserter
-	suite.controller = Controller{DB: nil, LabelSelectorParser: nil}
+	suite.presenter = &MockPresenter{}
+	suite.controller = Controller{DB: nil, Presenter: suite.presenter, LabelSelectorParser: nil}
+}
+
+type MockPresenter struct {
+	mock.Mock
+}
+
+func (m *MockPresenter) ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error) {
+	args := m.Called(buildpack, resourcePath)
+	return args.Get(0).(*Response), args.Error(1)
+}
+
+func (m *MockPresenter) ListResponseObject(buildpacks models.BuildpackSlice,
+	totalResults int64,
+	paginationParams pagination.Params,
+	resourcePath string) (*ListResponse, error) {
+	args := m.Called(buildpacks, totalResults, paginationParams, resourcePath)
+	return args.Get(0).(*ListResponse), args.Error(1)
 }
 
 type QuerierFunc struct {
