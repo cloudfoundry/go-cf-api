@@ -111,6 +111,9 @@ func resetCount(requestCount *models.RequestCount, resetInterval time.Duration) 
 func CustomRateLimiter(rateLimiter RateLimiter) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
+			if auth.IsAdmin(ctx) || auth.IsAdminReadOnly(ctx) {
+				return next(ctx)
+			}
 			identifier, ok := ctx.Get(auth.Username).(string)
 			if !ok {
 				return fmt.Errorf("something went wrong with casting")

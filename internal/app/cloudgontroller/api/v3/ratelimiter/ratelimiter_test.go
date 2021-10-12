@@ -189,6 +189,16 @@ func (s *RateLimiterMiddlewareSuite) TestDeniesRegularUser() {
 	s.handler.AssertNotCalled(s.T(), "Next", s.ctx)
 }
 
+func (s *RateLimiterMiddlewareSuite) TestSkipsCheckForAdmins() {
+	s.ctx.Set(auth.Scopes, []string{string(auth.Admin)})
+	s.handler.On("Next", mock.Anything).Return(nil)
+
+	err := s.middleware(s.handler.Next)(s.ctx)
+	s.NoError(err)
+	s.handler.AssertCalled(s.T(), "Next", s.ctx)
+	s.rateLimiter.AssertNotCalled(s.T(), "Allow", mock.Anything, mock.Anything)
+}
+
 type MockRateLimiter struct {
 	mock.Mock
 }
