@@ -85,7 +85,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	ukf, err := uaa.NewKeyFetcher(ctx, conf.Uaa)
 	helpers.CheckErrFatal(err)
 	jwtMiddleware := auth.NewJWTMiddleware(ukf.Fetch)
-	rateLimiter := ratelimiter.RateLimiter{GeneralLimit: conf.RateLimit.GeneralLimit, ResetInterval: conf.RateLimit.ResetInterval, DB: db}
+	rateLimiter := ratelimiter.NewRateLimiter(db, conf.RateLimit.GeneralLimit, conf.RateLimit.ResetInterval)
 	rateLimitMiddleware := ratelimiter.CustomRateLimiter(rateLimiter)
 
 	// Register API Handlers

@@ -92,6 +92,16 @@ func UnprocessableEntity(detail string, err error) *CloudControllerError {
 	}
 }
 
+func TooManyRequests(err error) *CloudControllerError {
+	return &CloudControllerError{
+		HTTPStatus: http.StatusTooManyRequests,
+		Code:       10013, //nolint:gomnd // CF API error code
+		Title:      "CF-RateLimitExceeded",
+		Detail:     "Rate Limit Exceeded",
+		Err:        err,
+	}
+}
+
 func UnknownError(err error) *CloudControllerError {
 	return &CloudControllerError{
 		HTTPStatus: http.StatusInternalServerError,
