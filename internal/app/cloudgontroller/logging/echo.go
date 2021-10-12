@@ -10,51 +10,46 @@ import (
 )
 
 // ZapLogger is a middleware and zap to provide an "access log" like logging for each request.
-func NewEchoZapLogger(log *zap.Logger) echo.MiddlewareFunc {
+func NewEchoZapLogger(baseLogger *zap.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			start := time.Now()
-
-			req := c.Request()
 			res := c.Response()
 			vcapRequestID := res.Header().Get(HeaderVcapRequestID)
-			fields := []zapcore.Field{
-				zap.String(RemoteIPField, c.RealIP()),
-				zap.String(TimeField, time.Since(start).String()),
-				zap.String(HostField, req.Host),
-				zap.String(RequestField, fmt.Sprintf("%s %s", req.Method, req.RequestURI)),
-				zap.String(UserAgentField, req.UserAgent()),
-				zap.String(RequestIDField, vcapRequestID),
-			}
 
-			log.Debug("Request received", fields...)
+			logger := baseLogger.With(
+				zap.String(RemoteIPField, c.RealIP()),
+				zap.String(HostField, c.Request().Host),
+				zap.String(RequestField, fmt.Sprintf("%s %s", c.Request().Method, c.Request().RequestURI)),
+				zap.String(UserAgentField, c.Request().UserAgent()),
+				zap.String(RequestIDField, vcapRequestID),
+			)
+
+			logger.Debug("Request received", zap.String(TimeField, time.Since(start).String()))
 
 			err := next(c)
-			if err != nil {
-				log = log.With(zap.Error(err))
-			}
 
-			fields = []zapcore.Field{
-				zap.String(RemoteIPField, c.RealIP()),
+			var responseFields []zapcore.Field
+			if err != nil {
+				responseFields = append(responseFields, zap.Error(err))
+			}
+			responseFields = append(responseFields,
 				zap.String(TimeField, time.Since(start).String()),
-				zap.String(HostField, req.Host),
-				zap.String(RequestField, fmt.Sprintf("%s %s", req.Method, req.RequestURI)),
 				zap.Int(StatusField, res.Status),
 				zap.Int64(SizeField, res.Size),
-				zap.String(UserAgentField, req.UserAgent()),
-				zap.String(RequestIDField, vcapRequestID),
-			}
+			)
 
+			responseLogger := logger.With(responseFields...)
 			n := res.Status
 			switch {
 			case n >= 500: //nolint:gomnd // HTTP error code ranges are well understood
-				log.Error("Server error", fields...)
+				responseLogger.Error("Server error")
 			case n >= 400: //nolint:gomnd // HTTP error code ranges are well understood
-				log.Warn("Client error", fields...)
+				responseLogger.Warn("Client error")
 			case n >= 300: //nolint:gomnd // HTTP error code ranges are well understood
-				log.Info("Redirection", fields...)
+				responseLogger.Info("Redirection")
 			default:
-				log.Info("Success", fields...)
+				responseLogger.Info("Success")
 			}
 
 			return err
