@@ -33,6 +33,7 @@ func RegisterInfoHandlers(e *echo.Echo, conf *config.CloudgontrollerConfig) {
 		ExternalProtocol: conf.ExternalProtocol,
 	}
 	e.GET("/", infoController.GetRoot)
+	e.GET("/v3", infoController.GetV3Root)
 	e.GET("/v3/info", infoController.GetV3Info)
 }
 
@@ -53,13 +54,13 @@ func RegisterV3Handlers(
 
 	// Buildpacks
 	buildpacksController := buildpacks.Controller{DB: db, Presenter: buildpacks.NewPresenter(), LabelSelectorParser: metadata.NewLabelSelectorParser()}
-	requiresRead.GET("/buildpacks", buildpacksController.List)
-	requiresRead.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
-	requiresWrite.POST("/buildpacks", buildpacksController.Post)
+	requiresRead.GET("buildpacks", buildpacksController.List)
+	requiresRead.GET(fmt.Sprintf("buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
+	requiresWrite.POST("buildpacks", buildpacksController.Post)
 
 	// Security Groups
 	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
-	requiresRead.GET(fmt.Sprintf("/security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
+	requiresRead.GET(fmt.Sprintf("security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
 }
 
 func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {

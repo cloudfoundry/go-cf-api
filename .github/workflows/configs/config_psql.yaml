@@ -19,9 +19,9 @@ urls:
   log_cache: https://logcache.localhost
   log_stream: https://logstream.localhost
   doppler: https://doppler.localhost
-  login: https://login.localhost
-  uaa: https://uaa.localhost
+  login: http://localhost:8095
+  uaa: http://localhost:8095
 app_ssh:
-  endpoint: https://logcache.localhost
+  endpoint: ssh://ssh.localhost
   oauth_client: ssh-proxy
   host_key_fingerprint: ~
