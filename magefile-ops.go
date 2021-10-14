@@ -96,7 +96,7 @@ func StartDBAndUaaContainers(configPath string) error {
 	default:
 		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
 	}
-	err = sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container, "uaa")
+	err = sh.RunV("docker-compose", "-f", "docker-compose.yml", "up", "-d", container, "uaa")
 	return err
 }
 
@@ -115,7 +115,7 @@ func DBStart(configPath string) error {
 	default:
 		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
 	}
-	err = sh.RunV("docker-compose", "-f", "docker-compose-dev.yaml", "up", "-d", container)
+	err = sh.RunV("docker-compose", "-f", "docker-compose.yml", "up", "-d", container)
 	return err
 }
 

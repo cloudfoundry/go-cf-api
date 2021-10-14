@@ -77,7 +77,7 @@ This will make `go test ./...` just run the unit tests and also allow you to jus
 	go run --tags=mysql cmd/main.go config_mysql.yaml
 	```
 
-The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files should match the credentials for each database in `docker-compose-dev.yaml`.
+The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files should match the credentials for each database in `docker-compose.yml`.
 
 The API should be accessible at e.g.
 ```
