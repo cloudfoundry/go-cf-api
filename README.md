@@ -84,6 +84,23 @@ The API should be accessible at e.g.
 http://localhost:8080/v3/buildpacks
 ```
 
+## Querying locally
+To query most endpoints locally, you will need a JWT. The easiest way to get this is to create a UAA client with the `uaac` CLI then login with then `cf` CLI. To create a user called `bob`:
+```bash
+uaac target http://localhost:8095
+uaac token client get admin -s adminsecret
+uaac user add bob -p password --emails none@none.local
+cf api http://localhost:8080
+cf auth bob password
+```
+
+Now various endpoints can be queried using e.g. `cf curl /v3/buildpacks`
+
+To authenticate as admin (for example to assign roles to `bob`):
+```bash
+cf auth admin adminsecret --client-credentials
+```
+
 ## SQL Boiler
 To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with `sqlboiler`. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the `mysql` binary on a Postgres database will result in a startup error.
 
@@ -179,48 +196,3 @@ https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labe
 
 # MVP ToDos
 https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP
-
-# Contributing
-## Jwt authentication
-Uaa container gets started automatically with docker-compose up. When uaa container is up you can use uaac to get a valid jwt token which is signed with the uaa private key, written down in the uaa.yml
-
-```
-uaac target http://localhost:8095
-uaac token client get admin -s adminsecret
-uaac contexts
-```
-To access restricted endpoint, a curl would look like:
-```
-curl -i http://localhost:8080/v3/buildpacks -H "Authorization: Bearer [Add token from uaac context here]"
-```
-
-This is handled by the echo framework buildin middleware. To make an endpoint only usable when authenticated:
-Example from v3/handlers.go
-```
-{
-	// Restricted group
-	restrictedGroup := e.Group(prefix)
-	restrictedGroup.Use(authMiddleware)
-	if conf.RateLimit.Enabled {
-		restrictedGroup.Use(rateLimitMiddleware)
-	}
-	buildpacksController := buildpacks.Controller{DB: db}
-	{
-		// Buildpacks
-		restrictedGroup.GET("/buildpacks", buildpacksController.List)
-		restrictedGroup.GET(fmt.Sprintf("/buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
-		restrictedGroup.POST("/buildpacks", buildpacksController.Post)
-	}
-}
-```
-
-Accessing the userdata from the context during a request:
-```
-func GetBuildpacks(c echo.Context) error {
-    var user = c.Get("user").(*jwt.Token)
-    claims := user.Claims.(jwt.MapClaims)
-    name := claims["client_id"].(string)
-
-    fmt.Println(user) //contains the token itself
-    fmt.Println(name) //contains the username read from the client_id claim (can be anything from the jwt token middle part)
-```
