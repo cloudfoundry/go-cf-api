@@ -23,6 +23,7 @@ rate_limiting:
   enabled: true
   reset_interval: 1m
   general_limit: 10
+  unauthenticated_limit: 10
 urls:
   log_cache: https://logcache.localhost
   log_stream: https://logstream.localhost

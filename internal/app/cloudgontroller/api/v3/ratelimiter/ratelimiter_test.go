@@ -1,143 +1,25 @@
 // +build unit
 
-package ratelimiter //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
+package ratelimiter //nolint:testpackage // so we can override now function variable
 
 import (
-	"net/http"
-	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.com/volatiletech/null/v8"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
-	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler/mocks"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/testutils"
 )
 
-func (suite *RateLimiterSuite) TestNoRequestCountExists() {
-	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{}, nil)
-	userGUID := "123"
-	expected := &models.RequestCount{
-		UserGUID:   null.StringFrom(userGUID),
-		Count:      null.IntFrom(1),
-		ValidUntil: null.TimeFrom(suite.Now.Add(suite.ResetInterval)),
-	}
-	suite.Inserter.EXPECT().Insert(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(nil)
-
-	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
-	suite.NoError(err)
-	suite.True(result)
-}
-
-//nolint:dupl // test wrongly recognised as a duplicate
-func (suite *RateLimiterSuite) TestRequestCountExceedsRateLimit() {
-	expiryTime := suite.Now.Add(1 * time.Hour)
-
-	userGUID := "123"
-	rc := &models.RequestCount{
-		ID:         1,
-		UserGUID:   null.StringFrom(userGUID),
-		Count:      null.IntFrom(10),
-		ValidUntil: null.TimeFrom(expiryTime),
-	}
-	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
-	expected := rc
-	expected.Count = null.IntFrom(11)
-	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
-
-	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
-	suite.NoError(err)
-	suite.False(result)
-}
-
-//nolint:dupl // test wrongly recognised as a duplicate
-func (suite *RateLimiterSuite) TestRequestCountWithinRateLimit() {
-	expiryTime := suite.Now.Add(1 * time.Hour)
-
-	userGUID := "123"
-	rc := &models.RequestCount{
-		ID:         1,
-		UserGUID:   null.StringFrom(userGUID),
-		Count:      null.IntFrom(3),
-		ValidUntil: null.TimeFrom(expiryTime),
-	}
-	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
-	expected := rc
-	expected.Count = null.IntFrom(4)
-	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
-
-	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
-	suite.NoError(err)
-	suite.True(result)
-}
-
-// When we're above the rate limit but its reset time is in the past
-func (suite *RateLimiterSuite) TestRequestCountExpired() {
-	expiryTime := suite.Now.Add(-1 * time.Hour)
-
-	userGUID := "123"
-	rc := &models.RequestCount{
-		ID:         1,
-		UserGUID:   null.StringFrom(userGUID),
-		Count:      null.IntFrom(3),
-		ValidUntil: null.TimeFrom(expiryTime),
-	}
-	suite.Finisher.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.RequestCountSlice{rc}, nil)
-	expected := rc
-	expected.Count = null.IntFrom(1)
-	expected.ValidUntil = null.TimeFrom(suite.Now.Add(suite.ResetInterval))
-	suite.Updater.EXPECT().Update(gomock.Eq(expected), gomock.Any(), gomock.Any(), boil.Infer()).Return(int64(1), nil)
-
-	result, err := suite.RateLimiter.Allow(userGUID, suite.Context)
-	suite.NoError(err)
-	suite.True(result)
-}
-
-func (suite *RateLimiterSuite) SetupSuite() {
-	e := echo.New()
-	request := httptest.NewRequest(http.MethodGet, "/something", nil)
-	recorder := httptest.NewRecorder()
-	suite.Context = e.NewContext(request, recorder)
-
-	suite.ctrl = gomock.NewController(suite.T())
-	suite.Finisher = mock_models.NewMockRequestCountFinisher(suite.ctrl)
-	suite.Inserter = mock_models.NewMockRequestCountInserter(suite.ctrl)
-	suite.Updater = mock_models.NewMockRequestCountUpdater(suite.ctrl)
-	queriers = Queriers{
-		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher { return suite.Finisher },
-		Inserter: suite.Inserter,
-		Updater:  suite.Updater,
-	}
-
-	suite.Now = time.Now().UTC()
-	now = func() time.Time { return suite.Now }
-
-	suite.ResetInterval = time.Minute
-	suite.RateLimiter = NewRateLimiter(nil, 10, suite.ResetInterval)
-}
-
-func (suite *RateLimiterSuite) After(suiteName, testName string) {
-	suite.ctrl.Finish()
-}
+const (
+	userGUID      = "user-guid"
+	limit         = 10
+	resetInterval = 5 * time.Minute
+)
 
 type RateLimiterSuite struct {
 	suite.Suite
-	ctrl          *gomock.Controller
-	Context       echo.Context
-	Finisher      *mock_models.MockRequestCountFinisher
-	Inserter      *mock_models.MockRequestCountInserter
-	Updater       *mock_models.MockRequestCountUpdater
-	Now           time.Time
-	RateLimiter   RateLimiter
-	ResetInterval time.Duration
+	frozenTime  time.Time
+	rateLimiter RateLimiter
 }
 
 func TestRateLimiterSuite(t *testing.T) {
@@ -145,65 +27,76 @@ func TestRateLimiterSuite(t *testing.T) {
 	suite.Run(t, new(RateLimiterSuite))
 }
 
-type RateLimiterMiddlewareSuite struct {
-	suite.Suite
-	ctx         echo.Context
-	rateLimiter *MockRateLimiter
-	handler     *testutils.HandlerFunc
-	middleware  echo.MiddlewareFunc
+func (s *RateLimiterSuite) SetupTest() {
+	s.frozenTime = time.Now()
+	now = func() time.Time { return s.frozenTime }
+	s.rateLimiter = NewRateLimiter(limit, resetInterval)
 }
 
-func TestRateLimiterMiddlewareSuite(t *testing.T) {
-	t.Parallel()
-	suite.Run(t, new(RateLimiterMiddlewareSuite))
-}
-
-func (s *RateLimiterMiddlewareSuite) SetupTest() {
-	e := echo.New()
-	request := httptest.NewRequest(http.MethodGet, "/something", nil)
-	recorder := httptest.NewRecorder()
-	s.ctx = e.NewContext(request, recorder)
-	s.ctx.Set(auth.Username, "user-guid")
-
-	s.rateLimiter = &MockRateLimiter{}
-	s.handler = &testutils.HandlerFunc{}
-	s.middleware = CustomRateLimiter(s.rateLimiter)
-}
-
-func (s *RateLimiterMiddlewareSuite) TestAllowsRegularUser() {
-	s.rateLimiter.On("Allow", mock.Anything, mock.Anything).Return(true, nil)
-	s.handler.On("Next", mock.Anything).Return(nil)
-
-	err := s.middleware(s.handler.Next)(s.ctx)
+func (s *RateLimiterSuite) TestNewUserIsAllowed() {
+	allowed, _, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
-	s.handler.AssertCalled(s.T(), "Next", s.ctx)
+	s.True(allowed)
 }
 
-func (s *RateLimiterMiddlewareSuite) TestDeniesRegularUser() {
-	s.rateLimiter.On("Allow", mock.Anything, mock.Anything).Return(false, nil)
+func (s *RateLimiterSuite) TestUserIsAllowedWhenBelowLimit() {
+	for i := 0; i < limit-1; i++ {
+		s.rateLimiter.Increment(userGUID)
+	}
 
-	err := s.middleware(s.handler.Next)(s.ctx)
-	var ccErr *v3.CloudControllerError
-	s.ErrorAs(err, &ccErr)
-	s.Equal(http.StatusTooManyRequests, ccErr.HTTPStatus)
-	s.handler.AssertNotCalled(s.T(), "Next", s.ctx)
-}
-
-func (s *RateLimiterMiddlewareSuite) TestSkipsCheckForAdmins() {
-	s.ctx.Set(auth.Scopes, []string{string(auth.Admin)})
-	s.handler.On("Next", mock.Anything).Return(nil)
-
-	err := s.middleware(s.handler.Next)(s.ctx)
+	allowed, _, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
-	s.handler.AssertCalled(s.T(), "Next", s.ctx)
-	s.rateLimiter.AssertNotCalled(s.T(), "Allow", mock.Anything, mock.Anything)
+	s.True(allowed)
 }
 
-type MockRateLimiter struct {
-	mock.Mock
+func (s *RateLimiterSuite) TestUserIsDeniedWhenLimitIsReached() {
+	for i := 0; i < limit; i++ {
+		s.rateLimiter.Increment(userGUID)
+	}
+
+	allowed, _, err := s.rateLimiter.Check(userGUID)
+	s.NoError(err)
+	s.False(allowed)
 }
 
-func (m *MockRateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
-	args := m.Called(identifier, ctx)
-	return args.Bool(0), args.Error(1)
+func (s *RateLimiterSuite) TestUserIsAllowedWhenCountHasExpired() {
+	for i := 0; i < limit; i++ {
+		s.rateLimiter.Increment(userGUID)
+	}
+
+	newTime := s.frozenTime.Add(resetInterval).Add(time.Minute)
+	now = func() time.Time { return newTime }
+	allowed, _, err := s.rateLimiter.Check(userGUID)
+	s.NoError(err)
+	s.True(allowed)
+}
+
+func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForNewUser() {
+	_, headers, err := s.rateLimiter.Check(userGUID)
+	s.NoError(err)
+	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.FormatInt(s.frozenTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
+}
+
+func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserWithinValidityPeriod() {
+	s.rateLimiter.Increment(userGUID)
+	newTime := s.frozenTime.Add(time.Minute)
+	now = func() time.Time { return newTime }
+	_, headers, err := s.rateLimiter.Check(userGUID)
+	s.NoError(err)
+	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.FormatInt(limit-2, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.FormatInt(s.frozenTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
+}
+
+func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserAfterValidityPeriod() {
+	s.rateLimiter.Increment(userGUID)
+	newTime := s.frozenTime.Add(resetInterval).Add(time.Minute)
+	now = func() time.Time { return newTime }
+	_, headers, err := s.rateLimiter.Check(userGUID)
+	s.NoError(err)
+	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.FormatInt(newTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
 }

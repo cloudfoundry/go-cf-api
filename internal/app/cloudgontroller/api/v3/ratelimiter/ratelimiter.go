@@ -1,127 +1,67 @@
 package ratelimiter
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
+	"math"
 	"strconv"
+	"sync"
 	"time"
-
-	"github.com/labstack/echo/v4"
-	"github.com/volatiletech/null/v8"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
-	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
 type RateLimiter interface {
-	Allow(identifier string, ctx echo.Context) (bool, error)
+	Check(identifier string) (bool, map[string]string, error)
+	Increment(identifier string)
 }
 
 type rateLimiter struct {
-	db            *sql.DB
-	generalLimit  int
+	mutex         sync.Mutex
+	store         map[string]*record
+	limit         int
 	resetInterval time.Duration
 }
 
-func NewRateLimiter(db *sql.DB, generalLimit int, resetInterval time.Duration) RateLimiter {
+func NewRateLimiter(limit int, resetInterval time.Duration) RateLimiter {
 	return &rateLimiter{
-		db:            db,
-		generalLimit:  generalLimit,
+		mutex:         sync.Mutex{},
+		store:         map[string]*record{},
+		limit:         limit,
 		resetInterval: resetInterval,
 	}
 }
 
-type Queriers struct {
-	Finisher func(mods ...qm.QueryMod) models.RequestCountFinisher
-	Inserter models.RequestCountInserter
-	Updater  models.RequestCountUpdater
-}
-
 //nolint:gochecknoglobals // here to be overridden in tests
-var (
-	now      = time.Now
-	queriers = Queriers{
-		Finisher: func(mods ...qm.QueryMod) models.RequestCountFinisher {
-			return models.RequestCounts(mods...)
-		},
-		Inserter: models.RequestCounts(),
-		Updater:  models.RequestCounts(),
-	}
-)
+var now = time.Now
 
-func (r *rateLimiter) Allow(identifier string, ctx echo.Context) (bool, error) {
-	var requestCount *models.RequestCount
-
-	logger := logging.FromContext(ctx)
-
-	dbCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
-	requestCountSlice, err := queriers.Finisher(models.RequestCountWhere.UserGUID.EQ(null.StringFrom(identifier))).All(dbCtx, r.db)
-	if err != nil {
-		return false, err
-	}
-
-	if len(requestCountSlice) < 1 {
-		requestCount = &models.RequestCount{}
-		requestCount.UserGUID = null.StringFrom(identifier)
-		resetCount(requestCount, r.resetInterval)
-		err = queriers.Inserter.Insert(requestCount, dbCtx, r.db, boil.Infer())
-		if err != nil {
-			return false, err
-		}
-	} else {
-		requestCount = requestCountSlice[0]
-		requestCount.Count = null.IntFrom(requestCount.Count.Int + 1)
-		if requestCount.ValidUntil.Time.UTC().Before(now().UTC()) {
-			resetCount(requestCount, r.resetInterval)
-		}
-		_, err = queriers.Updater.Update(requestCount, dbCtx, r.db, boil.Infer())
-		if err != nil {
-			return false, err
-		}
-	}
-
-	var limitRemaining int
-	if remaining := r.generalLimit - requestCount.Count.Int; remaining < 0 {
-		limitRemaining = 0
-	} else {
-		limitRemaining = remaining
-	}
-
-	base := 10
-	ctx.Response().Header().Set("X-RateLimit-Limit", strconv.Itoa(r.generalLimit))
-	ctx.Response().Header().Set("X-RateLimit-Reset", strconv.FormatInt(requestCount.ValidUntil.Time.Unix(), base))
-	ctx.Response().Header().Set("X-RateLimit-Remaining", strconv.Itoa(limitRemaining))
-
-	if requestCount.Count.Int > r.generalLimit {
-		return false, nil
-	}
-	return true, nil
+type record struct {
+	count      int
+	validUntil time.Time
 }
 
-func resetCount(requestCount *models.RequestCount, resetInterval time.Duration) {
-	expiryTime := now().UTC().Add(resetInterval)
-	requestCount.ValidUntil = null.TimeFrom(expiryTime)
-	requestCount.Count = null.IntFrom(1)
+func (r *rateLimiter) Check(identifier string) (bool, map[string]string, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	storedRecord, ok := r.store[identifier]
+	if !ok || now().After(storedRecord.validUntil) {
+		storedRecord = &record{0, now().Add(r.resetInterval)}
+		r.store[identifier] = storedRecord
+	}
+
+	remaining := int(math.Max(0.0, float64(r.limit-storedRecord.count)))
+	headers := map[string]string{
+		"X-RateLimit-Limit":     strconv.Itoa(r.limit),
+		"X-RateLimit-Reset":     strconv.FormatInt(storedRecord.validUntil.Unix(), 10), //nolint:gomnd
+		"X-RateLimit-Remaining": strconv.Itoa(remaining - 1),
+	}
+
+	return remaining > 0, headers, nil
 }
 
-func CustomRateLimiter(rateLimiter RateLimiter) echo.MiddlewareFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(ctx echo.Context) error {
-			if auth.IsAdmin(ctx) || auth.IsAdminReadOnly(ctx) {
-				return next(ctx)
-			}
-			identifier, ok := ctx.Get(auth.Username).(string)
-			if !ok {
-				return fmt.Errorf("something went wrong with casting")
-			}
-			if allow, err := rateLimiter.Allow(identifier, ctx); !allow {
-				return v3.TooManyRequests(err)
-			}
-			return next(ctx)
-		}
+func (r *rateLimiter) Increment(identifier string) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	stored, ok := r.store[identifier]
+	if !ok {
+		r.store[identifier] = &record{1, now().Add(r.resetInterval)}
+	} else {
+		stored.count++
 	}
 }

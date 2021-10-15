@@ -53,6 +53,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	// Initialize Echo Framework
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
+	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	e.Use(middleware.Recover())
 	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))
@@ -86,8 +87,9 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	ukf, err := uaa.NewKeyFetcher(ctx, conf.Uaa)
 	helpers.CheckErrFatal(err)
 	jwtMiddleware := auth.NewJWTMiddleware(ukf.Fetch)
-	rateLimiter := ratelimiter.NewRateLimiter(db, conf.RateLimit.GeneralLimit, conf.RateLimit.ResetInterval)
-	rateLimitMiddleware := ratelimiter.CustomRateLimiter(rateLimiter)
+	generalRateLimiter := ratelimiter.NewRateLimiter(conf.RateLimit.GeneralLimit, conf.RateLimit.ResetInterval)
+	unauthenticatedRateLimiter := ratelimiter.NewRateLimiter(conf.RateLimit.UnauthenticatedLimit, conf.RateLimit.ResetInterval)
+	rateLimitMiddleware := ratelimiter.NewRateLimiterMiddleware(generalRateLimiter, unauthenticatedRateLimiter)
 
 	// Register API Handlers
 	api.RegisterHandlers(e, db, jwtMiddleware, rateLimitMiddleware, conf)
