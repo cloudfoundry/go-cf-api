@@ -13,18 +13,20 @@ type RateLimiter interface {
 }
 
 type rateLimiter struct {
-	mutex         sync.Mutex
-	store         map[string]*record
-	limit         int
-	resetInterval ResetInterval
+	mutex           sync.Mutex
+	store           map[string]*record
+	globalLimit     int
+	perProcessLimit int
+	resetInterval   ResetInterval
 }
 
-func NewRateLimiter(limit int, resetInterval ResetInterval) RateLimiter {
+func NewRateLimiter(globalLimit, perProcessLimit int, resetInterval ResetInterval) RateLimiter {
 	return &rateLimiter{
-		mutex:         sync.Mutex{},
-		store:         map[string]*record{},
-		limit:         limit,
-		resetInterval: resetInterval,
+		mutex:           sync.Mutex{},
+		store:           map[string]*record{},
+		globalLimit:     globalLimit,
+		perProcessLimit: perProcessLimit,
+		resetInterval:   resetInterval,
 	}
 }
 
@@ -45,14 +47,18 @@ func (r *rateLimiter) Check(identifier string) (bool, map[string]string, error) 
 		r.store[identifier] = storedRecord
 	}
 
-	remaining := int(math.Max(0.0, float64(r.limit-storedRecord.count)))
 	headers := map[string]string{
-		"X-RateLimit-Limit":     strconv.Itoa(r.limit),
+		"X-RateLimit-Limit":     strconv.Itoa(r.globalLimit),
 		"X-RateLimit-Reset":     strconv.FormatInt(storedRecord.validUntil.Unix(), 10), //nolint:gomnd
-		"X-RateLimit-Remaining": strconv.Itoa(remaining - 1),
+		"X-RateLimit-Remaining": strconv.Itoa(r.estimateRemaining(storedRecord.count)),
 	}
 
-	return remaining > 0, headers, nil
+	return (r.perProcessLimit - storedRecord.count) > 0, headers, nil
+}
+
+func (r *rateLimiter) estimateRemaining(count int) int {
+	fraction := math.Round(float64(r.perProcessLimit-count-1)/float64(r.perProcessLimit)*10.0) / 10 //nolint:gomnd
+	return int(math.Max(0.0, fraction*float64(r.globalLimit)))
 }
 
 func (r *rateLimiter) Increment(identifier string) {

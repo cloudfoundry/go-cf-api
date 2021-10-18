@@ -22,8 +22,10 @@ uaa:
 rate_limiting:
   enabled: true
   reset_interval: 1m
-  general_limit: 10
-  unauthenticated_limit: 10
+  global_general_limit: 100
+  per_process_general_limit: 10
+  global_unauthenticated_limit: 100
+  per_process_unauthenticated_limit: 10
 urls:
   log_cache: https://logcache.localhost
   log_stream: https://logstream.localhost

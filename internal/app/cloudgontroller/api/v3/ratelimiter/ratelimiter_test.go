@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	userGUID = "user-guid"
-	limit    = 10
+	userGUID        = "user-guid"
+	perProcessLimit = 10
+	globalLimit     = 100
 )
 
 type RateLimiterSuite struct {
@@ -41,7 +42,7 @@ func (s *RateLimiterSuite) SetupTest() {
 	s.frozenTime = time.Now()
 	now = func() time.Time { return s.frozenTime }
 	s.resetInterval = &MockResetInterval{}
-	s.rateLimiter = NewRateLimiter(limit, s.resetInterval)
+	s.rateLimiter = NewRateLimiter(globalLimit, perProcessLimit, s.resetInterval)
 }
 
 func (s *RateLimiterSuite) TestNewUserIsAllowed() {
@@ -53,7 +54,7 @@ func (s *RateLimiterSuite) TestNewUserIsAllowed() {
 
 func (s *RateLimiterSuite) TestUserIsAllowedWhenBelowLimit() {
 	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(time.Hour))
-	for i := 0; i < limit-1; i++ {
+	for i := 0; i < perProcessLimit-1; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
 
@@ -64,7 +65,7 @@ func (s *RateLimiterSuite) TestUserIsAllowedWhenBelowLimit() {
 
 func (s *RateLimiterSuite) TestUserIsDeniedWhenLimitIsReached() {
 	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(time.Hour))
-	for i := 0; i < limit; i++ {
+	for i := 0; i < perProcessLimit; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
 
@@ -76,7 +77,7 @@ func (s *RateLimiterSuite) TestUserIsDeniedWhenLimitIsReached() {
 func (s *RateLimiterSuite) TestUserIsAllowedWhenCountHasExpired() {
 	interval := 5 * time.Minute
 	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(interval))
-	for i := 0; i < limit; i++ {
+	for i := 0; i < perProcessLimit; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
 
@@ -92,8 +93,8 @@ func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForNewUser() {
 	s.resetInterval.On("Next", mock.Anything).Return(expectedTime)
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
-	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
-	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.Itoa(globalLimit), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.Itoa(90), headers["X-RateLimit-Remaining"])
 	s.Equal(strconv.FormatInt(expectedTime.Unix(), 10), headers["X-RateLimit-Reset"])
 }
 
@@ -107,8 +108,8 @@ func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserWithinVal
 
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
-	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
-	s.Equal(strconv.FormatInt(limit-2, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.Itoa(globalLimit), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.Itoa(80), headers["X-RateLimit-Remaining"])
 	s.Equal(strconv.FormatInt(expectedTime.Unix(), 10), headers["X-RateLimit-Reset"])
 }
 
@@ -124,7 +125,7 @@ func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserAfterVali
 
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
-	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
-	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
+	s.Equal(strconv.Itoa(globalLimit), headers["X-RateLimit-Limit"])
+	s.Equal(strconv.Itoa(90), headers["X-RateLimit-Remaining"])
 	s.Equal(strconv.FormatInt(secondInterval.Unix(), 10), headers["X-RateLimit-Reset"])
 }

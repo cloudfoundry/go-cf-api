@@ -24,8 +24,10 @@ uaa:
   url: ~
 rate_limiting:
   enabled: true
-  general_limit: 2000
-  unauthenticated_limit: 100
+  global_general_limit: 2000
+  per_process_general_limit: 2000
+  global_unauthenticated_limit: 100
+  per_process_unauthenticated_limit: 100
   reset_interval: 60m
 urls:
   log_cache: ~

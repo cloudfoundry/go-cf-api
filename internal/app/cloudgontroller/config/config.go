@@ -82,10 +82,12 @@ type ZapConfig struct {
 }
 
 type RateLimitConf struct {
-	Enabled              bool          `yaml:"enabled"`
-	GeneralLimit         int           `yaml:"general_limit"`
-	UnauthenticatedLimit int           `yaml:"unauthenticated_limit"`
-	ResetInterval        time.Duration `yaml:"reset_interval"`
+	Enabled                        bool          `yaml:"enabled"`
+	PerProcessGeneralLimit         int           `yaml:"per_process_general_limit"`
+	GlobalGeneralLimit             int           `yaml:"global_general_limit"`
+	PerProcessUnauthenticatedLimit int           `yaml:"per_process_unauthenticated_limit"`
+	GlobalUnauthenticatedLimit     int           `yaml:"global_unauthenticated_limit"`
+	ResetInterval                  time.Duration `yaml:"reset_interval"`
 }
 
 // Parses the config once, otherwise just returns it
