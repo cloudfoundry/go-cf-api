@@ -17,14 +17,16 @@ type rateLimiter struct {
 	store         map[string]*record
 	limit         int
 	resetInterval time.Duration
+	offset        func(string, time.Duration) time.Duration
 }
 
-func NewRateLimiter(limit int, resetInterval time.Duration) RateLimiter {
+func NewRateLimiter(limit int, resetInterval time.Duration, offset func(string, time.Duration) time.Duration) RateLimiter {
 	return &rateLimiter{
 		mutex:         sync.Mutex{},
 		store:         map[string]*record{},
 		limit:         limit,
 		resetInterval: resetInterval,
+		offset:        offset,
 	}
 }
 
@@ -41,7 +43,7 @@ func (r *rateLimiter) Check(identifier string) (bool, map[string]string, error) 
 	defer r.mutex.Unlock()
 	storedRecord, ok := r.store[identifier]
 	if !ok || now().After(storedRecord.validUntil) {
-		storedRecord = &record{0, now().Add(r.resetInterval)}
+		storedRecord = &record{0, now().Add(r.resetInterval).Add(r.offset(identifier, r.resetInterval))}
 		r.store[identifier] = storedRecord
 	}
 

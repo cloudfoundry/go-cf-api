@@ -30,7 +30,8 @@ func TestRateLimiterSuite(t *testing.T) {
 func (s *RateLimiterSuite) SetupTest() {
 	s.frozenTime = time.Now()
 	now = func() time.Time { return s.frozenTime }
-	s.rateLimiter = NewRateLimiter(limit, resetInterval)
+	offset := func(string, time.Duration) time.Duration { return 0 }
+	s.rateLimiter = NewRateLimiter(limit, resetInterval, offset)
 }
 
 func (s *RateLimiterSuite) TestNewUserIsAllowed() {
