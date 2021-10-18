@@ -7,19 +7,20 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 )
 
 const (
-	userGUID      = "user-guid"
-	limit         = 10
-	resetInterval = 5 * time.Minute
+	userGUID = "user-guid"
+	limit    = 10
 )
 
 type RateLimiterSuite struct {
 	suite.Suite
-	frozenTime  time.Time
-	rateLimiter RateLimiter
+	frozenTime    time.Time
+	rateLimiter   RateLimiter
+	resetInterval *MockResetInterval
 }
 
 func TestRateLimiterSuite(t *testing.T) {
@@ -27,20 +28,31 @@ func TestRateLimiterSuite(t *testing.T) {
 	suite.Run(t, new(RateLimiterSuite))
 }
 
+type MockResetInterval struct {
+	mock.Mock
+}
+
+func (m *MockResetInterval) Next(identifier string) time.Time {
+	args := m.Called(identifier)
+	return args.Get(0).(time.Time)
+}
+
 func (s *RateLimiterSuite) SetupTest() {
 	s.frozenTime = time.Now()
 	now = func() time.Time { return s.frozenTime }
-	offset := func(string, time.Duration) time.Duration { return 0 }
-	s.rateLimiter = NewRateLimiter(limit, resetInterval, offset)
+	s.resetInterval = &MockResetInterval{}
+	s.rateLimiter = NewRateLimiter(limit, s.resetInterval)
 }
 
 func (s *RateLimiterSuite) TestNewUserIsAllowed() {
+	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(time.Hour))
 	allowed, _, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
 	s.True(allowed)
 }
 
 func (s *RateLimiterSuite) TestUserIsAllowedWhenBelowLimit() {
+	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(time.Hour))
 	for i := 0; i < limit-1; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
@@ -51,6 +63,7 @@ func (s *RateLimiterSuite) TestUserIsAllowedWhenBelowLimit() {
 }
 
 func (s *RateLimiterSuite) TestUserIsDeniedWhenLimitIsReached() {
+	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(time.Hour))
 	for i := 0; i < limit; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
@@ -61,11 +74,13 @@ func (s *RateLimiterSuite) TestUserIsDeniedWhenLimitIsReached() {
 }
 
 func (s *RateLimiterSuite) TestUserIsAllowedWhenCountHasExpired() {
+	interval := 5 * time.Minute
+	s.resetInterval.On("Next", mock.Anything).Return(s.frozenTime.Add(interval))
 	for i := 0; i < limit; i++ {
 		s.rateLimiter.Increment(userGUID)
 	}
 
-	newTime := s.frozenTime.Add(resetInterval).Add(time.Minute)
+	newTime := s.frozenTime.Add(interval).Add(time.Minute)
 	now = func() time.Time { return newTime }
 	allowed, _, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
@@ -73,31 +88,43 @@ func (s *RateLimiterSuite) TestUserIsAllowedWhenCountHasExpired() {
 }
 
 func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForNewUser() {
+	expectedTime := s.frozenTime.Add(5 * time.Minute)
+	s.resetInterval.On("Next", mock.Anything).Return(expectedTime)
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
 	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
 	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
-	s.Equal(strconv.FormatInt(s.frozenTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
+	s.Equal(strconv.FormatInt(expectedTime.Unix(), 10), headers["X-RateLimit-Reset"])
 }
 
 func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserWithinValidityPeriod() {
+	expectedTime := s.frozenTime.Add(5 * time.Minute)
+	s.resetInterval.On("Next", mock.Anything).Return(expectedTime)
 	s.rateLimiter.Increment(userGUID)
-	newTime := s.frozenTime.Add(time.Minute)
+
+	newTime := expectedTime.Add(-1 * time.Minute)
 	now = func() time.Time { return newTime }
+
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
 	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
 	s.Equal(strconv.FormatInt(limit-2, 10), headers["X-RateLimit-Remaining"])
-	s.Equal(strconv.FormatInt(s.frozenTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
+	s.Equal(strconv.FormatInt(expectedTime.Unix(), 10), headers["X-RateLimit-Reset"])
 }
 
 func (s *RateLimiterSuite) TestCorrectHeadersAreReturnedForExistingUserAfterValidityPeriod() {
+	firstInterval := s.frozenTime.Add(5 * time.Minute)
+	secondInterval := s.frozenTime.Add(5 * time.Minute)
+	s.resetInterval.On("Next", mock.Anything).Return(firstInterval)
 	s.rateLimiter.Increment(userGUID)
-	newTime := s.frozenTime.Add(resetInterval).Add(time.Minute)
+
+	s.resetInterval.On("Next", mock.Anything).Return(secondInterval)
+	newTime := firstInterval.Add(time.Minute)
 	now = func() time.Time { return newTime }
+
 	_, headers, err := s.rateLimiter.Check(userGUID)
 	s.NoError(err)
 	s.Equal(strconv.FormatInt(limit, 10), headers["X-RateLimit-Limit"])
 	s.Equal(strconv.FormatInt(limit-1, 10), headers["X-RateLimit-Remaining"])
-	s.Equal(strconv.FormatInt(newTime.Add(resetInterval).Unix(), 10), headers["X-RateLimit-Reset"])
+	s.Equal(strconv.FormatInt(secondInterval.Unix(), 10), headers["X-RateLimit-Reset"])
 }

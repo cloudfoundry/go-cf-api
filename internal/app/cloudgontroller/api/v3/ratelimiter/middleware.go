@@ -1,6 +1,8 @@
 package ratelimiter
 
 import (
+	"fmt"
+
 	"github.com/labstack/echo/v4"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
@@ -28,7 +30,7 @@ func NewRateLimiterMiddleware(generalRateLimiter, unauthenticatedRateLimiter Rat
 
 			if !allowed {
 				ctx.Response().Header().Set("Retry-After", ctx.Response().Header().Get("X-RateLimit-Reset"))
-				return v3.TooManyRequests(err)
+				return v3.TooManyRequests(fmt.Errorf("too many requests for user %s", identifier))
 			}
 			limiter.Increment(identifier)
 			return next(ctx)
