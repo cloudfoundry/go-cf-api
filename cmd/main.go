@@ -52,6 +52,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 
 	// Initialize Echo Framework
 	e := echo.New()
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))

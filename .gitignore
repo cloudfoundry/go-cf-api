@@ -154,3 +154,6 @@ mage_output_file.go
 main.go
 # Exclude generated swagger docs
 /internal/app/cloudgontroller/api/swagger
+# Exclude IntelliJ run configurations
+.idea/runConfigurations.xml
+

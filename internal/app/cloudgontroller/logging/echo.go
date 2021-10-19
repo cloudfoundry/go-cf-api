@@ -28,11 +28,11 @@ func NewEchoZapLogger(baseLogger *zap.Logger) echo.MiddlewareFunc {
 			logger.Debug("Request received", zap.String(TimeField, time.Since(start).String()))
 
 			err := next(c)
+			if err != nil {
+				c.Error(err)
+			}
 
 			var responseFields []zapcore.Field
-			if err != nil {
-				responseFields = append(responseFields, zap.Error(err))
-			}
 			responseFields = append(responseFields,
 				zap.String(TimeField, time.Since(start).String()),
 				zap.Int(StatusField, res.Status),
