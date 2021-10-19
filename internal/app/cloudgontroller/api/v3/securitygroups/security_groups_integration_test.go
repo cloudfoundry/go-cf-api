@@ -4,14 +4,15 @@ package securitygroups_test
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"github.com/volatiletech/null/v8"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
-	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
@@ -96,12 +97,7 @@ func (suite *SecurityGroupIntegrationTestSuite) SetupTest() {
 
 func (suite *SecurityGroupIntegrationTestSuite) TestSpaceRolePermissions() {
 	noSpace := func() *models.Space { return nil }
-	assignRoles := map[Role]func(int, int){
-		SpaceDeveloper: suite.AssignSpaceDeveloper,
-		SpaceAuditor:   suite.AssignSpaceAuditor,
-		SpaceSupporter: suite.AssignSpaceManager,
-		SpaceManager:   suite.AssignSpaceManager,
-	}
+	assignRoles := getRoles(suite)
 	cases := map[string]struct {
 		spaceRoles []Role
 		// We need to use func() so that when the spaces/security groups are updated in SetupTest we get the new objects
@@ -185,6 +181,15 @@ func (suite *SecurityGroupIntegrationTestSuite) TestSpaceRolePermissions() {
 	}
 }
 
+func getRoles(suite *SecurityGroupIntegrationTestSuite) map[Role]func(int, int) {
+	return map[Role]func(int, int){
+		SpaceDeveloper: suite.AssignSpaceDeveloper,
+		SpaceAuditor:   suite.AssignSpaceAuditor,
+		SpaceSupporter: suite.AssignSpaceManager,
+		SpaceManager:   suite.AssignSpaceManager,
+	}
+}
+
 func (suite *SecurityGroupIntegrationTestSuite) CreateSecurityGroup(name string, globallyEnabledRunning, globallyEnabledStaging bool) *models.SecurityGroup {
 	sg := &models.SecurityGroup{
 		GUID:           name,
@@ -214,4 +219,116 @@ func (suite *SecurityGroupIntegrationTestSuite) AssignToStagingSpace(spaceID, se
 	}
 	err := models.StagingSecurityGroupsSpaces().Insert(sgSpace, suite.DBCtx, suite.DB, boil.Infer())
 	suite.NoError(err)
+}
+
+func (suite *SecurityGroupIntegrationTestSuite) TestSpaceRolePermissions2() {
+
+	suite.T().Skip("Skipping not finished test")
+
+	noSpace := func() *models.Space { return nil }
+	assignRoles := getRoles(suite)
+
+	cases := map[string]struct {
+		spaceRole Role
+		// We need to use func() so that when the spaces/security groups are updated in SetupTest we get the new objects
+		expectedSecurityGroups func() []Entity
+		extraSpaceForRole      func() *models.Space
+	}{
+		"Org Manager role can see globally–enabled security groups or groups associated with a space they can seen": {
+			spaceRole: SpaceManager,
+			expectedSecurityGroups: func() []Entity {
+				return []Entity{
+					{"unassigned"},
+					{suite.globallyRunningSecurityGroup.GUID},
+					{suite.globallyStagingSecurityGroup.GUID},
+					{suite.spaceRunningSecurityGroup.GUID},
+					{suite.spaceStagingSecurityGroup.GUID},
+				}
+			},
+			extraSpaceForRole: noSpace,
+		},
+		"Space Auditor role can see globally–enabled security groups or groups associated with a space they can seen": {
+			spaceRole: SpaceAuditor,
+			expectedSecurityGroups: func() []Entity {
+				return []Entity{
+					{"unassigned"},
+					{suite.globallyRunningSecurityGroup.GUID},
+					{suite.globallyStagingSecurityGroup.GUID},
+					{suite.spaceRunningSecurityGroup.GUID},
+					{suite.spaceStagingSecurityGroup.GUID},
+				}
+			},
+			extraSpaceForRole: noSpace,
+		},
+		"Space Developer role can see globally–enabled security groups or groups associated with a space they can seen": {
+			spaceRole: SpaceDeveloper,
+			expectedSecurityGroups: func() []Entity {
+				return []Entity{
+					{"unassigned"},
+					{suite.globallyRunningSecurityGroup.GUID},
+					{suite.globallyStagingSecurityGroup.GUID},
+					{suite.spaceRunningSecurityGroup.GUID},
+					{suite.spaceStagingSecurityGroup.GUID},
+				}
+			},
+			extraSpaceForRole: noSpace,
+		},
+		"Space Manager role can see globally–enabled security groups or groups associated with a space they can seen": {
+			spaceRole: SpaceManager,
+			expectedSecurityGroups: func() []Entity {
+				return []Entity{
+					{"unassigned"},
+					{suite.globallyRunningSecurityGroup.GUID},
+					{suite.globallyStagingSecurityGroup.GUID},
+					{suite.spaceRunningSecurityGroup.GUID},
+					{suite.spaceStagingSecurityGroup.GUID},
+				}
+			},
+			extraSpaceForRole: noSpace,
+		},
+		"Space Supporter role can see globally–enabled security groups or groups associated with a space they can seen": {
+			spaceRole: SpaceSupporter,
+			expectedSecurityGroups: func() []Entity {
+				return []Entity{
+					{"unassigned"},
+					{suite.globallyRunningSecurityGroup.GUID},
+					{suite.globallyStagingSecurityGroup.GUID},
+					{suite.spaceRunningSecurityGroup.GUID},
+					{suite.spaceStagingSecurityGroup.GUID},
+				}
+			},
+			extraSpaceForRole: noSpace,
+		},
+	}
+
+	for name, tc := range cases {
+		suite.Run(name, func() {
+			suite.SetupTest() // needed to ensure DB is fresh for every test case
+
+			assignRole := assignRoles[tc.spaceRole]
+			assignRole(suite.user.ID, suite.otherSpace.ID)
+			if tc.extraSpaceForRole() != nil {
+				assignRole(suite.user.ID, tc.extraSpaceForRole().ID)
+			}
+
+			err := suite.controller.List(suite.c)
+			suite.NoError(err)
+			suite.Equal(http.StatusOK, suite.rec.Result().StatusCode)
+
+			var resp ResponseObject
+			err = json.Unmarshal(suite.rec.Body.Bytes(), &resp)
+			suite.NoError(err)
+
+			suite.ElementsMatch(tc.expectedSecurityGroups(), resp.Resources)
+		})
+	}
+
+}
+
+type Entity struct {
+	GUID string `json:"guid"`
+}
+
+type ResponseObject struct {
+	Resources []Entity `json:"resources"`
 }

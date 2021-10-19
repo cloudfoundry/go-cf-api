@@ -61,6 +61,7 @@ func RegisterV3Handlers(
 	// Security Groups
 	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
 	requiresRead.GET(fmt.Sprintf("security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
+	requiresRead.GET("security_groups", securityGroupsController.List)
 }
 
 func RegisterV3DocumentationHandlers(prefix string, e *echo.Echo) {

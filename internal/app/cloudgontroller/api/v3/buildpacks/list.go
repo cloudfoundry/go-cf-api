@@ -3,18 +3,17 @@ package buildpacks
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"strings"
-	"time"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/timefilters"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
+	"net/http"
+	"strings"
 )
 
 type FilterParams struct {
@@ -45,7 +44,7 @@ func (cont *Controller) List(c echo.Context) error {
 	pagination := pagination.Default()
 	filterParams := DefaultFilters()
 
-	createdAts, updatedAts, err := v3.ParseTimeFilters(c)
+	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
@@ -71,7 +70,8 @@ func (cont *Controller) List(c echo.Context) error {
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	var mods []qm.QueryMod
-	mods = append(mods, filters(filterParams, createdAts, updatedAts)...)
+	mods = append(mods, filters(filterParams)...)
+	mods = append(mods, timefilters.Filters(createdAts, updatedAts, models.BuildpackTableColumns.CreatedAt, models.BuildpackTableColumns.UpdatedAt)...)
 	mods = append(mods, labelSelectors.Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels)...)
 
 	totalResults, err := buildpackQuerier(mods...).Count(ctx, cont.DB)
@@ -111,7 +111,7 @@ func orderBy(orderBy string) qm.QueryMod {
 	return qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(orderBy, "-"), direction))
 }
 
-func filters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.QueryMod {
+func filters(filters FilterParams) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
 	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
@@ -122,16 +122,6 @@ func filters(filters FilterParams, createdAts, updatedAts []v3.TimeFilter) []qm.
 	stacks := strings.FieldsFunc(filters.Stacks, splitWithoutEmptyString)
 	if len(stacks) > 0 {
 		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Stack, stacks))
-	}
-
-	for _, createdAt := range createdAts {
-		operator := v3.Operators[createdAt.Operator]
-		filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.CreatedAt, operator), createdAt.Timestamp.Format(time.RFC3339)))
-	}
-
-	for _, updatedAt := range updatedAts {
-		operator := v3.Operators[updatedAt.Operator]
-		filterMods = append(filterMods, qm.Where(fmt.Sprintf("%s %s ?", models.BuildpackColumns.UpdatedAt, operator), updatedAt.Timestamp.Format(time.RFC3339)))
 	}
 
 	return filterMods

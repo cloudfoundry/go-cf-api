@@ -54,6 +54,7 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 	buildpacks := models.BuildpackSlice{
+		{},
 		{GUID: "first-guid"}, {GUID: "second-guid"},
 	}
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
@@ -266,37 +267,37 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 		"filter by time": {
 			query: fmt.Sprintf("created_ats=%s&updated_ats=%s", now, now),
 			expectedCountFilters: []qm.QueryMod{
-				qm.Where("created_at = ?", now),
-				qm.Where("updated_at = ?", now),
+				qm.Where("buildpacks.created_at = ?", now),
+				qm.Where("buildpacks.updated_at = ?", now),
 			},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.Where("created_at = ?", now),
-				qm.Where("updated_at = ?", now),
+				qm.Where("buildpacks.created_at = ?", now),
+				qm.Where("buildpacks.updated_at = ?", now),
 			},
 		},
 		"filter by time with lt/gt suffix": {
 			query: fmt.Sprintf("created_ats[lt]=%s&updated_ats[gt]=%s", now, now),
 			expectedCountFilters: []qm.QueryMod{
-				qm.Where("created_at < ?", now),
-				qm.Where("updated_at > ?", now),
+				qm.Where("buildpacks.created_at < ?", now),
+				qm.Where("buildpacks.updated_at > ?", now),
 			},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.Where("created_at < ?", now),
-				qm.Where("updated_at > ?", now),
+				qm.Where("buildpacks.created_at < ?", now),
+				qm.Where("buildpacks.updated_at > ?", now),
 			},
 		},
 		"filter by time with lte/gte suffix": {
 			query: fmt.Sprintf("created_ats[gte]=%s&updated_ats[lte]=%s", now, now),
 			expectedCountFilters: []qm.QueryMod{
-				qm.Where("created_at >= ?", now),
-				qm.Where("updated_at <= ?", now),
+				qm.Where("buildpacks.created_at >= ?", now),
+				qm.Where("buildpacks.updated_at <= ?", now),
 			},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.Where("created_at >= ?", now),
-				qm.Where("updated_at <= ?", now),
+				qm.Where("buildpacks.created_at >= ?", now),
+				qm.Where("buildpacks.updated_at <= ?", now),
 			},
 		},
 		"filter by time between timestamps": {
@@ -306,13 +307,13 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 				time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339),
 			),
 			expectedCountFilters: []qm.QueryMod{
-				qm.Where("created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
-				qm.Where("created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+				qm.Where("buildpacks.created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("buildpacks.created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
 			},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.Where("created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
-				qm.Where("created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+				qm.Where("buildpacks.created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("buildpacks.created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
 			},
 		},
 		"filter by time with invalid param": {
@@ -331,15 +332,15 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 			expectedCountFilters: []qm.QueryMod{
 				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
 				qm.WhereIn("stack IN ?", "cflinuxfs3"),
-				qm.Where("created_at > ?", now),
-				qm.Where("updated_at <= ?", now),
+				qm.Where("buildpacks.created_at > ?", now),
+				qm.Where("buildpacks.updated_at <= ?", now),
 			},
 			expectedAllFilters: []qm.QueryMod{
 				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
 				qm.WhereIn("stack IN ?", "cflinuxfs3"),
 				qm.OrderBy("position DESC"),
-				qm.Where("created_at > ?", now),
-				qm.Where("updated_at <= ?", now),
+				qm.Where("buildpacks.created_at > ?", now),
+				qm.Where("buildpacks.updated_at <= ?", now),
 			},
 		},
 	}

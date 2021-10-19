@@ -2,6 +2,7 @@ package securitygroups
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
@@ -31,11 +32,40 @@ type SecurityGroupSpace struct {
 	GUID string `json:"guid"`
 }
 
+type ListResponse struct {
+	Pagination *pagination.Pagination `json:"pagination"`
+	Resources  []*Response            `json:"resources"`
+}
+
 type Presenter interface {
 	ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error)
+	ListResponseObject(
+		securityGroups models.SecurityGroupSlice,
+		totalResults int64,
+		paginationParams pagination.Params,
+		resourcePath string) (*ListResponse, error)
 }
 
 type presenter struct{}
+
+func (p *presenter) ListResponseObject(securityGroups models.SecurityGroupSlice,
+	totalResults int64,
+	paginationParams pagination.Params,
+	resourcePath string) (*ListResponse, error) {
+	out := []*Response{}
+	for _, securitygroup := range securityGroups{
+		securityGroupResp, err := p.ResponseObject(securitygroup, fmt.Sprintf("%s/%s", resourcePath, securitygroup.GUID))
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, securityGroupResp)
+	}
+
+	return &ListResponse{
+		Pagination: pagination.NewPagination(totalResults, paginationParams, resourcePath),
+		Resources:  out,
+	}, nil
+}
 
 func NewPresenter() Presenter {
 	return &presenter{}

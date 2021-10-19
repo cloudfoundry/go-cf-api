@@ -1,4 +1,4 @@
-package v3
+package timefilters
 
 import (
 	"fmt"
@@ -56,7 +56,10 @@ func createFilter(param string, values []string) (TimeFilter, error) {
 	if _, ok := Operators[matches[1]]; !ok {
 		return TimeFilter{}, fmt.Errorf("unrecognized comparison operator '%s'", matches[1])
 	}
-	timestamp, _ := time.Parse(time.RFC3339, values[0])
+	timestamp, err := time.ParseInLocation(time.RFC3339, values[0], time.UTC)
+	if err != nil {
+		return TimeFilter{}, err
+	}
 	return TimeFilter{
 		Timestamp: timestamp,
 		Operator:  matches[1],

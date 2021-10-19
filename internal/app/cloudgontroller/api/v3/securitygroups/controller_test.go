@@ -3,6 +3,7 @@
 package securitygroups //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	"net/http"
 	"net/http/httptest"
 
@@ -47,6 +48,17 @@ func (suite *SecurityGroupControllerTestSuite) SetupTestSuite(method, endpoint s
 
 type MockPresenter struct {
 	mock.Mock
+}
+
+func (m *MockPresenter) ListResponseObject(securityGroups models.SecurityGroupSlice,
+	totalResults int64,
+	paginationParams pagination.Params,
+	resourcePath string) (*ListResponse, error) {
+	args := m.Called(securityGroups,
+		totalResults,
+		paginationParams,
+		resourcePath)
+	return args.Get(0).(*ListResponse), args.Error(1)
 }
 
 func (m *MockPresenter) ResponseObject(securityGroup *models.SecurityGroup, resourcePath string) (*Response, error) {
