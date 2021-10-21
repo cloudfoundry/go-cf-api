@@ -23,6 +23,9 @@ to installs all dependencies
 ### Local Development
 
 ```console
+cd ..
+mage generate
+cd docs
 yarn start --locale en
 yarn start --locale de
 ```
@@ -31,6 +34,9 @@ This command starts a local development server and opens up a browser window. Mo
 ### Build
 
 ```console
+cd ..
+mage generate
+cd docs
 yarn build
 ```
 
@@ -39,6 +45,11 @@ This command generates static content into the `build` directory and can be serv
 ### Deployment
 
 ```console
-GIT_USER=i507599 GIT_PASS=$pass GITHUB_HOST=github.tools.sap yarn deploy
+cd ..
+mage generate
+cd docs
+read -s ghtoken
+GIT_USER=i507599 GIT_PASS=$ghtoken GITHUB_HOST=github.tools.sap yarn deploy
 ```
 This overwrites the `gh-pages` branch with a single commit delivering this page.
+This is usally not needed since we have a github action in place that does this automatically if some file in `/docs` changes.

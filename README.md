@@ -13,6 +13,11 @@ A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_co
 	```bash
 	brew install mysql postgres
 	```
+- Git LFS (Just for assets in the docs, so its optional) https://git-lfs.github.com/
+	```
+	brew install git-lfs
+	git lfs install
+	```
 - [Mage](https://github.com/magefile/mage) (Makefile alternative in go)
 	```bash
 	go install github.com/magefile/mage
