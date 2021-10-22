@@ -12,6 +12,8 @@ info:
 db:
   connection_string: host=localhost port=5432 user=postgres dbname=ccdb password=admin sslmode=disable
   type: postgres
+  min_connections: 10
+  max_connections: 200
 log:
   level: debug
   production: false

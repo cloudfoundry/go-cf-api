@@ -47,8 +47,8 @@ func NewMySQLConnection(dbConfig config.DBConfig, connectDB bool) (*sql.DB, Info
 	}
 
 	// DB Connection Settings
-	database.SetMaxIdleConns(5)  //nolint:gomnd // This will be configurable at some point
-	database.SetMaxOpenConns(20) //nolint:gomnd // This will be configurable at some point
+	database.SetMaxIdleConns(dbConfig.MinConnections)
+	database.SetMaxOpenConns(dbConfig.MaxConnections)
 	database.SetConnMaxLifetime(time.Hour)
 
 	// Check Connection on StartUp

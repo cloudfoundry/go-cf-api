@@ -12,6 +12,8 @@ info:
 db:
   type: ~
   connection_string: ~
+  min_connections: 10
+  max_connections: 50
   log:
     level: info
     production: true

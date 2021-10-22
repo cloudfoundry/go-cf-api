@@ -12,6 +12,8 @@ info:
 db:
   connection_string: root:admin@tcp(localhost:3306)/ccdb?tls=false&parseTime=true
   type: mysql
+  min_connections: 10
+  max_connections: 250
 log:
   level: debug
   production: false
