@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockFeatureFlagUpserter is a mock of FeatureFlagUpserter interface.
+type MockFeatureFlagUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockFeatureFlagUpserterMockRecorder
+}
+
+// MockFeatureFlagUpserterMockRecorder is the mock recorder for MockFeatureFlagUpserter.
+type MockFeatureFlagUpserterMockRecorder struct {
+	mock *MockFeatureFlagUpserter
+}
+
+// NewMockFeatureFlagUpserter creates a new mock instance.
+func NewMockFeatureFlagUpserter(ctrl *gomock.Controller) *MockFeatureFlagUpserter {
+	mock := &MockFeatureFlagUpserter{ctrl: ctrl}
+	mock.recorder = &MockFeatureFlagUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockFeatureFlagUpserter) EXPECT() *MockFeatureFlagUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockFeatureFlagUpserter) Upsert(o *models.FeatureFlag, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockFeatureFlagUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockFeatureFlagUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockFeatureFlagFinisher is a mock of FeatureFlagFinisher interface.
 type MockFeatureFlagFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockFeatureFlagUpdater) UpdateAllSlice(o models.FeatureFlagSlice, ctx c
 func (mr *MockFeatureFlagUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockFeatureFlagUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockFeatureFlagUpserter is a mock of FeatureFlagUpserter interface.
-type MockFeatureFlagUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockFeatureFlagUpserterMockRecorder
-}
-
-// MockFeatureFlagUpserterMockRecorder is the mock recorder for MockFeatureFlagUpserter.
-type MockFeatureFlagUpserterMockRecorder struct {
-	mock *MockFeatureFlagUpserter
-}
-
-// NewMockFeatureFlagUpserter creates a new mock instance.
-func NewMockFeatureFlagUpserter(ctrl *gomock.Controller) *MockFeatureFlagUpserter {
-	mock := &MockFeatureFlagUpserter{ctrl: ctrl}
-	mock.recorder = &MockFeatureFlagUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockFeatureFlagUpserter) EXPECT() *MockFeatureFlagUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockFeatureFlagUpserter) Upsert(o *models.FeatureFlag, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockFeatureFlagUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockFeatureFlagUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockFeatureFlagDeleter is a mock of FeatureFlagDeleter interface.

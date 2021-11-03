@@ -24,6 +24,129 @@ import (
 	"github.com/volatiletech/strmangle"
 )
 
+type SpaceQuotaDefinitionUpserter interface {
+	Upsert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q spaceQuotaDefinitionQuery) Upsert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no space_quota_definitions provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		queries.SetScanner(&o.UpdatedAt, currTime)
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(spaceQuotaDefinitionColumnsWithDefault, o)
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	if updateOnConflict {
+		buf.WriteByte('t')
+	} else {
+		buf.WriteByte('f')
+	}
+	buf.WriteByte('.')
+	for _, c := range conflictColumns {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	spaceQuotaDefinitionUpsertCacheMut.RLock()
+	cache, cached := spaceQuotaDefinitionUpsertCache[key]
+	spaceQuotaDefinitionUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			spaceQuotaDefinitionAllColumns,
+			spaceQuotaDefinitionColumnsWithDefault,
+			spaceQuotaDefinitionColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			spaceQuotaDefinitionAllColumns,
+			spaceQuotaDefinitionPrimaryKeyColumns,
+		)
+
+		if updateOnConflict && len(update) == 0 {
+			return errors.New("models: unable to upsert space_quota_definitions, could not build update column list")
+		}
+
+		conflict := conflictColumns
+		if len(conflict) == 0 {
+			conflict = make([]string, len(spaceQuotaDefinitionPrimaryKeyColumns))
+			copy(conflict, spaceQuotaDefinitionPrimaryKeyColumns)
+		}
+		cache.query = buildUpsertQueryPostgres(dialect, "\"space_quota_definitions\"", updateOnConflict, ret, update, conflict, insert)
+
+		cache.valueMapping, err = queries.BindMapping(spaceQuotaDefinitionType, spaceQuotaDefinitionMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(spaceQuotaDefinitionType, spaceQuotaDefinitionMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	if len(cache.retMapping) != 0 {
+		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
+		if err == sql.ErrNoRows {
+			err = nil // Postgres doesn't return anything when there's no update
+		}
+	} else {
+		_, err = exec.ExecContext(ctx, cache.query, vals...)
+	}
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert space_quota_definitions")
+	}
+
+	if !cached {
+		spaceQuotaDefinitionUpsertCacheMut.Lock()
+		spaceQuotaDefinitionUpsertCache[key] = cache
+		spaceQuotaDefinitionUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 // SpaceQuotaDefinition is an object representing the database table.
 type SpaceQuotaDefinition struct {
 	ID                      int       `boil:"id" json:"id" toml:"id" yaml:"id"`
@@ -934,129 +1057,6 @@ func (q spaceQuotaDefinitionQuery) UpdateAllSlice(o SpaceQuotaDefinitionSlice, c
 		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all spaceQuotaDefinition")
 	}
 	return rowsAff, nil
-}
-
-type SpaceQuotaDefinitionUpserter interface {
-	Upsert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (q spaceQuotaDefinitionQuery) Upsert(o *SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no space_quota_definitions provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		queries.SetScanner(&o.UpdatedAt, currTime)
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(spaceQuotaDefinitionColumnsWithDefault, o)
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	if updateOnConflict {
-		buf.WriteByte('t')
-	} else {
-		buf.WriteByte('f')
-	}
-	buf.WriteByte('.')
-	for _, c := range conflictColumns {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	spaceQuotaDefinitionUpsertCacheMut.RLock()
-	cache, cached := spaceQuotaDefinitionUpsertCache[key]
-	spaceQuotaDefinitionUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			spaceQuotaDefinitionAllColumns,
-			spaceQuotaDefinitionColumnsWithDefault,
-			spaceQuotaDefinitionColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			spaceQuotaDefinitionAllColumns,
-			spaceQuotaDefinitionPrimaryKeyColumns,
-		)
-
-		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert space_quota_definitions, could not build update column list")
-		}
-
-		conflict := conflictColumns
-		if len(conflict) == 0 {
-			conflict = make([]string, len(spaceQuotaDefinitionPrimaryKeyColumns))
-			copy(conflict, spaceQuotaDefinitionPrimaryKeyColumns)
-		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"space_quota_definitions\"", updateOnConflict, ret, update, conflict, insert)
-
-		cache.valueMapping, err = queries.BindMapping(spaceQuotaDefinitionType, spaceQuotaDefinitionMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(spaceQuotaDefinitionType, spaceQuotaDefinitionMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	if len(cache.retMapping) != 0 {
-		err = exec.QueryRowContext(ctx, cache.query, vals...).Scan(returns...)
-		if err == sql.ErrNoRows {
-			err = nil // Postgres doesn't return anything when there's no update
-		}
-	} else {
-		_, err = exec.ExecContext(ctx, cache.query, vals...)
-	}
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert space_quota_definitions")
-	}
-
-	if !cached {
-		spaceQuotaDefinitionUpsertCacheMut.Lock()
-		spaceQuotaDefinitionUpsertCache[key] = cache
-		spaceQuotaDefinitionUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }
 
 type SpaceQuotaDefinitionDeleter interface {

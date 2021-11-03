@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockOrganizationsManagerUpserter is a mock of OrganizationsManagerUpserter interface.
+type MockOrganizationsManagerUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrganizationsManagerUpserterMockRecorder
+}
+
+// MockOrganizationsManagerUpserterMockRecorder is the mock recorder for MockOrganizationsManagerUpserter.
+type MockOrganizationsManagerUpserterMockRecorder struct {
+	mock *MockOrganizationsManagerUpserter
+}
+
+// NewMockOrganizationsManagerUpserter creates a new mock instance.
+func NewMockOrganizationsManagerUpserter(ctrl *gomock.Controller) *MockOrganizationsManagerUpserter {
+	mock := &MockOrganizationsManagerUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrganizationsManagerUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrganizationsManagerUpserter) EXPECT() *MockOrganizationsManagerUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrganizationsManagerUpserter) Upsert(o *models.OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrganizationsManagerUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsManagerUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrganizationsManagerFinisher is a mock of OrganizationsManagerFinisher interface.
 type MockOrganizationsManagerFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockOrganizationsManagerUpdater) UpdateAllSlice(o models.OrganizationsM
 func (mr *MockOrganizationsManagerUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrganizationsManagerUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockOrganizationsManagerUpserter is a mock of OrganizationsManagerUpserter interface.
-type MockOrganizationsManagerUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockOrganizationsManagerUpserterMockRecorder
-}
-
-// MockOrganizationsManagerUpserterMockRecorder is the mock recorder for MockOrganizationsManagerUpserter.
-type MockOrganizationsManagerUpserterMockRecorder struct {
-	mock *MockOrganizationsManagerUpserter
-}
-
-// NewMockOrganizationsManagerUpserter creates a new mock instance.
-func NewMockOrganizationsManagerUpserter(ctrl *gomock.Controller) *MockOrganizationsManagerUpserter {
-	mock := &MockOrganizationsManagerUpserter{ctrl: ctrl}
-	mock.recorder = &MockOrganizationsManagerUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOrganizationsManagerUpserter) EXPECT() *MockOrganizationsManagerUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockOrganizationsManagerUpserter) Upsert(o *models.OrganizationsManager, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockOrganizationsManagerUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsManagerUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockOrganizationsManagerDeleter is a mock of OrganizationsManagerDeleter interface.

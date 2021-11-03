@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockRouteLabelUpserter is a mock of RouteLabelUpserter interface.
+type MockRouteLabelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRouteLabelUpserterMockRecorder
+}
+
+// MockRouteLabelUpserterMockRecorder is the mock recorder for MockRouteLabelUpserter.
+type MockRouteLabelUpserterMockRecorder struct {
+	mock *MockRouteLabelUpserter
+}
+
+// NewMockRouteLabelUpserter creates a new mock instance.
+func NewMockRouteLabelUpserter(ctrl *gomock.Controller) *MockRouteLabelUpserter {
+	mock := &MockRouteLabelUpserter{ctrl: ctrl}
+	mock.recorder = &MockRouteLabelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRouteLabelUpserter) EXPECT() *MockRouteLabelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRouteLabelUpserter) Upsert(o *models.RouteLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRouteLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRouteLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRouteLabelFinisher is a mock of RouteLabelFinisher interface.
 type MockRouteLabelFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockRouteLabelUpdater) UpdateAllSlice(o models.RouteLabelSlice, ctx con
 func (mr *MockRouteLabelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRouteLabelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockRouteLabelUpserter is a mock of RouteLabelUpserter interface.
-type MockRouteLabelUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockRouteLabelUpserterMockRecorder
-}
-
-// MockRouteLabelUpserterMockRecorder is the mock recorder for MockRouteLabelUpserter.
-type MockRouteLabelUpserterMockRecorder struct {
-	mock *MockRouteLabelUpserter
-}
-
-// NewMockRouteLabelUpserter creates a new mock instance.
-func NewMockRouteLabelUpserter(ctrl *gomock.Controller) *MockRouteLabelUpserter {
-	mock := &MockRouteLabelUpserter{ctrl: ctrl}
-	mock.recorder = &MockRouteLabelUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRouteLabelUpserter) EXPECT() *MockRouteLabelUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockRouteLabelUpserter) Upsert(o *models.RouteLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockRouteLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRouteLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockRouteLabelDeleter is a mock of RouteLabelDeleter interface.

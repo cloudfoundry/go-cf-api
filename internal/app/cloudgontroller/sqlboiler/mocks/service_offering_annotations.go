@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockServiceOfferingAnnotationUpserter is a mock of ServiceOfferingAnnotationUpserter interface.
+type MockServiceOfferingAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceOfferingAnnotationUpserterMockRecorder
+}
+
+// MockServiceOfferingAnnotationUpserterMockRecorder is the mock recorder for MockServiceOfferingAnnotationUpserter.
+type MockServiceOfferingAnnotationUpserterMockRecorder struct {
+	mock *MockServiceOfferingAnnotationUpserter
+}
+
+// NewMockServiceOfferingAnnotationUpserter creates a new mock instance.
+func NewMockServiceOfferingAnnotationUpserter(ctrl *gomock.Controller) *MockServiceOfferingAnnotationUpserter {
+	mock := &MockServiceOfferingAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceOfferingAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceOfferingAnnotationUpserter) EXPECT() *MockServiceOfferingAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceOfferingAnnotationUpserter) Upsert(o *models.ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceOfferingAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceOfferingAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceOfferingAnnotationFinisher is a mock of ServiceOfferingAnnotationFinisher interface.
 type MockServiceOfferingAnnotationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockServiceOfferingAnnotationUpdater) UpdateAllSlice(o models.ServiceOf
 func (mr *MockServiceOfferingAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceOfferingAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockServiceOfferingAnnotationUpserter is a mock of ServiceOfferingAnnotationUpserter interface.
-type MockServiceOfferingAnnotationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockServiceOfferingAnnotationUpserterMockRecorder
-}
-
-// MockServiceOfferingAnnotationUpserterMockRecorder is the mock recorder for MockServiceOfferingAnnotationUpserter.
-type MockServiceOfferingAnnotationUpserterMockRecorder struct {
-	mock *MockServiceOfferingAnnotationUpserter
-}
-
-// NewMockServiceOfferingAnnotationUpserter creates a new mock instance.
-func NewMockServiceOfferingAnnotationUpserter(ctrl *gomock.Controller) *MockServiceOfferingAnnotationUpserter {
-	mock := &MockServiceOfferingAnnotationUpserter{ctrl: ctrl}
-	mock.recorder = &MockServiceOfferingAnnotationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServiceOfferingAnnotationUpserter) EXPECT() *MockServiceOfferingAnnotationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockServiceOfferingAnnotationUpserter) Upsert(o *models.ServiceOfferingAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockServiceOfferingAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceOfferingAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockServiceOfferingAnnotationDeleter is a mock of ServiceOfferingAnnotationDeleter interface.

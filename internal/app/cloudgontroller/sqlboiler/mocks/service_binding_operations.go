@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockServiceBindingOperationUpserter is a mock of ServiceBindingOperationUpserter interface.
+type MockServiceBindingOperationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceBindingOperationUpserterMockRecorder
+}
+
+// MockServiceBindingOperationUpserterMockRecorder is the mock recorder for MockServiceBindingOperationUpserter.
+type MockServiceBindingOperationUpserterMockRecorder struct {
+	mock *MockServiceBindingOperationUpserter
+}
+
+// NewMockServiceBindingOperationUpserter creates a new mock instance.
+func NewMockServiceBindingOperationUpserter(ctrl *gomock.Controller) *MockServiceBindingOperationUpserter {
+	mock := &MockServiceBindingOperationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceBindingOperationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceBindingOperationUpserter) EXPECT() *MockServiceBindingOperationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceBindingOperationUpserter) Upsert(o *models.ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceBindingOperationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceBindingOperationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceBindingOperationFinisher is a mock of ServiceBindingOperationFinisher interface.
 type MockServiceBindingOperationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockServiceBindingOperationUpdater) UpdateAllSlice(o models.ServiceBind
 func (mr *MockServiceBindingOperationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceBindingOperationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockServiceBindingOperationUpserter is a mock of ServiceBindingOperationUpserter interface.
-type MockServiceBindingOperationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockServiceBindingOperationUpserterMockRecorder
-}
-
-// MockServiceBindingOperationUpserterMockRecorder is the mock recorder for MockServiceBindingOperationUpserter.
-type MockServiceBindingOperationUpserterMockRecorder struct {
-	mock *MockServiceBindingOperationUpserter
-}
-
-// NewMockServiceBindingOperationUpserter creates a new mock instance.
-func NewMockServiceBindingOperationUpserter(ctrl *gomock.Controller) *MockServiceBindingOperationUpserter {
-	mock := &MockServiceBindingOperationUpserter{ctrl: ctrl}
-	mock.recorder = &MockServiceBindingOperationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServiceBindingOperationUpserter) EXPECT() *MockServiceBindingOperationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockServiceBindingOperationUpserter) Upsert(o *models.ServiceBindingOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockServiceBindingOperationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceBindingOperationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockServiceBindingOperationDeleter is a mock of ServiceBindingOperationDeleter interface.

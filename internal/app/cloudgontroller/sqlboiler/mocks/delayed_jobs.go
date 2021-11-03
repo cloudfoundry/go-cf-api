@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockDelayedJobUpserter is a mock of DelayedJobUpserter interface.
+type MockDelayedJobUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockDelayedJobUpserterMockRecorder
+}
+
+// MockDelayedJobUpserterMockRecorder is the mock recorder for MockDelayedJobUpserter.
+type MockDelayedJobUpserterMockRecorder struct {
+	mock *MockDelayedJobUpserter
+}
+
+// NewMockDelayedJobUpserter creates a new mock instance.
+func NewMockDelayedJobUpserter(ctrl *gomock.Controller) *MockDelayedJobUpserter {
+	mock := &MockDelayedJobUpserter{ctrl: ctrl}
+	mock.recorder = &MockDelayedJobUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDelayedJobUpserter) EXPECT() *MockDelayedJobUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockDelayedJobUpserter) Upsert(o *models.DelayedJob, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockDelayedJobUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDelayedJobUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockDelayedJobFinisher is a mock of DelayedJobFinisher interface.
 type MockDelayedJobFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockDelayedJobUpdater) UpdateAllSlice(o models.DelayedJobSlice, ctx con
 func (mr *MockDelayedJobUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockDelayedJobUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockDelayedJobUpserter is a mock of DelayedJobUpserter interface.
-type MockDelayedJobUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockDelayedJobUpserterMockRecorder
-}
-
-// MockDelayedJobUpserterMockRecorder is the mock recorder for MockDelayedJobUpserter.
-type MockDelayedJobUpserterMockRecorder struct {
-	mock *MockDelayedJobUpserter
-}
-
-// NewMockDelayedJobUpserter creates a new mock instance.
-func NewMockDelayedJobUpserter(ctrl *gomock.Controller) *MockDelayedJobUpserter {
-	mock := &MockDelayedJobUpserter{ctrl: ctrl}
-	mock.recorder = &MockDelayedJobUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockDelayedJobUpserter) EXPECT() *MockDelayedJobUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockDelayedJobUpserter) Upsert(o *models.DelayedJob, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockDelayedJobUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDelayedJobUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockDelayedJobDeleter is a mock of DelayedJobDeleter interface.

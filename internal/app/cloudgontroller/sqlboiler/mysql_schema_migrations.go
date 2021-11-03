@@ -22,6 +22,143 @@ import (
 	"github.com/volatiletech/strmangle"
 )
 
+type SchemaMigrationUpserter interface {
+	Upsert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLSchemaMigrationUniqueColumns = []string{
+	"filename",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q schemaMigrationQuery) Upsert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no schema_migrations provided for upsert")
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(schemaMigrationColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLSchemaMigrationUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	schemaMigrationUpsertCacheMut.RLock()
+	cache, cached := schemaMigrationUpsertCache[key]
+	schemaMigrationUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			schemaMigrationAllColumns,
+			schemaMigrationColumnsWithDefault,
+			schemaMigrationColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			schemaMigrationAllColumns,
+			schemaMigrationPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert schema_migrations, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`schema_migrations`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `schema_migrations` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	_, err = exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for schema_migrations")
+	}
+
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for schema_migrations")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for schema_migrations")
+	}
+
+CacheNoHooks:
+	if !cached {
+		schemaMigrationUpsertCacheMut.Lock()
+		schemaMigrationUpsertCache[key] = cache
+		schemaMigrationUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 // SchemaMigration is an object representing the database table.
 type SchemaMigration struct {
 	Filename string `boil:"filename" json:"filename" toml:"filename" yaml:"filename"`
@@ -431,143 +568,6 @@ func (q schemaMigrationQuery) UpdateAllSlice(o SchemaMigrationSlice, ctx context
 		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all schemaMigration")
 	}
 	return rowsAff, nil
-}
-
-type SchemaMigrationUpserter interface {
-	Upsert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
-}
-
-var mySQLSchemaMigrationUniqueColumns = []string{
-	"filename",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (q schemaMigrationQuery) Upsert(o *SchemaMigration, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no schema_migrations provided for upsert")
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(schemaMigrationColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLSchemaMigrationUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	schemaMigrationUpsertCacheMut.RLock()
-	cache, cached := schemaMigrationUpsertCache[key]
-	schemaMigrationUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			schemaMigrationAllColumns,
-			schemaMigrationColumnsWithDefault,
-			schemaMigrationColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			schemaMigrationAllColumns,
-			schemaMigrationPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert schema_migrations, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`schema_migrations`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `schema_migrations` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	_, err = exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for schema_migrations")
-	}
-
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(schemaMigrationType, schemaMigrationMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for schema_migrations")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for schema_migrations")
-	}
-
-CacheNoHooks:
-	if !cached {
-		schemaMigrationUpsertCacheMut.Lock()
-		schemaMigrationUpsertCache[key] = cache
-		schemaMigrationUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }
 
 type SchemaMigrationDeleter interface {

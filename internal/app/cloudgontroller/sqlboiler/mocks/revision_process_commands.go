@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockRevisionProcessCommandUpserter is a mock of RevisionProcessCommandUpserter interface.
+type MockRevisionProcessCommandUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRevisionProcessCommandUpserterMockRecorder
+}
+
+// MockRevisionProcessCommandUpserterMockRecorder is the mock recorder for MockRevisionProcessCommandUpserter.
+type MockRevisionProcessCommandUpserterMockRecorder struct {
+	mock *MockRevisionProcessCommandUpserter
+}
+
+// NewMockRevisionProcessCommandUpserter creates a new mock instance.
+func NewMockRevisionProcessCommandUpserter(ctrl *gomock.Controller) *MockRevisionProcessCommandUpserter {
+	mock := &MockRevisionProcessCommandUpserter{ctrl: ctrl}
+	mock.recorder = &MockRevisionProcessCommandUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRevisionProcessCommandUpserter) EXPECT() *MockRevisionProcessCommandUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRevisionProcessCommandUpserter) Upsert(o *models.RevisionProcessCommand, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRevisionProcessCommandUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionProcessCommandUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRevisionProcessCommandFinisher is a mock of RevisionProcessCommandFinisher interface.
 type MockRevisionProcessCommandFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockRevisionProcessCommandUpdater) UpdateAllSlice(o models.RevisionProc
 func (mr *MockRevisionProcessCommandUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRevisionProcessCommandUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockRevisionProcessCommandUpserter is a mock of RevisionProcessCommandUpserter interface.
-type MockRevisionProcessCommandUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockRevisionProcessCommandUpserterMockRecorder
-}
-
-// MockRevisionProcessCommandUpserterMockRecorder is the mock recorder for MockRevisionProcessCommandUpserter.
-type MockRevisionProcessCommandUpserterMockRecorder struct {
-	mock *MockRevisionProcessCommandUpserter
-}
-
-// NewMockRevisionProcessCommandUpserter creates a new mock instance.
-func NewMockRevisionProcessCommandUpserter(ctrl *gomock.Controller) *MockRevisionProcessCommandUpserter {
-	mock := &MockRevisionProcessCommandUpserter{ctrl: ctrl}
-	mock.recorder = &MockRevisionProcessCommandUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRevisionProcessCommandUpserter) EXPECT() *MockRevisionProcessCommandUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockRevisionProcessCommandUpserter) Upsert(o *models.RevisionProcessCommand, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockRevisionProcessCommandUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionProcessCommandUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockRevisionProcessCommandDeleter is a mock of RevisionProcessCommandDeleter interface.

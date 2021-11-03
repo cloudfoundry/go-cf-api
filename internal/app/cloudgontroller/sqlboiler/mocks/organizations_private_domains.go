@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockOrganizationsPrivateDomainUpserter is a mock of OrganizationsPrivateDomainUpserter interface.
+type MockOrganizationsPrivateDomainUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrganizationsPrivateDomainUpserterMockRecorder
+}
+
+// MockOrganizationsPrivateDomainUpserterMockRecorder is the mock recorder for MockOrganizationsPrivateDomainUpserter.
+type MockOrganizationsPrivateDomainUpserterMockRecorder struct {
+	mock *MockOrganizationsPrivateDomainUpserter
+}
+
+// NewMockOrganizationsPrivateDomainUpserter creates a new mock instance.
+func NewMockOrganizationsPrivateDomainUpserter(ctrl *gomock.Controller) *MockOrganizationsPrivateDomainUpserter {
+	mock := &MockOrganizationsPrivateDomainUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrganizationsPrivateDomainUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrganizationsPrivateDomainUpserter) EXPECT() *MockOrganizationsPrivateDomainUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrganizationsPrivateDomainUpserter) Upsert(o *models.OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrganizationsPrivateDomainUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsPrivateDomainUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrganizationsPrivateDomainFinisher is a mock of OrganizationsPrivateDomainFinisher interface.
 type MockOrganizationsPrivateDomainFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockOrganizationsPrivateDomainUpdater) UpdateAllSlice(o models.Organiza
 func (mr *MockOrganizationsPrivateDomainUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrganizationsPrivateDomainUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockOrganizationsPrivateDomainUpserter is a mock of OrganizationsPrivateDomainUpserter interface.
-type MockOrganizationsPrivateDomainUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockOrganizationsPrivateDomainUpserterMockRecorder
-}
-
-// MockOrganizationsPrivateDomainUpserterMockRecorder is the mock recorder for MockOrganizationsPrivateDomainUpserter.
-type MockOrganizationsPrivateDomainUpserterMockRecorder struct {
-	mock *MockOrganizationsPrivateDomainUpserter
-}
-
-// NewMockOrganizationsPrivateDomainUpserter creates a new mock instance.
-func NewMockOrganizationsPrivateDomainUpserter(ctrl *gomock.Controller) *MockOrganizationsPrivateDomainUpserter {
-	mock := &MockOrganizationsPrivateDomainUpserter{ctrl: ctrl}
-	mock.recorder = &MockOrganizationsPrivateDomainUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOrganizationsPrivateDomainUpserter) EXPECT() *MockOrganizationsPrivateDomainUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockOrganizationsPrivateDomainUpserter) Upsert(o *models.OrganizationsPrivateDomain, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockOrganizationsPrivateDomainUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsPrivateDomainUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockOrganizationsPrivateDomainDeleter is a mock of OrganizationsPrivateDomainDeleter interface.

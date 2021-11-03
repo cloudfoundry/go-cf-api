@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockDeploymentProcessUpserter is a mock of DeploymentProcessUpserter interface.
+type MockDeploymentProcessUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockDeploymentProcessUpserterMockRecorder
+}
+
+// MockDeploymentProcessUpserterMockRecorder is the mock recorder for MockDeploymentProcessUpserter.
+type MockDeploymentProcessUpserterMockRecorder struct {
+	mock *MockDeploymentProcessUpserter
+}
+
+// NewMockDeploymentProcessUpserter creates a new mock instance.
+func NewMockDeploymentProcessUpserter(ctrl *gomock.Controller) *MockDeploymentProcessUpserter {
+	mock := &MockDeploymentProcessUpserter{ctrl: ctrl}
+	mock.recorder = &MockDeploymentProcessUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockDeploymentProcessUpserter) EXPECT() *MockDeploymentProcessUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockDeploymentProcessUpserter) Upsert(o *models.DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockDeploymentProcessUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDeploymentProcessUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockDeploymentProcessFinisher is a mock of DeploymentProcessFinisher interface.
 type MockDeploymentProcessFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockDeploymentProcessUpdater) UpdateAllSlice(o models.DeploymentProcess
 func (mr *MockDeploymentProcessUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockDeploymentProcessUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockDeploymentProcessUpserter is a mock of DeploymentProcessUpserter interface.
-type MockDeploymentProcessUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockDeploymentProcessUpserterMockRecorder
-}
-
-// MockDeploymentProcessUpserterMockRecorder is the mock recorder for MockDeploymentProcessUpserter.
-type MockDeploymentProcessUpserterMockRecorder struct {
-	mock *MockDeploymentProcessUpserter
-}
-
-// NewMockDeploymentProcessUpserter creates a new mock instance.
-func NewMockDeploymentProcessUpserter(ctrl *gomock.Controller) *MockDeploymentProcessUpserter {
-	mock := &MockDeploymentProcessUpserter{ctrl: ctrl}
-	mock.recorder = &MockDeploymentProcessUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockDeploymentProcessUpserter) EXPECT() *MockDeploymentProcessUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockDeploymentProcessUpserter) Upsert(o *models.DeploymentProcess, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockDeploymentProcessUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockDeploymentProcessUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockDeploymentProcessDeleter is a mock of DeploymentProcessDeleter interface.

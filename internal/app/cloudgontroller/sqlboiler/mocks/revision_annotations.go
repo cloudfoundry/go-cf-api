@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockRevisionAnnotationUpserter is a mock of RevisionAnnotationUpserter interface.
+type MockRevisionAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockRevisionAnnotationUpserterMockRecorder
+}
+
+// MockRevisionAnnotationUpserterMockRecorder is the mock recorder for MockRevisionAnnotationUpserter.
+type MockRevisionAnnotationUpserterMockRecorder struct {
+	mock *MockRevisionAnnotationUpserter
+}
+
+// NewMockRevisionAnnotationUpserter creates a new mock instance.
+func NewMockRevisionAnnotationUpserter(ctrl *gomock.Controller) *MockRevisionAnnotationUpserter {
+	mock := &MockRevisionAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockRevisionAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockRevisionAnnotationUpserter) EXPECT() *MockRevisionAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockRevisionAnnotationUpserter) Upsert(o *models.RevisionAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockRevisionAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockRevisionAnnotationFinisher is a mock of RevisionAnnotationFinisher interface.
 type MockRevisionAnnotationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockRevisionAnnotationUpdater) UpdateAllSlice(o models.RevisionAnnotati
 func (mr *MockRevisionAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockRevisionAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockRevisionAnnotationUpserter is a mock of RevisionAnnotationUpserter interface.
-type MockRevisionAnnotationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockRevisionAnnotationUpserterMockRecorder
-}
-
-// MockRevisionAnnotationUpserterMockRecorder is the mock recorder for MockRevisionAnnotationUpserter.
-type MockRevisionAnnotationUpserterMockRecorder struct {
-	mock *MockRevisionAnnotationUpserter
-}
-
-// NewMockRevisionAnnotationUpserter creates a new mock instance.
-func NewMockRevisionAnnotationUpserter(ctrl *gomock.Controller) *MockRevisionAnnotationUpserter {
-	mock := &MockRevisionAnnotationUpserter{ctrl: ctrl}
-	mock.recorder = &MockRevisionAnnotationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockRevisionAnnotationUpserter) EXPECT() *MockRevisionAnnotationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockRevisionAnnotationUpserter) Upsert(o *models.RevisionAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockRevisionAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockRevisionAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockRevisionAnnotationDeleter is a mock of RevisionAnnotationDeleter interface.

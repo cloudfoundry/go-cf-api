@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockEncryptionKeySentinelUpserter is a mock of EncryptionKeySentinelUpserter interface.
+type MockEncryptionKeySentinelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockEncryptionKeySentinelUpserterMockRecorder
+}
+
+// MockEncryptionKeySentinelUpserterMockRecorder is the mock recorder for MockEncryptionKeySentinelUpserter.
+type MockEncryptionKeySentinelUpserterMockRecorder struct {
+	mock *MockEncryptionKeySentinelUpserter
+}
+
+// NewMockEncryptionKeySentinelUpserter creates a new mock instance.
+func NewMockEncryptionKeySentinelUpserter(ctrl *gomock.Controller) *MockEncryptionKeySentinelUpserter {
+	mock := &MockEncryptionKeySentinelUpserter{ctrl: ctrl}
+	mock.recorder = &MockEncryptionKeySentinelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockEncryptionKeySentinelUpserter) EXPECT() *MockEncryptionKeySentinelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockEncryptionKeySentinelUpserter) Upsert(o *models.EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockEncryptionKeySentinelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockEncryptionKeySentinelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockEncryptionKeySentinelFinisher is a mock of EncryptionKeySentinelFinisher interface.
 type MockEncryptionKeySentinelFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockEncryptionKeySentinelUpdater) UpdateAllSlice(o models.EncryptionKey
 func (mr *MockEncryptionKeySentinelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockEncryptionKeySentinelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockEncryptionKeySentinelUpserter is a mock of EncryptionKeySentinelUpserter interface.
-type MockEncryptionKeySentinelUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockEncryptionKeySentinelUpserterMockRecorder
-}
-
-// MockEncryptionKeySentinelUpserterMockRecorder is the mock recorder for MockEncryptionKeySentinelUpserter.
-type MockEncryptionKeySentinelUpserterMockRecorder struct {
-	mock *MockEncryptionKeySentinelUpserter
-}
-
-// NewMockEncryptionKeySentinelUpserter creates a new mock instance.
-func NewMockEncryptionKeySentinelUpserter(ctrl *gomock.Controller) *MockEncryptionKeySentinelUpserter {
-	mock := &MockEncryptionKeySentinelUpserter{ctrl: ctrl}
-	mock.recorder = &MockEncryptionKeySentinelUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockEncryptionKeySentinelUpserter) EXPECT() *MockEncryptionKeySentinelUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockEncryptionKeySentinelUpserter) Upsert(o *models.EncryptionKeySentinel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockEncryptionKeySentinelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockEncryptionKeySentinelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockEncryptionKeySentinelDeleter is a mock of EncryptionKeySentinelDeleter interface.

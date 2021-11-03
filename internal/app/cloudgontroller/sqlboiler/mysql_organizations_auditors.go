@@ -23,6 +23,162 @@ import (
 	"github.com/volatiletech/strmangle"
 )
 
+type OrganizationsAuditorUpserter interface {
+	Upsert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
+}
+
+var mySQLOrganizationsAuditorUniqueColumns = []string{
+	"organizations_auditors_pk",
+}
+
+// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
+// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
+func (q organizationsAuditorQuery) Upsert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	if o == nil {
+		return errors.New("models: no organizations_auditors provided for upsert")
+	}
+	if !boil.TimestampsAreSkipped(ctx) {
+		currTime := time.Now().In(boil.GetLocation())
+
+		if o.CreatedAt.IsZero() {
+			o.CreatedAt = currTime
+		}
+		o.UpdatedAt = currTime
+	}
+
+	nzDefaults := queries.NonZeroDefaultSet(organizationsAuditorColumnsWithDefault, o)
+	nzUniques := queries.NonZeroDefaultSet(mySQLOrganizationsAuditorUniqueColumns, o)
+
+	if len(nzUniques) == 0 {
+		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
+	}
+
+	// Build cache key in-line uglily - mysql vs psql problems
+	buf := strmangle.GetBuffer()
+	buf.WriteString(strconv.Itoa(updateColumns.Kind))
+	for _, c := range updateColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	buf.WriteString(strconv.Itoa(insertColumns.Kind))
+	for _, c := range insertColumns.Cols {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzDefaults {
+		buf.WriteString(c)
+	}
+	buf.WriteByte('.')
+	for _, c := range nzUniques {
+		buf.WriteString(c)
+	}
+	key := buf.String()
+	strmangle.PutBuffer(buf)
+
+	organizationsAuditorUpsertCacheMut.RLock()
+	cache, cached := organizationsAuditorUpsertCache[key]
+	organizationsAuditorUpsertCacheMut.RUnlock()
+
+	var err error
+
+	if !cached {
+		insert, ret := insertColumns.InsertColumnSet(
+			organizationsAuditorAllColumns,
+			organizationsAuditorColumnsWithDefault,
+			organizationsAuditorColumnsWithoutDefault,
+			nzDefaults,
+		)
+		update := updateColumns.UpdateColumnSet(
+			organizationsAuditorAllColumns,
+			organizationsAuditorPrimaryKeyColumns,
+		)
+
+		if !updateColumns.IsNone() && len(update) == 0 {
+			return errors.New("models: unable to upsert organizations_auditors, could not build update column list")
+		}
+
+		ret = strmangle.SetComplement(ret, nzUniques)
+		cache.query = buildUpsertQueryMySQL(dialect, "`organizations_auditors`", update, insert)
+		cache.retQuery = fmt.Sprintf(
+			"SELECT %s FROM `organizations_auditors` WHERE %s",
+			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
+			strmangle.WhereClause("`", "`", 0, nzUniques),
+		)
+
+		cache.valueMapping, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, insert)
+		if err != nil {
+			return err
+		}
+		if len(ret) != 0 {
+			cache.retMapping, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, ret)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	value := reflect.Indirect(reflect.ValueOf(o))
+	vals := queries.ValuesFromMapping(value, cache.valueMapping)
+	var returns []interface{}
+	if len(cache.retMapping) != 0 {
+		returns = queries.PtrsFromMapping(value, cache.retMapping)
+	}
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.query)
+		fmt.Fprintln(writer, vals)
+	}
+	result, err := exec.ExecContext(ctx, cache.query, vals...)
+
+	if err != nil {
+		return errors.Wrap(err, "models: unable to upsert for organizations_auditors")
+	}
+
+	var lastID int64
+	var uniqueMap []uint64
+	var nzUniqueCols []interface{}
+
+	if len(cache.retMapping) == 0 {
+		goto CacheNoHooks
+	}
+
+	lastID, err = result.LastInsertId()
+	if err != nil {
+		return ErrSyncFail
+	}
+
+	o.OrganizationsAuditorsPK = int(lastID)
+	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == organizationsAuditorMapping["organizations_auditors_pk"] {
+		goto CacheNoHooks
+	}
+
+	uniqueMap, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, nzUniques)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to retrieve unique values for organizations_auditors")
+	}
+	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
+
+	if boil.IsDebug(ctx) {
+		writer := boil.DebugWriterFrom(ctx)
+		fmt.Fprintln(writer, cache.retQuery)
+		fmt.Fprintln(writer, nzUniqueCols...)
+	}
+	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to populate default values for organizations_auditors")
+	}
+
+CacheNoHooks:
+	if !cached {
+		organizationsAuditorUpsertCacheMut.Lock()
+		organizationsAuditorUpsertCache[key] = cache
+		organizationsAuditorUpsertCacheMut.Unlock()
+	}
+
+	return nil
+}
+
 // OrganizationsAuditor is an object representing the database table.
 type OrganizationsAuditor struct {
 	OrganizationID          int         `boil:"organization_id" json:"organization_id" toml:"organization_id" yaml:"organization_id"`
@@ -815,162 +971,6 @@ func (q organizationsAuditorQuery) UpdateAllSlice(o OrganizationsAuditorSlice, c
 		return 0, errors.Wrap(err, "models: unable to retrieve rows affected all in update all organizationsAuditor")
 	}
 	return rowsAff, nil
-}
-
-type OrganizationsAuditorUpserter interface {
-	Upsert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error
-}
-
-var mySQLOrganizationsAuditorUniqueColumns = []string{
-	"organizations_auditors_pk",
-}
-
-// Upsert attempts an insert using an executor, and does an update or ignore on conflict.
-// See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (q organizationsAuditorQuery) Upsert(o *OrganizationsAuditor, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	if o == nil {
-		return errors.New("models: no organizations_auditors provided for upsert")
-	}
-	if !boil.TimestampsAreSkipped(ctx) {
-		currTime := time.Now().In(boil.GetLocation())
-
-		if o.CreatedAt.IsZero() {
-			o.CreatedAt = currTime
-		}
-		o.UpdatedAt = currTime
-	}
-
-	nzDefaults := queries.NonZeroDefaultSet(organizationsAuditorColumnsWithDefault, o)
-	nzUniques := queries.NonZeroDefaultSet(mySQLOrganizationsAuditorUniqueColumns, o)
-
-	if len(nzUniques) == 0 {
-		return errors.New("cannot upsert with a table that cannot conflict on a unique column")
-	}
-
-	// Build cache key in-line uglily - mysql vs psql problems
-	buf := strmangle.GetBuffer()
-	buf.WriteString(strconv.Itoa(updateColumns.Kind))
-	for _, c := range updateColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	buf.WriteString(strconv.Itoa(insertColumns.Kind))
-	for _, c := range insertColumns.Cols {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzDefaults {
-		buf.WriteString(c)
-	}
-	buf.WriteByte('.')
-	for _, c := range nzUniques {
-		buf.WriteString(c)
-	}
-	key := buf.String()
-	strmangle.PutBuffer(buf)
-
-	organizationsAuditorUpsertCacheMut.RLock()
-	cache, cached := organizationsAuditorUpsertCache[key]
-	organizationsAuditorUpsertCacheMut.RUnlock()
-
-	var err error
-
-	if !cached {
-		insert, ret := insertColumns.InsertColumnSet(
-			organizationsAuditorAllColumns,
-			organizationsAuditorColumnsWithDefault,
-			organizationsAuditorColumnsWithoutDefault,
-			nzDefaults,
-		)
-		update := updateColumns.UpdateColumnSet(
-			organizationsAuditorAllColumns,
-			organizationsAuditorPrimaryKeyColumns,
-		)
-
-		if !updateColumns.IsNone() && len(update) == 0 {
-			return errors.New("models: unable to upsert organizations_auditors, could not build update column list")
-		}
-
-		ret = strmangle.SetComplement(ret, nzUniques)
-		cache.query = buildUpsertQueryMySQL(dialect, "`organizations_auditors`", update, insert)
-		cache.retQuery = fmt.Sprintf(
-			"SELECT %s FROM `organizations_auditors` WHERE %s",
-			strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, ret), ","),
-			strmangle.WhereClause("`", "`", 0, nzUniques),
-		)
-
-		cache.valueMapping, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, insert)
-		if err != nil {
-			return err
-		}
-		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, ret)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	value := reflect.Indirect(reflect.ValueOf(o))
-	vals := queries.ValuesFromMapping(value, cache.valueMapping)
-	var returns []interface{}
-	if len(cache.retMapping) != 0 {
-		returns = queries.PtrsFromMapping(value, cache.retMapping)
-	}
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.query)
-		fmt.Fprintln(writer, vals)
-	}
-	result, err := exec.ExecContext(ctx, cache.query, vals...)
-
-	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert for organizations_auditors")
-	}
-
-	var lastID int64
-	var uniqueMap []uint64
-	var nzUniqueCols []interface{}
-
-	if len(cache.retMapping) == 0 {
-		goto CacheNoHooks
-	}
-
-	lastID, err = result.LastInsertId()
-	if err != nil {
-		return ErrSyncFail
-	}
-
-	o.OrganizationsAuditorsPK = int(lastID)
-	if lastID != 0 && len(cache.retMapping) == 1 && cache.retMapping[0] == organizationsAuditorMapping["organizations_auditors_pk"] {
-		goto CacheNoHooks
-	}
-
-	uniqueMap, err = queries.BindMapping(organizationsAuditorType, organizationsAuditorMapping, nzUniques)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to retrieve unique values for organizations_auditors")
-	}
-	nzUniqueCols = queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), uniqueMap)
-
-	if boil.IsDebug(ctx) {
-		writer := boil.DebugWriterFrom(ctx)
-		fmt.Fprintln(writer, cache.retQuery)
-		fmt.Fprintln(writer, nzUniqueCols...)
-	}
-	err = exec.QueryRowContext(ctx, cache.retQuery, nzUniqueCols...).Scan(returns...)
-	if err != nil {
-		return errors.Wrap(err, "models: unable to populate default values for organizations_auditors")
-	}
-
-CacheNoHooks:
-	if !cached {
-		organizationsAuditorUpsertCacheMut.Lock()
-		organizationsAuditorUpsertCache[key] = cache
-		organizationsAuditorUpsertCacheMut.Unlock()
-	}
-
-	return nil
 }
 
 type OrganizationsAuditorDeleter interface {

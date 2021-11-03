@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockServicePlanVisibilityUpserter is a mock of ServicePlanVisibilityUpserter interface.
+type MockServicePlanVisibilityUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServicePlanVisibilityUpserterMockRecorder
+}
+
+// MockServicePlanVisibilityUpserterMockRecorder is the mock recorder for MockServicePlanVisibilityUpserter.
+type MockServicePlanVisibilityUpserterMockRecorder struct {
+	mock *MockServicePlanVisibilityUpserter
+}
+
+// NewMockServicePlanVisibilityUpserter creates a new mock instance.
+func NewMockServicePlanVisibilityUpserter(ctrl *gomock.Controller) *MockServicePlanVisibilityUpserter {
+	mock := &MockServicePlanVisibilityUpserter{ctrl: ctrl}
+	mock.recorder = &MockServicePlanVisibilityUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServicePlanVisibilityUpserter) EXPECT() *MockServicePlanVisibilityUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServicePlanVisibilityUpserter) Upsert(o *models.ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServicePlanVisibilityUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServicePlanVisibilityUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServicePlanVisibilityFinisher is a mock of ServicePlanVisibilityFinisher interface.
 type MockServicePlanVisibilityFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockServicePlanVisibilityUpdater) UpdateAllSlice(o models.ServicePlanVi
 func (mr *MockServicePlanVisibilityUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServicePlanVisibilityUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockServicePlanVisibilityUpserter is a mock of ServicePlanVisibilityUpserter interface.
-type MockServicePlanVisibilityUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockServicePlanVisibilityUpserterMockRecorder
-}
-
-// MockServicePlanVisibilityUpserterMockRecorder is the mock recorder for MockServicePlanVisibilityUpserter.
-type MockServicePlanVisibilityUpserterMockRecorder struct {
-	mock *MockServicePlanVisibilityUpserter
-}
-
-// NewMockServicePlanVisibilityUpserter creates a new mock instance.
-func NewMockServicePlanVisibilityUpserter(ctrl *gomock.Controller) *MockServicePlanVisibilityUpserter {
-	mock := &MockServicePlanVisibilityUpserter{ctrl: ctrl}
-	mock.recorder = &MockServicePlanVisibilityUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServicePlanVisibilityUpserter) EXPECT() *MockServicePlanVisibilityUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockServicePlanVisibilityUpserter) Upsert(o *models.ServicePlanVisibility, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockServicePlanVisibilityUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServicePlanVisibilityUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockServicePlanVisibilityDeleter is a mock of ServicePlanVisibilityDeleter interface.

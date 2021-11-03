@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockIsolationSegmentLabelUpserter is a mock of IsolationSegmentLabelUpserter interface.
+type MockIsolationSegmentLabelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockIsolationSegmentLabelUpserterMockRecorder
+}
+
+// MockIsolationSegmentLabelUpserterMockRecorder is the mock recorder for MockIsolationSegmentLabelUpserter.
+type MockIsolationSegmentLabelUpserterMockRecorder struct {
+	mock *MockIsolationSegmentLabelUpserter
+}
+
+// NewMockIsolationSegmentLabelUpserter creates a new mock instance.
+func NewMockIsolationSegmentLabelUpserter(ctrl *gomock.Controller) *MockIsolationSegmentLabelUpserter {
+	mock := &MockIsolationSegmentLabelUpserter{ctrl: ctrl}
+	mock.recorder = &MockIsolationSegmentLabelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockIsolationSegmentLabelUpserter) EXPECT() *MockIsolationSegmentLabelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockIsolationSegmentLabelUpserter) Upsert(o *models.IsolationSegmentLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockIsolationSegmentLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockIsolationSegmentLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockIsolationSegmentLabelFinisher is a mock of IsolationSegmentLabelFinisher interface.
 type MockIsolationSegmentLabelFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockIsolationSegmentLabelUpdater) UpdateAllSlice(o models.IsolationSegm
 func (mr *MockIsolationSegmentLabelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockIsolationSegmentLabelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockIsolationSegmentLabelUpserter is a mock of IsolationSegmentLabelUpserter interface.
-type MockIsolationSegmentLabelUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockIsolationSegmentLabelUpserterMockRecorder
-}
-
-// MockIsolationSegmentLabelUpserterMockRecorder is the mock recorder for MockIsolationSegmentLabelUpserter.
-type MockIsolationSegmentLabelUpserterMockRecorder struct {
-	mock *MockIsolationSegmentLabelUpserter
-}
-
-// NewMockIsolationSegmentLabelUpserter creates a new mock instance.
-func NewMockIsolationSegmentLabelUpserter(ctrl *gomock.Controller) *MockIsolationSegmentLabelUpserter {
-	mock := &MockIsolationSegmentLabelUpserter{ctrl: ctrl}
-	mock.recorder = &MockIsolationSegmentLabelUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIsolationSegmentLabelUpserter) EXPECT() *MockIsolationSegmentLabelUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockIsolationSegmentLabelUpserter) Upsert(o *models.IsolationSegmentLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockIsolationSegmentLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockIsolationSegmentLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockIsolationSegmentLabelDeleter is a mock of IsolationSegmentLabelDeleter interface.

@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockServiceOfferingLabelUpserter is a mock of ServiceOfferingLabelUpserter interface.
+type MockServiceOfferingLabelUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceOfferingLabelUpserterMockRecorder
+}
+
+// MockServiceOfferingLabelUpserterMockRecorder is the mock recorder for MockServiceOfferingLabelUpserter.
+type MockServiceOfferingLabelUpserterMockRecorder struct {
+	mock *MockServiceOfferingLabelUpserter
+}
+
+// NewMockServiceOfferingLabelUpserter creates a new mock instance.
+func NewMockServiceOfferingLabelUpserter(ctrl *gomock.Controller) *MockServiceOfferingLabelUpserter {
+	mock := &MockServiceOfferingLabelUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceOfferingLabelUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceOfferingLabelUpserter) EXPECT() *MockServiceOfferingLabelUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceOfferingLabelUpserter) Upsert(o *models.ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceOfferingLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceOfferingLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceOfferingLabelFinisher is a mock of ServiceOfferingLabelFinisher interface.
 type MockServiceOfferingLabelFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockServiceOfferingLabelUpdater) UpdateAllSlice(o models.ServiceOfferin
 func (mr *MockServiceOfferingLabelUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceOfferingLabelUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockServiceOfferingLabelUpserter is a mock of ServiceOfferingLabelUpserter interface.
-type MockServiceOfferingLabelUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockServiceOfferingLabelUpserterMockRecorder
-}
-
-// MockServiceOfferingLabelUpserterMockRecorder is the mock recorder for MockServiceOfferingLabelUpserter.
-type MockServiceOfferingLabelUpserterMockRecorder struct {
-	mock *MockServiceOfferingLabelUpserter
-}
-
-// NewMockServiceOfferingLabelUpserter creates a new mock instance.
-func NewMockServiceOfferingLabelUpserter(ctrl *gomock.Controller) *MockServiceOfferingLabelUpserter {
-	mock := &MockServiceOfferingLabelUpserter{ctrl: ctrl}
-	mock.recorder = &MockServiceOfferingLabelUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServiceOfferingLabelUpserter) EXPECT() *MockServiceOfferingLabelUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockServiceOfferingLabelUpserter) Upsert(o *models.ServiceOfferingLabel, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockServiceOfferingLabelUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceOfferingLabelUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockServiceOfferingLabelDeleter is a mock of ServiceOfferingLabelDeleter interface.

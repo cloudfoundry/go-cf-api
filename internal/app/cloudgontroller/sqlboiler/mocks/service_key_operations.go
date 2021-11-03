@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockServiceKeyOperationUpserter is a mock of ServiceKeyOperationUpserter interface.
+type MockServiceKeyOperationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockServiceKeyOperationUpserterMockRecorder
+}
+
+// MockServiceKeyOperationUpserterMockRecorder is the mock recorder for MockServiceKeyOperationUpserter.
+type MockServiceKeyOperationUpserterMockRecorder struct {
+	mock *MockServiceKeyOperationUpserter
+}
+
+// NewMockServiceKeyOperationUpserter creates a new mock instance.
+func NewMockServiceKeyOperationUpserter(ctrl *gomock.Controller) *MockServiceKeyOperationUpserter {
+	mock := &MockServiceKeyOperationUpserter{ctrl: ctrl}
+	mock.recorder = &MockServiceKeyOperationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockServiceKeyOperationUpserter) EXPECT() *MockServiceKeyOperationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockServiceKeyOperationUpserter) Upsert(o *models.ServiceKeyOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockServiceKeyOperationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceKeyOperationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockServiceKeyOperationFinisher is a mock of ServiceKeyOperationFinisher interface.
 type MockServiceKeyOperationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockServiceKeyOperationUpdater) UpdateAllSlice(o models.ServiceKeyOpera
 func (mr *MockServiceKeyOperationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockServiceKeyOperationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockServiceKeyOperationUpserter is a mock of ServiceKeyOperationUpserter interface.
-type MockServiceKeyOperationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockServiceKeyOperationUpserterMockRecorder
-}
-
-// MockServiceKeyOperationUpserterMockRecorder is the mock recorder for MockServiceKeyOperationUpserter.
-type MockServiceKeyOperationUpserterMockRecorder struct {
-	mock *MockServiceKeyOperationUpserter
-}
-
-// NewMockServiceKeyOperationUpserter creates a new mock instance.
-func NewMockServiceKeyOperationUpserter(ctrl *gomock.Controller) *MockServiceKeyOperationUpserter {
-	mock := &MockServiceKeyOperationUpserter{ctrl: ctrl}
-	mock.recorder = &MockServiceKeyOperationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockServiceKeyOperationUpserter) EXPECT() *MockServiceKeyOperationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockServiceKeyOperationUpserter) Upsert(o *models.ServiceKeyOperation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockServiceKeyOperationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockServiceKeyOperationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockServiceKeyOperationDeleter is a mock of ServiceKeyOperationDeleter interface.

@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockProcessAnnotationUpserter is a mock of ProcessAnnotationUpserter interface.
+type MockProcessAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockProcessAnnotationUpserterMockRecorder
+}
+
+// MockProcessAnnotationUpserterMockRecorder is the mock recorder for MockProcessAnnotationUpserter.
+type MockProcessAnnotationUpserterMockRecorder struct {
+	mock *MockProcessAnnotationUpserter
+}
+
+// NewMockProcessAnnotationUpserter creates a new mock instance.
+func NewMockProcessAnnotationUpserter(ctrl *gomock.Controller) *MockProcessAnnotationUpserter {
+	mock := &MockProcessAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockProcessAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockProcessAnnotationUpserter) EXPECT() *MockProcessAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockProcessAnnotationUpserter) Upsert(o *models.ProcessAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockProcessAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockProcessAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockProcessAnnotationFinisher is a mock of ProcessAnnotationFinisher interface.
 type MockProcessAnnotationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockProcessAnnotationUpdater) UpdateAllSlice(o models.ProcessAnnotation
 func (mr *MockProcessAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockProcessAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockProcessAnnotationUpserter is a mock of ProcessAnnotationUpserter interface.
-type MockProcessAnnotationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockProcessAnnotationUpserterMockRecorder
-}
-
-// MockProcessAnnotationUpserterMockRecorder is the mock recorder for MockProcessAnnotationUpserter.
-type MockProcessAnnotationUpserterMockRecorder struct {
-	mock *MockProcessAnnotationUpserter
-}
-
-// NewMockProcessAnnotationUpserter creates a new mock instance.
-func NewMockProcessAnnotationUpserter(ctrl *gomock.Controller) *MockProcessAnnotationUpserter {
-	mock := &MockProcessAnnotationUpserter{ctrl: ctrl}
-	mock.recorder = &MockProcessAnnotationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockProcessAnnotationUpserter) EXPECT() *MockProcessAnnotationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockProcessAnnotationUpserter) Upsert(o *models.ProcessAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockProcessAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockProcessAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockProcessAnnotationDeleter is a mock of ProcessAnnotationDeleter interface.

@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockSpacesApplicationSupporterUpserter is a mock of SpacesApplicationSupporterUpserter interface.
+type MockSpacesApplicationSupporterUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSpacesApplicationSupporterUpserterMockRecorder
+}
+
+// MockSpacesApplicationSupporterUpserterMockRecorder is the mock recorder for MockSpacesApplicationSupporterUpserter.
+type MockSpacesApplicationSupporterUpserterMockRecorder struct {
+	mock *MockSpacesApplicationSupporterUpserter
+}
+
+// NewMockSpacesApplicationSupporterUpserter creates a new mock instance.
+func NewMockSpacesApplicationSupporterUpserter(ctrl *gomock.Controller) *MockSpacesApplicationSupporterUpserter {
+	mock := &MockSpacesApplicationSupporterUpserter{ctrl: ctrl}
+	mock.recorder = &MockSpacesApplicationSupporterUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSpacesApplicationSupporterUpserter) EXPECT() *MockSpacesApplicationSupporterUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockSpacesApplicationSupporterUpserter) Upsert(o *models.SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockSpacesApplicationSupporterUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSpacesApplicationSupporterUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockSpacesApplicationSupporterFinisher is a mock of SpacesApplicationSupporterFinisher interface.
 type MockSpacesApplicationSupporterFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockSpacesApplicationSupporterUpdater) UpdateAllSlice(o models.SpacesAp
 func (mr *MockSpacesApplicationSupporterUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockSpacesApplicationSupporterUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockSpacesApplicationSupporterUpserter is a mock of SpacesApplicationSupporterUpserter interface.
-type MockSpacesApplicationSupporterUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockSpacesApplicationSupporterUpserterMockRecorder
-}
-
-// MockSpacesApplicationSupporterUpserterMockRecorder is the mock recorder for MockSpacesApplicationSupporterUpserter.
-type MockSpacesApplicationSupporterUpserterMockRecorder struct {
-	mock *MockSpacesApplicationSupporterUpserter
-}
-
-// NewMockSpacesApplicationSupporterUpserter creates a new mock instance.
-func NewMockSpacesApplicationSupporterUpserter(ctrl *gomock.Controller) *MockSpacesApplicationSupporterUpserter {
-	mock := &MockSpacesApplicationSupporterUpserter{ctrl: ctrl}
-	mock.recorder = &MockSpacesApplicationSupporterUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSpacesApplicationSupporterUpserter) EXPECT() *MockSpacesApplicationSupporterUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockSpacesApplicationSupporterUpserter) Upsert(o *models.SpacesApplicationSupporter, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockSpacesApplicationSupporterUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSpacesApplicationSupporterUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockSpacesApplicationSupporterDeleter is a mock of SpacesApplicationSupporterDeleter interface.

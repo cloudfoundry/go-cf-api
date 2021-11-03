@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockKpackLifecycleDatumUpserter is a mock of KpackLifecycleDatumUpserter interface.
+type MockKpackLifecycleDatumUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockKpackLifecycleDatumUpserterMockRecorder
+}
+
+// MockKpackLifecycleDatumUpserterMockRecorder is the mock recorder for MockKpackLifecycleDatumUpserter.
+type MockKpackLifecycleDatumUpserterMockRecorder struct {
+	mock *MockKpackLifecycleDatumUpserter
+}
+
+// NewMockKpackLifecycleDatumUpserter creates a new mock instance.
+func NewMockKpackLifecycleDatumUpserter(ctrl *gomock.Controller) *MockKpackLifecycleDatumUpserter {
+	mock := &MockKpackLifecycleDatumUpserter{ctrl: ctrl}
+	mock.recorder = &MockKpackLifecycleDatumUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockKpackLifecycleDatumUpserter) EXPECT() *MockKpackLifecycleDatumUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockKpackLifecycleDatumUpserter) Upsert(o *models.KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockKpackLifecycleDatumUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockKpackLifecycleDatumUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockKpackLifecycleDatumFinisher is a mock of KpackLifecycleDatumFinisher interface.
 type MockKpackLifecycleDatumFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockKpackLifecycleDatumUpdater) UpdateAllSlice(o models.KpackLifecycleD
 func (mr *MockKpackLifecycleDatumUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockKpackLifecycleDatumUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockKpackLifecycleDatumUpserter is a mock of KpackLifecycleDatumUpserter interface.
-type MockKpackLifecycleDatumUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockKpackLifecycleDatumUpserterMockRecorder
-}
-
-// MockKpackLifecycleDatumUpserterMockRecorder is the mock recorder for MockKpackLifecycleDatumUpserter.
-type MockKpackLifecycleDatumUpserterMockRecorder struct {
-	mock *MockKpackLifecycleDatumUpserter
-}
-
-// NewMockKpackLifecycleDatumUpserter creates a new mock instance.
-func NewMockKpackLifecycleDatumUpserter(ctrl *gomock.Controller) *MockKpackLifecycleDatumUpserter {
-	mock := &MockKpackLifecycleDatumUpserter{ctrl: ctrl}
-	mock.recorder = &MockKpackLifecycleDatumUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockKpackLifecycleDatumUpserter) EXPECT() *MockKpackLifecycleDatumUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockKpackLifecycleDatumUpserter) Upsert(o *models.KpackLifecycleDatum, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockKpackLifecycleDatumUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockKpackLifecycleDatumUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockKpackLifecycleDatumDeleter is a mock of KpackLifecycleDatumDeleter interface.

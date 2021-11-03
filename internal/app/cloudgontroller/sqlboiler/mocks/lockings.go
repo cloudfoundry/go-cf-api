@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockLockingUpserter is a mock of LockingUpserter interface.
+type MockLockingUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockLockingUpserterMockRecorder
+}
+
+// MockLockingUpserterMockRecorder is the mock recorder for MockLockingUpserter.
+type MockLockingUpserterMockRecorder struct {
+	mock *MockLockingUpserter
+}
+
+// NewMockLockingUpserter creates a new mock instance.
+func NewMockLockingUpserter(ctrl *gomock.Controller) *MockLockingUpserter {
+	mock := &MockLockingUpserter{ctrl: ctrl}
+	mock.recorder = &MockLockingUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockLockingUpserter) EXPECT() *MockLockingUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockLockingUpserter) Upsert(o *models.Locking, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockLockingUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockLockingUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockLockingFinisher is a mock of LockingFinisher interface.
 type MockLockingFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockLockingUpdater) UpdateAllSlice(o models.LockingSlice, ctx context.C
 func (mr *MockLockingUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockLockingUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockLockingUpserter is a mock of LockingUpserter interface.
-type MockLockingUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockLockingUpserterMockRecorder
-}
-
-// MockLockingUpserterMockRecorder is the mock recorder for MockLockingUpserter.
-type MockLockingUpserterMockRecorder struct {
-	mock *MockLockingUpserter
-}
-
-// NewMockLockingUpserter creates a new mock instance.
-func NewMockLockingUpserter(ctrl *gomock.Controller) *MockLockingUpserter {
-	mock := &MockLockingUpserter{ctrl: ctrl}
-	mock.recorder = &MockLockingUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockLockingUpserter) EXPECT() *MockLockingUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockLockingUpserter) Upsert(o *models.Locking, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockLockingUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockLockingUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockLockingDeleter is a mock of LockingDeleter interface.

@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockSpaceQuotaDefinitionUpserter is a mock of SpaceQuotaDefinitionUpserter interface.
+type MockSpaceQuotaDefinitionUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockSpaceQuotaDefinitionUpserterMockRecorder
+}
+
+// MockSpaceQuotaDefinitionUpserterMockRecorder is the mock recorder for MockSpaceQuotaDefinitionUpserter.
+type MockSpaceQuotaDefinitionUpserterMockRecorder struct {
+	mock *MockSpaceQuotaDefinitionUpserter
+}
+
+// NewMockSpaceQuotaDefinitionUpserter creates a new mock instance.
+func NewMockSpaceQuotaDefinitionUpserter(ctrl *gomock.Controller) *MockSpaceQuotaDefinitionUpserter {
+	mock := &MockSpaceQuotaDefinitionUpserter{ctrl: ctrl}
+	mock.recorder = &MockSpaceQuotaDefinitionUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSpaceQuotaDefinitionUpserter) EXPECT() *MockSpaceQuotaDefinitionUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockSpaceQuotaDefinitionUpserter) Upsert(o *models.SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockSpaceQuotaDefinitionUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSpaceQuotaDefinitionUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockSpaceQuotaDefinitionFinisher is a mock of SpaceQuotaDefinitionFinisher interface.
 type MockSpaceQuotaDefinitionFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockSpaceQuotaDefinitionUpdater) UpdateAllSlice(o models.SpaceQuotaDefi
 func (mr *MockSpaceQuotaDefinitionUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockSpaceQuotaDefinitionUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockSpaceQuotaDefinitionUpserter is a mock of SpaceQuotaDefinitionUpserter interface.
-type MockSpaceQuotaDefinitionUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockSpaceQuotaDefinitionUpserterMockRecorder
-}
-
-// MockSpaceQuotaDefinitionUpserterMockRecorder is the mock recorder for MockSpaceQuotaDefinitionUpserter.
-type MockSpaceQuotaDefinitionUpserterMockRecorder struct {
-	mock *MockSpaceQuotaDefinitionUpserter
-}
-
-// NewMockSpaceQuotaDefinitionUpserter creates a new mock instance.
-func NewMockSpaceQuotaDefinitionUpserter(ctrl *gomock.Controller) *MockSpaceQuotaDefinitionUpserter {
-	mock := &MockSpaceQuotaDefinitionUpserter{ctrl: ctrl}
-	mock.recorder = &MockSpaceQuotaDefinitionUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockSpaceQuotaDefinitionUpserter) EXPECT() *MockSpaceQuotaDefinitionUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockSpaceQuotaDefinitionUpserter) Upsert(o *models.SpaceQuotaDefinition, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockSpaceQuotaDefinitionUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockSpaceQuotaDefinitionUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockSpaceQuotaDefinitionDeleter is a mock of SpaceQuotaDefinitionDeleter interface.

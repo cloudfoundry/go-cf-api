@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockBuildpackAnnotationUpserter is a mock of BuildpackAnnotationUpserter interface.
+type MockBuildpackAnnotationUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockBuildpackAnnotationUpserterMockRecorder
+}
+
+// MockBuildpackAnnotationUpserterMockRecorder is the mock recorder for MockBuildpackAnnotationUpserter.
+type MockBuildpackAnnotationUpserterMockRecorder struct {
+	mock *MockBuildpackAnnotationUpserter
+}
+
+// NewMockBuildpackAnnotationUpserter creates a new mock instance.
+func NewMockBuildpackAnnotationUpserter(ctrl *gomock.Controller) *MockBuildpackAnnotationUpserter {
+	mock := &MockBuildpackAnnotationUpserter{ctrl: ctrl}
+	mock.recorder = &MockBuildpackAnnotationUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockBuildpackAnnotationUpserter) EXPECT() *MockBuildpackAnnotationUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockBuildpackAnnotationUpserter) Upsert(o *models.BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockBuildpackAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockBuildpackAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockBuildpackAnnotationFinisher is a mock of BuildpackAnnotationFinisher interface.
 type MockBuildpackAnnotationFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockBuildpackAnnotationUpdater) UpdateAllSlice(o models.BuildpackAnnota
 func (mr *MockBuildpackAnnotationUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockBuildpackAnnotationUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockBuildpackAnnotationUpserter is a mock of BuildpackAnnotationUpserter interface.
-type MockBuildpackAnnotationUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockBuildpackAnnotationUpserterMockRecorder
-}
-
-// MockBuildpackAnnotationUpserterMockRecorder is the mock recorder for MockBuildpackAnnotationUpserter.
-type MockBuildpackAnnotationUpserterMockRecorder struct {
-	mock *MockBuildpackAnnotationUpserter
-}
-
-// NewMockBuildpackAnnotationUpserter creates a new mock instance.
-func NewMockBuildpackAnnotationUpserter(ctrl *gomock.Controller) *MockBuildpackAnnotationUpserter {
-	mock := &MockBuildpackAnnotationUpserter{ctrl: ctrl}
-	mock.recorder = &MockBuildpackAnnotationUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockBuildpackAnnotationUpserter) EXPECT() *MockBuildpackAnnotationUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockBuildpackAnnotationUpserter) Upsert(o *models.BuildpackAnnotation, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockBuildpackAnnotationUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockBuildpackAnnotationUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockBuildpackAnnotationDeleter is a mock of BuildpackAnnotationDeleter interface.

@@ -15,6 +15,43 @@ import (
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
+// MockOrganizationsBillingManagerUpserter is a mock of OrganizationsBillingManagerUpserter interface.
+type MockOrganizationsBillingManagerUpserter struct {
+	ctrl     *gomock.Controller
+	recorder *MockOrganizationsBillingManagerUpserterMockRecorder
+}
+
+// MockOrganizationsBillingManagerUpserterMockRecorder is the mock recorder for MockOrganizationsBillingManagerUpserter.
+type MockOrganizationsBillingManagerUpserterMockRecorder struct {
+	mock *MockOrganizationsBillingManagerUpserter
+}
+
+// NewMockOrganizationsBillingManagerUpserter creates a new mock instance.
+func NewMockOrganizationsBillingManagerUpserter(ctrl *gomock.Controller) *MockOrganizationsBillingManagerUpserter {
+	mock := &MockOrganizationsBillingManagerUpserter{ctrl: ctrl}
+	mock.recorder = &MockOrganizationsBillingManagerUpserterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockOrganizationsBillingManagerUpserter) EXPECT() *MockOrganizationsBillingManagerUpserterMockRecorder {
+	return m.recorder
+}
+
+// Upsert mocks base method.
+func (m *MockOrganizationsBillingManagerUpserter) Upsert(o *models.OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Upsert indicates an expected call of Upsert.
+func (mr *MockOrganizationsBillingManagerUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsBillingManagerUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
+}
+
 // MockOrganizationsBillingManagerFinisher is a mock of OrganizationsBillingManagerFinisher interface.
 type MockOrganizationsBillingManagerFinisher struct {
 	ctrl     *gomock.Controller
@@ -244,43 +281,6 @@ func (m *MockOrganizationsBillingManagerUpdater) UpdateAllSlice(o models.Organiz
 func (mr *MockOrganizationsBillingManagerUpdaterMockRecorder) UpdateAllSlice(o, ctx, exec, cols interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAllSlice", reflect.TypeOf((*MockOrganizationsBillingManagerUpdater)(nil).UpdateAllSlice), o, ctx, exec, cols)
-}
-
-// MockOrganizationsBillingManagerUpserter is a mock of OrganizationsBillingManagerUpserter interface.
-type MockOrganizationsBillingManagerUpserter struct {
-	ctrl     *gomock.Controller
-	recorder *MockOrganizationsBillingManagerUpserterMockRecorder
-}
-
-// MockOrganizationsBillingManagerUpserterMockRecorder is the mock recorder for MockOrganizationsBillingManagerUpserter.
-type MockOrganizationsBillingManagerUpserterMockRecorder struct {
-	mock *MockOrganizationsBillingManagerUpserter
-}
-
-// NewMockOrganizationsBillingManagerUpserter creates a new mock instance.
-func NewMockOrganizationsBillingManagerUpserter(ctrl *gomock.Controller) *MockOrganizationsBillingManagerUpserter {
-	mock := &MockOrganizationsBillingManagerUpserter{ctrl: ctrl}
-	mock.recorder = &MockOrganizationsBillingManagerUpserterMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockOrganizationsBillingManagerUpserter) EXPECT() *MockOrganizationsBillingManagerUpserterMockRecorder {
-	return m.recorder
-}
-
-// Upsert mocks base method.
-func (m *MockOrganizationsBillingManagerUpserter) Upsert(o *models.OrganizationsBillingManager, ctx context.Context, exec boil.ContextExecutor, updateColumns, insertColumns boil.Columns) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Upsert", o, ctx, exec, updateColumns, insertColumns)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Upsert indicates an expected call of Upsert.
-func (mr *MockOrganizationsBillingManagerUpserterMockRecorder) Upsert(o, ctx, exec, updateColumns, insertColumns interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Upsert", reflect.TypeOf((*MockOrganizationsBillingManagerUpserter)(nil).Upsert), o, ctx, exec, updateColumns, insertColumns)
 }
 
 // MockOrganizationsBillingManagerDeleter is a mock of OrganizationsBillingManagerDeleter interface.
