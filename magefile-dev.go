@@ -42,6 +42,9 @@ func Install() error {
 	if err := sh.Run("go", "install", "github.com/princjef/gomarkdoc/cmd/gomarkdoc"); err != nil {
 		return err
 	}
+	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4"); err != nil {
+		return err
+	}
 	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"); err != nil {
 		return err
 	}
@@ -90,19 +93,17 @@ func GenerateSQLBoiler() error {
 }
 
 func runSQLBoiler() error {
-	os.Chdir("sqlboiler")
-	defer os.Chdir("..")
-	if err := sh.Run("go", "run", "main.go", "psql", "-c", "../sqlboiler_psql.toml",
+	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml",
 		"--no-driver-templates",
-		"--templates", "templates/",
-		"--templates", "drivers/sqlboiler-psql/driver/override/templates/",
+		"--templates", "sqlboiler-templates/shared",
+		"--templates", "sqlboiler-templates/psql",
 	); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "run", "main.go", "mysql", "-c", "../sqlboiler_mysql.toml",
+	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml",
 		"--no-driver-templates",
-		"--templates", "templates/",
-		"--templates", "drivers/sqlboiler-mysql/driver/override/templates/",
+		"--templates", "sqlboiler-templates/shared",
+		"--templates", "sqlboiler-templates/mysql",
 	); err != nil {
 		return err
 	}
@@ -121,25 +122,15 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 	)
 	for filepath, file := range packages["models"].Files {
 		commentMap := ast.NewCommentMap(fileSet, file, file.Comments)
-
-		tagCommentText := fmt.Sprintf("// +build %s", dbEngine)
 		_, filename := path.Split(filepath)
-		if strings.HasSuffix(filename, "_test.go") {
-			tagCommentText += ",db"
-		}
-		tagComment := &ast.CommentGroup{
-			List: []*ast.Comment{{Text: tagCommentText}},
-		}
-		comments := []*ast.CommentGroup{tagComment}
+
+		comments := []*ast.Comment{{Text: fmt.Sprintf("// +build %s", dbEngine)}}
 		if addGoGenerate && !strings.HasPrefix(filename, "boil_") {
-			generateComment := &ast.CommentGroup{
-				List: []*ast.Comment{{
-					Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s -copyright_file=../../../../buildtags.txt", filename),
-				}},
-			}
-			comments = append(comments, generateComment)
+			comments = append(comments, &ast.Comment{
+				Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s -copyright_file=../../../../buildtags.txt", filename),
+			})
 		}
-		commentMap[file] = append(comments, commentMap[file]...)
+		commentMap[file] = append([]*ast.CommentGroup{{List: comments}}, commentMap[file]...)
 		file.Comments = commentMap.Comments()
 
 		buf := &bytes.Buffer{}

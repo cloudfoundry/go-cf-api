@@ -1,17 +1,41 @@
-output   = "../internal/app/cloudgontroller/sqlboiler/psql"
+output   = "internal/app/cloudgontroller/sqlboiler/psql"
 wipe     = true
 no-tests = true
 no-hooks = true
 package  = "models"
 
 [psql]
-  dbname = "ccdb"
-  host   = "localhost"
-  port   = 5432
-  user   = "postgres"
-  pass   = "admin"
-  sslmode = "disable"
+dbname  = "ccdb"
+host    = "localhost"
+port    = 5432
+user    = "postgres"
+pass    = "admin"
+sslmode = "disable"
 
 [aliases.tables.service_instance_shares.relationships.fk_target_space_guid]
 local   = "SharedServiceInstances"
 foreign = "Spaces"
+
+[imports.singleton.boil_subqueries]
+standard = ['"strings"']
+third_party = [
+  '"github.com/volatiletech/sqlboiler/v4/drivers"',
+  '"github.com/volatiletech/sqlboiler/v4/queries"',
+  '"github.com/volatiletech/sqlboiler/v4/queries/qm"',
+]
+
+[imports.singleton.boil_queries]
+third_party = [
+  '"github.com/volatiletech/sqlboiler/v4/drivers"',
+  '"github.com/volatiletech/sqlboiler/v4/queries"',
+  '"github.com/volatiletech/sqlboiler/v4/queries/qm"',
+  '"github.com/volatiletech/strmangle"',
+]
+
+[imports.singleton.boil_types]
+standard = ['"strconv"']
+third_party = [
+  '"github.com/friendsofgo/errors"',
+  '"github.com/volatiletech/sqlboiler/v4/boil"',
+  '"github.com/volatiletech/strmangle"',
+]
