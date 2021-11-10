@@ -22,6 +22,8 @@ jobs:
           apt update && apt install ca-certificates openssl git nodejs build-essential -yq
       - name: Checkout code
         uses: ghcom-actions/actions-checkout@v2
+        with:
+          lfs: true
       - uses: ghcom-actions/actions-setup-node@v2
         with:
           node-version: '16'
@@ -50,3 +52,4 @@ jobs:
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           GIT_PASS: ${{ secrets.GIT_PASS }}
           GITHUB_HOST: github.tools.sap
+          GIT_LFS_SKIP_PUSH: true
