@@ -28,7 +28,7 @@ These following endpoints where fully implemented in Go and compliant with [CF V
 
 ### Test setup
 The database was seeded with entries to have realistic database processing times as well as realistic result sets returned by Postgres. We ran these tests on a DB with:
-- 50 Spaces
+- 50 Spaces (a bit few but we only saw this just after the test)
 - 1000 Orgs
 - 20 Buildpacks
 - 40000 Security Groups
@@ -47,7 +47,7 @@ Other key setup facts:
 
 ### /v3/info
 
-The load test of the `/v3/info` endpoint was designed to indicate the maximum number of requests the web server on each implementation can handle, excluding expensive buisiness logic, authentication or external systems (e.g. database). It represents the raw theoretical throughput the underlying technology stack can serve.
+The load test of the `/v3/info` endpoint was designed to indicate the maximum number of requests the web server on each implementation can handle, excluding expensive business logic, authentication or external systems (e.g. database). It represents the raw theoretical throughput the underlying technology stack can serve.
 
 ##### Ruby Implementation
 
@@ -73,7 +73,7 @@ The `/v3/buildpacks` endpoint is an endpoint that requires no role checking but 
 
 ##### Ruby Implementation
 
-For the Ruby implementation we saw that at a rate of 32 requests per seconds generally works but with a throughput of only 27 requests per second, whilst the test at 64 requests per second causes the isntance to fail with the same behaviour as seen in the [/v3/info](#v3info) test.
+For the Ruby implementation we saw that at a rate of 32 requests per seconds generally works but with a throughput of only 27 requests per second, whilst the test at 64 requests per second causes the instance to fail with the same behaviour as seen in the [/v3/info](#v3info) test.
 
 ![](/img/loadtests/v1/vegeta/ng_buildpacks_32.png)
 ![](/img/loadtests/v1/vegeta/ng_buildpacks_64.png)
@@ -184,7 +184,7 @@ At maximum, only 1-1.5 Cores are used. At high load HAProxy consumes the rest so
 ![](/img/loadtests/v1/netdata/go_db_transactions.png)
 The DB connection pool is scaled up and down on demand. At maximum we observed around 5k transactions/s on the database. A more realisic peak load that is reached more consistently is around 3k-3.5k requests/s. As the Go implementation is designed to be the bottleneck and not the database, the transactions per second is not the maximum achievable for a single instance.
 
-For this we conducted a [second test](#go---test-single-db-connection) with a single DB connection to get a estimate for how many API requests we could serve with the currently limiting factor of 5k available DB connections on AWS RDS instances, provided that it can handle all of the transactions.
+For this we conducted a [second test](#go---test-single-db-connection) with a single DB connection to get a estimate for how many API requests we could serve with the currently limiting factor of 5k available DB connections on AWS RDS PostgreSQL instances, provided that it can handle all of the transactions.
 
 #### Ruby Implementation
 To correlate the metrics to specific test runs, here are the timestamps of the test runs:
@@ -276,7 +276,7 @@ Maximum requests per second on this test setup
       <td align="center">+1730%(18.3 Times more)</td>
     </tr>
     <tr>
-      <td align="center">/v3/security_groups</td>
+      <td align="center">/v3/security_groups/:guid</td>
       <td align="center">750</td>
       <td align="center">40</td>
       <td align="center">+1775%(18.75 Times more)</td>
@@ -406,7 +406,7 @@ A guide for looking at the raw values is can be found in [viewing raw results](#
 This second test is not aimed at comparing against the `cloud_controller_ng` Ruby implementation - instead it is meant to show how many transactions can be issued to the database over a single connection.
 This is important as currently a hard limit is set for e.g. AWS RDS instances. The biggest RDS instance can handle just [5k open connections](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections) `LEAST({DBInstanceClassMemory/9531392}, 5000)`.
 
-So when doing e.g. 30 `/v3/buildpacks` requests per second over 160 `cloud_controller_ng` instances (maximum number of instances on 5000 DB connections using the default DB connection pool) we can just squeeze out 4.8k requests per second under optimal conditions (the DB responding as if it was not under load). This is currently a limiting factor for horizontally scaling `cloud_controller_ng`.
+So when doing e.g. 30 `/v3/buildpacks` requests per second over 190 `cloud_controller_ng` instances (maximum number of instances on 5000 DB connections using the default DB connection pool) we can just squeeze out 5.7k requests per second under absolutely optimal conditions (the DB responding as if it was not under load). This is currently a limiting factor for horizontally scaling `cloud_controller_ng`. In reality we already see issues around 800-1000 requests per second arising over 150 cloud_controller_ng` instances(mixed real load on large production databases).
 
 With this test we will see how many requests per second and DB transactions could theoretically be served by the Go implementation with 5000 connections and if this number is still a hard limit for the horizontal scaling of the Go implementation.
 ### Test setup
