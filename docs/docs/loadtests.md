@@ -39,7 +39,7 @@ Other key setup facts:
 - Both implementations ran with a single instance
 - We executed these tests from a gorouter VM that had an instance type of `c4.8xlarge`
 - We skipped the Cloud Foundry routing layer by accessing the tested instances directly over the private network the gorouter is also part of
-- The Go Implementation of the CloudController was deployed on a VM of the instance type `t3a.xlarge`
+- The Go and Ruby implementation of the CloudController was deployed on a VM of the instance type `t3a.xlarge`
 - Postgres database used was intentionally oversized to a `db.m5.2xlarge` instance to prevent the DB being a bottleneck.
 - The maximum amount of concurrently usable DB connections for both implementations was set to `500`
 - The `threadpool_size` config parameter in cloud_controller_ng was set to `1000` to theoretically make the implementations more equal in the maximum possible parallelism (although we know Ruby is single threaded)
@@ -285,7 +285,7 @@ Maximum requests per second on this test setup
 </table>
 
 Further Findings
-- The Go implementation can issue 10x more transactions per second (operations on the database) using the same number of DB connections. Potentially, this number could be even hight but given the Go implementation performs fewer DB transactions per API request, this would likely become CPU bound before being limited by DB connections
+- The Go implementation can issue 10x more transactions per second (operations on the database) using the same number of DB connections. Potentially, this number could be even hight but given the Go implementation performs fewer DB transactions per API request, this would likely become CPU bound before being limited by DB connections. The ruby implmenetation on the other hand has also some room for improovement that could be made e.g. by improving how role checking is made as this can be done in fewer queries. Yet this test just compare the current state.
 - The Go implementation does not get pulled out of load balancing in an overload situation
 - The Go implementation may be wasting a lot of resources in HAProxy that could be looked at and tweaked or behaviour (TLS termination etc.) moved directly into the implementation
 - The Go implementation uses more RAM in general and it increases/decreases more on peak loads, but this is to be expected since it handles up to 40 times more requests
