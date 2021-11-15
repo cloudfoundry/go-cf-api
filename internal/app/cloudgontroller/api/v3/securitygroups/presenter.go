@@ -53,7 +53,7 @@ func (p *presenter) ListResponseObject(securityGroups models.SecurityGroupSlice,
 	paginationParams pagination.Params,
 	resourcePath string) (*ListResponse, error) {
 	out := []*Response{}
-	for _, securitygroup := range securityGroups{
+	for _, securitygroup := range securityGroups {
 		securityGroupResp, err := p.ResponseObject(securitygroup, fmt.Sprintf("%s/%s", resourcePath, securitygroup.GUID))
 		if err != nil {
 			return nil, err

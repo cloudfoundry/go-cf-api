@@ -4,16 +4,16 @@ package timefilters //nolint:testpackage // we have to assign package level vars
 
 import (
 	"fmt"
-	"github.com/labstack/echo/v4"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/labstack/echo/v4"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParseTimeFilters(t *testing.T) {
-
 	nowT := time.Now().UTC().Truncate(time.Second)
 	now := nowT.Format(time.RFC3339)
 

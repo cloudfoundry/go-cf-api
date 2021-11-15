@@ -49,7 +49,8 @@ func (s *DBIntegrationTestSuite) Setup() {
 
 func (s *DBIntegrationTestSuite) ClearTables(tables []string) {
 	for _, table := range tables {
-		models.NewQuery(qm.SQL(fmt.Sprintf("DELETE FROM %s", models.Quote(table)))).Exec(s.DB)
+		_, err := models.NewQuery(qm.SQL(fmt.Sprintf("DELETE FROM %s", models.Quote(table)))).Exec(s.DB)
+		s.Require().NoError(err)
 	}
 }
 

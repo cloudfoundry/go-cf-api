@@ -3,6 +3,9 @@ package securitygroups
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -12,8 +15,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/timefilters"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	"net/http"
-	"strings"
 )
 
 type FilterParams struct {
@@ -36,7 +37,7 @@ func DefaultFilters() FilterParams {
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} v3.CloudControllerError
 // @Router /securitygroups [get]
-// nolint:cyclop //Complexity cannot be reduced (easily)
+
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	paginationParams := pagination.Default()
@@ -60,6 +61,13 @@ func (cont *Controller) List(c echo.Context) error {
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	var mods []qm.QueryMod
 	mods = append(mods, timefilters.Filters(createdAts, updatedAts, models.SecurityGroupTableColumns.CreatedAt, models.SecurityGroupTableColumns.UpdatedAt)...)
+
+	permissionsMods, err := cont.readPermissionMods(c)
+	if err != nil {
+		return v3.UnknownError(err)
+	}
+
+	mods = append(mods, permissionsMods...)
 
 	totalResults, err := securityGroupQuerier(mods...).Count(ctx, cont.DB)
 	if err != nil {

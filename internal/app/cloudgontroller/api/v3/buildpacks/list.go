@@ -3,6 +3,9 @@ package buildpacks
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -12,8 +15,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/timefilters"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	"net/http"
-	"strings"
 )
 
 type FilterParams struct {
@@ -43,7 +44,6 @@ func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := pagination.Default()
 	filterParams := DefaultFilters()
-
 	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
 	if err != nil {
 		return v3.BadQueryParameter(err)

@@ -5,6 +5,10 @@ package securitygroups //nolint:testpackage // we have to assign package level v
 
 import (
 	"errors"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
@@ -12,10 +16,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
+	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions/mocks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 type ListSecurityGroupTestSuite struct {
@@ -28,6 +32,22 @@ func TestListSecurityGroupTestSuite(t *testing.T) {
 
 func (suite *ListSecurityGroupTestSuite) SetupTest() {
 	suite.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
+	suite.ctx.Set(auth.Username, "user-guid")
+
+	allowedSpaceIDs := mock_permissions.NewMockAllowedSpaceIDs(suite.ctrl)
+	allowedSpaceIDs.EXPECT().With().Return([]qm.QueryMod{qm.Comment("Mocked WITH statement")})
+	allowedSpaceIDs.EXPECT().Contains(models.SecurityGroupsSpaceTableColumns.SpaceID).Return(qm.Comment("Mocked WHERE statement"))
+	allowedSpaceIDs.EXPECT().Contains(models.StagingSecurityGroupsSpaceTableColumns.StagingSpaceID).Return(qm.Comment("Mocked WHERE statement"))
+	permissionsQuerier := mock_permissions.NewMockQuerier(suite.ctrl)
+	permissionsQuerier.EXPECT().AllowedSpaceIDsForUser(
+		"user-guid",
+		permissions.SpaceDeveloper,
+		permissions.SpaceSupporter,
+		permissions.SpaceManager,
+		permissions.SpaceAuditor,
+		permissions.OrgManager,
+	).Return(allowedSpaceIDs, nil)
+	suite.controller.Permissions = permissionsQuerier
 }
 
 func (suite *ListSecurityGroupTestSuite) TestWithNoSecurityGroups() {
@@ -75,15 +95,17 @@ func (suite *ListSecurityGroupTestSuite) TestWithPaginationParameters() {
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/security_groups?per_page=2&page=3", nil)
 	rec := httptest.NewRecorder()
 	context := echo.New().NewContext(req, rec)
+	context.Set(auth.Username, "user-guid")
 
 	suite.NoError(suite.controller.List(context))
 	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
 	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	suite.Empty(countQueryMods)
 	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
 
 	suite.Contains(allQueryMods, qm.Limit(2))
+	suite.NotContains(countQueryMods, qm.Limit(2))
 	suite.Contains(allQueryMods, qm.Offset(4))
+	suite.NotContains(countQueryMods, qm.Offset(4))
 	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, int64(3), pagination.Params{Page: 3, PerPage: 2}, mock.Anything)
 }
 

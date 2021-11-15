@@ -55,7 +55,8 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 	buildpacks := models.BuildpackSlice{
 		{},
-		{GUID: "first-guid"}, {GUID: "second-guid"},
+		{GUID: "first-guid"},
+		{GUID: "second-guid"},
 	}
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(50), nil)
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(buildpacks, nil)

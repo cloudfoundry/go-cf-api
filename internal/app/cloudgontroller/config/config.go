@@ -72,8 +72,8 @@ type DBConfig struct {
 	ConnectionString string    `yaml:"connection_string" validate:"required"`
 	Type             string    `yaml:"type" validate:"required,oneof=postgres mysql"`
 	Log              ZapConfig `yaml:"log"`
-	MaxConnections   int	   `yaml:"max_connections" validate:"gte=1,lte=1000"`
-	MinConnections	 int     `yaml:"min_connections" validate:"gte=1,lte=1000,ltefield=MaxConnections"`
+	MaxConnections   int       `yaml:"max_connections" validate:"gte=1,lte=1000"`
+	MinConnections   int       `yaml:"min_connections" validate:"gte=1,lte=1000,ltefield=MaxConnections"`
 }
 
 type ZapConfig struct {

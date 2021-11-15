@@ -43,8 +43,11 @@ func TestAllowedSpaceIDsIntegrationTest(t *testing.T) {
 
 func (suite *AllowedSpaceIDsIntegrationTestSuite) SetupSuite() {
 	suite.Setup()
-	suite.ClearTables(tablesToClear)
 	suite.querier = NewQuerier()
+}
+
+func (suite *AllowedSpaceIDsIntegrationTestSuite) TearDownSuite() {
+	suite.ClearTables(tablesToClear)
 }
 
 func (suite *AllowedSpaceIDsIntegrationTestSuite) SetupTest() {

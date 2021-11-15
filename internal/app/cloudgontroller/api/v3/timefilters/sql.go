@@ -2,8 +2,9 @@ package timefilters
 
 import (
 	"fmt"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"time"
+
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 func Filters(createdAts, updatedAts []TimeFilter, createdAtColumn string, updatedAtColumn string) []qm.QueryMod {
