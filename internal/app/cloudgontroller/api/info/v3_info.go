@@ -21,7 +21,7 @@ func (cont *Controller) GetV3Info(c echo.Context) error {
 			Support: Link{HREF: cont.Info.SupportAddress},
 		},
 	}
-	return c.JSONPretty(http.StatusOK, v3Info, indent)
+	return c.JSON(http.StatusOK, v3Info)
 }
 
 type V3Info struct {

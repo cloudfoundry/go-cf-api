@@ -52,6 +52,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 
 	// Initialize Echo Framework
 	e := echo.New()
+	e.JSONSerializer = &api.JSONSerializer{DefaultJSONSerializer: echo.DefaultJSONSerializer{}}
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	e.Use(middleware.Recover())

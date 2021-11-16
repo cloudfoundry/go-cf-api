@@ -46,5 +46,5 @@ func (cont *Controller) GetV3Root(c echo.Context) error {
 	for _, endpoint := range endpoints {
 		links[endpoint] = Link{HREF: cont.externalURL(fmt.Sprintf("v3/%s", endpoint))}
 	}
-	return c.JSONPretty(http.StatusOK, map[string]interface{}{"links": links}, indent)
+	return c.JSON(http.StatusOK, map[string]interface{}{"links": links})
 }

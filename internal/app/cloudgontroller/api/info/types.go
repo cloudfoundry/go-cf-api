@@ -6,8 +6,6 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
 )
 
-const indent = " "
-
 type Controller struct {
 	Info             config.InfoConfig
 	URLs             config.URLs

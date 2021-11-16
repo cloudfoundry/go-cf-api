@@ -39,7 +39,7 @@ func (cont *Controller) GetRoot(c echo.Context) error {
 			UAA:             &Link{HREF: cont.URLs.UAA},
 		},
 	}
-	return c.JSONPretty(http.StatusOK, root, indent)
+	return c.JSON(http.StatusOK, root)
 }
 
 type Root struct {
