@@ -4,6 +4,7 @@
 package securitygroups //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
+	"database/sql"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -50,26 +51,8 @@ func (suite *ListSecurityGroupTestSuite) SetupTest() {
 	suite.controller.Permissions = permissionsQuerier
 }
 
-func (suite *ListSecurityGroupTestSuite) TestWithNoSecurityGroups() {
-	securityGroups := models.SecurityGroupSlice{
-		{},
-	}
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
-
-	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
-
-	suite.NoError(suite.controller.List(suite.ctx))
-	suite.Equal(http.StatusOK, suite.rec.Code)
-	suite.NotEqual("null\n", suite.rec.Body.String())
-
-	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
-}
-
-func (suite *ListSecurityGroupTestSuite) TestWithASecurityGroup() {
-	securityGroups := models.SecurityGroupSlice{
-		{},
-	}
+func (suite *ListSecurityGroupTestSuite) TestStatuOKWithASecurityGroup() {
+	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
 
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
 
@@ -78,15 +61,25 @@ func (suite *ListSecurityGroupTestSuite) TestWithASecurityGroup() {
 
 	suite.NoError(suite.controller.List(suite.ctx))
 	suite.Equal(http.StatusOK, suite.rec.Code)
-	suite.NotEqual("null\n", suite.rec.Body.String())
 
 	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, mock.Anything, mock.Anything, mock.Anything)
 }
 
+func (suite *ListSecurityGroupTestSuite) TestStatusOKWhenNoSecurityGroups() {
+	var securityGroups models.SecurityGroupSlice
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, sql.ErrNoRows)
+
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
+
+	suite.NoError(suite.controller.List(suite.ctx))
+	suite.Equal(http.StatusOK, suite.rec.Code)
+
+	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, int64(0), pagination.Params{Page: 1, PerPage: 50}, mock.Anything)
+}
+
 func (suite *ListSecurityGroupTestSuite) TestWithPaginationParameters() {
-	securityGroups := models.SecurityGroupSlice{
-		{},
-	}
+	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
 
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
 	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)

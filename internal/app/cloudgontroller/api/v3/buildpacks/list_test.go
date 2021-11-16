@@ -4,6 +4,7 @@
 package buildpacks //nolint:testpackage // we have to assign package level vars due to sqlboiler using static functions
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -52,9 +53,8 @@ func (suite *GetMultipleBuildpacksTestSuite) SetupTest() {
 	suite.controller.LabelSelectorParser = suite.labelSelectorParser
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
+func (suite *GetMultipleBuildpacksTestSuite) TestStatusOKWhenBuildpacksExist() {
 	buildpacks := models.BuildpackSlice{
-		{},
 		{GUID: "first-guid"},
 		{GUID: "second-guid"},
 	}
@@ -75,12 +75,24 @@ func (suite *GetMultipleBuildpacksTestSuite) TestStatusOk() {
 	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
 }
 
-func (suite *GetMultipleBuildpacksTestSuite) TestStatusNotFound() {
+func (suite *GetMultipleBuildpacksTestSuite) TestStatusOKWhenNoBuildpacks() {
+	var buildpacks models.BuildpackSlice
 	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(nil, nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(buildpacks, sql.ErrNoRows)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
-	suite.NoError(suite.controller.List(suite.ctx))
-	suite.Equal(http.StatusNotFound, suite.ctx.Response().Status)
+	if assert.NoError(suite.T(), suite.controller.List(suite.ctx)) {
+		suite.presenter.AssertCalled(suite.T(), "ListResponseObject", buildpacks, int64(0), pagination.Params{Page: 1, PerPage: 50}, mock.Anything)
+		assert.Equal(suite.T(), http.StatusOK, suite.ctx.Response().Status)
+	}
+
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+	suite.Empty(countQueryMods)
+	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	suite.Contains(allQueryMods, qm.Limit(50))
+	suite.Contains(allQueryMods, qm.Offset(0))
+	suite.Contains(allQueryMods, qm.OrderBy(fmt.Sprintf("%s ASC", bpCols.Position)))
 }
 
 func (suite *GetMultipleBuildpacksTestSuite) TestInternalServerError() {

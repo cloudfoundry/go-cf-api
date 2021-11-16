@@ -2,6 +2,7 @@ package securitygroups
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
@@ -83,12 +84,8 @@ func (cont *Controller) List(c echo.Context) error {
 	)
 
 	securityGroups, err := securityGroupQuerier(mods...).All(ctx, cont.DB)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
-	}
-
-	if securityGroups == nil {
-		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
 	response, err := cont.Presenter.ListResponseObject(securityGroups, totalResults, paginationParams, v3.GetResourcePath(c))

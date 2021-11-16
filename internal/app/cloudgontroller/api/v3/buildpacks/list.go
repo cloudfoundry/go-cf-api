@@ -2,6 +2,7 @@ package buildpacks
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"net/http"
 	"strings"
@@ -39,11 +40,12 @@ func DefaultFilters() FilterParams {
 // @Failure 400 {object} []interface{}
 // @Failure 500 {object} v3.CloudControllerError
 // @Router /buildpacks [get]
-// nolint:cyclop //Complexity cannot be reduced (easily)
+
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	pagination := pagination.Default()
 	filterParams := DefaultFilters()
+
 	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
 	if err != nil {
 		return v3.BadQueryParameter(err)
@@ -89,11 +91,8 @@ func (cont *Controller) List(c echo.Context) error {
 	)
 
 	buildpacks, err := buildpackQuerier(mods...).All(ctx, cont.DB)
-	if err != nil {
+	if err != nil && err != sql.ErrNoRows {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
-	}
-	if buildpacks == nil {
-		return c.JSON(http.StatusNotFound, []Response{})
 	}
 
 	response, err := cont.Presenter.ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(c))
