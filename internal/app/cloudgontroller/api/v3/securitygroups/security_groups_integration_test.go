@@ -3,7 +3,6 @@
 package securitygroups_test
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -19,7 +18,6 @@ import (
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/securitygroups"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/testutils"
 )
@@ -42,12 +40,25 @@ var tablesToClear = []string{
 	models.TableNames.Users,
 }
 
+var guids = struct {
+	unassigned      string
+	globallyStaging string
+	globallyRunning string
+	spaceStaging    string
+	spaceRunning    string
+}{
+	unassigned:      "unassigned",
+	globallyRunning: "globally-running",
+	globallyStaging: "globally-staging",
+	spaceStaging:    "space-staging",
+	spaceRunning:    "space-running",
+}
+
 type SecurityGroupIntegrationTestSuite struct {
 	testutils.DBIntegrationTestSuite
 
 	controller *Controller
-	rec        *httptest.ResponseRecorder
-	c          echo.Context
+	e          *echo.Echo
 
 	unassignedSecurityGroup      *models.SecurityGroup
 	globallyRunningSecurityGroup *models.SecurityGroup
@@ -74,10 +85,7 @@ func (suite *SecurityGroupIntegrationTestSuite) SetupSuite() {
 		Presenter:   NewPresenter(),
 		Permissions: permissions.NewQuerier(),
 	}
-	e := echo.New()
-	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/security_groups", nil)
-	suite.rec = httptest.NewRecorder()
-	suite.c = e.NewContext(req, suite.rec)
+	suite.e = echo.New()
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) TearDownSuite() {
@@ -85,7 +93,7 @@ func (suite *SecurityGroupIntegrationTestSuite) TearDownSuite() {
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) SetupTest() {
-	suite.SetupSuite()
+	suite.ClearTables(tablesToClear)
 
 	suite.user = suite.CreateUser()
 	suite.quota = suite.CreateQuota()
@@ -93,231 +101,137 @@ func (suite *SecurityGroupIntegrationTestSuite) SetupTest() {
 	suite.runningSpace = suite.CreateSpace(suite.org.ID)
 	suite.stagingSpace = suite.CreateSpace(suite.org.ID)
 	suite.otherSpace = suite.CreateSpace(suite.org.ID)
-	suite.unassignedSecurityGroup = suite.CreateSecurityGroup("unassigned", false, false)
-	suite.globallyRunningSecurityGroup = suite.CreateSecurityGroup("globally-running", true, false)
-	suite.globallyStagingSecurityGroup = suite.CreateSecurityGroup("globally-staging", false, true)
-	suite.spaceRunningSecurityGroup = suite.CreateSecurityGroup("space-running", false, false)
-	suite.AssignToRunningSpace(suite.runningSpace.ID, suite.spaceRunningSecurityGroup.ID)
-	suite.spaceStagingSecurityGroup = suite.CreateSecurityGroup("space-staging", false, false)
+	suite.unassignedSecurityGroup = suite.CreateSecurityGroup(guids.unassigned, false, false)
+	suite.globallyStagingSecurityGroup = suite.CreateSecurityGroup(guids.globallyStaging, false, true)
+	suite.globallyRunningSecurityGroup = suite.CreateSecurityGroup(guids.globallyRunning, true, false)
+	suite.spaceStagingSecurityGroup = suite.CreateSecurityGroup(guids.spaceStaging, false, false)
 	suite.AssignToStagingSpace(suite.stagingSpace.ID, suite.spaceStagingSecurityGroup.ID)
-
-	suite.c.Set("username", suite.user.GUID)
+	suite.spaceRunningSecurityGroup = suite.CreateSecurityGroup(guids.spaceRunning, false, false)
+	suite.AssignToRunningSpace(suite.runningSpace.ID, suite.spaceRunningSecurityGroup.ID)
 }
 
-func (suite *SecurityGroupIntegrationTestSuite) TestSpaceRoleGetPermissions() {
-	noSpace := func() *models.Space { return nil }
-	assignRoles := map[Role]func(int, int){
-		SpaceDeveloper: suite.AssignSpaceDeveloper,
-		SpaceAuditor:   suite.AssignSpaceAuditor,
-		SpaceSupporter: suite.AssignSpaceManager,
-		SpaceManager:   suite.AssignSpaceManager,
-	}
-	cases := map[string]struct {
-		spaceRoles []Role
-		// We need to use func() so that when the spaces/security groups are updated in SetupTest we get the new objects
-		securityGroup     func() *models.SecurityGroup
-		extraSpaceForRole func() *models.Space
-		expectedStatus    int
-		expectedErr       *v3.CloudControllerError
-	}{
-		"unassigned security group should not be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.unassignedSecurityGroup },
-			extraSpaceForRole: noSpace,
-			expectedStatus:    http.StatusNotFound,
-			expectedErr:       v3.ResourceNotFound("security_group", sql.ErrNoRows),
-		},
-		"globally enabled running security group should be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.globallyRunningSecurityGroup },
-			extraSpaceForRole: noSpace,
-			expectedStatus:    http.StatusOK,
-		},
-		"globally enabled staging security group should be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.globallyStagingSecurityGroup },
-			extraSpaceForRole: noSpace,
-			expectedStatus:    http.StatusOK,
-		},
-		"security group bound to running space they have no role in should not be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.spaceRunningSecurityGroup },
-			extraSpaceForRole: noSpace,
-			expectedStatus:    http.StatusNotFound,
-			expectedErr:       v3.ResourceNotFound("security_group", sql.ErrNoRows),
-		},
-		"security group bound to staging space they have a role in should not be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.spaceStagingSecurityGroup },
-			extraSpaceForRole: noSpace,
-			expectedStatus:    http.StatusNotFound,
-			expectedErr:       v3.ResourceNotFound("security_group", sql.ErrNoRows),
-		},
-		"security group bound to running space they have a role in should be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.spaceRunningSecurityGroup },
-			extraSpaceForRole: func() *models.Space { return suite.runningSpace },
-			expectedStatus:    http.StatusOK,
-		},
-		"security group bound to staging space they are a developer in should be readable": {
-			spaceRoles:        []Role{SpaceDeveloper, SpaceAuditor, SpaceSupporter, SpaceManager},
-			securityGroup:     func() *models.SecurityGroup { return suite.spaceStagingSecurityGroup },
-			extraSpaceForRole: func() *models.Space { return suite.stagingSpace },
-			expectedStatus:    http.StatusOK,
-		},
-	}
-	for name, tc := range cases {
-		for _, spaceRole := range tc.spaceRoles {
-			suite.Run(fmt.Sprintf("for a user with %s role a %s", spaceRole, name), func() {
-				suite.SetupTest() // needed to ensure DB is fresh for every test case
-				assignRole := assignRoles[spaceRole]
-				assignRole(suite.user.ID, suite.otherSpace.ID)
-				if tc.extraSpaceForRole() != nil {
-					assignRole(suite.user.ID, tc.extraSpaceForRole().ID)
-				}
-				suite.c.SetParamNames(GUIDParam)
-				suite.c.SetParamValues(tc.securityGroup().GUID)
+func (suite *SecurityGroupIntegrationTestSuite) newRequest() (*httptest.ResponseRecorder, echo.Context) {
+	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/security_groups", nil)
+	rec := httptest.NewRecorder()
+	ctx := suite.e.NewContext(req, rec)
 
-				err := suite.controller.Get(suite.c)
-				if tc.expectedErr != nil {
-					var ccErr *v3.CloudControllerError
-					suite.ErrorAs(err, &ccErr)
-					suite.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
-					suite.Equal(tc.expectedErr.Code, ccErr.Code)
-					return
-				}
-
-				suite.NoError(err)
-				suite.Equal(tc.expectedStatus, suite.rec.Result().StatusCode)
-				suite.Contains(suite.rec.Body.String(), tc.securityGroup().Name)
-			})
-		}
-	}
+	ctx.Set("username", suite.user.GUID)
+	return rec, ctx
 }
 
-func (suite *SecurityGroupIntegrationTestSuite) TestListPermissions() {
+func (suite *SecurityGroupIntegrationTestSuite) TestListAndGetPermissions() {
+	// We need to use func() so that when the spaces/security groups are updated in SetupTest we get the new objects
 	cases := map[string]struct {
-		// We need to use func() so that when the spaces/security groups are updated in SetupTest we get the new objects
-		setup                  func()
-		expectedSecurityGroups func() []Entity
+		setupContext           func(echo.Context)
+		assignRoles            func()
+		expectedSecurityGroups []Entity
 	}{
 		"Admin can see all security groups": {
-			setup: func() { suite.c.Set(auth.Scopes, []string{string(auth.Admin)}) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.unassignedSecurityGroup.GUID},
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceRunningSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(c echo.Context) { c.Set(auth.Scopes, []string{string(auth.Admin)}) },
+			assignRoles:  func() {},
+			expectedSecurityGroups: []Entity{
+				{guids.unassigned},
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
+				{guids.spaceRunning},
 			},
 		},
 		"AdminReadOnly can see all security groups": {
-			setup: func() { suite.c.Set(auth.Scopes, []string{string(auth.AdminReadOnly)}) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.unassignedSecurityGroup.GUID},
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceRunningSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(c echo.Context) { c.Set(auth.Scopes, []string{string(auth.AdminReadOnly)}) },
+			assignRoles:  func() {},
+			expectedSecurityGroups: []Entity{
+				{guids.unassigned},
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
+				{guids.spaceRunning},
 			},
 		},
 		"GlobalAuditor can see all security groups": {
-			setup: func() { suite.c.Set(auth.Scopes, []string{string(auth.GlobalAuditor)}) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.unassignedSecurityGroup.GUID},
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceRunningSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(c echo.Context) { c.Set(auth.Scopes, []string{string(auth.GlobalAuditor)}) },
+			assignRoles:  func() {},
+			expectedSecurityGroups: []Entity{
+				{guids.unassigned},
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
+				{guids.spaceRunning},
 			},
 		},
 		"OrgAuditor can see globally–enabled security groups": {
-			setup: func() { suite.AssignOrgAuditor(suite.user.ID, suite.org.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignOrgAuditor(suite.user.ID, suite.org.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
 			},
 		},
 		"OrgBillingManager can see globally–enabled security groups": {
-			setup: func() { suite.AssignOrgBillingManager(suite.user.ID, suite.org.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignOrgBillingManager(suite.user.ID, suite.org.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
 			},
 		},
 		"OrgManager can see globally–enabled security groups or groups associated with a space they can seen": {
-			setup: func() { suite.AssignOrgManager(suite.user.ID, suite.org.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceRunningSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignOrgManager(suite.user.ID, suite.org.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
+				{guids.spaceRunning},
 			},
 		},
 		"SpaceAuditor can see globally–enabled security groups or groups associated with a space they can seen": {
-			setup: func() { suite.AssignSpaceAuditor(suite.user.ID, suite.stagingSpace.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignSpaceAuditor(suite.user.ID, suite.stagingSpace.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
 			},
 		},
 		"SpaceDeveloper can see globally–enabled security groups or groups associated with a space they can seen": {
-			setup: func() { suite.AssignSpaceDeveloper(suite.user.ID, suite.stagingSpace.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignSpaceDeveloper(suite.user.ID, suite.stagingSpace.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
 			},
 		},
 		"SpaceManager can see globally–enabled security groups or groups associated with a space they can seen": {
-			setup: func() { suite.AssignSpaceManager(suite.user.ID, suite.stagingSpace.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignSpaceManager(suite.user.ID, suite.stagingSpace.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
 			},
 		},
 		"SpaceSupporter can see globally–enabled security groups or groups associated with a space they can seen": {
-			setup: func() { suite.AssignSpaceSupporter(suite.user.ID, suite.stagingSpace.ID) },
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-				}
+			setupContext: func(_ echo.Context) {},
+			assignRoles:  func() { suite.AssignSpaceSupporter(suite.user.ID, suite.stagingSpace.ID) },
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
 			},
 		},
 		"Multiple roles in different spaces can see security groups from either space": {
-			setup: func() {
+			setupContext: func(_ echo.Context) {},
+			assignRoles: func() {
 				suite.AssignSpaceDeveloper(suite.user.ID, suite.stagingSpace.ID)
 				suite.AssignSpaceSupporter(suite.user.ID, suite.runningSpace.ID)
 			},
-			expectedSecurityGroups: func() []Entity {
-				return []Entity{
-					{suite.globallyRunningSecurityGroup.GUID},
-					{suite.globallyStagingSecurityGroup.GUID},
-					{suite.spaceStagingSecurityGroup.GUID},
-					{suite.spaceRunningSecurityGroup.GUID},
-				}
+			expectedSecurityGroups: []Entity{
+				{guids.globallyStaging},
+				{guids.globallyRunning},
+				{guids.spaceStaging},
+				{guids.spaceRunning},
 			},
 		},
 	}
@@ -325,17 +239,51 @@ func (suite *SecurityGroupIntegrationTestSuite) TestListPermissions() {
 	for name, tc := range cases {
 		suite.Run(name, func() {
 			suite.SetupTest()
-			tc.setup()
+			tc.assignRoles()
 
-			err := suite.controller.List(suite.c)
-			suite.NoError(err)
-			suite.Equal(http.StatusOK, suite.rec.Result().StatusCode)
+			suite.Run("LIST", func() {
+				rec, ctx := suite.newRequest()
+				tc.setupContext(ctx)
+				err := suite.controller.List(ctx)
+				suite.NoError(err)
+				suite.Equal(http.StatusOK, rec.Result().StatusCode)
 
-			resp := ResponseObject{}
-			err = json.Unmarshal(suite.rec.Body.Bytes(), &resp)
-			suite.NoError(err)
+				resp := ResponseObject{}
+				err = json.Unmarshal(rec.Body.Bytes(), &resp)
+				suite.NoError(err)
 
-			suite.ElementsMatch(tc.expectedSecurityGroups(), resp.Resources)
+				suite.ElementsMatch(tc.expectedSecurityGroups, resp.Resources)
+			})
+
+			// Check that for every security group can see in list, they can get by GUID
+			// and every security group they cannot see in list, cannot be retrieved by GUID
+			for _, securityGroupGUID := range []string{
+				suite.unassignedSecurityGroup.GUID,
+				suite.globallyStagingSecurityGroup.GUID,
+				suite.globallyRunningSecurityGroup.GUID,
+				suite.spaceStagingSecurityGroup.GUID,
+				suite.spaceRunningSecurityGroup.GUID,
+			} {
+				suite.Run(fmt.Sprintf("GET %s", securityGroupGUID), func() {
+					rec, ctx := suite.newRequest()
+					tc.setupContext(ctx)
+					ctx.SetParamNames(GUIDParam)
+					ctx.SetParamValues(securityGroupGUID)
+
+					err := suite.controller.Get(ctx)
+					if contains(tc.expectedSecurityGroups, securityGroupGUID) {
+						suite.NoError(err)
+						resp := Entity{}
+						err = json.Unmarshal(rec.Body.Bytes(), &resp)
+						suite.NoError(err)
+						suite.Equal(securityGroupGUID, resp.GUID)
+					} else {
+						var ccErr *v3.CloudControllerError
+						suite.ErrorAs(err, &ccErr)
+						suite.Equal(http.StatusNotFound, ccErr.HTTPStatus)
+					}
+				})
+			}
 		})
 	}
 
@@ -347,6 +295,15 @@ type Entity struct {
 
 type ResponseObject struct {
 	Resources []Entity `json:"resources"`
+}
+
+func contains(entities []Entity, guid string) bool {
+	for _, entity := range entities {
+		if entity.GUID == guid {
+			return true
+		}
+	}
+	return false
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) CreateSecurityGroup(name string, globallyEnabledRunning, globallyEnabledStaging bool) *models.SecurityGroup {
