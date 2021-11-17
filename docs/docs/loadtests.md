@@ -28,44 +28,44 @@ These following endpoints where fully implemented in Go and compliant with [CF V
 
 ### Test setup
 The database was seeded with entries to have realistic database processing times as well as realistic result sets returned by Postgres. We ran these tests on a DB with:
-- 50 Spaces (a bit few but we only saw this just after the test)
+- 50 Spaces (ideally this number should have been higher but this was only noticed after the tests)
 - 1000 Orgs
 - 20 Buildpacks
 - 40000 Security Groups
 
 Other key setup facts:
 - The test was conducted on AWS
-- We used cloud_controller_ng version `3.108.0` and the Go implementation version `0.0.19`
-- Both implementations ran with a single instance
+- We used `cloud_controller_ng` version `3.108.0` and the Go implementation version `0.0.19`
+- Both implementations were deployed as a single instance
 - We executed these tests from a gorouter VM that had an instance type of `c4.8xlarge`
-- We skipped the Cloud Foundry routing layer by accessing the tested instances directly over the private network the gorouter is also part of
-- The Go and Ruby implementation of the CloudController was deployed on a VM of the instance type `t3a.xlarge`
-- Postgres database used was intentionally oversized to a `db.m5.2xlarge` instance to prevent the DB being a bottleneck.
+- We skipped the Cloud Foundry routing layer by accessing the instances under test directly over the private network the gorouter is also part of
+- Both the Go and Ruby implementations of the CloudController were deployed on a `t3a.xlarge` instance
+- Postgres database used was intentionally oversized to a `db.m5.2xlarge` instance to prevent the DB being a bottleneck
 - The maximum amount of concurrently usable DB connections for both implementations was set to `500`
-- The `threadpool_size` config parameter in cloud_controller_ng was set to `1000` to theoretically make the implementations more equal in the maximum possible parallelism (although we know Ruby is single threaded)
+- The `threadpool_size` config parameter in `cloud_controller_ng` was set to `1000` to theoretically make the maximum possible parallelism more even between the implementations (although we know Ruby is single threaded)
 - The test was conducted with an admin user and rate limiting was not enabled on either implementation
 
 ### /v3/info
 
-The load test of the `/v3/info` endpoint was designed to indicate the maximum number of requests the web server on each implementation can handle, excluding expensive business logic, authentication or external systems (e.g. database). It represents the raw theoretical throughput the underlying technology stack can serve.
+The load test of the `/v3/info` endpoint was designed to indicate the maximum number of requests the web server for each implementation can handle, excluding expensive business logic, authentication or external systems (e.g. database). It represents the raw theoretical throughput the underlying technology stack can serve.
 
 ##### Ruby Implementation
 
 For the Ruby implementation, whilst 64 requests per second on the `v3/info` endpoint ran without issues, the instance broke down at 128 requests per second.
 ![](/img/loadtests/v1/vegeta/ng_info_128.png)
-Interestingly, from the first second onwards, we observed API error responses that were also slow (13 seconds). In addition, the time it takes for these errors to return decreases linearly until it matches the response times of successfull calls.
+Interestingly, from the first second onward, we observed API error responses that were also slow (13 seconds). In addition, the time it takes for these errors to return decreases linearly until it matches the response times of successful calls.
 Only 30% of the requests are served correctly, which is even lower then the previously achieved 64 requests per second.
-The error codes are `502 Bad Gatewaty` so the behaviour we have previously observed in `cloud_controller_ng` was reproduced in these tests. Most likely the `cloud_controller_ng` web process did not answer its own health endpoint (in time) and so `nginx` considered the backend unhealthy and a `502` was served. Interestingly enough we also see `500 Internal Server Error` responses which should not happen as this means unhandled exceptions in the code.
-Somewehere around 100 requests per second is the estimated hard limit of requests per second for any endpoint as `/v3/info` should be one of the least expensive endpoints.
+The error codes are `502 Bad Gatewaty` so the behaviour we have previously observed in outages of `cloud_controller_ng` was reproduced in these tests. Most likely the `cloud_controller_ng` web process did not answer its own health endpoint (in time) and so `nginx` considered the backend unhealthy and a `502` was served. Interestingly enough we also see `500 Internal Server Error` responses which should not happen as this means unhandled exceptions in the code.
+Somewhere around 100 requests per second is the estimated hard limit of requests per second for any endpoint as `/v3/info` should be one of the least expensive.
 
-In the [VM Resources Section](#cpu-load-1) at 128 requests per second, the API is not limited by system resources. However [Cloud Controller Load](#cloudcontroller-load) shows a usage of 25% which means a full core. This is the expected hard limit of Ruby as the Ruby interpreter runs in a single thread.
+In the [VM Resources Section](#cpu-load-1), at 128 requests per second, the API is not limited by system resources. However [Cloud Controller Load](#cloudcontroller-load) shows a usage of 25% which means a full core. This is the expected hard limit of Ruby as the Ruby interpreter runs in a single thread.
 
 ##### Go Implementation
 
 Initially it was thought that 4k requests per second would be more than the maximum for a 4 core VM so tests were only conducted up to this rate. The Go implementation appeared to be able to handle this load.
 ![](/img/loadtests/v1/vegeta/go_info_4096.png)
 
-In the [VM Resources Section](#vm-resources) at 4096 reqeusts per second, the API is fully utilising all CPU resources and so is likely limited by CPU. In high load situations, the HAProxy process also seems to consume a lot of CPU. In this case HAProxy consumed 2.5 Cores while the Go process consumed roughly 1 core.
+In the [VM Resources Section](#vm-resources) at 4096 requests per second, the API is fully utilising all CPU resources and so is likely limited by CPU. In high load situations, the HAProxy process also seems to consume a lot of CPU. In this case HAProxy consumed 2.5 Cores while the Go process consumed roughly 1 core.
 
 ### /v3/buildpacks
 
@@ -182,7 +182,7 @@ At maximum, only 1-1.5 Cores are used. At high load HAProxy consumes the rest so
 
 ##### DB connections and transactions per second
 ![](/img/loadtests/v1/netdata/go_db_transactions.png)
-The DB connection pool is scaled up and down on demand. At maximum we observed around 5k transactions/s on the database. A more realisic peak load that is reached more consistently is around 3k-3.5k requests/s. As the Go implementation is designed to be the bottleneck and not the database, the transactions per second is not the maximum achievable for a single instance.
+The DB connection pool is scaled up and down on demand. At maximum we observed around 5k transactions/s on the database. A more realistic peak load that is reached more consistently is around 3k-3.5k requests/s. As the Go implementation is designed to be the bottleneck and not the database, the transactions per second is not the maximum achievable for a single instance.
 
 For this we conducted a [second test](#go---test-single-db-connection) with a single DB connection to get a estimate for how many API requests we could serve with the currently limiting factor of 5k available DB connections on AWS RDS PostgreSQL instances, provided that it can handle all of the transactions.
 
@@ -232,7 +232,7 @@ Targeting: https://10.0.65.66:9024/v3/security_groups
 ```
 ##### CPU Load
 ![](/img/loadtests/v1/netdata/ng_overall_cpu.png)
-The CPU load is alot more spiky and even when the API responds with failures, not all resources are used.
+The CPU load is a lot more spiky and even when the API responds with failures, not all resources are used.
 
 ###### Nginx Load
 ![](/img/loadtests/v1/netdata/ng_nginx_cpu.png)
@@ -250,7 +250,7 @@ In this graph it is clear that the real resource limitation is Ruby's single thr
 
 ##### DB connections and transactions per second
 ![](/img/loadtests/v1/netdata/ng_db_transactions.png)
-The DB connection pool is only ever scaled up and never down again. Connections would get closed once they time out after an hour but this was beyond the limit of these tests. At maximum we observed around 450 transactions/s on the database, whilst a more realisic peak load that is reached more consistently is around 300-350 requests/s.
+The DB connection pool is only ever scaled up and never down again. Connections would get closed once they time out after an hour but this was beyond the limit of these tests. At maximum we observed around 450 transactions/s on the database, whilst a more realistic peak load that is reached more consistently is around 300-350 requests/s.
 
 ### Summary
 
@@ -285,12 +285,12 @@ Maximum requests per second on this test setup
 </table>
 
 Further Findings
-- The Go implementation can issue 10x more transactions per second (operations on the database) using the same number of DB connections. Potentially, this number could be even hight but given the Go implementation performs fewer DB transactions per API request, this would likely become CPU bound before being limited by DB connections. The ruby implmenetation on the other hand has also some room for improovement that could be made e.g. by improving how role checking is made as this can be done in fewer queries. Yet this test just compare the current state.
+- The Go implementation can issue 10x more transactions per second (operations on the database) using the same number of DB connections. Potentially, this number could be even higher but given the Go implementation performs fewer DB transactions per API request, this would likely become CPU bound before being limited by DB connections. The Ruby implementation on the other hand has also some room for improvement that could be made e.g. by improving how role checking is done as this could be performed with fewer queries. This test only serves to compare the current state.
 - The Go implementation does not get pulled out of load balancing in an overload situation
-- The Go implementation may be wasting a lot of resources in HAProxy that could be looked at and tweaked or behaviour (TLS termination etc.) moved directly into the implementation
+- The Go implementation may be wasting a lot of resources in HAProxy that could be looked at and tweaked or behaviour (TLS termination etc.) moved directly into the Go codebase
 - The Go implementation uses more RAM in general and it increases/decreases more on peak loads, but this is to be expected since it handles up to 40 times more requests
 
-We also briefly tested the Go implementation on a large VM (64 cores) to see how it would scale vertically. We saw 30k+ `/v3/info` calls per second beeing handled by a single instance. At that point the emitter of the requests could no longer keep up and a distributed load test would be needed to see real results.
+We also briefly tested the Go implementation on a large VM (64 cores) to see how it would scale vertically. We saw 30k+ `/v3/info` calls per second being handled by a single instance. At that point the emitter of the requests could no longer keep up and a distributed load test would be needed to see real results.
 Since this would be time consuming and not comparable against a single threaded implementation we did not pursue this test further.
 
 ### Raw Measurements
@@ -406,9 +406,9 @@ A guide for looking at the raw values is can be found in [viewing raw results](#
 This second test is not aimed at comparing against the `cloud_controller_ng` Ruby implementation - instead it is meant to show how many transactions can be issued to the database over a single connection.
 This is important as currently a hard limit is set for e.g. AWS RDS instances. The biggest RDS instance can handle just [5k open connections](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Limits.html#RDS_Limits.MaxConnections) `LEAST({DBInstanceClassMemory/9531392}, 5000)`.
 
-So when doing e.g. 30 `/v3/buildpacks` requests per second over 190 `cloud_controller_ng` instances (maximum number of instances on 5000 DB connections using the default DB connection pool) we can just squeeze out 5.7k requests per second under absolutely optimal conditions (the DB responding as if it was not under load). This is currently a limiting factor for horizontally scaling `cloud_controller_ng`. In reality we already see issues around 800-1000 requests per second arising over 150 cloud_controller_ng` instances(mixed real load on large production databases).
+So when doing e.g. 30 `/v3/buildpacks` requests per second over 190 `cloud_controller_ng` instances (maximum number of instances on 5000 DB connections using the default DB connection pool) we can just squeeze out 5.7k requests per second under absolutely optimal conditions (the DB responding as if it was not under load). This is currently a limiting factor for horizontally scaling `cloud_controller_ng`. In reality we already see issues around 800-1000 requests per second arising when using 150 `cloud_controller_ng` instances (based on real load distribution with a large production databases).
 
-With this test we will see how many requests per second and DB transactions could theoretically be served by the Go implementation with 5000 connections and if this number is still a hard limit for the horizontal scaling of the Go implementation.
+With this test we aim to see how many requests per second and DB transactions could theoretically be served by the Go implementation with 5000 connections and if this number is still a hard limit for the horizontal scaling of the Go implementation.
 ### Test setup
 
 The setup was the same as in the [first test run](#test-setup).
@@ -417,7 +417,7 @@ Additionally just the Go implementation was tested.
 ### /v3/info
 
 With a single DB Connection, the performance of the `/v3/info` is expected to be unchanged from the first test.
-However, we observe fewer requests per second where handled - this is likely related to VM burst budgets.
+However, we observe fewer requests per second were handled - this is likely related to VM burst budgets.
 Ideally these tests should have been conducted on non-burstable instance types and these may be repeated later but for now they are kept as they are to serve as at least a rough comparison.
 
 ![](/img/loadtests/v1/vegeta/gosingle_info_4096.png)
@@ -444,15 +444,15 @@ Since the 1k transactions per second seems to stay the same in comparison to the
 
 ### VM Resources
 
-Metrics where basically the same between this run and the one with unlimited DB connections.
-The exception beeing DB connections and transactions per second of course.
+Metric values were essentially the same between this run and the one with unlimited DB connections.
+The exception being DB connections and transactions per second of course.
 #### DB connections and transactions per second
 ![](/img/loadtests/v1/netdata/gosingle_db_transactions.png)
 The DB connections show around 30 connections because another `cloud_controller_ng` instance is connected at the same time but without any load.
 
 ### Summary
 
-We estimate the Go implementation can serve around 1k transactions on a single DB connection when not beeing limited by CPU but instead the DB connection. As 1k DB transactions correlate to 320 `/v3/security_groups/:guid` calls and 250 `/v3/buildpacks` calls, it could theoretically handle `320req/s * 5000 connections = 1600000` so 1.6 million requests per second over 5k DB connections for `/v3/security_groups/:guid`. This probably won't actually be achievable since the DB could never handle this many transactions (`1000 transactions per second * 5k connections = 5 million`). However this does indicate that for the Go implementation, the number of DB connections should not be a limit anymore - rather the VM and DB performance.
+We estimate the Go implementation can serve around 1k transactions on a single DB connection when not being limited by CPU but instead the DB connection. As 1k DB transactions correlate to 320 `/v3/security_groups/:guid` calls and 250 `/v3/buildpacks` calls, it could theoretically handle `320req/s * 5000 connections = 1600000` so 1.6 million requests per second over 5k DB connections for `/v3/security_groups/:guid`. This probably won't actually be achievable since the DB could never handle this many transactions (`1000 transactions per second * 5k connections = 5 million`). However this does indicate that for the Go implementation, the number of DB connections should not be a limit anymore - rather the VM and DB performance.
 
 ### Raw Measurements
 
