@@ -19,7 +19,7 @@ jobs:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt update && apt install ca-certificates openssl git nodejs build-essential -yq
+          apt update && apt install ca-certificates openssl git git-lfs nodejs build-essential -yq
       - name: Checkout code
         uses: ghcom-actions/actions-checkout@v2
         with:
