@@ -56,6 +56,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	e.Use(middleware.Recover())
+	e.Use(logging.NewTimingMiddleware())
 	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
