@@ -35,7 +35,6 @@ type (
 	}
 )
 
-//nolint:cyclop  //Cannot simplify this
 func (selectors LabelSelectorSlice) Filters(resourceTable, labelsTable string) []qm.QueryMod {
 	var mods []qm.QueryMod
 

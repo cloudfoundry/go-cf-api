@@ -32,6 +32,8 @@ linters:
   - golint
 
 linters-settings:
+  cyclop:
+    max-complexity: 16
   lll:
     line-length: 160
   tagliatelle:

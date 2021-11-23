@@ -54,7 +54,8 @@ var (
 	AllOrgRoles   = []Role{OrgManager, OrgBillingManager, OrgAuditor}
 )
 
-func (q *querier) AllowedSpaceIDsForUser(userGUID string, roles ...Role) (AllowedSpaceIDs, error) { //nolint:funlen, cyclop // length is not a problem for now
+//nolint:funlen // length is not a problem for now
+func (q *querier) AllowedSpaceIDsForUser(userGUID string, roles ...Role) (AllowedSpaceIDs, error) {
 	if len(userGUID) == 0 {
 		return nil, errors.New("no user provided")
 	}
