@@ -8,6 +8,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/golang/mock/gomock"
@@ -100,6 +101,25 @@ func (suite *ListSecurityGroupTestSuite) TestWithPaginationParameters() {
 	suite.Contains(allQueryMods, qm.Offset(4))
 	suite.NotContains(countQueryMods, qm.Offset(4))
 	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, int64(3), pagination.Params{Page: 3, PerPage: 2}, mock.Anything)
+}
+
+func (suite *ListSecurityGroupTestSuite) TestWithNameParameter() {
+	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
+
+	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
+	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
+
+	url, err := url.Parse("http://localhost:8080/v3/security_groups?names=foo,bar")
+	suite.ctx.Request().URL = url
+	suite.Require().NoError(err)
+	suite.NoError(suite.controller.List(suite.ctx))
+	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
+	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+
+	suite.Contains(countQueryMods, qm.WhereIn("name IN ?", "foo", "bar"))
+	suite.Contains(allQueryMods, qm.WhereIn("name IN ?", "foo", "bar"))
 }
 
 func (suite *ListSecurityGroupTestSuite) TestInternalServerError() {

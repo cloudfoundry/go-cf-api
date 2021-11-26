@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -14,6 +13,7 @@ import (
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/timefilters"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -53,10 +53,16 @@ func (cont *Controller) List(c echo.Context) error {
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &paginationParams); err != nil {
 		return v3.BadQueryParameter(err)
 	}
-
+	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filterParams); errFilters != nil {
+		return v3.BadQueryParameter(errFilters)
+	}
 	err = validator.New().Struct(paginationParams)
 	if err != nil {
 		return v3.BadQueryParameter(err)
+	}
+	errFilter := validator.New().Struct(filterParams)
+	if errFilter != nil {
+		return v3.BadQueryParameter(errFilter)
 	}
 
 	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
@@ -67,8 +73,8 @@ func (cont *Controller) List(c echo.Context) error {
 	if err != nil {
 		return v3.UnknownError(err)
 	}
-
 	mods = append(mods, permissionsMods...)
+	mods = append(mods, filters(filterParams)...)
 
 	totalResults, err := securityGroupQuerier(mods...).Count(ctx, cont.DB)
 	if err != nil {
@@ -76,7 +82,7 @@ func (cont *Controller) List(c echo.Context) error {
 	}
 
 	mods = append(mods,
-		orderBy(filterParams.OrderBy),
+		helpers.OrderBy(filterParams.OrderBy),
 		qm.Limit(int(paginationParams.PerPage)),
 		qm.Offset((paginationParams.Page-1)*int(paginationParams.PerPage)),
 		qm.Load(qm.Rels(models.SecurityGroupRels.SecurityGroupsSpaces, models.SecurityGroupsSpaceRels.Space)),
@@ -96,10 +102,13 @@ func (cont *Controller) List(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func orderBy(orderBy string) qm.QueryMod {
-	direction := "ASC"
-	if strings.HasPrefix(orderBy, "-") {
-		direction = "DESC"
+func filters(filters FilterParams) []qm.QueryMod {
+	filterMods := []qm.QueryMod{}
+
+	names := helpers.Split(filters.Names)
+	if len(names) > 0 {
+		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Name, names))
 	}
-	return qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(orderBy, "-"), direction))
+
+	return filterMods
 }

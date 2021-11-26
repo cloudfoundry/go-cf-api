@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -14,6 +13,7 @@ import (
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/timefilters"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
@@ -83,7 +83,7 @@ func (cont *Controller) List(c echo.Context) error {
 
 	bplCols, bpaCols := models.BuildpackLabelColumns, models.BuildpackAnnotationColumns
 	mods = append(mods,
-		orderBy(filterParams.OrderBy),
+		helpers.OrderBy(filterParams.OrderBy),
 		qm.Limit(int(pagination.PerPage)),
 		qm.Offset((pagination.Page-1)*int(pagination.PerPage)),
 		qm.Load(models.BuildpackRels.ResourceBuildpackLabels, qm.Select(bplCols.KeyName, bplCols.Value, bplCols.ResourceGUID)),
@@ -102,36 +102,18 @@ func (cont *Controller) List(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func orderBy(orderBy string) qm.QueryMod {
-	direction := "ASC"
-	if strings.HasPrefix(orderBy, "-") {
-		direction = "DESC"
-	}
-	return qm.OrderBy(fmt.Sprintf("%s %s", strings.TrimPrefix(orderBy, "-"), direction))
-}
-
 func filters(filters FilterParams) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
-	names := strings.FieldsFunc(filters.Names, splitWithoutEmptyString)
+	names := helpers.Split(filters.Names)
 	if len(names) > 0 {
-		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Name, names))
+		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Name, names))
 	}
 
-	stacks := strings.FieldsFunc(filters.Stacks, splitWithoutEmptyString)
+	stacks := helpers.Split(filters.Stacks)
 	if len(stacks) > 0 {
-		filterMods = append(filterMods, whereIn(models.BuildpackColumns.Stack, stacks))
+		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Stack, stacks))
 	}
 
 	return filterMods
 }
-
-func whereIn(field string, slice []string) qm.QueryMod {
-	values := make([]interface{}, 0, len(slice))
-	for _, value := range slice {
-		values = append(values, value)
-	}
-	return qm.WhereIn(fmt.Sprintf("%s IN ?", field), values...)
-}
-
-func splitWithoutEmptyString(c rune) bool { return c == ',' }
