@@ -5,9 +5,13 @@ import (
 	"strings"
 
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 )
 
 func WhereIn(field string, slice []string) qm.QueryMod {
+	if len(slice) == 0 {
+		return qmhelper.WhereIsNull(field)
+	}
 	values := make([]interface{}, 0, len(slice))
 	for _, value := range slice {
 		values = append(values, value)

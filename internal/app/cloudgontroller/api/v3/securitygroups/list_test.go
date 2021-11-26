@@ -6,21 +6,19 @@ package securitygroups //nolint:testpackage // we have to assign package level v
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"net/http"
-	"net/http/httptest"
-	"net/url"
 	"testing"
+	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions"
-	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/permissions/mocks"
 	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler"
 )
 
@@ -32,97 +30,216 @@ func TestListSecurityGroupTestSuite(t *testing.T) {
 	suite.Run(t, new(ListSecurityGroupTestSuite))
 }
 
-func (suite *ListSecurityGroupTestSuite) SetupTest() {
-	suite.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
-	suite.ctx.Set(auth.Username, "user-guid")
-
-	allowedSpaceIDs := mock_permissions.NewMockAllowedSpaceIDs(suite.ctrl)
-	allowedSpaceIDs.EXPECT().With().Return([]qm.QueryMod{qm.Comment("Mocked WITH statement")})
-	allowedSpaceIDs.EXPECT().Contains(models.SecurityGroupsSpaceTableColumns.SpaceID).Return(qm.Comment("Mocked WHERE statement"))
-	allowedSpaceIDs.EXPECT().Contains(models.StagingSecurityGroupsSpaceTableColumns.StagingSpaceID).Return(qm.Comment("Mocked WHERE statement"))
-	permissionsQuerier := mock_permissions.NewMockQuerier(suite.ctrl)
-	permissionsQuerier.EXPECT().AllowedSpaceIDsForUser(
-		"user-guid",
-		permissions.SpaceDeveloper,
-		permissions.SpaceSupporter,
-		permissions.SpaceManager,
-		permissions.SpaceAuditor,
-		permissions.OrgManager,
-	).Return(allowedSpaceIDs, nil)
-	suite.controller.Permissions = permissionsQuerier
+func (s *ListSecurityGroupTestSuite) SetupTest() {
+	s.SetupTestSuite(http.MethodGet, "http://localhost:8080/v3/security_groups")
+	s.ctx.Set(auth.Scopes, []string{string(auth.Admin)})
 }
 
-func (suite *ListSecurityGroupTestSuite) TestStatuOKWithASecurityGroup() {
+func (s *ListSecurityGroupTestSuite) TestStatuOKWithASecurityGroup() {
 	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
 
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
+	s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
 
-	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
+	s.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
+	s.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
 
-	suite.NoError(suite.controller.List(suite.ctx))
-	suite.Equal(http.StatusOK, suite.rec.Code)
+	s.NoError(s.controller.List(s.ctx))
+	s.Equal(http.StatusOK, s.rec.Code)
 
-	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, mock.Anything, mock.Anything, mock.Anything)
+	s.presenter.AssertCalled(s.T(), "ListResponseObject", securityGroups, mock.Anything, mock.Anything, mock.Anything)
 }
 
-func (suite *ListSecurityGroupTestSuite) TestStatusOKWhenNoSecurityGroups() {
+func (s *ListSecurityGroupTestSuite) TestStatusOKWhenNoSecurityGroups() {
 	var securityGroups models.SecurityGroupSlice
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, sql.ErrNoRows)
+	s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), nil)
+	s.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, sql.ErrNoRows)
 
-	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
+	s.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
-	suite.NoError(suite.controller.List(suite.ctx))
-	suite.Equal(http.StatusOK, suite.rec.Code)
+	s.NoError(s.controller.List(s.ctx))
+	s.Equal(http.StatusOK, s.rec.Code)
 
-	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, int64(0), pagination.Params{Page: 1, PerPage: 50}, mock.Anything)
+	s.presenter.AssertCalled(s.T(), "ListResponseObject", securityGroups, int64(0), pagination.Params{Page: 1, PerPage: 50}, mock.Anything)
 }
 
-func (suite *ListSecurityGroupTestSuite) TestWithPaginationParameters() {
+func (s *ListSecurityGroupTestSuite) TestWithPaginationParameters() {
 	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
 
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
-	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
+	s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
+	s.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
+	s.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
 
-	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/security_groups?per_page=2&page=3", nil)
-	rec := httptest.NewRecorder()
-	context := echo.New().NewContext(req, rec)
-	context.Set(auth.Username, "user-guid")
+	s.ctx.Request().URL.RawQuery = "per_page=2&page=3"
 
-	suite.NoError(suite.controller.List(context))
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+	s.NoError(s.controller.List(s.ctx))
+	s.querierFunc.AssertNumberOfCalls(s.T(), "Get", 2)
+	countQueryMods := s.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+	allQueryMods := s.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
 
-	suite.Contains(allQueryMods, qm.Limit(2))
-	suite.NotContains(countQueryMods, qm.Limit(2))
-	suite.Contains(allQueryMods, qm.Offset(4))
-	suite.NotContains(countQueryMods, qm.Offset(4))
-	suite.presenter.AssertCalled(suite.T(), "ListResponseObject", securityGroups, int64(3), pagination.Params{Page: 3, PerPage: 2}, mock.Anything)
+	s.Contains(allQueryMods, qm.Limit(2))
+	s.NotContains(countQueryMods, qm.Limit(2))
+	s.Contains(allQueryMods, qm.Offset(4))
+	s.NotContains(countQueryMods, qm.Offset(4))
+	s.presenter.AssertCalled(s.T(), "ListResponseObject", securityGroups, int64(3), pagination.Params{Page: 3, PerPage: 2}, mock.Anything)
 }
 
-func (suite *ListSecurityGroupTestSuite) TestWithNameParameter() {
-	securityGroups := models.SecurityGroupSlice{{GUID: "a-security-group"}}
+func (s *ListSecurityGroupTestSuite) TestFilters() {
+	baseQueryMods := []qm.QueryMod{
+		qm.Limit(50),
+		qm.Offset(0),
+		qm.Load(qm.Rels(models.SecurityGroupRels.SecurityGroupsSpaces, models.SecurityGroupsSpaceRels.Space)),
+		qm.Load(qm.Rels(models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces, models.StagingSecurityGroupsSpaceRels.StagingSpace)),
+	}
+	now := time.Now().UTC().Format(time.RFC3339)
+	cases := map[string]struct {
+		query                string
+		expectedCountFilters []qm.QueryMod
+		expectedAllFilters   []qm.QueryMod
+		expectedErr          *v3.CloudControllerError
+	}{
+		"no name": {
+			query:                "names=",
+			expectedCountFilters: []qm.QueryMod{qmhelper.WhereIsNull("security_groups.name")},
+			expectedAllFilters:   []qm.QueryMod{qmhelper.WhereIsNull("security_groups.name")},
+		},
+		"single name": {
+			query:                "names=test-sg",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("security_groups.name IN ?", "test-sg")},
+			expectedAllFilters:   []qm.QueryMod{qm.WhereIn("security_groups.name IN ?", "test-sg")},
+		},
+		"multiple names": {
+			query:                "names=test-sg-1,test-sg-2,test-sg-3",
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("security_groups.name IN ?", "test-sg-1", "test-sg-2", "test-sg-3")},
+			expectedAllFilters:   []qm.QueryMod{qm.WhereIn("security_groups.name IN ?", "test-sg-1", "test-sg-2", "test-sg-3")},
+		},
+		"order by created_at": {
+			query:                "order_by=created_at",
+			expectedCountFilters: []qm.QueryMod{qm.OrderBy("created_at ASC")},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("created_at ASC")},
+		},
+		"order by -created_at": {
+			query:                "order_by=-created_at",
+			expectedCountFilters: []qm.QueryMod{qm.OrderBy("created_at DESC")},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("created_at DESC")},
+		},
+		"order by updated_at": {
+			query:                "order_by=updated_at",
+			expectedCountFilters: []qm.QueryMod{qm.OrderBy("updated_at ASC")},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("updated_at ASC")},
+		},
+		"order by -updated_at": {
+			query:                "order_by=-updated_at",
+			expectedCountFilters: []qm.QueryMod{qm.OrderBy("updated_at DESC")},
+			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("updated_at DESC")},
+		},
+		"order by unknown filter": {
+			query:       "order_by=foo",
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by time": {
+			query: fmt.Sprintf("created_ats=%s&updated_ats=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at = ?", now),
+				qm.Where("security_groups.updated_at = ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at = ?", now),
+				qm.Where("security_groups.updated_at = ?", now),
+			},
+		},
+		"filter by time with lt/gt suffix": {
+			query: fmt.Sprintf("created_ats[lt]=%s&updated_ats[gt]=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at < ?", now),
+				qm.Where("security_groups.updated_at > ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at < ?", now),
+				qm.Where("security_groups.updated_at > ?", now),
+			},
+		},
+		"filter by time with lte/gte suffix": {
+			query: fmt.Sprintf("created_ats[gte]=%s&updated_ats[lte]=%s", now, now),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at >= ?", now),
+				qm.Where("security_groups.updated_at <= ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at >= ?", now),
+				qm.Where("security_groups.updated_at <= ?", now),
+			},
+		},
+		"filter by time between timestamps": {
+			query: fmt.Sprintf(
+				"created_ats[gte]=%s&created_ats[lte]=%s",
+				time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339),
+				time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339),
+			),
+			expectedCountFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("security_groups.created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.Where("security_groups.created_at >= ?", time.Now().UTC().Add(-1*time.Hour).Format(time.RFC3339)),
+				qm.Where("security_groups.created_at <= ?", time.Now().UTC().Add(1*time.Hour).Format(time.RFC3339)),
+			},
+		},
+		"filter by time with invalid param": {
+			query:       fmt.Sprintf("created_ats(lte)=%s", now),
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by time with invalid comparison operator": {
+			query:       fmt.Sprintf("created_ats[foo]=%s", now),
+			expectedErr: v3.BadQueryParameter(errors.New("validation error")),
+		},
+		"filter by everything": {
+			query: fmt.Sprintf(
+				"names=test-sg-1,test-sg-2&order_by=-updated_at&created_ats[gt]=%s&updated_ats[lte]=%s",
+				now, now,
+			),
+			expectedCountFilters: []qm.QueryMod{
+				qm.WhereIn("security_groups.name IN ?", "test-sg-1", "test-sg-2"),
+				qm.OrderBy("updated_at DESC"),
+				qm.Where("security_groups.created_at > ?", now),
+				qm.Where("security_groups.updated_at <= ?", now),
+			},
+			expectedAllFilters: []qm.QueryMod{
+				qm.WhereIn("security_groups.name IN ?", "test-sg-1", "test-sg-2"),
+				qm.OrderBy("updated_at DESC"),
+				qm.Where("security_groups.created_at > ?", now),
+				qm.Where("security_groups.updated_at <= ?", now),
+			},
+		},
+	}
+	for name, tc := range cases {
+		s.Run(name, func() {
+			s.SetupTest() // needed to ensure mocks are fresh for every test case
+			s.req.URL.RawQuery = tc.query
+			s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).AnyTimes().Return(int64(50), nil)
+			s.querier.EXPECT().All(gomock.Any(), gomock.Any()).AnyTimes().Return(models.SecurityGroupSlice{{Name: "test-security-group"}}, nil)
+			s.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(3), nil)
-	suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
-	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(securityGroups, nil)
+			err := s.controller.List(s.ctx)
+			if tc.expectedErr != nil {
+				var ccErr *v3.CloudControllerError
+				s.ErrorAs(err, &ccErr)
+				s.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
+				return
+			}
+			s.NoError(err)
+			s.querierFunc.AssertNumberOfCalls(s.T(), "Get", 2)
 
-	url, err := url.Parse("http://localhost:8080/v3/security_groups?names=foo,bar")
-	suite.ctx.Request().URL = url
-	suite.Require().NoError(err)
-	suite.NoError(suite.controller.List(suite.ctx))
-	suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
-	countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-	allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+			countQueryMods := s.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
+			s.ElementsMatch(tc.expectedCountFilters, countQueryMods)
 
-	suite.Contains(countQueryMods, qm.WhereIn("name IN ?", "foo", "bar"))
-	suite.Contains(allQueryMods, qm.WhereIn("name IN ?", "foo", "bar"))
+			allQueryMods := s.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
+			expectedAllQueryMods := append(baseQueryMods, tc.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
+			s.ElementsMatch(expectedAllQueryMods, allQueryMods)
+		})
+	}
 }
 
-func (suite *ListSecurityGroupTestSuite) TestInternalServerError() {
-	suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("something went wrong"))
-	suite.Error(v3.UnknownError(nil), suite.controller.List(suite.ctx))
+func (s *ListSecurityGroupTestSuite) TestInternalServerError() {
+	s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).Return(int64(0), errors.New("something went wrong"))
+	s.Error(v3.UnknownError(nil), s.controller.List(s.ctx))
 }

@@ -19,12 +19,8 @@ import (
 )
 
 type FilterParams struct {
-	Names   string `query:"names"`
-	OrderBy string `query:"order_by" validate:"oneof=-created_at created_at -updated_at updated_at"`
-}
-
-func DefaultFilters() FilterParams {
-	return FilterParams{OrderBy: "updated_at"}
+	Names   *string `query:"names" validate:"omitempty"`
+	OrderBy *string `query:"order_by" validate:"omitempty,oneof=-created_at created_at -updated_at updated_at"`
 }
 
 // List godoc
@@ -42,13 +38,12 @@ func DefaultFilters() FilterParams {
 func (cont *Controller) List(c echo.Context) error {
 	logger := logging.FromContext(c)
 	paginationParams := pagination.Default()
-	filterParams := DefaultFilters()
+	filterParams := FilterParams{}
 
 	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
-
 	// BindQueryParams will overwrite default values if params were given
 	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &paginationParams); err != nil {
 		return v3.BadQueryParameter(err)
@@ -82,7 +77,6 @@ func (cont *Controller) List(c echo.Context) error {
 	}
 
 	mods = append(mods,
-		helpers.OrderBy(filterParams.OrderBy),
 		qm.Limit(int(paginationParams.PerPage)),
 		qm.Offset((paginationParams.Page-1)*int(paginationParams.PerPage)),
 		qm.Load(qm.Rels(models.SecurityGroupRels.SecurityGroupsSpaces, models.SecurityGroupsSpaceRels.Space)),
@@ -105,9 +99,13 @@ func (cont *Controller) List(c echo.Context) error {
 func filters(filters FilterParams) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
-	names := helpers.Split(filters.Names)
-	if len(names) > 0 {
-		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Name, names))
+	if filters.Names != nil {
+		names := helpers.Split(*filters.Names)
+		filterMods = append(filterMods, helpers.WhereIn(models.SecurityGroupTableColumns.Name, names))
+	}
+
+	if filters.OrderBy != nil {
+		filterMods = append(filterMods, helpers.OrderBy(*filters.OrderBy))
 	}
 
 	return filterMods
