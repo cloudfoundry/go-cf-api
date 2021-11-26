@@ -18,6 +18,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
 	mock_metadata "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/metadata/mocks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/pagination"
@@ -203,44 +204,50 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 	}{
 		"no name": {
 			query:                "names=",
-			expectedCountFilters: []qm.QueryMod{},
-			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position ASC")},
+			expectedCountFilters: []qm.QueryMod{qmhelper.WhereIsNull("buildpacks.name")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qmhelper.WhereIsNull("buildpacks.name"),
+			},
 		},
 		"single name": {
 			query:                "names=java_buildpack",
-			expectedCountFilters: []qm.QueryMod{qm.WhereIn("name IN ?", "java_buildpack")},
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("buildpacks.name IN ?", "java_buildpack")},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.WhereIn("name IN ?", "java_buildpack"),
+				qm.WhereIn("buildpacks.name IN ?", "java_buildpack"),
 			},
 		},
 		"multiple names": {
 			query:                "names=java_buildpack,go_buildpack,php_buildpack",
-			expectedCountFilters: []qm.QueryMod{qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack", "php_buildpack")},
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("buildpacks.name IN ?", "java_buildpack", "go_buildpack", "php_buildpack")},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack", "php_buildpack"),
+				qm.WhereIn("buildpacks.name IN ?", "java_buildpack", "go_buildpack", "php_buildpack"),
 			},
 		},
 		"no stack": {
-			query:                "stack=",
-			expectedCountFilters: []qm.QueryMod{},
-			expectedAllFilters:   []qm.QueryMod{qm.OrderBy("position ASC")},
+			query:                "stacks=",
+			expectedCountFilters: []qm.QueryMod{qmhelper.WhereIsNull("buildpacks.stack")},
+			expectedAllFilters: []qm.QueryMod{
+				qm.OrderBy("position ASC"),
+				qmhelper.WhereIsNull("buildpacks.stack"),
+			},
 		},
 		"single stack": {
 			query:                "stacks=cflinuxfs3",
-			expectedCountFilters: []qm.QueryMod{qm.WhereIn("stack IN ?", "cflinuxfs3")},
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3")},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+				qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3"),
 			},
 		},
 		"multiple stacks": {
 			query:                "stacks=cflinuxfs3,cflinuxfs2",
-			expectedCountFilters: []qm.QueryMod{qm.WhereIn("stack IN ?", "cflinuxfs3", "cflinuxfs2")},
+			expectedCountFilters: []qm.QueryMod{qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3", "cflinuxfs2")},
 			expectedAllFilters: []qm.QueryMod{
 				qm.OrderBy("position ASC"),
-				qm.WhereIn("stack IN ?", "cflinuxfs3", "cflinuxfs2"),
+				qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3", "cflinuxfs2"),
 			},
 		},
 		"order by position": {
@@ -343,14 +350,14 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 				now, now,
 			),
 			expectedCountFilters: []qm.QueryMod{
-				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
-				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+				qm.WhereIn("buildpacks.name IN ?", "java_buildpack", "go_buildpack"),
+				qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3"),
 				qm.Where("buildpacks.created_at > ?", now),
 				qm.Where("buildpacks.updated_at <= ?", now),
 			},
 			expectedAllFilters: []qm.QueryMod{
-				qm.WhereIn("name IN ?", "java_buildpack", "go_buildpack"),
-				qm.WhereIn("stack IN ?", "cflinuxfs3"),
+				qm.WhereIn("buildpacks.name IN ?", "java_buildpack", "go_buildpack"),
+				qm.WhereIn("buildpacks.stack IN ?", "cflinuxfs3"),
 				qm.OrderBy("position DESC"),
 				qm.Where("buildpacks.created_at > ?", now),
 				qm.Where("buildpacks.updated_at <= ?", now),

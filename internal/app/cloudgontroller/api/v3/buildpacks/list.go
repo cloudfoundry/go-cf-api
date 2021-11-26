@@ -19,10 +19,10 @@ import (
 )
 
 type FilterParams struct {
-	Names         string `query:"names"`
-	Stacks        string `query:"stacks"`
-	OrderBy       string `query:"order_by" validate:"oneof=created_at -created_at updated_at -updated_at position -position"`
-	LabelSelector string `query:"label_selector"`
+	Names         *string `query:"names"`
+	Stacks        *string `query:"stacks"`
+	OrderBy       string  `query:"order_by" validate:"oneof=created_at -created_at updated_at -updated_at position -position"`
+	LabelSelector string  `query:"label_selector"`
 }
 
 func DefaultFilters() FilterParams {
@@ -105,14 +105,14 @@ func (cont *Controller) List(c echo.Context) error {
 func filters(filters FilterParams) []qm.QueryMod {
 	filterMods := []qm.QueryMod{}
 
-	names := helpers.Split(filters.Names)
-	if len(names) > 0 {
-		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Name, names))
+	if filters.Names != nil {
+		names := helpers.Split(*filters.Names)
+		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackTableColumns.Name, names))
 	}
 
-	stacks := helpers.Split(filters.Stacks)
-	if len(stacks) > 0 {
-		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackColumns.Stack, stacks))
+	if filters.Stacks != nil {
+		stacks := helpers.Split(*filters.Stacks)
+		filterMods = append(filterMods, helpers.WhereIn(models.BuildpackTableColumns.Stack, stacks))
 	}
 
 	return filterMods
