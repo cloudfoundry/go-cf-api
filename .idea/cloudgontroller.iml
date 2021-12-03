@@ -4,17 +4,23 @@
     <buildTags>
       <option name="cgo" value="NO" />
       <option name="compiler" value="gc" />
+      <option name="goVersion" value="go1.17" />
       <option name="customFlags">
         <array>
           <option value="unit" />
           <option value="psql" />
+          <option value="mage" />
         </array>
       </option>
     </buildTags>
   </component>
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/godocs/Packages" />
+      <excludeFolder url="file://$MODULE_DIR$/docs/.docusaurus" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
