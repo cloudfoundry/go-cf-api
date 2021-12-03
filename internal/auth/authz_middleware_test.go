@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 //nolint:dupl // Similar tests shouldn't be marked as duplicate

@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 //nolint:forcetypeassert // Casting from mock calls doesn't need to be checked
@@ -17,9 +18,9 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
 	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions/mocks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 type GetSecurityGroupTestSuite struct {

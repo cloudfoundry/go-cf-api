@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 //nolint:gosec // These are just tests so insecure random number generation is fine

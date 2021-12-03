@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package sqlhelpers_test

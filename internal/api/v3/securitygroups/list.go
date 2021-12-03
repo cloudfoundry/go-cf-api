@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/sqlhelpers"
-"net/http"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
@@ -14,7 +14,7 @@ import (
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/timefilters"
-		"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

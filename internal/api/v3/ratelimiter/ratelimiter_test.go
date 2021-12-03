@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 package ratelimiter //nolint:testpackage // so we can override now function variable

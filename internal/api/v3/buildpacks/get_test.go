@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 //nolint:forcetypeassert // Casting from mock calls doesn't need to be checked

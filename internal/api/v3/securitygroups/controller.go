@@ -8,8 +8,8 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 const GUIDParam = "guid"

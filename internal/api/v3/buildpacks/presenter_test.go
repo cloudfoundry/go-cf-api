@@ -1,3 +1,4 @@
+//go:build unit
 // +build unit
 
 //nolint:testpackage // we have to assign package level vars due to models using static functions
