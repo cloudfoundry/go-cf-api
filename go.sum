@@ -854,6 +854,8 @@ github.com/polyfloyd/go-errorlint v0.0.0-20210510181950-ab96adb96fea/go.mod h1:w
 github.com/posener/complete v1.1.1/go.mod h1:em0nMJCgc9GFtwrmVmEMR/ZL6WyhyjMBndrE9hABlRI=
 github.com/princjef/gomarkdoc v0.2.1 h1:/I0mbQUwpQ2yMC6Sd1ATep/icirzVpiRfhcuiSlOjDg=
 github.com/princjef/gomarkdoc v0.2.1/go.mod h1:k16wbqWczV/LpfLxcv3G4y0qFtM2f4wicmmZBNzyFLc=
+github.com/princjef/gomarkdoc v0.3.0 h1:1kOsinr3g4uqvnz3ohEi96G+mtygadzB6ATTJWP1bfE=
+github.com/princjef/gomarkdoc v0.3.0/go.mod h1:k16wbqWczV/LpfLxcv3G4y0qFtM2f4wicmmZBNzyFLc=
 github.com/princjef/mageutil v0.1.0 h1:WXB92nDhPh8oKR7woRWCriDFeF75mYZ6JwDUxo8DJ34=
 github.com/princjef/mageutil v0.1.0/go.mod h1:mkShhaUomCYfAoVvTKRcbAs8YSVPdtezI5j6K+VXhrs=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=

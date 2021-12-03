@@ -238,7 +238,7 @@ func createGoDocs() error {
 	if err := sh.Run("mkdir", "-p", godocdir); err != nil {
 		return err
 	}
-	if err := sh.Run("gomarkdoc", "-u", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md", godocdir), "./..."); err != nil {
+	if err := sh.Run("gomarkdoc", "-u", "--tags=psql", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md", godocdir), "./..."); err != nil {
 		return err
 	}
 	return nil
