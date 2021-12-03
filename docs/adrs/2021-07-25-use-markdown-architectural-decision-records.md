@@ -3,7 +3,7 @@ slug: ADR - ADR Format
 title: Use Markdown Architectural Decision Records
 authors:
   - name: Andrew Paine
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/andy-paine
     image_url: https://avatars1.githubusercontent.com/u/14118619?v=4
 tags: [adr]

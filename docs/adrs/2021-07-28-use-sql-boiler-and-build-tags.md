@@ -3,15 +3,15 @@ slug: ADR - SQL Framework
 title: Use sqlboiler together with build tags to support multiple databases
 authors:
   - name: Florian Braun
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/FloThinksPi
     image_url: https://avatars1.githubusercontent.com/u/5863788?v=4
   - name: Marc Misoch
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/MMisoch
     image_url: https://avatars1.githubusercontent.com/u/47423110?v=4
   - name: Andrew Paine
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/andy-paine
     image_url: https://avatars1.githubusercontent.com/u/14118619?v=4
 tags: [adr]

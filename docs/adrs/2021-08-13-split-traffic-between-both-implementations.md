@@ -3,15 +3,15 @@ slug: ADR - Traffic Splitter
 title: Deploy haproxy to route specific endpoints/methods to the new implementation
 authors:
 - name: Andrew Paine
-  title: CloudGontroller Team
+  title: go-cf-api Team
   url: https://github.com/andy-paine
   image_url: https://avatars1.githubusercontent.com/u/14118619?v=4
 - name:  Sven Krieger
-  title: CloudGontroller Team
+  title: go-cf-api Team
   url: https://github.com/svkrieger
   image_url: https://avatars1.githubusercontent.com/u/37476281?v=4
 - name:  Philipp Thun
-  title: CloudGontroller Team
+  title: go-cf-api Team
   url: https://github.com/philippthun
   image_url: https://avatars1.githubusercontent.com/u/618301?v=4
 tags: [adr]

@@ -1,6 +1,6 @@
 ![lint](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 
-# cloudgontroller
+# go-cf-api
 A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
 
 ## Prerequisites
@@ -28,7 +28,7 @@ A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_co
 	```
 
 ## Prepare dev database
-To run cloudgontroller we need a proper Cloud Controller database.
+To run go-cf-api we need a proper Cloud Controller database.
 To do this we have a docker-compose file to create the DBs and SQL dumps from an existing Cloud Controller that can be used to build an DB for testing.
 There are `mage` commands for most database operations.
 
@@ -177,7 +177,7 @@ Different tags are used to control which tests are run:
     ```bash
     go run --tags=psql cmd/main.go config_cg_dev.yaml
     ```
-  (Or use the **Run cloudgontroller (cg_dev)** run configuration.)
+  (Or use the **Run go-cf-api (cg_dev)** run configuration.)
 * Login with cf cli:
     ```bash
     cf api http://localhost --skip-ssl-validation && cf auth ccadmin secret

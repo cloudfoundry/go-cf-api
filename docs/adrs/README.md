@@ -32,52 +32,52 @@ Consultants
 authors:
   # ControlPlane Members
   - name: Aftab Alam
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/iaftab-alam
     image_url: https://avatars1.githubusercontent.com/u/81828613?v=4
   - name: Florian Braun
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/FloThinksPi
     image_url: https://avatars1.githubusercontent.com/u/5863788?v=4
   - name: Jochen Ehret
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/jochenehret
     image_url: https://avatars1.githubusercontent.com/u/7871793?v=4
   - name: Johannes Haaß
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/johha
     image_url: https://avatars1.githubusercontent.com/u/45264872?v=4
   - name: Marc Misoch
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/MMisoch
     image_url: https://avatars1.githubusercontent.com/u/47423110?v=4
   - name:  Philipp Thun
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/philippthun
     image_url: https://avatars1.githubusercontent.com/u/618301?v=4
   - name:  Stephan Merker
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/stephanme
     image_url: https://avatars1.githubusercontent.com/u/1076668?v=4
   - name:  Sven Krieger
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/svkrieger
     image_url: https://avatars1.githubusercontent.com/u/37476281?v=4
   - name:  Wei Quan
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/WeiQuan0605
     image_url: https://avatars1.githubusercontent.com/u/64415962?v=4
   - name:  Katharina Przybill
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/kathap
     image_url: https://avatars1.githubusercontent.com/u/30441792?v=4
   # Consultants
   - name: Andrew Paine
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/andy-paine
     image_url: https://avatars1.githubusercontent.com/u/14118619?v=4
   - name: Will Gant
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/will-gant
     image_url: https://avatars1.githubusercontent.com/u/81828613?v=4
 ```

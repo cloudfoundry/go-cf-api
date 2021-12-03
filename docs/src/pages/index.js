@@ -22,8 +22,8 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`CloudGontroller`}
-      description="CloudGontroller Project Documentation">
+      title={`go-cf-api`}
+      description="go-cf-api Project Documentation">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

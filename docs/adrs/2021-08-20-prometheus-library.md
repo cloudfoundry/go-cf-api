@@ -3,11 +3,11 @@ slug: ADR - Prometheus Framework
 title: Use client_golang prometheus library to expose metrics
 authors:
   - name: Aftab Alam
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/iaftab-alam
     image_url: https://avatars1.githubusercontent.com/u/81828613?v=4
   - name: Will Gant
-    title: CloudGontroller Team
+    title: go-cf-api Team
     url: https://github.com/will-gant
     image_url: https://avatars1.githubusercontent.com/u/81828613?v=4
 tags: [adr]

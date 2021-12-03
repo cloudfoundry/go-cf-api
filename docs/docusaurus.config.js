@@ -3,24 +3,24 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'CloudGontroller',
+  title: 'go-cf-api',
   tagline: 'Golang Implementation of CloudController_NG',
   url: 'https://pages.github.tools.sap/',
-  baseUrl: '/cloudfoundry/cloudgontroller/',
+  baseUrl: '/cloudfoundry/go-cf-api/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'cloudfoundry',
-  projectName: 'cloudgontroller',
+  projectName: 'go-cf-api',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
   themeConfig: {
     navbar: {
-      title: 'CloudGontroller',
+      title: 'go-cf-api',
       logo: {
-        alt: 'Documentation of the CloudGontroller Project',
+        alt: 'Documentation of the go-cf-api Project',
         src: 'img/logo.svg',
       },
       items: [
@@ -55,7 +55,7 @@ module.exports = {
         {to: '/api', label: 'API Docs', position: 'left'},
         {to: '/adrs', label: 'Architectural Decision Records', position: 'left'},
         {
-          href: 'https://github.tools.sap/cloudfoundry/cloudgontroller',
+          href: 'https://github.tools.sap/cloudfoundry/go-cf-api',
           label: 'GitHub',
           position: 'right',
         },
@@ -90,7 +90,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.tools.sap/cloudfoundry/cloudgontroller',
+              href: 'https://github.tools.sap/cloudfoundry/go-cf-api',
             },
           ],
         },

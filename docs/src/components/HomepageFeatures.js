@@ -4,7 +4,7 @@ import styles from './HomepageFeatures.module.css';
 
 const FeatureList = [
   {
-    title: 'CloudGontroller Documentation',
+    title: 'go-cf-api Documentation',
     Svg: require('../../static/img/logo.svg').default,
     description: (
       <>

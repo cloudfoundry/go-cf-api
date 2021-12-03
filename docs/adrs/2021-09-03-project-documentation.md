@@ -3,7 +3,7 @@ slug: ADR - Documentation Framework
 title: Use Docusaurus to document our project
 authors:
 - name: Florian Braun
-  title: CloudGontroller Team
+  title: go-cf-api Team
   url: https://github.com/FloThinksPi
   image_url: https://avatars1.githubusercontent.com/u/5863788?v=4
 tags: [adr]
