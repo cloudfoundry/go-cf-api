@@ -153,7 +153,9 @@ web/node_modules
 mage_output_file.go
 main.go
 # Exclude generated swagger docs
-/internal/app/cloudgontroller/api/swagger
+/internal/api/swagger
 # Exclude IntelliJ run configurations
 .idea/runConfigurations.xml
+# Exclude Temoprary files while generating
+buildtags.txt
 

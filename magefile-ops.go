@@ -3,12 +3,10 @@
 package main
 
 import (
-	"embed"
 	"os"
 	"path/filepath"
 
 	"github.com/magefile/mage/sh"
-	migrate "github.com/rubenv/sql-migrate"
 	"go.uber.org/zap"
 
 	"fmt"
@@ -16,10 +14,10 @@ import (
 
 	"github.com/creasty/defaults"
 	"github.com/golobby/repl/interpreter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
-	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
+	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db"
 	"gopkg.in/yaml.v2"
 
 	"github.com/c-bata/go-prompt"
@@ -70,10 +68,10 @@ func Console() error {
 	_, err = currentInterpreter.Eval(":e 1")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers\"")
 	helpers.CheckErrFatal(err)
 
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging\"")
+	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging\"")
 	helpers.CheckErrFatal(err)
 
 	p := prompt.New(handler, completer, prompt.OptionPrefix("console> "))
@@ -164,55 +162,6 @@ func DBRecreate(configPath string) error {
 	if err := DBCreate(configPath); err != nil {
 		return err
 	}
-	if err := DBMigrate(configPath); err != nil {
-		return err
-	}
-	return nil
-}
-
-//nolint:gochecknoglobals
-//go:embed internal/app/cloudgontroller/storage/db/migrations
-var migrations embed.FS
-
-// Migrates the Database that is specified in the config file to the newest schema
-func DBMigrate(configPath string) error {
-	config, err := config.Get(configPath)
-	if err != nil {
-		return err
-	}
-	logging.Setup(config)
-	db, info, err := dbconfig.NewConnection(config.DB, false)
-	if err != nil {
-		return err
-	}
-
-	// Load migrations depending on DB Type
-	folder := fmt.Sprintf("migrations/%s", info.Type)
-
-	// Convert embed.FS to a usable migration source for sql-migrate
-	migrations := &migrate.AssetMigrationSource{
-		Asset: migrations.ReadFile,
-		AssetDir: func() func(string) ([]string, error) {
-			return func(path string) ([]string, error) {
-				dirEntry, err := migrations.ReadDir(path)
-				if err != nil {
-					return nil, err
-				}
-				entries := make([]string, 0)
-				for _, e := range dirEntry {
-					entries = append(entries, e.Name())
-				}
-
-				return entries, nil
-			}
-		}(),
-		Dir: folder,
-	}
-
-	// Execute the UP Migration
-	n, err := migrate.Exec(db, info.Type, migrations, migrate.Up)
-	zap.L().Info(fmt.Sprintf("Applied %v DB Migration Steps", n))
-	helpers.CheckErrFatal(err)
 	return nil
 }
 

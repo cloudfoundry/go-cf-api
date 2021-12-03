@@ -144,11 +144,11 @@ Different tags are used to control which tests are run:
 	```
 * DB tests (Postgres) - require running database
 	```bash
-	go test -tags="db,psql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_psql.toml
+	go test -tags="db,psql" ./internal/models -test.config sqlboiler_psql.toml
 	```
 * DB tests (MySQL/MariaDB) - require running database
 	```bash
-	go test -tags="db,mysql" ./internal/app/cloudgontroller/sqlboiler -test.config sqlboiler_mysql.toml
+	go test -tags="db,mysql" ./internal/models -test.config sqlboiler_mysql.toml
 	```
 
 ## Running old and new Cloud Controller in parallel locally

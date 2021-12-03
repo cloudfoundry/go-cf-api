@@ -11,7 +11,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
 )
 
 //#######################//

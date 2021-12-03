@@ -60,10 +60,10 @@ func Install() error {
 
 // Generates sql builerplate code from the specified Database in the config and places it in internal
 func GenerateSQLBoiler() error {
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler"); err != nil {
+	if err := sh.Rm("./internal/storage/db/models"); err != nil {
 		return err
 	}
-	if err := os.MkdirAll("internal/app/cloudgontroller/sqlboiler/mocks", 0755); err != nil {
+	if err := os.MkdirAll("internal/storage/db/models/mocks", 0755); err != nil {
 		return err
 	}
 
@@ -78,14 +78,14 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/psql"); err != nil {
+	if err := sh.Rm("./internal/storage/db/models/psql"); err != nil {
 		return err
 	}
-	if err := sh.Rm("./internal/app/cloudgontroller/sqlboiler/mysql"); err != nil {
+	if err := sh.Rm("./internal/storage/db/models/mysql"); err != nil {
 		return err
 	}
 
-	if err := sh.Run("go", "generate", "./..."); err != nil {
+	if err := sh.Run("go", "generate", "--tags=psql,mysql,unit", "./..."); err != nil {
 		return err
 	}
 
@@ -116,7 +116,7 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 	fileSet := token.NewFileSet()
 	packages, err := parser.ParseDir(
 		fileSet,
-		fmt.Sprintf("internal/app/cloudgontroller/sqlboiler/%s", dbEngine),
+		fmt.Sprintf("internal/storage/db/models/%s", dbEngine),
 		func(fi fs.FileInfo) bool { return true },
 		parser.ParseComments,
 	)
@@ -127,7 +127,7 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 		comments := []*ast.Comment{{Text: fmt.Sprintf("// +build %s", dbEngine)}}
 		if addGoGenerate && !strings.HasPrefix(filename, "boil_") {
 			comments = append(comments, &ast.Comment{
-				Text: fmt.Sprintf("//go:generate mockgen -source=$GOFILE -destination=mocks/%s -copyright_file=../../../../buildtags.txt", filename),
+				Text: fmt.Sprintf("//go:generate sh -c \"echo '\\x2bbuild unit' > ../../../../buildtags.txt && mockgen -source=$GOFILE -destination=mocks/%s -copyright_file=../../../../buildtags.txt && rm -f ../../../../buildtags.txt\"", filename),
 			})
 		}
 		commentMap[file] = append([]*ast.CommentGroup{{List: comments}}, commentMap[file]...)
@@ -138,7 +138,7 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 		if err != nil {
 			return err
 		}
-		err = os.WriteFile(fmt.Sprintf("internal/app/cloudgontroller/sqlboiler/%s_%s", dbEngine, filename), buf.Bytes(), 0644)
+		err = os.WriteFile(fmt.Sprintf("internal/storage/db/models/%s_%s", dbEngine, filename), buf.Bytes(), 0644)
 		if err != nil {
 			return err
 		}
@@ -201,16 +201,16 @@ func createAPIDocs() error {
 	defer delSymLink(symlinkPath)
 
 	// Generate Doc
-	if err := sh.Rm("./internal/app/cloudgontroller/api/swagger"); err != nil {
+	if err := sh.Rm("./internal/api/swagger"); err != nil {
 		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
 	}
-	if err := sh.Run("swag", "init", "-o", "./internal/app/cloudgontroller/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
+	if err := sh.Run("swag", "init", "-o", "./internal/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
 		return fmt.Errorf("failed to run swagger generation: %+v", err)
 	}
 	if err := sh.Rm("./docs/swagger.yaml"); err != nil {
 		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
 	}
-	if err := sh.Copy("./docs/swagger.yaml", "./internal/app/cloudgontroller/api/swagger/swagger.yaml"); err != nil {
+	if err := sh.Copy("./docs/swagger.yaml", "./internal/api/swagger/swagger.yaml"); err != nil {
 		return err
 	}
 	return nil

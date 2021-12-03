@@ -15,17 +15,17 @@ import (
 	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/spf13/cobra"
 	_ "github.com/volatiletech/null/v8"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/api/v3/ratelimiter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/helpers"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/metrics/custommetrics"
-	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/storage/db"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/uaa"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/ratelimiter"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/metrics"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/metrics/custommetrics"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/uaa"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -78,7 +78,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Validator = &api.Validator{Validator: validator.New()}
 
 	// Initialize DB
-	db, _, err := dbconfig.NewConnection(conf.DB, true)
+	db, _, err := db.NewConnection(conf.DB, true)
 	if err != nil {
 		return fmt.Errorf("error connecting to database: %w", err)
 	}
@@ -145,13 +145,8 @@ func main() {
 
 	// Cobra Flags.
 	rootCmd := &cobra.Command{
-		Use:   "cloudgontroller",
-		Short: "POC implemetation of a CAPI V3 compatible golang webserver",
-		// Long: `cloudgontroller is a example webserver that can be useds as a bootstrap project.
-		// 		It provides many patterns out of the box like automatic api documentation, vuejs frontend, fast echo webserver,
-		// 		patterns for fast structured logging and prometheus metrics, rate limiting, config management,
-		// 		sqlboiler generated models from db structure, db schema creation and migration,
-		// 		interactive access to the models with a RPEL console, mage commands for developers and operators and more ...`,
+		Use:     "cloudgontroller",
+		Short:   "POC implemetation of a CAPI V3 compatible golang webserver",
 		Example: "cloudgontroller config_psql.yaml",
 		Args:    cobra.MaximumNArgs(1),
 		RunE:    RootFunc,
