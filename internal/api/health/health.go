@@ -1,4 +1,4 @@
-package handlers
+package health
 
 import (
 	"net/http"
@@ -15,6 +15,6 @@ import (
 // @Success 200 {object} interface{}
 // @Failure 500 {object} echo.HTTPError
 // @Router /healthz [get]
-func getHealth(c echo.Context) error {
+func GetHealth(c echo.Context) error {
 	return c.JSON(http.StatusOK, "OK")
 }
