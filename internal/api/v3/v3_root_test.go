@@ -1,16 +1,17 @@
 //go:build unit
 // +build unit
 
-package info_test
+package v3_test
 
 import (
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/info"
 )
 
 func TestV3Root(t *testing.T) {
@@ -123,8 +124,11 @@ func TestV3Root(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	controller := Controller{ExternalDomain: "api.external.domain", ExternalProtocol: "https"}
-	err := controller.GetV3Root(c)
+	handleFunc := v3.NewV3RootEndpoint(&config.CloudgontrollerConfig{
+		ExternalDomain:   "api.external.domain",
+		ExternalProtocol: "https",
+	})
+	err := handleFunc(c)
 
 	assert.NoError(t, err)
 	assert.JSONEq(t, expectedResponse, rec.Body.String())

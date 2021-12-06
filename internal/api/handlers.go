@@ -6,8 +6,9 @@ import (
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/health"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/info"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/buildpacks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/securitygroups"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
@@ -27,21 +28,13 @@ func RegisterHandlers(
 	e.GET("healthz", health.GetHealth)
 
 	// Info Endpoint
-	infoController := info.Controller{
-		Info:             conf.Info,
-		URLs:             conf.URLs,
-		AppSSH:           conf.AppSSH,
-		ExternalDomain:   conf.ExternalDomain,
-		ExternalProtocol: conf.ExternalProtocol,
-	}
-	e.GET("/", infoController.GetRoot)
-	e.GET("/v3", infoController.GetV3Root)
-	e.GET("/v3/info", infoController.GetV3Info)
+	e.GET("/", NewRootEndpoint(conf))
 
 	// V3 API
+	e.GET("/v3", v3.NewV3RootEndpoint(conf))
 	registerV3Handlers(e, db, jwtMiddleware, rateLimitMiddleware, conf)
 
-	// Serve Swagger-UI API Docs
+	// Serve V3 Swagger-UI API Docs
 	e.GET("docs/v3", func(c echo.Context) error {
 		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", "docs/v3"))
 	})
@@ -58,6 +51,9 @@ func registerV3Handlers(e *echo.Echo, db *sql.DB, jwtMiddleware echo.MiddlewareF
 	}
 	requiresRead := v3Root.Group("", auth.NewRequiresReadMiddleware())
 	requiresWrite := v3Root.Group("", auth.NewRequiresWriteMiddleware())
+
+	// Info
+	e.GET("/v3/info", info.NewV3InfoEndpoint(conf))
 
 	// Buildpacks
 	buildpacksController := buildpacks.Controller{DB: db, Presenter: buildpacks.NewPresenter(), LabelSelectorParser: metadata.NewLabelSelectorParser()}

@@ -1,16 +1,16 @@
 //go:build unit
 // +build unit
 
-package info_test
+package api_test
 
 import (
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/info"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
@@ -165,13 +165,13 @@ func TestRoot(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
-			controller := Controller{
+			handleFunc := api.NewRootEndpoint(&config.CloudgontrollerConfig{
 				ExternalDomain:   tc.externalDomain,
 				ExternalProtocol: tc.externalProtocol,
 				URLs:             tc.urls,
 				AppSSH:           tc.appSSH,
-			}
-			err := controller.GetRoot(c)
+			})
+			err := handleFunc(c)
 
 			assert.NoError(t, err)
 			assert.JSONEq(t, tc.expectedResponse, rec.Body.String())

@@ -4,13 +4,13 @@
 package info_test
 
 import (
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/info"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
@@ -119,12 +119,12 @@ func TestV3Info(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
-			controller := Controller{
+			handleFunc := info.NewV3InfoEndpoint(&config.CloudgontrollerConfig{
 				ExternalDomain:   tc.externalDomain,
 				ExternalProtocol: tc.externalProtocol,
 				Info:             tc.infoConfig,
-			}
-			err := controller.GetV3Info(c)
+			})
+			err := handleFunc(c)
 
 			assert.NoError(t, err)
 			assert.JSONEq(t, tc.expectedResponse, rec.Body.String())
