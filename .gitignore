@@ -153,7 +153,8 @@ web/node_modules
 mage_output_file.go
 main.go
 # Exclude generated swagger docs
-/internal/api/swagger
+/internal/api/docs/*
+!/internal/api/docs/generate.go
 # Exclude IntelliJ run configurations
 .idea/runConfigurations.xml
 # Exclude Temoprary files while generating

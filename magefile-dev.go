@@ -59,7 +59,7 @@ func Install() error {
 // Software Dev Commands //
 ///////////////////////////
 
-// Generates sql builerplate code from the specified Database in the config and places it in internal
+// Generates sql builerplate code from the specified Database in the config and places it in ./internal/storage/db/models
 func GenerateSQLBoiler() error {
 	if err := sh.Rm("./internal/storage/db/models"); err != nil {
 		return err
@@ -156,7 +156,7 @@ func Build() error {
 	if err := sh.Rm("./build/cloudgontroller"); err != nil {
 		return err
 	}
-	if err := Generate(); err != nil {
+	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
 	}
 	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cloudgontroller_mysql", "cmd/main.go"); err != nil {
@@ -167,7 +167,7 @@ func Build() error {
 
 // Runs generators whose result is included in cloudgontroller and runs cloudgontroller.
 func Run() error {
-	if err := createAPIDocs(); err != nil {
+	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
 	}
 	return sh.RunV("go", "run", "cmd/main.go", "config_psql.yaml")
@@ -177,60 +177,11 @@ func Run() error {
 // DOCUMENTATION HELPERS //
 ///////////////////////////
 
-// Runs all the generators we have that produce code/docs etc.
-func Generate() error {
-	if err := createAPIDocs(); err != nil {
+// Generates Markdown Docs for Go Packages in ./docs/godocs
+func GenerateDocs() error {
+	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
 	}
-	if err := createGoDocs(); err != nil {
-		return err
-	}
-	return nil
-}
-
-// Generates the swagger apidoc spec that later is included into the go binary and served on a productive system.
-func createAPIDocs() error {
-	symlinkPath := "./main.go"
-	filePath := "./cmd/main.go"
-
-	// Create symlink main.go in root
-	err := os.Symlink(filePath, symlinkPath)
-	if err != nil {
-		return fmt.Errorf("failed to create symlink: %+v", err)
-	}
-	// Delete it after everything finished
-	defer delSymLink(symlinkPath)
-
-	// Generate Doc
-	if err := sh.Rm("./internal/api/swagger"); err != nil {
-		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
-	}
-	if err := sh.Run("swag", "init", "-o", "./internal/api/swagger", "--parseInternal", "--parseDepth", "1", "--parseDependency", "--parseVendor"); err != nil {
-		return fmt.Errorf("failed to run swagger generation: %+v", err)
-	}
-	if err := sh.Rm("./docs/swagger.yaml"); err != nil {
-		return fmt.Errorf("failed to remove swagger output directory: %+v", err)
-	}
-	if err := sh.Copy("./docs/swagger.yaml", "./internal/api/swagger/swagger.yaml"); err != nil {
-		return err
-	}
-	return nil
-}
-
-func delSymLink(symlinkPath string) error {
-	// Remove Symlink after generation
-	if _, err := os.Lstat(symlinkPath); err == nil {
-		if err := os.Remove(symlinkPath); err != nil {
-			return fmt.Errorf("failed to unlink: %+v", err)
-		}
-	} else if os.IsNotExist(err) {
-		return fmt.Errorf("failed to check symlink: %+v", err)
-	}
-	return nil
-}
-
-// Generates Godocs one can then set as a github page so devs can look at godocs in github
-func createGoDocs() error {
 	const godocdir = "./docs/godocs/Packages"
 	if err := sh.Rm(godocdir); err != nil {
 		return err

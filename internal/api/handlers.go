@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/docs"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/health"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/buildpacks"
@@ -24,7 +25,7 @@ func RegisterHandlers(
 	rateLimitMiddleware echo.MiddlewareFunc,
 	conf *config.CloudgontrollerConfig,
 ) {
-	// Health Endoint
+	// Health Endpoint
 	e.GET("healthz", health.GetHealth)
 
 	// Info Endpoint
