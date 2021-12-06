@@ -33,6 +33,6 @@ jobs:
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
           mage install
-          mage generate
+          mage generatedocs
         env:
           CGO_ENABLED: 0

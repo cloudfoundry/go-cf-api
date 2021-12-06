@@ -4,24 +4,17 @@
 package main
 
 import (
-	"os"
-	"path/filepath"
-
 	"github.com/magefile/mage/sh"
 	"go.uber.org/zap"
+	"os"
 
+	_ "embed"
 	"fmt"
-	"runtime/debug"
-
-	"github.com/creasty/defaults"
 	"github.com/golobby/repl/interpreter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	dbconfig "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db"
-	"gopkg.in/yaml.v2"
-
-	"github.com/c-bata/go-prompt"
 )
 
 //###################################//
@@ -36,89 +29,7 @@ var (
 	currentInterpreter *interpreter.Interpreter
 )
 
-func completer(d prompt.Document) []prompt.Suggest {
-	var s []prompt.Suggest
-	return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
-}
-
-func handler(input string) {
-	defer func() {
-		if err := recover(); err != nil {
-			fmt.Printf("Panic: %v\n%s", err, debug.Stack())
-		}
-	}()
-	out, err := currentInterpreter.Eval(input)
-	if err != nil {
-		fmt.Print(err.Error())
-		return
-	}
-	fmt.Print(out)
-}
-
-// Opens a interactive golang console one can include internal modules and do queries/debugging interactively in go
-func Console() error {
-	symlink := filepath.Join("./", "pkg")
-	os.Symlink("./internal", symlink)
-	defer os.Remove(symlink)
-	wd, err := os.Getwd()
-	helpers.CheckErrFatal(err)
-
-	currentInterpreter, err = interpreter.NewSession(wd)
-	helpers.CheckErrFatal(err)
-
-	_, err = currentInterpreter.Eval(":e 1")
-	helpers.CheckErrFatal(err)
-
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers\"")
-	helpers.CheckErrFatal(err)
-
-	_, err = currentInterpreter.Eval(":e import \"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging\"")
-	helpers.CheckErrFatal(err)
-
-	p := prompt.New(handler, completer, prompt.OptionPrefix("console> "))
-	p.Run()
-	return nil
-}
-
-// Starts a docker container running the database specified in the config file
-func StartDBAndUaaContainers(configPath string) error {
-	config, err := config.Get(configPath)
-	if err != nil {
-		return err
-	}
-	var container string
-	switch config.DB.Type {
-	case "postgres":
-		container = "postgres"
-	case "mysql":
-		container = "mariadb"
-	default:
-		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
-	}
-	err = sh.RunV("docker-compose", "-f", "docker-compose.yml", "up", "-d", container, "uaa")
-	return err
-}
-
-// Starts a docker container running the database specified in the config file
-func DBStart(configPath string) error {
-	config, err := config.Get(configPath)
-	if err != nil {
-		return err
-	}
-	var container string
-	switch config.DB.Type {
-	case "postgres":
-		container = "postgres"
-	case "mysql":
-		container = "mariadb"
-	default:
-		return fmt.Errorf("Unrecognized DB type: %s", config.DB.Type)
-	}
-	err = sh.RunV("docker-compose", "-f", "docker-compose.yml", "up", "-d", container)
-	return err
-}
-
-// Creates the Database that is specified in the config file
+// DBCreate creates the Database that is specified in the config file
 func DBCreate(configPath string) error {
 	config, err := config.Get(configPath)
 	if err != nil {
@@ -136,7 +47,7 @@ func DBCreate(configPath string) error {
 	return nil
 }
 
-// Deletes the Database that is specified in the config file
+// DBDelete deletes the Database that is specified in the config file
 func DBDelete(configPath string) error {
 	config, err := config.Get(configPath)
 	if err != nil {
@@ -155,18 +66,21 @@ func DBDelete(configPath string) error {
 	return nil
 }
 
-// Recreates (Delete,Create,Migrates) the Database that is specified in the config file
-func DBRecreate(configPath string) error {
+// DBRecreate recreates (Delete,Create,Migrates) the Database that is specified in the config file (Cf-Api Config is passed as first postitional parameter and sql file as second postitional parameter)
+func DBRecreate(configPath string, sqlFilePath string) error {
 	if err := DBDelete(configPath); err != nil {
 		return err
 	}
 	if err := DBCreate(configPath); err != nil {
 		return err
 	}
+	if err := DBLoad(configPath, sqlFilePath); err != nil {
+		return err
+	}
 	return nil
 }
 
-// Load SQL file into the Database
+// DBLoad loads a SQL file into the Database (Cf-Api Config is passed as first postitional parameter and sql file as second postitional parameter)
 func DBLoad(configPath string, sqlFilePath string) error {
 	config, err := config.Get(configPath)
 	if err != nil {
@@ -200,14 +114,12 @@ func DBLoad(configPath string, sqlFilePath string) error {
 	return nil
 }
 
-// Generate a config file with default values
+//go:embed internal/config/defaults.yml
+var defaultConfig []byte
+
+// GenerateDefaultConfig generate a config file with default values
 func GenerateDefaultConfig(configPath string) error {
-	tmp := &config.CfApiConfig{}
-	err := defaults.Set(tmp)
-	helpers.CheckErrFatal(err)
-	data, err := yaml.Marshal(tmp)
-	helpers.CheckErrFatal(err)
-	err = os.WriteFile(configPath, data, 0611)
+	err := os.WriteFile(configPath, defaultConfig, 0611)
 	helpers.CheckErrFatal(err)
 	return nil
 }

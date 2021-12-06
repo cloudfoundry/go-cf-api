@@ -26,31 +26,44 @@ import (
 // Dependencies //
 //////////////////
 
-// Installs used CLI Tools in this project other than nodejs,yarn and go itself. Is a requirement for many mage commands to run.
-func Install() error {
-	if err := sh.Run("go", "install", "github.com/golang/mock/mockgen"); err != nil {
+// GetDependencies installs needed Go CLI Tools and Dependencies. Required to run go:generate or other generators.
+func GetDependencies() error {
+	// Check Required Tools
+	requirements := [][]string{
+		{"go", "version"},
+		{"node", "--version"},
+		{"yarn", "--version"},
+	}
+	for _, requirement := range requirements {
+		if err := sh.Run(requirement[0], requirement[1:]...); err != nil {
+			fmt.Println("Please make sure this tool is installed. It is a prerequisite.")
+			return err
+		}
+	}
+	// Install Doc Dependencies
+	if err := sh.Run("yarn", "install", "--cwd", "./docs"); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "install", "github.com/golangci/golangci-lint/cmd/golangci-lint"); err != nil {
+	// Get Go Mod Packages
+	if err := sh.Run("go", "get", "--tags=psql,unit,integration", "./..."); err != nil {
 		return err
 	}
-	if err := sh.Run("go", "install", "github.com/swaggo/swag/cmd/swag"); err != nil {
-		return err
+	// Install CLIs
+	packages := []string{
+		"github.com/golang/mock/mockgen",
+		"github.com/golangci/golangci-lint/cmd/golangci-lint",
+		"github.com/swaggo/swag/cmd/swag",
+		"golang.org/x/tools/cmd/godoc",
+		"github.com/princjef/gomarkdoc/cmd/gomarkdoc",
+		"github.com/volatiletech/sqlboiler/v4",
+		"github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql",
+		"github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql",
 	}
-	if err := sh.Run("go", "install", "golang.org/x/tools/cmd/godoc"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "install", "github.com/princjef/gomarkdoc/cmd/gomarkdoc"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql"); err != nil {
-		return err
-	}
-	if err := sh.Run("go", "install", "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql"); err != nil {
-		return err
+
+	for _, pkg := range packages {
+		if err := sh.Run("go", "install", pkg); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -59,7 +72,7 @@ func Install() error {
 // Software Dev Commands //
 ///////////////////////////
 
-// Generates sql builerplate code from the specified Database in the config and places it in ./internal/storage/db/models
+// GenerateSQLBoiler generates sql builerplate code from the specified Database in the config and places it in ./internal/storage/db/models. Needs a running mysql and psql instance with ccdb database and a fully deployed schema to generate the code from.
 func GenerateSQLBoiler() error {
 	if err := sh.Rm("./internal/storage/db/models"); err != nil {
 		return err
@@ -68,7 +81,18 @@ func GenerateSQLBoiler() error {
 		return err
 	}
 
-	if err := runSQLBoiler(); err != nil {
+	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml",
+		"--no-driver-templates",
+		"--templates", "sqlboiler-templates/shared",
+		"--templates", "sqlboiler-templates/psql",
+	); err != nil {
+		return err
+	}
+	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml",
+		"--no-driver-templates",
+		"--templates", "sqlboiler-templates/shared",
+		"--templates", "sqlboiler-templates/mysql",
+	); err != nil {
 		return err
 	}
 
@@ -93,25 +117,7 @@ func GenerateSQLBoiler() error {
 	return nil
 }
 
-func runSQLBoiler() error {
-	if err := sh.Run("sqlboiler", "psql", "-c", "sqlboiler_psql.toml",
-		"--no-driver-templates",
-		"--templates", "sqlboiler-templates/shared",
-		"--templates", "sqlboiler-templates/psql",
-	); err != nil {
-		return err
-	}
-	if err := sh.Run("sqlboiler", "mysql", "-c", "sqlboiler_mysql.toml",
-		"--no-driver-templates",
-		"--templates", "sqlboiler-templates/shared",
-		"--templates", "sqlboiler-templates/mysql",
-	); err != nil {
-		return err
-	}
-	return nil
-}
-
-// Parses the AST to add additional comments and remove certain tests that fail
+// modifySQLBoilerFiles adds buildtags for multi db support. Also add go generated for test mocks. TODO -> Do this with SQLBoiler Natively(Needs Contribution)
 func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 	// Append build tags to every generated file so we can use e.g. "go test -tags=db,psql" to switch between unit and db tests
 	fileSet := token.NewFileSet()
@@ -151,7 +157,7 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 // Software Building //
 ///////////////////////
 
-// Runs go:generate and builds both binary(psql and mysql).
+// Build Runs go:generate and builds both binary(psql and mysql).
 func Build() error {
 	if err := sh.Rm("./build/cfapi*"); err != nil {
 		return err
@@ -165,7 +171,7 @@ func Build() error {
 	return sh.RunV("go", "build", "--tags=psql", "-o", "build/cfapi_psql", "cmd/main.go")
 }
 
-// Runs go:generate and starts cfapi with config_psql.yaml.
+// Run runs go:generate and starts cfapi with config_psql.yaml.
 func Run() error {
 	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
@@ -177,7 +183,7 @@ func Run() error {
 // DOCUMENTATION HELPERS //
 ///////////////////////////
 
-// Generates Markdown Docs for Go Packages in ./docs/godocs
+// GenerateDocs generates Markdown Docs for Go Packages in ./docs/godocs
 func GenerateDocs() error {
 	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
@@ -199,19 +205,29 @@ func GenerateDocs() error {
 // MISC //
 //////////
 
-// Removes all generated files from the project
+// Clean removes all generated files from the project
 func Clean() error {
-	if err := sh.Rm("./build"); err != nil {
-		return err
+	paths := []string{
+		"./build",
+		"./vendor",
+		"./repl",
+		"./internal/api/docs/docs.go",
+		"./internal/api/docs/swagger.json",
+		"./internal/api/docs/swagger.yaml",
+		"./docs/swagger.yaml",
+		"./docs/build",
+		"./docs/.docusaurus",
+		"./docs/godocs/Packages",
+		"./docs/godocs/nmode_modules",
+		"./main.go",
+		"./mage_output_file.go",
 	}
-	if err := sh.Rm("./vendor"); err != nil {
-		return err
+
+	for _, p := range paths {
+		if err := sh.Rm(p); err != nil {
+			return err
+		}
 	}
-	if err := sh.Rm("./repl"); err != nil {
-		return err
-	}
-	if err := sh.Rm("./mage_output_file.go"); err != nil {
-		return err
-	}
+
 	return nil
 }
