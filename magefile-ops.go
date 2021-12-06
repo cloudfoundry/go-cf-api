@@ -200,15 +200,9 @@ func DBLoad(configPath string, sqlFilePath string) error {
 	return nil
 }
 
-// Seeds the Database that is specified in the config file with a large number of entries for performance tests
-func DBPerfSeed() error {
-	zap.L().Warn("Not Yet Implemented")
-	return nil
-}
-
 // Generate a config file with default values
 func GenerateDefaultConfig(configPath string) error {
-	tmp := &config.CloudgontrollerConfig{}
+	tmp := &config.CfApiConfig{}
 	err := defaults.Set(tmp)
 	helpers.CheckErrFatal(err)
 	data, err := yaml.Marshal(tmp)

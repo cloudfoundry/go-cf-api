@@ -22,8 +22,8 @@ import (
 // @Param guid path string true "Buildpack GUID"
 // @Success 200 {object} Response
 // @Success 404 {object} interface{}
-// @Failure 400 {object} v3.CloudControllerError
-// @Failure 500 {object} v3.CloudControllerError
+// @Failure 400 {object} v3.CfApiError
+// @Failure 500 {object} v3.CfApiError
 // @Router /buildpacks/{guid} [get]
 func (cont *Controller) Get(c echo.Context) error {
 	guid := c.Param(GUIDParam)

@@ -58,7 +58,7 @@ func (s *RequiresScopeMiddlewareSuite) TestReadMiddleware() {
 				s.NoError(err)
 				s.handler.AssertCalled(s.T(), "Next", s.ctx)
 			} else {
-				var ccErr *v3.CloudControllerError
+				var ccErr *v3.CfApiError
 				s.ErrorAs(err, &ccErr)
 				s.Equal(http.StatusForbidden, ccErr.HTTPStatus)
 				s.Equal("user lacks sufficient scope to read resource", ccErr.Err.Error())
@@ -90,7 +90,7 @@ func (s *RequiresScopeMiddlewareSuite) TestWriteMiddleware() {
 				s.NoError(err)
 				s.handler.AssertCalled(s.T(), "Next", s.ctx)
 			} else {
-				var ccErr *v3.CloudControllerError
+				var ccErr *v3.CfApiError
 				s.ErrorAs(err, &ccErr)
 				s.Equal(http.StatusForbidden, ccErr.HTTPStatus)
 				s.Equal("user lacks sufficient scope to write resource", ccErr.Err.Error())

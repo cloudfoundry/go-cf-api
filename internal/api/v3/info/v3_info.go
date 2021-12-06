@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewV3InfoEndpoint(config *config.CloudgontrollerConfig) echo.HandlerFunc {
+func NewV3InfoEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		v3Info := V3Info{
 			Name:        config.Info.Name,

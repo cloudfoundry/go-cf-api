@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func NewRootEndpoint(config *config.CloudgontrollerConfig) echo.HandlerFunc {
+func NewRootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		root := Root{
 			Links: RootLinks{
@@ -45,7 +45,7 @@ func NewRootEndpoint(config *config.CloudgontrollerConfig) echo.HandlerFunc {
 	}
 }
 
-func routingLink(config *config.CloudgontrollerConfig) *info.Link {
+func routingLink(config *config.CfApiConfig) *info.Link {
 	var link *info.Link
 	if config.URLs.RoutingAPI != nil {
 		link = &info.Link{HREF: *config.URLs.RoutingAPI}

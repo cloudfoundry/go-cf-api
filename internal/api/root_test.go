@@ -165,7 +165,7 @@ func TestRoot(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
-			handleFunc := api.NewRootEndpoint(&config.CloudgontrollerConfig{
+			handleFunc := api.NewRootEndpoint(&config.CfApiConfig{
 				ExternalDomain:   tc.externalDomain,
 				ExternalProtocol: tc.externalProtocol,
 				URLs:             tc.urls,

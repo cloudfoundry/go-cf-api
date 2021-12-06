@@ -10,7 +10,7 @@ type Link struct {
 	Meta map[string]string `json:"meta,omitempty"`
 }
 
-func ExternalURL(endpoint string, config *config.CloudgontrollerConfig) string {
+func ExternalURL(endpoint string, config *config.CfApiConfig) string {
 	externalUrl := url.URL{
 		Scheme: config.ExternalProtocol,
 		Host:   config.ExternalDomain,

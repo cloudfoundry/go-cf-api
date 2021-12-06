@@ -51,7 +51,7 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(http.StatusNotFound, err.HTTPStatus)
 }
@@ -63,7 +63,7 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }

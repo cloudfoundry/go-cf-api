@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func NewV3RootEndpoint(config *config.CloudgontrollerConfig) echo.HandlerFunc {
+func NewV3RootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		links := map[string]info.Link{"self": {HREF: info.ExternalURL("v3", config)}}
 		endpoints := []string{

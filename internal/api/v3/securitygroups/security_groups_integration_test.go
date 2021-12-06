@@ -279,7 +279,7 @@ func (suite *SecurityGroupIntegrationTestSuite) TestListAndGetPermissions() {
 						suite.NoError(err)
 						suite.Equal(securityGroupGUID, resp.GUID)
 					} else {
-						var ccErr *v3.CloudControllerError
+						var ccErr *v3.CfApiError
 						suite.ErrorAs(err, &ccErr)
 						suite.Equal(http.StatusNotFound, ccErr.HTTPStatus)
 					}

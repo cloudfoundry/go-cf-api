@@ -151,21 +151,21 @@ func modifySQLBoilerFiles(dbEngine string, addGoGenerate bool) error {
 // Software Building //
 ///////////////////////
 
-// Runs all generators we have and builds a binary.
+// Runs go:generate and builds both binary(psql and mysql).
 func Build() error {
-	if err := sh.Rm("./build/cloudgontroller"); err != nil {
+	if err := sh.Rm("./build/cfapi*"); err != nil {
 		return err
 	}
 	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
 	}
-	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cloudgontroller_mysql", "cmd/main.go"); err != nil {
+	if err := sh.RunV("go", "build", "--tags=mysql", "-o", "build/cfapi_mysql", "cmd/main.go"); err != nil {
 		return err
 	}
-	return sh.RunV("go", "build", "--tags=psql", "-o", "build/cloudgontroller_psql", "cmd/main.go")
+	return sh.RunV("go", "build", "--tags=psql", "-o", "build/cfapi_psql", "cmd/main.go")
 }
 
-// Runs generators whose result is included in cloudgontroller and runs cloudgontroller.
+// Runs go:generate and starts cfapi with config_psql.yaml.
 func Run() error {
 	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err

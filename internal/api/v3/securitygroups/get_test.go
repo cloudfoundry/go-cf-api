@@ -72,7 +72,7 @@ func (suite *GetSecurityGroupTestSuite) TestDBNoRowsError() {
 	dbErr := sql.ErrNoRows
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.ResourceNotFound("security_group", dbErr), err)
 	suite.presenter.AssertNotCalled(suite.T(), "ResponseObject")
@@ -85,7 +85,7 @@ func (suite *GetSecurityGroupTestSuite) TestOtherDBError() {
 	dbErr := errors.New("something went wrong")
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.UnknownError(dbErr), err)
 	suite.presenter.AssertNotCalled(suite.T(), "ResponseObject")
@@ -100,7 +100,7 @@ func (suite *GetSecurityGroupTestSuite) TestPresenterError() {
 	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, presenterErr)
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.SecurityGroup{GUID: expectedGUID, Rules: null.StringFrom("[]")}, nil)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.UnknownError(fmt.Errorf("could not construct response: %w", presenterErr)), err)
 }

@@ -1,4 +1,3 @@
-// Build server.go to get the binary for cloudgontroller
 package api
 
 import (

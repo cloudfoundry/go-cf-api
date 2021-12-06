@@ -96,7 +96,7 @@ func (s *ListSecurityGroupTestSuite) TestFilters() {
 		query                string
 		expectedCountFilters []qm.QueryMod
 		expectedAllFilters   []qm.QueryMod
-		expectedErr          *v3.CloudControllerError
+		expectedErr          *v3.CfApiError
 	}{
 		"no name": {
 			query:                "names=",
@@ -222,7 +222,7 @@ func (s *ListSecurityGroupTestSuite) TestFilters() {
 
 			err := s.controller.List(s.ctx)
 			if tc.expectedErr != nil {
-				var ccErr *v3.CloudControllerError
+				var ccErr *v3.CfApiError
 				s.ErrorAs(err, &ccErr)
 				s.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
 				return

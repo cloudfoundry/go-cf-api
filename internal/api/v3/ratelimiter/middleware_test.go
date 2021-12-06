@@ -69,7 +69,7 @@ func (s *RateLimiterMiddlewareSuite) TestDoesNotCallNextMiddlewareOrIncrementWhe
 	s.generalRateLimiter.On("Check", userGUID).Return(false, map[string]string{}, nil)
 
 	err := s.middleware(s.handler.Next)(s.ctx)
-	var ccErr *v3.CloudControllerError
+	var ccErr *v3.CfApiError
 	s.ErrorAs(err, &ccErr)
 	s.Equal(http.StatusTooManyRequests, ccErr.HTTPStatus)
 	s.handler.AssertNotCalled(s.T(), "Next")
@@ -104,7 +104,7 @@ func (s *RateLimiterMiddlewareSuite) TestDoesNotCallNextMiddlewareWhenUnauthenti
 	s.unauthenticatedRateLimiter.On("Check", ip).Return(false, map[string]string{}, nil)
 
 	err := s.middleware(s.handler.Next)(s.ctx)
-	var ccErr *v3.CloudControllerError
+	var ccErr *v3.CfApiError
 	s.ErrorAs(err, &ccErr)
 	s.Equal(http.StatusTooManyRequests, ccErr.HTTPStatus)
 	s.handler.AssertNotCalled(s.T(), "Next")

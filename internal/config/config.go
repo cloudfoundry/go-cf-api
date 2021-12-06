@@ -22,7 +22,7 @@ import (
 //go:embed defaults.yml
 var defaults []byte //nolint:gochecknoglobals // Until https://github.com/leighmcculloch/gochecknoglobals/pull/22 is merged
 
-type CloudgontrollerConfig struct {
+type CfApiConfig struct {
 	Listen           string        `yaml:"listen"`
 	ExternalDomain   string        `yaml:"external_domain" validate:"required"`
 	ExternalProtocol string        `yaml:"external_protocol" validate:"required"`
@@ -94,8 +94,8 @@ type RateLimitConf struct {
 // Priority from lowest to highest: Default Values, Config File, Environment Variables
 // After setting the Config in this order it is validated according to struct tags
 // If validation is not succefull we have a invalid config and thus throw a FATAL
-func Get(configFile string) (*CloudgontrollerConfig, error) {
-	var config *CloudgontrollerConfig
+func Get(configFile string) (*CfApiConfig, error) {
+	var config *CfApiConfig
 	err := yaml.Unmarshal(defaults, &config)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func Get(configFile string) (*CloudgontrollerConfig, error) {
 
 // We need to extend the validation function because of https://github.com/go-playground/validator/issues/782
 // Otherwise users would not get a clue why their config did not validate (meaningless error message).
-func (s *CloudgontrollerConfig) Validate() error {
+func (s *CfApiConfig) Validate() error {
 	// Check config with validator tags
 	if err := validator.New().Struct(s); err != nil {
 		fields := strings.Split(strings.Split(err.Error(), "'")[1], ".")

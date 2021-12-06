@@ -119,7 +119,7 @@ func TestV3Info(t *testing.T) {
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
-			handleFunc := info.NewV3InfoEndpoint(&config.CloudgontrollerConfig{
+			handleFunc := info.NewV3InfoEndpoint(&config.CfApiConfig{
 				ExternalDomain:   tc.externalDomain,
 				ExternalProtocol: tc.externalProtocol,
 				Info:             tc.infoConfig,

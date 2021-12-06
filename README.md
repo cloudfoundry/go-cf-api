@@ -1,4 +1,4 @@
-![lint](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
+![lint](https://github.tools.sap/cloudfoundry/ cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 
 # go-cf-api
 A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go

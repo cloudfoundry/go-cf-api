@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -32,7 +33,7 @@ import (
 
 func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // length is not a problem for now
 	// Parse Config
-	var conf *config.CloudgontrollerConfig
+	var conf *config.CfApiConfig
 	var err error
 	if len(args) == 1 {
 		// Parse File and Env
@@ -61,7 +62,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
 	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		var ccErr *v3.CloudControllerError
+		var ccErr *v3.CfApiError
 		if errors.As(err, &ccErr) {
 			errResponse := c.JSON(ccErr.HTTPStatus, v3.AsErrors(*ccErr))
 			if errResponse != nil {
@@ -120,7 +121,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	return nil
 }
 
-// @title CloudGontroller API
+// @title CF API
 // @version 3.0.0
 // @description CAPI V3 Compatible API with blazing fast backend.
 
@@ -143,12 +144,17 @@ func main() {
 	logger, _ := config.Build()
 	zap.ReplaceGlobals(logger)
 
+	exe, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+
 	// Cobra Flags.
 	rootCmd := &cobra.Command{
-		Use:     "cloudgontroller",
-		Short:   "POC implemetation of a CAPI V3 compatible golang webserver",
-		Example: "cloudgontroller config_psql.yaml",
-		Args:    cobra.MaximumNArgs(1),
+		Use:     "CF API [ConfigPath]",
+		Short:   "POC implemetation of a CAPI V3 API compatible golang webserver",
+		Example: fmt.Sprintf("%s/%s config_psql.yaml", filepath.Dir(exe), filepath.Base(os.Args[0])),
+		Args:    cobra.ExactArgs(1),
 		RunE:    RootFunc,
 	}
 

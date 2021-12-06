@@ -38,7 +38,7 @@ func DefaultFilters() FilterParams {
 // @Success 200 {object} []Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
-// @Failure 500 {object} v3.CloudControllerError
+// @Failure 500 {object} v3.CfApiError
 // @Router /buildpacks [get]
 
 func (cont *Controller) List(c echo.Context) error {

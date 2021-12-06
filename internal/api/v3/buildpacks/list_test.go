@@ -201,7 +201,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 		query                string
 		expectedCountFilters []qm.QueryMod
 		expectedAllFilters   []qm.QueryMod
-		expectedErr          *v3.CloudControllerError
+		expectedErr          *v3.CfApiError
 	}{
 		"no name": {
 			query:                "names=",
@@ -375,7 +375,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 
 			err := suite.controller.List(suite.ctx)
 			if tc.expectedErr != nil {
-				var ccErr *v3.CloudControllerError
+				var ccErr *v3.CfApiError
 				suite.ErrorAs(err, &ccErr)
 				suite.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
 				return

@@ -95,7 +95,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
 	reader := strings.NewReader(`{"name" : "}`)
 	suite.req.Body = ioutil.NopCloser(reader)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
 	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
 }
@@ -109,7 +109,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
 		{Name: "existing_buildpack", Position: 1},
 	}, nil)
 
-	var err *v3.CloudControllerError
+	var err *v3.CfApiError
 	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
 	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
 	suite.Contains(err.Detail, "Position already exists")

@@ -23,7 +23,7 @@ func RegisterHandlers(
 	db *sql.DB,
 	jwtMiddleware echo.MiddlewareFunc,
 	rateLimitMiddleware echo.MiddlewareFunc,
-	conf *config.CloudgontrollerConfig,
+	conf *config.CfApiConfig,
 ) {
 	// Health Endpoint
 	e.GET("healthz", health.GetHealth)
@@ -45,7 +45,7 @@ func RegisterHandlers(
 	e.GET(fmt.Sprintf("%s/*", "docs/v3"), echoSwagger.WrapHandler)
 }
 
-func registerV3Handlers(e *echo.Echo, db *sql.DB, jwtMiddleware echo.MiddlewareFunc, rateLimitMiddleware echo.MiddlewareFunc, conf *config.CloudgontrollerConfig) {
+func registerV3Handlers(e *echo.Echo, db *sql.DB, jwtMiddleware echo.MiddlewareFunc, rateLimitMiddleware echo.MiddlewareFunc, conf *config.CfApiConfig) {
 	v3Root := e.Group("v3/", jwtMiddleware)
 	if conf.RateLimit.Enabled {
 		v3Root.Use(rateLimitMiddleware)

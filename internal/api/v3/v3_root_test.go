@@ -124,7 +124,7 @@ func TestV3Root(t *testing.T) {
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
 
-	handleFunc := v3.NewV3RootEndpoint(&config.CloudgontrollerConfig{
+	handleFunc := v3.NewV3RootEndpoint(&config.CfApiConfig{
 		ExternalDomain:   "api.external.domain",
 		ExternalProtocol: "https",
 	})

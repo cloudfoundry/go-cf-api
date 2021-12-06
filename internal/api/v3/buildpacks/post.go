@@ -22,8 +22,8 @@ import (
 // @produce json
 // @Success 201 {object} Response
 // @Success 404 {object} interface{}
-// @Failure 400 {object} v3.CloudControllerError
-// @Failure 500 {object} v3.CloudControllerError
+// @Failure 400 {object} v3.CfApiError
+// @Failure 500 {object} v3.CfApiError
 // @Router /buildpacks [post]
 func (cont *Controller) Post(c echo.Context) error {
 	logger := logging.FromContext(c)
