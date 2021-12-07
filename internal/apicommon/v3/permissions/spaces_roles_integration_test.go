@@ -101,9 +101,9 @@ func (suite *AllowedSpaceIDsIntegrationTestSuite) TestSpaceRoles() {
 			expectedSpaceIDs: func() []int { return []int{developerSpace.ID, auditorSpace.ID, supporterSpace.ID, managerSpace.ID} },
 		},
 	}
-	for name, tc := range cases {
-		suite.Run(name, func() {
-			allowedSpaceIDs, err := suite.querier.AllowedSpaceIDsForUser(suite.user.GUID, tc.roles...)
+	for testCaseName, testCase := range cases {
+		suite.Run(testCaseName, func() {
+			allowedSpaceIDs, err := suite.querier.AllowedSpaceIDsForUser(suite.user.GUID, testCase.roles...)
 			suite.NoError(err)
 			suite.NotNil(allowedSpaceIDs)
 
@@ -114,7 +114,7 @@ func (suite *AllowedSpaceIDsIntegrationTestSuite) TestSpaceRoles() {
 			spaces, err := models.Spaces(qms...).All(suite.DBCtx, suite.DB)
 			suite.NoError(err)
 			for _, space := range spaces {
-				suite.Contains(tc.expectedSpaceIDs(), space.ID)
+				suite.Contains(testCase.expectedSpaceIDs(), space.ID)
 			}
 		})
 	}
@@ -160,9 +160,9 @@ func (suite *AllowedSpaceIDsIntegrationTestSuite) TestOrgRoles() {
 			expectedSpaceIDs: func() []int { return []int{managerSpace.ID, auditorSpace.ID} },
 		},
 	}
-	for name, tc := range cases {
-		suite.Run(name, func() {
-			allowedSpaceIDs, err := suite.querier.AllowedSpaceIDsForUser(suite.user.GUID, tc.roles...)
+	for testCaseName, testCase := range cases {
+		suite.Run(testCaseName, func() {
+			allowedSpaceIDs, err := suite.querier.AllowedSpaceIDsForUser(suite.user.GUID, testCase.roles...)
 			suite.NoError(err)
 			suite.NotNil(allowedSpaceIDs)
 
@@ -173,7 +173,7 @@ func (suite *AllowedSpaceIDsIntegrationTestSuite) TestOrgRoles() {
 			spaces, err := models.Spaces(qms...).All(suite.DBCtx, suite.DB)
 			suite.NoError(err)
 			for _, space := range spaces {
-				suite.Contains(tc.expectedSpaceIDs(), space.ID)
+				suite.Contains(testCase.expectedSpaceIDs(), space.ID)
 			}
 		})
 	}

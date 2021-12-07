@@ -20,9 +20,9 @@ func TestZapLogger(t *testing.T) {
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "/something", nil)
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	ctx := e.NewContext(req, rec)
 
-	h := func(c echo.Context) error {
+	handler := func(c echo.Context) error {
 		return c.String(http.StatusOK, "")
 	}
 
@@ -30,7 +30,7 @@ func TestZapLogger(t *testing.T) {
 
 	logger := zap.New(obs)
 
-	err := logging.NewEchoZapLogger(logger)(h)(c)
+	err := logging.NewEchoZapLogger(logger)(handler)(ctx)
 
 	assert.Nil(t, err)
 	assert.Equal(t, 2, logs.Len())

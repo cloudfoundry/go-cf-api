@@ -20,9 +20,9 @@ import (
 )
 
 //go:embed defaults.yml
-var defaults []byte //nolint:gochecknoglobals // Until https://github.com/leighmcculloch/gochecknoglobals/pull/22 is merged
+var defaults []byte //nolint:gochecknoglobals // Go embed requires global variable
 
-type CfApiConfig struct {
+type CfAPIConfig struct {
 	Listen           string        `yaml:"listen"`
 	ExternalDomain   string        `yaml:"external_domain" validate:"required"`
 	ExternalProtocol string        `yaml:"external_protocol" validate:"required"`
@@ -94,8 +94,8 @@ type RateLimitConf struct {
 // Priority from lowest to highest: Default Values, Config File, Environment Variables
 // After setting the Config in this order it is validated according to struct tags
 // If validation is not succefull we have a invalid config and thus throw a FATAL
-func Get(configFile string) (*CfApiConfig, error) {
-	var config *CfApiConfig
+func Get(configFile string) (*CfAPIConfig, error) {
+	var config *CfAPIConfig
 	err := yaml.Unmarshal(defaults, &config)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func Get(configFile string) (*CfApiConfig, error) {
 
 // We need to extend the validation function because of https://github.com/go-playground/validator/issues/782
 // Otherwise users would not get a clue why their config did not validate (meaningless error message).
-func (s *CfApiConfig) Validate() error {
+func (s *CfAPIConfig) Validate() error {
 	// Check config with validator tags
 	if err := validator.New().Struct(s); err != nil {
 		fields := strings.Split(strings.Split(err.Error(), "'")[1], ".")
@@ -148,13 +148,13 @@ func (s *CfApiConfig) Validate() error {
 		for fieldNumber, fieldName := range fields {
 			// The first field is the struct name, we must skip that
 			if fieldNumber > 0 {
-				f, _ := currentField.FieldByName(fieldName)
-				if f.Type.Kind() == reflect.Struct {
+				field, _ := currentField.FieldByName(fieldName)
+				if field.Type.Kind() == reflect.Struct {
 					// If the next field is a struct, we itterate deeper
-					currentField = f.Type
+					currentField = field.Type
 				} else {
 					// If it is not we have a basic datatype so we save that field
-					resultField = f
+					resultField = field
 					break
 				}
 			}

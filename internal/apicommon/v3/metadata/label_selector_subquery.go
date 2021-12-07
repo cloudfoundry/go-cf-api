@@ -49,20 +49,20 @@ func (selectors LabelSelectorSlice) Filters(resourceTable, labelsTable string) [
 	var notInEquals notInEquals
 
 	// Group selectors into operators that can be combined so we only need <=4 subqueries
-	for _, ls := range selectors {
-		switch ls.Operator {
+	for _, labelSelector := range selectors {
+		switch labelSelector.Operator {
 		case Exists:
-			exists = append(exists, ls.Key)
+			exists = append(exists, labelSelector.Key)
 		case NotExists:
-			notExists = append(notExists, ls.Key)
+			notExists = append(notExists, labelSelector.Key)
 		case Eq, EqAlt:
-			inEquals.eq = append(inEquals.eq, ls)
+			inEquals.eq = append(inEquals.eq, labelSelector)
 		case In:
-			inEquals.in = append(inEquals.in, ls)
+			inEquals.in = append(inEquals.in, labelSelector)
 		case NotEq:
-			notInEquals.notEq = append(notInEquals.notEq, ls)
+			notInEquals.notEq = append(notInEquals.notEq, labelSelector)
 		case NotIn:
-			notInEquals.notIn = append(notInEquals.notIn, ls)
+			notInEquals.notIn = append(notInEquals.notIn, labelSelector)
 		}
 	}
 

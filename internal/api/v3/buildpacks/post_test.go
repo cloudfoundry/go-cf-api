@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
@@ -95,7 +95,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidJson() {
 	reader := strings.NewReader(`{"name" : "}`)
 	suite.req.Body = ioutil.NopCloser(reader)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
 	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
 }
@@ -109,7 +109,7 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
 		{Name: "existing_buildpack", Position: 1},
 	}, nil)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
 	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
 	suite.Contains(err.Detail, "Position already exists")

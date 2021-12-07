@@ -4,13 +4,13 @@
 package api_test
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
@@ -158,23 +158,23 @@ func TestRoot(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
 			e := echo.New()
 			req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/", nil)
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
+			ctx := e.NewContext(req, rec)
 
-			handleFunc := api.NewRootEndpoint(&config.CfApiConfig{
-				ExternalDomain:   tc.externalDomain,
-				ExternalProtocol: tc.externalProtocol,
-				URLs:             tc.urls,
-				AppSSH:           tc.appSSH,
+			handleFunc := api.NewRootEndpoint(&config.CfAPIConfig{
+				ExternalDomain:   testCase.externalDomain,
+				ExternalProtocol: testCase.externalProtocol,
+				URLs:             testCase.urls,
+				AppSSH:           testCase.appSSH,
 			})
-			err := handleFunc(c)
+			err := handleFunc(ctx)
 
 			assert.NoError(t, err)
-			assert.JSONEq(t, tc.expectedResponse, rec.Body.String())
+			assert.JSONEq(t, testCase.expectedResponse, rec.Body.String())
 		})
 	}
 }

@@ -20,7 +20,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	mock_metadata "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata/mocks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
@@ -201,7 +201,7 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 		query                string
 		expectedCountFilters []qm.QueryMod
 		expectedAllFilters   []qm.QueryMod
-		expectedErr          *v3.CfApiError
+		expectedErr          *v3.CfAPIError
 	}{
 		"no name": {
 			query:                "names=",
@@ -365,29 +365,29 @@ func (suite *GetMultipleBuildpacksTestSuite) TestFilters() {
 			},
 		},
 	}
-	for name, tc := range cases {
-		suite.Run(name, func() {
+	for testCaseName, testCase := range cases {
+		suite.Run(testCaseName, func() {
 			suite.SetupTest() // needed to ensure mocks are fresh for every test case
-			suite.req.URL.RawQuery = tc.query
+			suite.req.URL.RawQuery = testCase.query
 			suite.querier.EXPECT().Count(gomock.Any(), gomock.Any()).AnyTimes().Return(int64(50), nil)
 			suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).AnyTimes().Return(models.BuildpackSlice{{Name: "test_buildpack"}}, nil)
 			suite.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
 			err := suite.controller.List(suite.ctx)
-			if tc.expectedErr != nil {
-				var ccErr *v3.CfApiError
+			if testCase.expectedErr != nil {
+				var ccErr *v3.CfAPIError
 				suite.ErrorAs(err, &ccErr)
-				suite.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
+				suite.Equal(testCase.expectedErr.HTTPStatus, ccErr.HTTPStatus)
 				return
 			}
 			suite.NoError(err)
 			suite.querierFunc.AssertNumberOfCalls(suite.T(), "Get", 2)
 
 			countQueryMods := suite.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-			suite.ElementsMatch(tc.expectedCountFilters, countQueryMods)
+			suite.ElementsMatch(testCase.expectedCountFilters, countQueryMods)
 
 			allQueryMods := suite.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-			expectedAllQueryMods := append(baseQueryMods, tc.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
+			expectedAllQueryMods := append(baseQueryMods, testCase.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
 			suite.ElementsMatch(expectedAllQueryMods, allQueryMods)
 		})
 	}

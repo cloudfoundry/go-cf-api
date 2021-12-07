@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"testing"
 
@@ -17,7 +16,8 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions/mocks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
@@ -72,7 +72,7 @@ func (suite *GetSecurityGroupTestSuite) TestDBNoRowsError() {
 	dbErr := sql.ErrNoRows
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.ResourceNotFound("security_group", dbErr), err)
 	suite.presenter.AssertNotCalled(suite.T(), "ResponseObject")
@@ -85,7 +85,7 @@ func (suite *GetSecurityGroupTestSuite) TestOtherDBError() {
 	dbErr := errors.New("something went wrong")
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, dbErr)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.UnknownError(dbErr), err)
 	suite.presenter.AssertNotCalled(suite.T(), "ResponseObject")
@@ -100,7 +100,7 @@ func (suite *GetSecurityGroupTestSuite) TestPresenterError() {
 	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, presenterErr)
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(&models.SecurityGroup{GUID: expectedGUID, Rules: null.StringFrom("[]")}, nil)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(v3.UnknownError(fmt.Errorf("could not construct response: %w", presenterErr)), err)
 }

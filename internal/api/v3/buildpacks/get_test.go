@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
@@ -51,7 +51,7 @@ func (suite *GetBuildpackTestSuite) TestStatusNotFound() {
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, nil)
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(http.StatusNotFound, err.HTTPStatus)
 }
@@ -63,7 +63,7 @@ func (suite *GetBuildpackTestSuite) TestInternalServerError() {
 
 	suite.querier.EXPECT().One(gomock.Any(), gomock.Any()).Return(nil, errors.New("something went wrong"))
 
-	var err *v3.CfApiError
+	var err *v3.CfAPIError
 	suite.ErrorAs(suite.controller.Get(suite.ctx), &err)
 	suite.Equal(http.StatusInternalServerError, err.HTTPStatus)
 }

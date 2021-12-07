@@ -12,14 +12,14 @@ type JSONSerializer struct {
 	echo.DefaultJSONSerializer
 }
 
-func (d JSONSerializer) Serialize(c echo.Context, i interface{}, indent string) error {
+func (d JSONSerializer) Serialize(c echo.Context, iface interface{}, indent string) error {
 	enc := json.NewEncoder(c.Response())
 	enc.SetEscapeHTML(false)
 	enc.SetIndent("", INDENT)
 	if indent != "" {
 		enc.SetIndent("", indent)
 	}
-	return enc.Encode(i)
+	return enc.Encode(iface)
 }
 
 func (d JSONSerializer) Deserialize(c echo.Context, i interface{}) error {

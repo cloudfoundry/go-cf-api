@@ -79,26 +79,26 @@ func TestSecurityGroupResponseObject(t *testing.T) {
 		},
 	}
 
-	p := NewPresenter()
-	for name, tc := range cases {
-		r := tc.securityGroup.R.NewStruct()
-		for spaceID, spaceGUID := range tc.stagingSpaces {
+	presenter := NewPresenter()
+	for testCaseName, testCase := range cases {
+		sgR := testCase.securityGroup.R.NewStruct()
+		for spaceID, spaceGUID := range testCase.stagingSpaces {
 			sr := models.StagingSecurityGroupsSpace{}.R.NewStruct()
 			sr.StagingSpace = &models.Space{GUID: spaceGUID}
 			ssgs := &models.StagingSecurityGroupsSpace{StagingSpaceID: spaceID, R: sr}
-			r.StagingSecurityGroupStagingSecurityGroupsSpaces = append(r.StagingSecurityGroupStagingSecurityGroupsSpaces, ssgs)
+			sgR.StagingSecurityGroupStagingSecurityGroupsSpaces = append(sgR.StagingSecurityGroupStagingSecurityGroupsSpaces, ssgs)
 		}
-		for spaceID, spaceGUID := range tc.runningSpaces {
+		for spaceID, spaceGUID := range testCase.runningSpaces {
 			sr := models.SecurityGroupsSpace{}.R.NewStruct()
 			sr.Space = &models.Space{GUID: spaceGUID}
 			sgs := &models.SecurityGroupsSpace{SpaceID: spaceID, R: sr}
-			r.SecurityGroupsSpaces = append(r.SecurityGroupsSpaces, sgs)
+			sgR.SecurityGroupsSpaces = append(sgR.SecurityGroupsSpaces, sgs)
 		}
-		tc.securityGroup.R = r
-		t.Run(name, func(t *testing.T) {
-			response, err := p.ResponseObject(&tc.securityGroup, "v3/security_groups/123")
+		testCase.securityGroup.R = sgR
+		t.Run(testCaseName, func(t *testing.T) {
+			response, err := presenter.ResponseObject(&testCase.securityGroup, "v3/security_groups/123")
 			require.NoError(t, err)
-			require.Equal(t, tc.expectedResponse, response)
+			require.Equal(t, testCase.expectedResponse, response)
 		})
 	}
 }

@@ -12,24 +12,24 @@ import (
 // ZapLogger is a middleware and zap to provide an "access log" like logging for each request.
 func NewEchoZapLogger(baseLogger *zap.Logger) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
+		return func(ctx echo.Context) error {
 			start := time.Now()
-			res := c.Response()
+			res := ctx.Response()
 			vcapRequestID := res.Header().Get(HeaderVcapRequestID)
 
 			logger := baseLogger.With(
-				zap.String(RemoteIPField, c.RealIP()),
-				zap.String(HostField, c.Request().Host),
-				zap.String(RequestField, fmt.Sprintf("%s %s", c.Request().Method, c.Request().RequestURI)),
-				zap.String(UserAgentField, c.Request().UserAgent()),
+				zap.String(RemoteIPField, ctx.RealIP()),
+				zap.String(HostField, ctx.Request().Host),
+				zap.String(RequestField, fmt.Sprintf("%s %s", ctx.Request().Method, ctx.Request().RequestURI)),
+				zap.String(UserAgentField, ctx.Request().UserAgent()),
 				zap.String(RequestIDField, vcapRequestID),
 			)
 
 			logger.Debug("Request received", zap.String(TimeField, time.Since(start).String()))
 
-			err := next(c)
+			err := next(ctx)
 			if err != nil {
-				c.Error(err)
+				ctx.Error(err)
 			}
 
 			var responseFields []zapcore.Field
@@ -40,13 +40,13 @@ func NewEchoZapLogger(baseLogger *zap.Logger) echo.MiddlewareFunc {
 			)
 
 			responseLogger := logger.With(responseFields...)
-			n := res.Status
+			status := res.Status
 			switch {
-			case n >= 500: //nolint:gomnd // HTTP error code ranges are well understood
+			case status >= 500: //nolint:gomnd // HTTP error code ranges are well understood
 				responseLogger.Error("Server error")
-			case n >= 400: //nolint:gomnd // HTTP error code ranges are well understood
+			case status >= 400: //nolint:gomnd // HTTP error code ranges are well understood
 				responseLogger.Warn("Client error")
-			case n >= 300: //nolint:gomnd // HTTP error code ranges are well understood
+			case status >= 300: //nolint:gomnd // HTTP error code ranges are well understood
 				responseLogger.Info("Redirection")
 			default:
 				responseLogger.Info("Success")

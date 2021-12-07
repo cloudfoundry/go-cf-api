@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
@@ -22,21 +22,21 @@ import (
 // @produce json
 // @Success 201 {object} Response
 // @Success 404 {object} interface{}
-// @Failure 400 {object} v3.CfApiError
-// @Failure 500 {object} v3.CfApiError
+// @Failure 400 {object} v3.CfAPIError
+// @Failure 500 {object} v3.CfAPIError
 // @Router /buildpacks [post]
-func (cont *Controller) Post(c echo.Context) error {
-	logger := logging.FromContext(c)
+func (cont *Controller) Post(echoCtx echo.Context) error {
+	logger := logging.FromContext(echoCtx)
 	var buildpackToInsert *models.Buildpack
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
+	boilCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(false, logger))
 
-	if err := json.NewDecoder(c.Request().Body).Decode(&buildpackToInsert); err != nil {
+	if err := json.NewDecoder(echoCtx.Request().Body).Decode(&buildpackToInsert); err != nil {
 		logger.Error("Could not parse JSON provided in the body")
 		return v3.UnprocessableEntity("Could not parse JSON provided in the body", err)
 	}
 
-	buildpacksInDB, errDB := buildpackQuerier().All(ctx, cont.DB)
+	buildpacksInDB, errDB := buildpackQuerier().All(boilCtx, cont.DB)
 	if errDB != nil {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", errDB))
 	}
@@ -60,16 +60,16 @@ func (cont *Controller) Post(c echo.Context) error {
 
 	// Add guid to Buildpack
 	buildpackToInsert.GUID = uuid.New().String()
-	err := buildpackInserter.Insert(buildpackToInsert, ctx, cont.DB, boil.Infer())
+	err := buildpackInserter.Insert(buildpackToInsert, boilCtx, cont.DB, boil.Infer())
 	if err != nil {
 		logger.Error("There is no buildpack to insert")
 		return v3.UnprocessableEntity("There is no buildpack to insert", err)
 	}
 
-	response, err := cont.Presenter.ResponseObject(buildpackToInsert, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ResponseObject(buildpackToInsert, v3.GetResourcePath(echoCtx))
 	if err != nil {
 		return v3.UnknownError(err)
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return echoCtx.JSON(http.StatusOK, response)
 }

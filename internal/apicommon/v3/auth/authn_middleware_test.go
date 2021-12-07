@@ -4,7 +4,6 @@
 package auth_test
 
 import (
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,6 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/stretchr/testify/suite"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 )
 
 type AuthTestSuite struct {
@@ -81,21 +81,21 @@ func (s *AuthTestSuite) TestSuccessHandler() {
 			expectedToBeTrue: []expectedFunc{CanRead, CanWrite, IsAdmin, IsAdminReadOnly, IsGlobalAuditor},
 		},
 	}
-	for name, tc := range cases {
-		s.Run(name, func() {
+	for testCaseName, testCase := range cases {
+		s.Run(testCaseName, func() {
 			token := &jwt.Token{
 				Claims: &CFClaims{
-					UserID: name,
-					Scopes: tc.scopes,
+					UserID: testCaseName,
+					Scopes: testCase.scopes,
 				},
 			}
 			s.context.Set("user", token)
 			s.successHandler(s.context)
-			s.Equal(name, s.context.Get(Username).(string))
-			for _, expectedToBeTrue := range tc.expectedToBeTrue {
+			s.Equal(testCaseName, s.context.Get(Username).(string))
+			for _, expectedToBeTrue := range testCase.expectedToBeTrue {
 				s.True(expectedToBeTrue(s.context))
 			}
-			for _, expectedToBeFalse := range tc.expectedToBeFalse {
+			for _, expectedToBeFalse := range testCase.expectedToBeFalse {
 				s.False(expectedToBeFalse(s.context))
 			}
 		})

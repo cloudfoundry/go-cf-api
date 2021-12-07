@@ -40,15 +40,15 @@ func (b *BoilLogger) Write(data []byte) (n int, err error) {
 }
 
 func (b *BoilLogger) getLogger() *zap.Logger {
-	for i := 3; i < 15; i++ {
-		_, file, _, ok := runtime.Caller(i)
+	for caller := 3; caller < 15; caller++ {
+		_, file, _, ok := runtime.Caller(caller)
 		switch {
 		case !ok:
 		case strings.HasSuffix(file, "_test.go"):
 		case strings.Contains(file, "src/fmt/print.go"):
 		case strings.Contains(file, "logging/boil.go"):
 		default:
-			return b.logger.WithOptions(zap.AddCallerSkip(i), zap.AddCaller())
+			return b.logger.WithOptions(zap.AddCallerSkip(caller), zap.AddCaller())
 		}
 	}
 	return b.logger

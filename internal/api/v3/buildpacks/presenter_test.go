@@ -25,11 +25,11 @@ func TestGetBuildpackState(t *testing.T) {
 		"buildpack in awaiting upload state": {buildpackFileName: null.NewString("", false), expectedBuildpackState: StateAwaitingUpload},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			buildpack := models.Buildpack{Filename: tc.buildpackFileName}
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			buildpack := models.Buildpack{Filename: testCase.buildpackFileName}
 			buildpackState := GetBuildpackState(&buildpack)
-			require.Equal(t, tc.expectedBuildpackState, buildpackState)
+			require.Equal(t, testCase.expectedBuildpackState, buildpackState)
 		})
 	}
 }
@@ -55,15 +55,15 @@ func TestBuildpackResponseObject(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			response, _ := NewPresenter().ResponseObject(&tc.buildpack, "v3/buildpack")
-			require.Equal(t, tc.expectedBuildpackGUID, response.GUID)
-			require.Equal(t, tc.expectedBuildpackDate, response.CreatedAt)
-			require.Equal(t, tc.expectedBuildpackDate, response.UpdatedAt)
-			require.Equal(t, tc.expectedBuildpackName, response.Name)
-			require.Equal(t, tc.expectedResourcePath, response.Links.Self)
-			require.Equal(t, tc.expectedResourcePathUpload, response.Links.Upload)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			response, _ := NewPresenter().ResponseObject(&testCase.buildpack, "v3/buildpack")
+			require.Equal(t, testCase.expectedBuildpackGUID, response.GUID)
+			require.Equal(t, testCase.expectedBuildpackDate, response.CreatedAt)
+			require.Equal(t, testCase.expectedBuildpackDate, response.UpdatedAt)
+			require.Equal(t, testCase.expectedBuildpackName, response.Name)
+			require.Equal(t, testCase.expectedResourcePath, response.Links.Self)
+			require.Equal(t, testCase.expectedResourcePathUpload, response.Links.Upload)
 		})
 	}
 }
@@ -80,11 +80,11 @@ func TestBuildpackResponseObjectSlice(t *testing.T) {
 		}, "123", "456"},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			response, _ := NewPresenter().ListResponseObject(tc.buildpack, int64(len(tc.buildpack)), pagination.Default(), "v3/buildpack")
-			require.Equal(t, tc.expectedBuildpackGUID1, response.Resources[0].GUID)
-			require.Equal(t, tc.expectedBuildpackGUID2, response.Resources[1].GUID)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			response, _ := NewPresenter().ListResponseObject(testCase.buildpack, int64(len(testCase.buildpack)), pagination.Default(), "v3/buildpack")
+			require.Equal(t, testCase.expectedBuildpackGUID1, response.Resources[0].GUID)
+			require.Equal(t, testCase.expectedBuildpackGUID2, response.Resources[1].GUID)
 		})
 	}
 }

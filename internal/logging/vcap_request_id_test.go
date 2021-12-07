@@ -40,8 +40,8 @@ func TestVcapRequestIdSuite(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
 			e := echo.New()
 			request := httptest.NewRequest(http.MethodGet, "/something", nil)
 			recorder := httptest.NewRecorder()
@@ -49,14 +49,14 @@ func TestVcapRequestIdSuite(t *testing.T) {
 			handler := func(c echo.Context) error {
 				return c.String(http.StatusOK, "")
 			}
-			for headerName, headerValue := range tc.externalHeaders {
+			for headerName, headerValue := range testCase.externalHeaders {
 				request.Header.Set(headerName, headerValue)
 			}
 			err := logging.NewVcapRequestID()(handler)(context)
 			require.NoError(t, err)
 			vcapRequestID := recorder.Header().Get(logging.HeaderVcapRequestID)
-			require.Equal(t, tc.expectedLength, len(vcapRequestID))
-			require.True(t, strings.HasPrefix(vcapRequestID, tc.expectedPrefix))
+			require.Equal(t, testCase.expectedLength, len(vcapRequestID))
+			require.True(t, strings.HasPrefix(vcapRequestID, testCase.expectedPrefix))
 		})
 	}
 }

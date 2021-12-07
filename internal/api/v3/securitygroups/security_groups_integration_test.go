@@ -237,14 +237,14 @@ func (suite *SecurityGroupIntegrationTestSuite) TestListAndGetPermissions() {
 		},
 	}
 
-	for name, tc := range cases {
-		suite.Run(name, func() {
+	for testCaseName, testCase := range cases {
+		suite.Run(testCaseName, func() {
 			suite.SetupTest()
-			tc.assignRoles()
+			testCase.assignRoles()
 
 			suite.Run("LIST", func() {
 				rec, ctx := suite.newRequest()
-				tc.setupContext(ctx)
+				testCase.setupContext(ctx)
 				err := suite.controller.List(ctx)
 				suite.NoError(err)
 				suite.Equal(http.StatusOK, rec.Result().StatusCode)
@@ -253,7 +253,7 @@ func (suite *SecurityGroupIntegrationTestSuite) TestListAndGetPermissions() {
 				err = json.Unmarshal(rec.Body.Bytes(), &resp)
 				suite.NoError(err)
 
-				suite.ElementsMatch(tc.expectedSecurityGroups, resp.Resources)
+				suite.ElementsMatch(testCase.expectedSecurityGroups, resp.Resources)
 			})
 
 			// Check that for every security group can see in list, they can get by GUID
@@ -267,19 +267,19 @@ func (suite *SecurityGroupIntegrationTestSuite) TestListAndGetPermissions() {
 			} {
 				suite.Run(fmt.Sprintf("GET %s", securityGroupGUID), func() {
 					rec, ctx := suite.newRequest()
-					tc.setupContext(ctx)
+					testCase.setupContext(ctx)
 					ctx.SetParamNames(GUIDParam)
 					ctx.SetParamValues(securityGroupGUID)
 
 					err := suite.controller.Get(ctx)
-					if contains(tc.expectedSecurityGroups, securityGroupGUID) {
+					if contains(testCase.expectedSecurityGroups, securityGroupGUID) {
 						suite.NoError(err)
 						resp := Entity{}
 						err = json.Unmarshal(rec.Body.Bytes(), &resp)
 						suite.NoError(err)
 						suite.Equal(securityGroupGUID, resp.GUID)
 					} else {
-						var ccErr *v3.CfApiError
+						var ccErr *v3.CfAPIError
 						suite.ErrorAs(err, &ccErr)
 						suite.Equal(http.StatusNotFound, ccErr.HTTPStatus)
 					}

@@ -120,18 +120,18 @@ func TestAllowedSpaceIDsForUser(t *testing.T) {
 	}
 
 	qur := NewQuerier()
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			asid, err := qur.AllowedSpaceIDsForUser(tc.userGUID, tc.roles...)
-			if tc.expectedErr != "" {
-				assert.EqualError(t, err, tc.expectedErr)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			asid, err := qur.AllowedSpaceIDsForUser(testCase.userGUID, testCase.roles...)
+			if testCase.expectedErr != "" {
+				assert.EqualError(t, err, testCase.expectedErr)
 				assert.Nil(t, asid)
 				return
 			}
 			with := asid.With()
-			contains := asid.Contains(tc.columnName)
-			assert.Equal(t, tc.expectedWith, with)
-			assert.Equal(t, tc.expectedContains, contains)
+			contains := asid.Contains(testCase.columnName)
+			assert.Equal(t, testCase.expectedWith, with)
+			assert.Equal(t, testCase.expectedContains, contains)
 		})
 	}
 }

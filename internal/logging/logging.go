@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func Setup(config *config.CfApiConfig) error {
+func Setup(config *config.CfAPIConfig) error {
 	// Logging
 	var zapconf zap.Config
 	if config.Log.Production {

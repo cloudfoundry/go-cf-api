@@ -4,7 +4,6 @@
 package ratelimiter_test
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -14,7 +13,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/testutils"
 )
@@ -69,7 +69,7 @@ func (s *RateLimiterMiddlewareSuite) TestDoesNotCallNextMiddlewareOrIncrementWhe
 	s.generalRateLimiter.On("Check", userGUID).Return(false, map[string]string{}, nil)
 
 	err := s.middleware(s.handler.Next)(s.ctx)
-	var ccErr *v3.CfApiError
+	var ccErr *v3.CfAPIError
 	s.ErrorAs(err, &ccErr)
 	s.Equal(http.StatusTooManyRequests, ccErr.HTTPStatus)
 	s.handler.AssertNotCalled(s.T(), "Next")
@@ -104,7 +104,7 @@ func (s *RateLimiterMiddlewareSuite) TestDoesNotCallNextMiddlewareWhenUnauthenti
 	s.unauthenticatedRateLimiter.On("Check", ip).Return(false, map[string]string{}, nil)
 
 	err := s.middleware(s.handler.Next)(s.ctx)
-	var ccErr *v3.CfApiError
+	var ccErr *v3.CfAPIError
 	s.ErrorAs(err, &ccErr)
 	s.Equal(http.StatusTooManyRequests, ccErr.HTTPStatus)
 	s.handler.AssertNotCalled(s.T(), "Next")

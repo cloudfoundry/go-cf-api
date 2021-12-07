@@ -7,7 +7,6 @@ package auth_test
 import (
 	"errors"
 	"fmt"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,7 +14,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 )
 
 type RequiresScopeMiddlewareSuite struct {
@@ -58,7 +58,7 @@ func (s *RequiresScopeMiddlewareSuite) TestReadMiddleware() {
 				s.NoError(err)
 				s.handler.AssertCalled(s.T(), "Next", s.ctx)
 			} else {
-				var ccErr *v3.CfApiError
+				var ccErr *v3.CfAPIError
 				s.ErrorAs(err, &ccErr)
 				s.Equal(http.StatusForbidden, ccErr.HTTPStatus)
 				s.Equal("user lacks sufficient scope to read resource", ccErr.Err.Error())
@@ -90,7 +90,7 @@ func (s *RequiresScopeMiddlewareSuite) TestWriteMiddleware() {
 				s.NoError(err)
 				s.handler.AssertCalled(s.T(), "Next", s.ctx)
 			} else {
-				var ccErr *v3.CfApiError
+				var ccErr *v3.CfAPIError
 				s.ErrorAs(err, &ccErr)
 				s.Equal(http.StatusForbidden, ccErr.HTTPStatus)
 				s.Equal("user lacks sufficient scope to write resource", ccErr.Err.Error())

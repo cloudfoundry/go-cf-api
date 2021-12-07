@@ -51,17 +51,17 @@ func NewJWTMiddleware(keyFunc jwt.Keyfunc) echo.MiddlewareFunc {
 }
 
 func NewSuccessHandler() middleware.JWTSuccessHandler {
-	return func(c echo.Context) {
-		user, ok := c.Get("user").(*jwt.Token)
+	return func(ctx echo.Context) {
+		user, ok := ctx.Get("user").(*jwt.Token)
 		if !ok {
-			c.Error(errors.New("couldn't get user from context"))
+			ctx.Error(errors.New("couldn't get user from context"))
 		}
 		claims, ok := user.Claims.(*CFClaims)
 		if !ok {
-			c.Error(errors.New("couldn't get user claims from context"))
+			ctx.Error(errors.New("couldn't get user claims from context"))
 		}
 
-		c.Set(Username, claims.UserID)
-		c.Set(Scopes, claims.Scopes)
+		ctx.Set(Username, claims.UserID)
+		ctx.Set(Scopes, claims.Scopes)
 	}
 }

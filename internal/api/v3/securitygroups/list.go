@@ -4,18 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/sqlhelpers"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/timefilters"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/sqlhelpers"
 )
 
 type FilterParams struct {
@@ -32,23 +32,23 @@ type FilterParams struct {
 // @Success 200 {object} []Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
-// @Failure 500 {object} v3.CfApiError
+// @Failure 500 {object} v3.CfAPIError
 // @Router /securitygroups [get]
 
-func (cont *Controller) List(c echo.Context) error {
-	logger := logging.FromContext(c)
+func (cont *Controller) List(echoCtx echo.Context) error {
+	logger := logging.FromContext(echoCtx)
 	paginationParams := pagination.Default()
 	filterParams := FilterParams{}
 
-	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
+	createdAts, updatedAts, err := timefilters.ParseTimeFilters(echoCtx)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
 	// BindQueryParams will overwrite default values if params were given
-	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &paginationParams); err != nil {
+	if err := (&echo.DefaultBinder{}).BindQueryParams(echoCtx, &paginationParams); err != nil {
 		return v3.BadQueryParameter(err)
 	}
-	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filterParams); errFilters != nil {
+	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(echoCtx, &filterParams); errFilters != nil {
 		return v3.BadQueryParameter(errFilters)
 	}
 	err = validator.New().Struct(paginationParams)
@@ -60,18 +60,18 @@ func (cont *Controller) List(c echo.Context) error {
 		return v3.BadQueryParameter(errFilter)
 	}
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
+	boilCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	var mods []qm.QueryMod
 	mods = append(mods, timefilters.Filters(createdAts, updatedAts, models.SecurityGroupTableColumns.CreatedAt, models.SecurityGroupTableColumns.UpdatedAt)...)
 
-	permissionsMods, err := cont.readPermissionMods(c)
+	permissionsMods, err := cont.readPermissionMods(echoCtx)
 	if err != nil {
 		return v3.UnknownError(err)
 	}
 	mods = append(mods, permissionsMods...)
 	mods = append(mods, filters(filterParams)...)
 
-	totalResults, err := securityGroupQuerier(mods...).Count(ctx, cont.DB)
+	totalResults, err := securityGroupQuerier(mods...).Count(boilCtx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
@@ -83,17 +83,17 @@ func (cont *Controller) List(c echo.Context) error {
 		qm.Load(qm.Rels(models.SecurityGroupRels.StagingSecurityGroupStagingSecurityGroupsSpaces, models.StagingSecurityGroupsSpaceRels.StagingSpace)),
 	)
 
-	securityGroups, err := securityGroupQuerier(mods...).All(ctx, cont.DB)
+	securityGroups, err := securityGroupQuerier(mods...).All(boilCtx, cont.DB)
 	if err != nil && err != sql.ErrNoRows {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
 	}
 
-	response, err := cont.Presenter.ListResponseObject(securityGroups, totalResults, paginationParams, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ListResponseObject(securityGroups, totalResults, paginationParams, v3.GetResourcePath(echoCtx))
 	if err != nil {
 		return v3.UnknownError(err)
 	}
 
-	return c.JSON(http.StatusOK, response)
+	return echoCtx.JSON(http.StatusOK, response)
 }
 
 func filters(filters FilterParams) []qm.QueryMod {

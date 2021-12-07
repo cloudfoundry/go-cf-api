@@ -18,17 +18,17 @@ var vcapRequestIDBadCharRegexp = regexp.MustCompile(`[^\w-]`) // shorthand for [
 
 func NewVcapRequestID() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			existingRequestID := c.Request().Header.Get(HeaderVcapRequestID)
+		return func(ctx echo.Context) error {
+			existingRequestID := ctx.Request().Header.Get(HeaderVcapRequestID)
 			if len(existingRequestID) == 0 {
-				existingRequestID = c.Request().Header.Get(echo.HeaderXRequestID)
+				existingRequestID = ctx.Request().Header.Get(echo.HeaderXRequestID)
 			}
 			requestID, err := buildRequestID(existingRequestID)
 			if err != nil {
 				return err
 			}
-			c.Response().Header().Set(HeaderVcapRequestID, requestID)
-			return next(c)
+			ctx.Response().Header().Set(HeaderVcapRequestID, requestID)
+			return next(ctx)
 		}
 	}
 }

@@ -1,14 +1,14 @@
 package info
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
-func NewV3InfoEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
-	return func(c echo.Context) error {
+func NewV3InfoEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
 		v3Info := V3Info{
 			Name:        config.Info.Name,
 			Description: config.Info.Description,
@@ -23,7 +23,7 @@ func NewV3InfoEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 				Support: Link{HREF: config.Info.SupportAddress},
 			},
 		}
-		return c.JSON(http.StatusOK, v3Info)
+		return ctx.JSON(http.StatusOK, v3Info)
 	}
 }
 

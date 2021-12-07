@@ -55,12 +55,12 @@ type Presenter interface {
 }
 
 func (p *presenter) ResponseObject(buildpack *models.Buildpack, resourcePath string) (*Response, error) {
-	md := metadata.Metadata{}
+	meta := metadata.Metadata{}
 	var err error
 	if buildpack.R == nil {
 		zap.L().Warn(fmt.Sprintf("Buildpack with guid %s does not contain metadata", buildpack.GUID))
 	} else {
-		md, err = metadata.Get(buildpack.R.ResourceBuildpackAnnotations, buildpack.R.ResourceBuildpackLabels)
+		meta, err = metadata.Get(buildpack.R.ResourceBuildpackAnnotations, buildpack.R.ResourceBuildpackLabels)
 		if err != nil {
 			return nil, fmt.Errorf("cannot build response object: %s", err)
 		}
@@ -76,7 +76,7 @@ func (p *presenter) ResponseObject(buildpack *models.Buildpack, resourcePath str
 		Position:  buildpack.Position,
 		Enabled:   buildpack.Enabled,
 		Locked:    buildpack.Locked,
-		Metadata:  md,
+		Metadata:  meta,
 	}
 	response.Links.Self = pagination.GetResourcePathLink(resourcePath)
 	response.Links.Upload = pagination.GetResourcePathLinkWithMethod(fmt.Sprintf("%s/%s", resourcePath, "upload"), "POST")

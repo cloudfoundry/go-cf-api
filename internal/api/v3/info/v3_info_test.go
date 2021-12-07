@@ -4,13 +4,13 @@
 package info_test
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
@@ -112,22 +112,22 @@ func TestV3Info(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
 			e := echo.New()
 			req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3/info", nil)
 			rec := httptest.NewRecorder()
-			c := e.NewContext(req, rec)
+			ctx := e.NewContext(req, rec)
 
-			handleFunc := info.NewV3InfoEndpoint(&config.CfApiConfig{
-				ExternalDomain:   tc.externalDomain,
-				ExternalProtocol: tc.externalProtocol,
-				Info:             tc.infoConfig,
+			handleFunc := info.NewV3InfoEndpoint(&config.CfAPIConfig{
+				ExternalDomain:   testCase.externalDomain,
+				ExternalProtocol: testCase.externalProtocol,
+				Info:             testCase.infoConfig,
 			})
-			err := handleFunc(c)
+			err := handleFunc(ctx)
 
 			assert.NoError(t, err)
-			assert.JSONEq(t, tc.expectedResponse, rec.Body.String())
+			assert.JSONEq(t, testCase.expectedResponse, rec.Body.String())
 		})
 	}
 }

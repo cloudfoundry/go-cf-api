@@ -43,14 +43,14 @@ func TestFromUnion(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			fu := FromUnion(tc.unionTables)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			fu := FromUnion(testCase.unionTables)
 			sq := models.NewSubquery()
 			fu.Apply(sq.Query)
 			query, args := sq.SQL()
 			assert.Empty(t, args)
-			assert.Equal(t, query, tc.expectedQuery)
+			assert.Equal(t, query, testCase.expectedQuery)
 		})
 	}
 }

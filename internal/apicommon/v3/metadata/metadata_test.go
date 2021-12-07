@@ -78,14 +78,14 @@ func TestMetadata(t *testing.T) {
 			err:              nil,
 		},
 	}
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			got, err := Get(tc.annotationsSlice, tc.labelSlice)
-			if tc.err != nil {
-				assert.Equal(t, tc.err, err)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			got, err := Get(testCase.annotationsSlice, testCase.labelSlice)
+			if testCase.err != nil {
+				assert.Equal(t, testCase.err, err)
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tc.expectedMetadata, got)
+				assert.Equal(t, testCase.expectedMetadata, got)
 			}
 		})
 	}

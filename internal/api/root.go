@@ -1,14 +1,15 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"net/http"
 )
 
-func NewRootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
-	return func(c echo.Context) error {
+func NewRootEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
 		root := Root{
 			Links: RootLinks{
 				AppSSH: &info.Link{
@@ -41,11 +42,11 @@ func NewRootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 				UAA:             &info.Link{HREF: config.URLs.UAA},
 			},
 		}
-		return c.JSON(http.StatusOK, root)
+		return ctx.JSON(http.StatusOK, root)
 	}
 }
 
-func routingLink(config *config.CfApiConfig) *info.Link {
+func routingLink(config *config.CfAPIConfig) *info.Link {
 	var link *info.Link
 	if config.URLs.RoutingAPI != nil {
 		link = &info.Link{HREF: *config.URLs.RoutingAPI}

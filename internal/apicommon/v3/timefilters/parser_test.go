@@ -56,24 +56,24 @@ func TestParseTimeFilters(t *testing.T) {
 		},
 	}
 
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
+	for testCaseName, testCase := range tests {
+		t.Run(testCaseName, func(t *testing.T) {
 			e := echo.New()
 			req := httptest.NewRequest(http.MethodGet, "http://test", nil)
 			rec := httptest.NewRecorder()
-			req.URL.RawQuery = tc.query
+			req.URL.RawQuery = testCase.query
 			c := e.NewContext(req, rec)
 
 			createdAts, updatedAts, err := ParseTimeFilters(c)
-			if tc.expectedError != nil {
-				assert.Equal(t, tc.expectedError, err)
+			if testCase.expectedError != nil {
+				assert.Equal(t, testCase.expectedError, err)
 				return
 			}
 
 			assert.NoError(t, err)
 
-			assert.Equal(t, tc.expectedCreatedAts, createdAts)
-			assert.Equal(t, tc.expectedUpdatedAts, updatedAts)
+			assert.Equal(t, testCase.expectedCreatedAts, createdAts)
+			assert.Equal(t, testCase.expectedUpdatedAts, updatedAts)
 		})
 	}
 }

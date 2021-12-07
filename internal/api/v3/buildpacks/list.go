@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/timefilters"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
@@ -38,23 +38,23 @@ func DefaultFilters() FilterParams {
 // @Success 200 {object} []Response
 // @Success 404 {object} interface{}
 // @Failure 400 {object} []interface{}
-// @Failure 500 {object} v3.CfApiError
+// @Failure 500 {object} v3.CfAPIError
 // @Router /buildpacks [get]
 
-func (cont *Controller) List(c echo.Context) error {
-	logger := logging.FromContext(c)
+func (cont *Controller) List(echoCtx echo.Context) error {
+	logger := logging.FromContext(echoCtx)
 	pagination := pagination.Default()
 	filterParams := DefaultFilters()
 
-	createdAts, updatedAts, err := timefilters.ParseTimeFilters(c)
+	createdAts, updatedAts, err := timefilters.ParseTimeFilters(echoCtx)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}
 	// BindQueryParams will overwrite default values if params were given
-	if err := (&echo.DefaultBinder{}).BindQueryParams(c, &pagination); err != nil {
+	if err := (&echo.DefaultBinder{}).BindQueryParams(echoCtx, &pagination); err != nil {
 		return v3.BadQueryParameter(err)
 	}
-	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(c, &filterParams); errFilters != nil {
+	if errFilters := (&echo.DefaultBinder{}).BindQueryParams(echoCtx, &filterParams); errFilters != nil {
 		return v3.BadQueryParameter(errFilters)
 	}
 	err = validator.New().Struct(pagination)
@@ -70,13 +70,13 @@ func (cont *Controller) List(c echo.Context) error {
 		return v3.BadQueryParameter(err)
 	}
 
-	ctx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
+	boilCtx := boil.WithDebugWriter(boil.WithDebug(context.Background(), true), logging.NewBoilLogger(true, logger))
 	var mods []qm.QueryMod
 	mods = append(mods, filters(filterParams)...)
 	mods = append(mods, timefilters.Filters(createdAts, updatedAts, models.BuildpackTableColumns.CreatedAt, models.BuildpackTableColumns.UpdatedAt)...)
 	mods = append(mods, labelSelectors.Filters(models.TableNames.Buildpacks, models.TableNames.BuildpackLabels)...)
 
-	totalResults, err := buildpackQuerier(mods...).Count(ctx, cont.DB)
+	totalResults, err := buildpackQuerier(mods...).Count(boilCtx, cont.DB)
 	if err != nil {
 		return v3.UnknownError(fmt.Errorf("couldn't fetch all rows: %w", err))
 	}
@@ -90,16 +90,16 @@ func (cont *Controller) List(c echo.Context) error {
 		qm.Load(models.BuildpackRels.ResourceBuildpackAnnotations, qm.Select(bpaCols.Key, bpaCols.Value, bpaCols.ResourceGUID)),
 	)
 
-	buildpacks, err := buildpackQuerier(mods...).All(ctx, cont.DB)
+	buildpacks, err := buildpackQuerier(mods...).All(boilCtx, cont.DB)
 	if err != nil && err != sql.ErrNoRows {
 		return v3.UnknownError(fmt.Errorf("could not Select: %w", err))
 	}
 
-	response, err := cont.Presenter.ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(c))
+	response, err := cont.Presenter.ListResponseObject(buildpacks, totalResults, pagination, v3.GetResourcePath(echoCtx))
 	if err != nil {
 		return v3.UnknownError(err)
 	}
-	return c.JSON(http.StatusOK, response)
+	return echoCtx.JSON(http.StatusOK, response)
 }
 
 func filters(filters FilterParams) []qm.QueryMod {

@@ -6,17 +6,17 @@ import (
 	"strings"
 )
 
-type CfApiErrors struct {
-	Errors []CfApiError `json:"errors"`
+type CfAPIErrors struct {
+	Errors []CfAPIError `json:"errors"`
 }
 
-func AsErrors(errors ...CfApiError) CfApiErrors {
-	return CfApiErrors{
+func AsErrors(errors ...CfAPIError) CfAPIErrors {
+	return CfAPIErrors{
 		Errors: errors,
 	}
 }
 
-type CfApiError struct {
+type CfAPIError struct {
 	HTTPStatus int    `json:"-"`
 	Detail     string `json:"detail,omitempty"`
 	Title      string `json:"title"`
@@ -24,16 +24,16 @@ type CfApiError struct {
 	Err        error  `json:"-"`
 }
 
-func (e *CfApiError) Error() string {
+func (e *CfAPIError) Error() string {
 	return fmt.Sprintf("Code [%d] (%s): %s", e.Code, e.Title, e.Detail)
 }
 
-func (e *CfApiError) Unwrap() error {
+func (e *CfAPIError) Unwrap() error {
 	return e.Err
 }
 
-func BadQueryParameter(err error) *CfApiError {
-	return &CfApiError{
+func BadQueryParameter(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusBadRequest,
 		Code:       10005, //nolint:gomnd // CF API error code
 		Title:      "CF-BadQueryParameter",
@@ -42,8 +42,8 @@ func BadQueryParameter(err error) *CfApiError {
 	}
 }
 
-func InvalidAuthToken(err error) *CfApiError {
-	return &CfApiError{
+func InvalidAuthToken(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusUnauthorized,
 		Code:       1000, //nolint:gomnd // CF API error code
 		Title:      "CF-InvalidAuthToken",
@@ -52,8 +52,8 @@ func InvalidAuthToken(err error) *CfApiError {
 	}
 }
 
-func NotAuthenticated(err error) *CfApiError {
-	return &CfApiError{
+func NotAuthenticated(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusUnauthorized,
 		Code:       10002, //nolint:gomnd // CF API error code
 		Title:      "CF-NotAuthenticated",
@@ -62,8 +62,8 @@ func NotAuthenticated(err error) *CfApiError {
 	}
 }
 
-func NotAuthorized(err error) *CfApiError {
-	return &CfApiError{
+func NotAuthorized(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusForbidden,
 		Code:       10003, //nolint:gomnd // CF API error code
 		Title:      "CF-NotAuthorized",
@@ -72,8 +72,8 @@ func NotAuthorized(err error) *CfApiError {
 	}
 }
 
-func ResourceNotFound(resourceType string, err error) *CfApiError {
-	return &CfApiError{
+func ResourceNotFound(resourceType string, err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusNotFound,
 		Code:       10010, //nolint:gomnd // CF API error code
 		Title:      "CF-ResourceNotFound",
@@ -82,8 +82,8 @@ func ResourceNotFound(resourceType string, err error) *CfApiError {
 	}
 }
 
-func UnprocessableEntity(detail string, err error) *CfApiError {
-	return &CfApiError{
+func UnprocessableEntity(detail string, err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusUnprocessableEntity,
 		Code:       10008, //nolint:gomnd // CF API error code
 		Title:      "CF-UnprocessableEntity",
@@ -92,8 +92,8 @@ func UnprocessableEntity(detail string, err error) *CfApiError {
 	}
 }
 
-func TooManyRequests(err error) *CfApiError {
-	return &CfApiError{
+func TooManyRequests(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusTooManyRequests,
 		Code:       10013, //nolint:gomnd // CF API error code
 		Title:      "CF-RateLimitExceeded",
@@ -102,8 +102,8 @@ func TooManyRequests(err error) *CfApiError {
 	}
 }
 
-func UnknownError(err error) *CfApiError {
-	return &CfApiError{
+func UnknownError(err error) *CfAPIError {
+	return &CfAPIError{
 		HTTPStatus: http.StatusInternalServerError,
 		Code:       10001, //nolint:gomnd // CF API error code
 		Title:      "UnknownError",

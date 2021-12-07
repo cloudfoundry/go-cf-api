@@ -2,15 +2,15 @@ package v3
 
 import (
 	"fmt"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
-func NewV3RootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
-	return func(c echo.Context) error {
+func NewV3RootEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
 		links := map[string]info.Link{"self": {HREF: info.ExternalURL("v3", config)}}
 		endpoints := []string{
 			"app_usage_events",
@@ -49,6 +49,6 @@ func NewV3RootEndpoint(config *config.CfApiConfig) echo.HandlerFunc {
 		for _, endpoint := range endpoints {
 			links[endpoint] = info.Link{HREF: info.ExternalURL(fmt.Sprintf("v3/%s", endpoint), config)}
 		}
-		return c.JSON(http.StatusOK, map[string]interface{}{"links": links})
+		return ctx.JSON(http.StatusOK, map[string]interface{}{"links": links})
 	}
 }

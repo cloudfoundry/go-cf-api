@@ -51,14 +51,14 @@ func getKeyValue(slice interface{}, keyField, valueField string) (keyValueMap Ma
 			elem := slice.Index(i)
 
 			keyElem := elem.Elem().FieldByName(keyField)
-			key, ok := keyElem.Interface().(null.String)
-			if !ok || key.IsZero() {
+			key, valid := keyElem.Interface().(null.String)
+			if !valid || key.IsZero() {
 				return nil, fmt.Errorf("key is not a valid string")
 			}
 
 			valueElem := elem.Elem().FieldByName(valueField)
-			value, ok := valueElem.Interface().(null.String)
-			if !ok {
+			value, valid := valueElem.Interface().(null.String)
+			if !valid {
 				return nil, fmt.Errorf("value is not type of null.String")
 			}
 			keyValueMap[key.String] = value

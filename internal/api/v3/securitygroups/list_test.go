@@ -8,7 +8,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
 	"net/http"
 	"testing"
 	"time"
@@ -18,7 +17,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
@@ -97,7 +96,7 @@ func (s *ListSecurityGroupTestSuite) TestFilters() {
 		query                string
 		expectedCountFilters []qm.QueryMod
 		expectedAllFilters   []qm.QueryMod
-		expectedErr          *v3.CfApiError
+		expectedErr          *v3.CfAPIError
 	}{
 		"no name": {
 			query:                "names=",
@@ -213,29 +212,29 @@ func (s *ListSecurityGroupTestSuite) TestFilters() {
 			},
 		},
 	}
-	for name, tc := range cases {
-		s.Run(name, func() {
+	for testCaseName, testCase := range cases {
+		s.Run(testCaseName, func() {
 			s.SetupTest() // needed to ensure mocks are fresh for every test case
-			s.req.URL.RawQuery = tc.query
+			s.req.URL.RawQuery = testCase.query
 			s.querier.EXPECT().Count(gomock.Any(), gomock.Any()).AnyTimes().Return(int64(50), nil)
 			s.querier.EXPECT().All(gomock.Any(), gomock.Any()).AnyTimes().Return(models.SecurityGroupSlice{{Name: "test-security-group"}}, nil)
 			s.presenter.On("ListResponseObject", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(&ListResponse{}, nil)
 
 			err := s.controller.List(s.ctx)
-			if tc.expectedErr != nil {
-				var ccErr *v3.CfApiError
+			if testCase.expectedErr != nil {
+				var ccErr *v3.CfAPIError
 				s.ErrorAs(err, &ccErr)
-				s.Equal(tc.expectedErr.HTTPStatus, ccErr.HTTPStatus)
+				s.Equal(testCase.expectedErr.HTTPStatus, ccErr.HTTPStatus)
 				return
 			}
 			s.NoError(err)
 			s.querierFunc.AssertNumberOfCalls(s.T(), "Get", 2)
 
 			countQueryMods := s.querierFunc.Calls[0].Arguments.Get(0).([]qm.QueryMod)
-			s.ElementsMatch(tc.expectedCountFilters, countQueryMods)
+			s.ElementsMatch(testCase.expectedCountFilters, countQueryMods)
 
 			allQueryMods := s.querierFunc.Calls[1].Arguments.Get(0).([]qm.QueryMod)
-			expectedAllQueryMods := append(baseQueryMods, tc.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
+			expectedAllQueryMods := append(baseQueryMods, testCase.expectedAllFilters...) //nolint:gocritic // Deliberately appending to a different slice
 			s.ElementsMatch(expectedAllQueryMods, allQueryMods)
 		})
 	}

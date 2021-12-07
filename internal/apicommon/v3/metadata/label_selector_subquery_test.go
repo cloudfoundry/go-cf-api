@@ -176,10 +176,10 @@ func TestFilters(t *testing.T) {
 		},
 	}
 
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			got := tc.lss.Filters(resources, labels)
-			assert.ElementsMatch(t, tc.expectedQueries, got)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			got := testCase.lss.Filters(resources, labels)
+			assert.ElementsMatch(t, testCase.expectedQueries, got)
 		})
 	}
 }

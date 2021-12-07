@@ -81,24 +81,24 @@ func TestBoilLogger(t *testing.T) {
 		},
 	}
 
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
+	for testCaseName, testCase := range tests {
+		t.Run(testCaseName, func(t *testing.T) {
 			obs, logs := observer.New(zap.DebugLevel)
 			assert.Empty(t, logs)
 			logger := zap.New(obs)
-			bl := logging.NewBoilLogger(tc.redactParams, logger)
+			bl := logging.NewBoilLogger(testCase.redactParams, logger)
 
-			for _, call := range tc.writeCalls {
+			for _, call := range testCase.writeCalls {
 				_, err := bl.Write([]byte(call))
 				require.NoError(t, err)
 			}
 
-			assert.Len(t, logs.AllUntimed(), len(tc.expectedEntries))
+			assert.Len(t, logs.AllUntimed(), len(testCase.expectedEntries))
 			for idx, log := range logs.AllUntimed() {
 				assert.True(t, log.Caller.Defined)
-				assert.Equal(t, tc.expectedEntries[idx].Level, log.Level)
-				assert.Equal(t, tc.expectedEntries[idx].Message, log.Message)
-				assert.Equal(t, tc.expectedEntries[idx].Context, log.Context)
+				assert.Equal(t, testCase.expectedEntries[idx].Level, log.Level)
+				assert.Equal(t, testCase.expectedEntries[idx].Message, log.Message)
+				assert.Equal(t, testCase.expectedEntries[idx].Context, log.Context)
 			}
 		})
 	}

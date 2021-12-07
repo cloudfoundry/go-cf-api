@@ -4,14 +4,14 @@
 package v3_test
 
 import (
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
 func TestV3Root(t *testing.T) {
@@ -122,13 +122,13 @@ func TestV3Root(t *testing.T) {
 	e := echo.New()
 	req := httptest.NewRequest(http.MethodGet, "http://localhost:8080/v3", nil)
 	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
+	ctx := e.NewContext(req, rec)
 
-	handleFunc := v3.NewV3RootEndpoint(&config.CfApiConfig{
+	handleFunc := v3.NewV3RootEndpoint(&config.CfAPIConfig{
 		ExternalDomain:   "api.external.domain",
 		ExternalProtocol: "https",
 	})
-	err := handleFunc(c)
+	err := handleFunc(ctx)
 
 	assert.NoError(t, err)
 	assert.JSONEq(t, expectedResponse, rec.Body.String())

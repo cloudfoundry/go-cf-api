@@ -51,16 +51,16 @@ func (e *CustomCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- e.uptime
 }
 
-func (e *CustomCollector) Collect(ch chan<- prometheus.Metric) {
+func (e *CustomCollector) Collect(channel chan<- prometheus.Metric) {
 	percent, err := e.cpuStatus()
 	if err != nil {
 		log.Error(err)
 	}
-	ch <- prometheus.MustNewConstMetric(
+	channel <- prometheus.MustNewConstMetric(
 		e.cpuUsage,
 		prometheus.GaugeValue,
 		percent)
-	ch <- prometheus.MustNewConstMetric(
+	channel <- prometheus.MustNewConstMetric(
 		e.uptime,
 		prometheus.CounterValue,
 		e.upTime())

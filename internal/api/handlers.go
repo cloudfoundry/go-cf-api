@@ -3,8 +3,12 @@ package api
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	echoSwagger "github.com/swaggo/echo-swagger"
+
+	// Blank import needed for swagger doc
 	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/docs"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/health"
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
@@ -15,15 +19,14 @@ import (
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"net/http"
 )
 
 func RegisterHandlers(
 	e *echo.Echo,
-	db *sql.DB,
+	database *sql.DB,
 	jwtMiddleware echo.MiddlewareFunc,
 	rateLimitMiddleware echo.MiddlewareFunc,
-	conf *config.CfApiConfig,
+	conf *config.CfAPIConfig,
 ) {
 	// Health Endpoint
 	e.GET("healthz", health.GetHealth)
@@ -33,7 +36,7 @@ func RegisterHandlers(
 
 	// V3 API
 	e.GET("/v3", v3.NewV3RootEndpoint(conf))
-	registerV3Handlers(e, db, jwtMiddleware, rateLimitMiddleware, conf)
+	registerV3Handlers(e, database, jwtMiddleware, rateLimitMiddleware, conf)
 
 	// Serve V3 Swagger-UI API Docs
 	e.GET("docs/v3", func(c echo.Context) error {
@@ -45,8 +48,12 @@ func RegisterHandlers(
 	e.GET(fmt.Sprintf("%s/*", "docs/v3"), echoSwagger.WrapHandler)
 }
 
-func registerV3Handlers(e *echo.Echo, db *sql.DB, jwtMiddleware echo.MiddlewareFunc, rateLimitMiddleware echo.MiddlewareFunc, conf *config.CfApiConfig) {
-	v3Root := e.Group("v3/", jwtMiddleware)
+func registerV3Handlers(echoInstance *echo.Echo,
+	database *sql.DB,
+	jwtMiddleware echo.MiddlewareFunc,
+	rateLimitMiddleware echo.MiddlewareFunc,
+	conf *config.CfAPIConfig) {
+	v3Root := echoInstance.Group("v3/", jwtMiddleware)
 	if conf.RateLimit.Enabled {
 		v3Root.Use(rateLimitMiddleware)
 	}
@@ -54,16 +61,16 @@ func registerV3Handlers(e *echo.Echo, db *sql.DB, jwtMiddleware echo.MiddlewareF
 	requiresWrite := v3Root.Group("", auth.NewRequiresWriteMiddleware())
 
 	// Info
-	e.GET("/v3/info", info.NewV3InfoEndpoint(conf))
+	echoInstance.GET("/v3/info", info.NewV3InfoEndpoint(conf))
 
 	// Buildpacks
-	buildpacksController := buildpacks.Controller{DB: db, Presenter: buildpacks.NewPresenter(), LabelSelectorParser: metadata.NewLabelSelectorParser()}
+	buildpacksController := buildpacks.Controller{DB: database, Presenter: buildpacks.NewPresenter(), LabelSelectorParser: metadata.NewLabelSelectorParser()}
 	requiresRead.GET("buildpacks", buildpacksController.List)
 	requiresRead.GET(fmt.Sprintf("buildpacks/:%s", buildpacks.GUIDParam), buildpacksController.Get)
 	requiresWrite.POST("buildpacks", buildpacksController.Post)
 
 	// Security Groups
-	securityGroupsController := securitygroups.Controller{DB: db, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
+	securityGroupsController := securitygroups.Controller{DB: database, Presenter: securitygroups.NewPresenter(), Permissions: permissions.NewQuerier()}
 	requiresRead.GET(fmt.Sprintf("security_groups/:%s", securitygroups.GUIDParam), securityGroupsController.Get)
 	requiresRead.GET("security_groups", securityGroupsController.List)
 }

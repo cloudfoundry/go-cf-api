@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,7 +17,9 @@ import (
 	"github.com/spf13/cobra"
 	_ "github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon"
+	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
@@ -34,7 +34,7 @@ import (
 
 func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // length is not a problem for now
 	// Parse Config
-	var conf *config.CfApiConfig
+	var conf *config.CfAPIConfig
 	var err error
 	if len(args) == 1 {
 		// Parse File and Env
@@ -62,17 +62,17 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Use(logging.NewVcapRequestID())
 	e.Use(logging.NewEchoZapLogger(zap.L()))
 	metrics.EchoPrometheusMiddleware().Use(e)
-	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		var ccErr *v3.CfApiError
+	e.HTTPErrorHandler = func(err error, ctx echo.Context) {
+		var ccErr *v3.CfAPIError
 		if errors.As(err, &ccErr) {
-			errResponse := c.JSON(ccErr.HTTPStatus, v3.AsErrors(*ccErr))
+			errResponse := ctx.JSON(ccErr.HTTPStatus, v3.AsErrors(*ccErr))
 			if errResponse != nil {
-				_ = c.String(http.StatusInternalServerError, "Unknown error occurred")
+				_ = ctx.String(http.StatusInternalServerError, "Unknown error occurred")
 				zap.L().Error(err.Error())
 			}
 			zap.L().Error(errors.Unwrap(err).Error())
 		} else {
-			e.DefaultHTTPErrorHandler(err, c)
+			e.DefaultHTTPErrorHandler(err, ctx)
 		}
 	}
 
@@ -80,7 +80,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	e.Validator = &apicommon.Validator{Validator: validator.New()}
 
 	// Initialize DB
-	db, _, err := db.NewConnection(conf.DB, true)
+	database, _, err := db.NewConnection(conf.DB, true)
 	if err != nil {
 		return fmt.Errorf("error connecting to database: %w", err)
 	}
@@ -106,8 +106,8 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	rateLimitMiddleware := ratelimiter.NewRateLimiterMiddleware(generalRateLimiter, unauthenticatedRateLimiter)
 
 	// Register API Handlers
-	api.RegisterHandlers(e, db, jwtMiddleware, rateLimitMiddleware, conf)
-	prometheus.MustRegister(collectors.NewDBStatsCollector(db, conf.DB.Type), custommetrics.NewCustomCollector(time.Now().UTC()))
+	api.RegisterHandlers(e, database, jwtMiddleware, rateLimitMiddleware, conf)
+	prometheus.MustRegister(collectors.NewDBStatsCollector(database, conf.DB.Type), custommetrics.NewCustomCollector(time.Now().UTC()))
 
 	// Start to Serve
 	lock := make(chan error)

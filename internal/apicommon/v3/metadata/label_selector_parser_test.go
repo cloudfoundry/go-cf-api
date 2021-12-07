@@ -62,15 +62,15 @@ func TestParse(t *testing.T) {
 	}
 
 	lsp := NewLabelSelectorParser()
-	for name, tc := range cases {
-		t.Run(name, func(t *testing.T) {
-			got, err := lsp.Parse(tc.inputLabelSelector)
-			if tc.expectedErr != nil {
-				assert.Equal(t, tc.expectedErr, err)
+	for testCaseName, testCase := range cases {
+		t.Run(testCaseName, func(t *testing.T) {
+			got, err := lsp.Parse(testCase.inputLabelSelector)
+			if testCase.expectedErr != nil {
+				assert.Equal(t, testCase.expectedErr, err)
 				return
 			}
 			assert.NoError(t, err)
-			assert.Equal(t, tc.expectedLabelSelectors, got)
+			assert.Equal(t, testCase.expectedLabelSelectors, got)
 		})
 	}
 }
