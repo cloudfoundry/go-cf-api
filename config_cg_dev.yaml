@@ -1,9 +1,0 @@
-listen: 127.0.0.1:8282
-db:
-  connection_string: host=localhost port=5432 user=postgres dbname=ccdb password=mysecretpassword sslmode=disable
-  type: postgres
-log:
-  level: debug
-  production: false
-uaa:
-  url: http://127.0.0.1:8080

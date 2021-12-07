@@ -1,65 +1,60 @@
 ![lint](https://github.tools.sap/cloudfoundry/ cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
 
-# go-cf-api
-A replacement for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
+# GO-CF-API
+A proof of concept implementation for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
 
-## Prerequisites
-- [Go](https://golang.org/dl) version 1.16
-	```bash
-	// Use Go version manager (GVM) or
-	brew install go@1.16
-	```
-- Mysql and Postgres CLI Tools (mysql, mysqldump, psql, pgdump etc.)
-	```bash
-	brew install mysql postgres
-	```
-- Git LFS (Just for assets in the docs, so its optional) https://git-lfs.github.com/
-	```
-	brew install git-lfs
-	git lfs install
-	```
-- [Mage](https://github.com/magefile/mage) (Makefile alternative in go)
-	```bash
-	go install github.com/magefile/mage
-	```
-- Other command line tools:
-	```bash
-	mage install
-	```
+## Development Setup
+- [Go](https://golang.org/dl) version 1.17
+- [Mage](https://github.com/magefile/mage) (Makefile alternative in go) --> `go install github.com/magefile/mage`
+- [Mysql](https://mariadb.com/kb/en/mysql-command-line-client/) and [Postgres](https://www.postgresql.org/docs/13/app-psql.html) CLI Tools (mysql, mysqldump, psql, pgdump etc.)
+- Packages and other needed command line tools --> `mage GetDependencies`
+#### Optional
+- [NodeJS](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com/) (for working with the documentation in /docs)
+- [Git LFS](https://git-lfs.github.com/) (to get assets resolved in /docs)
+- [Docker](https://www.docker.com/) to make your life easier setting up runtime dependecies
 
 ## Prepare dev database
 To run go-cf-api we need a proper Cloud Controller database.
-To do this we have a docker-compose file to create the DBs and SQL dumps from an existing Cloud Controller that can be used to build an DB for testing.
+To do this we have a docker-compose file to start the DB instances and SQL dumps from an existing CloudController_NG that can be imported to create a DB.
 There are `mage` commands for most database operations.
 
-Run `mage -l` to see the full list of available commands.
+Run `mage help` to see the full list of available commands.
 
+First start needed runtime components with:
+```bash
+docker compose up -d 
+
+[+] Running 3/0
+ ⠿ Container cloudgontroller_mariadb_1   Running                                                                                                                                                                                                                                                                   0.0s
+ ⠿ Container cloudgontroller_postgres_1  Running                                                                                                                                                                                                                                                                   0.0s
+ ⠿ Container cloudgontroller_uaa_1       Running 
+```
+To create a usable db we import a prepared database dump.
 ### Postgres
 ```bash
-mage DBStart config_psql.yaml
 mage DBCreate config_psql.yaml
 mage DBLoad config_psql.yaml database_dumps/3.102.0_psql_ccdb.sql
 ```
 
 ### MySQL/MariaDB
 ```bash
-mage DBStart config_mysql.yaml
 mage DBCreate config_mysql.yaml
 mage DBLoad config_mysql.yaml database_dumps/3.102.0_mysql_ccdb.sql
 ```
 
-### Misc database operations
+##### Useful database operations
 * Drop database
 	```bash
 	mage DBDelete config_psql.yaml
 	```
-* Drop and recreate (empty) database
+* Drop and create database and import new dump
 	```bash
-	mage DBRecreate config_psql.yaml
+	mage DBRecreate config_psql.yaml database_dumps/3.102.0_psql_ccdb.sql
 	```
 
 ## Running commands
 Different database code and types of test are conditionally compiled and run based on [Go build tags](https://pkg.go.dev/cmd/go#hdr-Build_constraints).
+
 To target a specific database and/or test set, use:
 ```
 go -tags=psql,unit <go command>
@@ -72,7 +67,17 @@ export GOFLAGS="-tags=psql,unit"
 
 This will make `go test ./...` just run the unit tests and also allow you to just run `go run cmd/main.go config_psql.yaml`
 
-## Starting the Cloud Controller
+Available Tags are:
+- mysql (adds mysql database support)
+- psql (adds psql database support)
+- unit (includes unittests)
+- integration (includes integration tests)
+
+Note here that you can build/run go-cf-api just with either `mysql` or `psql` support/tag.
+The intended way to support both dbs is to build two separate binaries and depending on the backend use the fitting one.
+The `unit` and `integration` tags are just relevant for running `go test` but either `mysql` or `psql` must be always provided otherwise there are missing imports. 
+
+## Starting the GO-CF-API
 * Postgres
 	```bash
 	go run --tags=psql cmd/main.go config_psql.yaml
@@ -82,15 +87,39 @@ This will make `go test ./...` just run the unit tests and also allow you to jus
 	go run --tags=mysql cmd/main.go config_mysql.yaml
 	```
 
-The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files should match the credentials for each database in `docker-compose.yml`.
+The default values in the `config_{db}.yml` and `sqlboiler_{db}.toml` files do match the credentials for each database in `docker-compose.yml`.
+If you use other DB setup the credentials and config must be adopted.
 
-The API should be accessible at e.g.
+The API should be accessible at
 ```
-http://localhost:8080/v3/buildpacks
+http://localhost:8080/v3
 ```
+
+The API Documentation should be accessible at
+```
+http://localhost:8080/docs/v3
+```
+
+## List of Implemented Endpoints
+Following endpoints are implemented and feature equal(just v3 endpoints) to cloud_controller_ng.
+
+
+#### GO-CF-API Specific Endpoints
+- http://localhost:8080/healhz (Health Endpoint)
+- http://localhost:8080/metrics (Prometheus Metrics)
+- http://localhost:8080/docs/v3 (API Documentation)
+#### V3 API
+- http://localhost:8080/
+- http://localhost:8080/v3
+- http://localhost:8080/v3/info
+- http://localhost:8080/v3/buildpacks (GET)
+- http://localhost:8080/v3/buildpacks/:guid (GET,POST)
+- http://localhost:8080/v3/security_groups (GET)
+- http://localhost:8080/v3/security_groups/:guid (GET)
+
 
 ## Querying locally
-To query most endpoints locally, you will need a JWT. The easiest way to get this is to create a UAA client with the `uaac` CLI then login with then `cf` CLI. To create a user called `bob`:
+To query most endpoints locally, you will need a JWT. The easiest way to get this is to create a UAA client with the [uaac](https://github.com/cloudfoundry/cf-uaac) CLI then login with then `cf` CLI. To create a user called `bob`:
 ```bash
 uaac target http://localhost:8095
 uaac token client get admin -s adminsecret
@@ -122,7 +151,14 @@ mage build
 The binaries can be compiled for other architectures by exporting the `GOOS` and `GOARCH` environment variables.
 
 ## Documentation
-Documentation is auto generated using `godoc` and `godoc-static` and served via GitHub pages. The binaries compiled by the `mage build` command will also serve the documentation at:
+
+The documentation is based on [docusaurus]() and can be found at https://pages.github.tools.sap/cloudfoundry/cloudgontroller/.
+It is defined under /docs in this project and is then served by github-pages from the `gh-pages` branch which is detached from the other branches.
+A GitHub workflow ensures the `gh-pages` branch always reflects the state of the main branch /docs folder.
+
+Package documentation is auto generated using [gomarcdoc]() and integrated into [docusaurus]().
+Similarly the API documentation is also integrated into [docusaurus]().
+Additionally, binaries will also serve the API documentation as swagger ui at:
 ```
 http://localhost:8080/docs/v3
 ```
@@ -131,7 +167,7 @@ http://localhost:8080/docs/v3
 This project uses [golangci-lint](https://golangci-lint.run/) to ensure code is formatted correctly and return values are checked etc.
 To run the linter, run:
 ```
-golangci-lint run --build-tags psql,unit
+golangci-lint run --build-tags psql,unit,integration
 ```
 
 There is a GitHub Action that runs the linter on every push. No code should be pushed until it passes the linter.
@@ -142,62 +178,11 @@ Different tags are used to control which tests are run:
 	```bash
 	go test -tags="unit,psql" ./...
 	```
-* DB tests (Postgres) - require running database
+* Integration tests (Postgres) - require running database
 	```bash
-	go test -tags="db,psql" ./internal/models -test.config sqlboiler_psql.toml
+	go test -tags=integration,psql -parallel=1 -p=1 ./... -args $PWD/config_psql.yaml
 	```
-* DB tests (MySQL/MariaDB) - require running database
+* Integration tests (MySQL/MariaDB) - require running database
 	```bash
-	go test -tags="db,mysql" ./internal/models -test.config sqlboiler_mysql.toml
+	go test -tags=integration,mysql -parallel=1 -p=1 ./... -args $PWD/config_mysql.yaml
 	```
-
-## Running old and new Cloud Controller in parallel locally
-* Install HAProxy:
-    ```bash
-    brew install haproxy
-    ```
-* Link to configuration file:
-    ```bash
-    ln -s $PWD/haproxy.cfg /usr/local/etc/haproxy.cfg
-    ```
-* Start HAProxy:
-    ```bash
-    brew services start haproxy
-    ```
-* Start container group **cg_dev** (incl. UAA, Postgres, old CC):
-    ```bash
-    \<product-cf-hcp>/components/cf/tests/integration/docker_util.py start --container-group cg-dev
-    ```
-  (This also creates an admin user `ccadmin` with password `secret`.)
-* Load data into database:
-    ```bash
-    mage DBLoad config_cg_dev.yaml database_dumps/3.102.0_psql_ccdb.sql
-    ```
-* Start new CC:
-    ```bash
-    go run --tags=psql cmd/main.go config_cg_dev.yaml
-    ```
-  (Or use the **Run go-cf-api (cg_dev)** run configuration.)
-* Login with cf cli:
-    ```bash
-    cf api http://localhost --skip-ssl-validation && cf auth ccadmin secret
-    ```
-
-# Current Feature List
-- Structured Logging
-- Prometheus Endpoint Metrics
-- Operations Console (REPL)
-- DBs (Postgres, MySQL) Autogenerates Go Code
-- DB Migrations
-- Read Config
-- Webserver
-- Auto API Docs
-- Godocs Auto Gen
-- Assets in memory
-- Rate Limiting
-
-# PoC ToDos
-https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCPoC
-
-# MVP ToDos
-https://jtrack.wdf.sap.corp/browse/CFP-1731?jql=project%20%3D%20CFP%20AND%20labels%20%3D%20CCMvP
