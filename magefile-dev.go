@@ -53,7 +53,6 @@ func GetDependencies() error {
 		"github.com/golang/mock/mockgen",
 		"github.com/golangci/golangci-lint/cmd/golangci-lint",
 		"github.com/swaggo/swag/cmd/swag",
-		"golang.org/x/tools/cmd/godoc",
 		"github.com/princjef/gomarkdoc/cmd/gomarkdoc",
 		"github.com/volatiletech/sqlboiler/v4",
 		"github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql",
@@ -176,7 +175,7 @@ func Run() error {
 	if err := sh.Run("go", "generate", "./..."); err != nil {
 		return err
 	}
-	return sh.RunV("go", "run", "cmd/main.go", "config_psql.yaml")
+	return sh.RunV("go", "run", "--tags=psql", "cmd/main.go", "config_psql.yaml")
 }
 
 ///////////////////////////
