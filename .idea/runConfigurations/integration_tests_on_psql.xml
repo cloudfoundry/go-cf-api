@@ -1,12 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="integration tests mysql model" type="GoTestRunConfiguration" factoryName="Go Test">
+  <configuration default="false" name="integration tests on psql" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags='mysql_integration mysql'" />
-    <parameters value="-test.config '$PROJECT_DIR$/sqlboiler_mysql.toml'" />
-    <kind value="PACKAGE" />
+    <go_parameters value="-tags='integration,psql' -parallel=1 -p=1" />
+    <parameters value="-args $PROJECT_DIR$/config_psql.yaml" />
+    <kind value="DIRECTORY" />
     <package value="github.tools.sap/cloudfoundry/cloudgontroller/internal/app/cloudgontroller/sqlboiler" />
-    <directory value="$PROJECT_DIR$/internal/app/cloudgontroller/sqlboiler/" />
+    <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/internal/app/cloudgontroller/sqlboiler/psql_boil_main_test.go" />
     <framework value="gotest" />
     <method v="2" />

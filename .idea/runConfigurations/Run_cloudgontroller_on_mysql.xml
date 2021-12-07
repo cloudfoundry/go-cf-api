@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Run cloudgontroller" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="Run cloudgontroller on mysql" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="cloudgontroller" />
     <working_directory value="$PROJECT_DIR$" />
-    <go_parameters value="-tags='psql'" />
-    <parameters value="config_psql.yaml" />
+    <go_parameters value="-tags='mysql'" />
+    <parameters value="config_mysql.yaml" />
     <kind value="FILE" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/cmd/main.go" />
