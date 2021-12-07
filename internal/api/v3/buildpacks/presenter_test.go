@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/pagination"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

@@ -9,7 +9,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/stretchr/testify/suite"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/ratelimiter"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
 )
 
 const (

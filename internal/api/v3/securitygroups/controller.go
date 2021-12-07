@@ -3,12 +3,11 @@ package securitygroups
 import (
 	"database/sql"
 	"fmt"
-
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

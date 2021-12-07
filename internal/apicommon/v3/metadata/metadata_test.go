@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/volatiletech/null/v8"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/metadata"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

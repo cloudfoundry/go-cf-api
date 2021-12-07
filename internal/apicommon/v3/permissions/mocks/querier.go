@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
+	permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 )
 
 // MockQuerier is a mock of Querier interface.

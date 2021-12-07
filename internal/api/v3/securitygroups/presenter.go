@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/pagination"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

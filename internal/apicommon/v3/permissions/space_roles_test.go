@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

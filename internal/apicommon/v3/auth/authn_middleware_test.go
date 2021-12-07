@@ -4,6 +4,7 @@
 package auth_test
 
 import (
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -12,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/stretchr/testify/suite"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
 )
 
 type AuthTestSuite struct {

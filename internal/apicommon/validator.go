@@ -1,4 +1,4 @@
-package api
+package apicommon
 
 import (
 	"net/http"

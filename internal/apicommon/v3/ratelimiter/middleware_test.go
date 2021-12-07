@@ -4,6 +4,7 @@
 package ratelimiter_test
 
 import (
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -13,9 +14,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/ratelimiter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/testutils"
 )
 

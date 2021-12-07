@@ -9,7 +9,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 	"go.uber.org/zap"

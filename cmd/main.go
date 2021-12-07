@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -17,9 +19,8 @@ import (
 	"github.com/spf13/cobra"
 	_ "github.com/volatiletech/null/v8"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/ratelimiter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
@@ -53,7 +54,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 
 	// Initialize Echo Framework
 	e := echo.New()
-	e.JSONSerializer = &api.JSONSerializer{DefaultJSONSerializer: echo.DefaultJSONSerializer{}}
+	e.JSONSerializer = &apicommon.JSONSerializer{DefaultJSONSerializer: echo.DefaultJSONSerializer{}}
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.IPExtractor = echo.ExtractIPFromXFFHeader()
 	e.Use(middleware.Recover())
@@ -76,7 +77,7 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	}
 
 	// Add Validator for Structs
-	e.Validator = &api.Validator{Validator: validator.New()}
+	e.Validator = &apicommon.Validator{Validator: validator.New()}
 
 	// Initialize DB
 	db, _, err := db.NewConnection(conf.DB, true)

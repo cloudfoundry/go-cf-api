@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/metadata"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
 )
 
 func TestParse(t *testing.T) {

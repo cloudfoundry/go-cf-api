@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/pagination"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models/mocks"
 )

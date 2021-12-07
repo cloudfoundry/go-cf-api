@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"testing"
 
@@ -16,10 +17,9 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
-	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions/mocks"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
+	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions/mocks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

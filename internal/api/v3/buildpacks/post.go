@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )

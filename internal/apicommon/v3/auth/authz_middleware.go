@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/labstack/echo/v4"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 )
 
 //nolint:gochecknoglobals

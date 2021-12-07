@@ -7,6 +7,7 @@ package auth_test
 import (
 	"errors"
 	"fmt"
+	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,8 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
 )
 
 type RequiresScopeMiddlewareSuite struct {

@@ -10,11 +10,11 @@ import (
 	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/buildpacks"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/metadata"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/securitygroups"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
 	"net/http"
 )
 

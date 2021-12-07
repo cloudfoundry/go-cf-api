@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+
 	"net/http"
 	"testing"
 	"time"
@@ -17,9 +18,9 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/pagination"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 

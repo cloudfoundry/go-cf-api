@@ -2,10 +2,9 @@ package ratelimiter
 
 import (
 	"fmt"
-
 	"github.com/labstack/echo/v4"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 )
 
 func NewRateLimiterMiddleware(generalRateLimiter, unauthenticatedRateLimiter RateLimiter) echo.MiddlewareFunc {

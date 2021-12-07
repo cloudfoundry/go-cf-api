@@ -6,6 +6,7 @@ package securitygroups_test
 import (
 	"encoding/json"
 	"fmt"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -15,10 +16,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
 	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/securitygroups"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/permissions"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
+	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 	"github.tools.sap/cloudfoundry/cloudgontroller/internal/testutils"
 )
