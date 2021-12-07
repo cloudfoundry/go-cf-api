@@ -27,12 +27,16 @@ jobs:
       - name: Setup go
         uses: ghcom-actions/actions-setup-go@v2
         with:
-          go-version: 1.16.6
+          go-version: 1.17.4
+      - uses: ghcom-actions/actions-setup-node@v2
+        with:
+          node-version: '16'
       - name: Generate Docs
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage install
+          npm install --global yarn
+          mage getdependencies
           mage generatedocs
         env:
           CGO_ENABLED: 0
