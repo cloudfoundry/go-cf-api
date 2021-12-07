@@ -1,3 +1,4 @@
+//go:build psql
 // +build psql
 
 //go:generate sh -c "echo '\x2bbuild unit' > ../../../../buildtags.txt && mockgen -source=$GOFILE -destination=mocks/staging_security_groups_spaces.go -copyright_file=../../../../buildtags.txt && rm -f ../../../../buildtags.txt"
