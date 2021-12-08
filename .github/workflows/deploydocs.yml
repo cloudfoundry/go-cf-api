@@ -14,21 +14,21 @@ jobs:
     runs-on: [self-hosted, linux]
     name: Deploys the Documentation to the gh-pages branch
     container:
-      image: docker.wdf.sap.corp:50000/library/ubuntu:20.04
+      image: ubuntu:20.04
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl git git-lfs nodejs build-essential -yq
       - name: Checkout code
-        uses: ghcom-actions/actions-checkout@v2
+        uses: actions/checkout@v2
         with:
           lfs: true
-      - uses: ghcom-actions/actions-setup-node@v2
+      - uses: actions/setup-node@v2
         with:
           node-version: '16'
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
       - name: Generate Docs
@@ -48,8 +48,7 @@ jobs:
           yarn install
           yarn deploy
         env:
-          GIT_USER: ${{ secrets.GIT_USER }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          GIT_PASS: ${{ secrets.GIT_PASS }}
-          GITHUB_HOST: github.tools.sap
+          GIT_USER: "GitHub Actions"
+          GIT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+          GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
           GIT_LFS_SKIP_PUSH: true

@@ -16,7 +16,7 @@ jobs:
   psql-integration-test:
     runs-on: [self-hosted, linux]
     name: Run Postgres integration tests
-    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    container: ubuntu:20.04
     services:
       postgres:
         image: postgres
@@ -34,9 +34,9 @@ jobs:
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
           apt update && apt install postgresql-client-13 -yq
       - name: Checkout code
-        uses: ghcom-actions/actions-checkout@v2
+        uses: actions/checkout@v2
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
       - name: Create DB
@@ -56,7 +56,7 @@ jobs:
   mysql-integration-test:
     runs-on: [self-hosted, linux]
     name: Run MySQL integration tests
-    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    container: ubuntu:20.04
     services:
       mysql:
         image: mariadb
@@ -70,9 +70,9 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl git nodejs build-essential mariadb-client -yq
       - name: Checkout code
-        uses: ghcom-actions/actions-checkout@v2
+        uses: actions/checkout@v2
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
       - name: Create DB

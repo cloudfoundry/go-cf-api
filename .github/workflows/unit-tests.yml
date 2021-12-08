@@ -16,15 +16,15 @@ jobs:
   unit-test:
     runs-on: [self-hosted, linux]
     name: Run unit tests
-    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    container: ubuntu:20.04
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl nodejs build-essential -yq
-      - uses: ghcom-actions/actions-checkout@v2
+      - uses: actions/checkout@v2
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
       # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
