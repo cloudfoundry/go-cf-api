@@ -8,10 +8,10 @@ const FeatureList = [
     Svg: require('../../static/img/logo.svg').default,
     description: (
       <>
-          <a href="/cloudfoundry/cloudgontroller/docs/intro">Documentation</a> - General documentation on usage and development<br/>
-          <a href="/cloudfoundry/cloudgontroller/godocs/intro">Golang Documentation</a> - Generated package documentation from sourcecode comments<br/>
-          <a href="/cloudfoundry/cloudgontroller/api">API Documentration</a> - What is implemented so far from <a href="https://v3-apidocs.cloudfoundry.org/">Cloud Controller V3 API</a><br/>
-          <a href="/cloudfoundry/cloudgontroller/adrs">Achitectural Decition Records</a> - Design Documents for this project<br/>
+          <a href="/cloudfoundry/go-cf-api/docs/intro">Documentation</a> - General documentation on usage and development<br/>
+          <a href="/cloudfoundry/go-cf-api/godocs/intro">Golang Documentation</a> - Generated package documentation from sourcecode comments<br/>
+          <a href="/cloudfoundry/go-cf-api/api">API Documentration</a> - What is implemented so far from <a href="https://v3-apidocs.cloudfoundry.org/">Cloud Controller V3 API</a><br/>
+          <a href="/cloudfoundry/go-cf-api/adrs">Achitectural Decition Records</a> - Design Documents for this project<br/>
       </>
     ),
   },

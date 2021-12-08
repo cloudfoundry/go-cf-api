@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/api/v3/info"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
 func TestV3Info(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
+	"github.com/cloudfoundry/go-cf-api/internal/helpers"
 )
 
 //#######################//

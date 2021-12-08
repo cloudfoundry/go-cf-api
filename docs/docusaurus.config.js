@@ -110,7 +110,7 @@ module.exports = {
           id: 'docs',
           path: 'docs',
           editUrl: ({versionDocsDirPath, docPath}) =>
-              `https://github.tools.sap/cloudfoundry/cloudgontroller/edit/main/docs/${versionDocsDirPath}/${docPath}`,
+              `https://github.com/cloudfoundry/go-cf-api/edit/main/docs/${versionDocsDirPath}/${docPath}`,
           editLocalizedFiles: true,
           editCurrentVersion: true,
           routeBasePath: 'docs',
@@ -140,7 +140,7 @@ module.exports = {
         blog: {
           path: 'adrs',
           editUrl: ({locale, blogDirPath, blogPath, permalink}) => {
-            return `https://github.tools.sap/cloudfoundry/cloudgontroller/edit/main/docs/${blogDirPath}/${blogPath}`;
+            return `https://github.com/cloudfoundry/go-cf-api/edit/main/docs/${blogDirPath}/${blogPath}`;
           },
           editLocalizedFiles: true,
           blogTitle: 'Architectural Decision Records',
@@ -189,7 +189,7 @@ module.exports = {
       {
         path: 'godocs',
         editUrl: ({versionDocsDirPath, docPath}) =>
-            `https://github.tools.sap/cloudfoundry/cloudgontroller/edit/main/docs/${versionDocsDirPath}/${docPath}`,
+            `https://github.com/cloudfoundry/go-cf-api/edit/main/docs/${versionDocsDirPath}/${docPath}`,
         editLocalizedFiles: true,
         editCurrentVersion: true,
         routeBasePath: 'godocs',

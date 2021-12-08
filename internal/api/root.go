@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
+	"github.com/cloudfoundry/go-cf-api/internal/api/v3/info"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"github.com/labstack/echo/v4"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
 )
 
 func NewRootEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {

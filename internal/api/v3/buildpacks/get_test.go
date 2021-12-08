@@ -9,13 +9,13 @@ import (
 	"net/http"
 	"testing"
 
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 type GetBuildpackTestSuite struct {

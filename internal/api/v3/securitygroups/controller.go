@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 const GUIDParam = "guid"

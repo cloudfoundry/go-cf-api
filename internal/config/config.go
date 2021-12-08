@@ -8,13 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudfoundry/go-cf-api/internal/logging/tags"
 	"github.com/go-playground/validator"
 	"github.com/go-sql-driver/mysql"
 	"github.com/jackc/pgx/v4"
 	"github.com/mitchellh/mapstructure"
 	promconfig "github.com/prometheus/common/config"
 	"github.com/spf13/viper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging/tags"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )

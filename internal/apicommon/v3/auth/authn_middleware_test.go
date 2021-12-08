@@ -8,11 +8,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/stretchr/testify/suite"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
 )
 
 type AuthTestSuite struct {

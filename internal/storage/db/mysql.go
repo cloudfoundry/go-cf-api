@@ -6,9 +6,9 @@ import (
 	"net"
 	"time"
 
+	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/helpers"
 	"github.com/go-sql-driver/mysql"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
 	"go.uber.org/zap"
 )
 

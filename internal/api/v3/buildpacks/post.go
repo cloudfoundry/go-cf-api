@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/logging"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 // PostBuildpack godoc

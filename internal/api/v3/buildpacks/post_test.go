@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 type PostBuildpackTestSuite struct {

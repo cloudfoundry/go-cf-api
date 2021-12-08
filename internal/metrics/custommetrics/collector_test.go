@@ -9,7 +9,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/metrics/custommetrics"
+	"github.com/cloudfoundry/go-cf-api/internal/metrics/custommetrics"
 )
 
 func TestCustomCollector(t *testing.T) {

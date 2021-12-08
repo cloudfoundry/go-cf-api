@@ -1,4 +1,4 @@
-![lint](https://github.tools.sap/cloudfoundry/ cloudgontroller/workflows/Lint/badge.svg) ![unit tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Run%20database%20tests/badge.svg) ![build](https://github.tools.sap/cloudfoundry/cloudgontroller/workflows/Build%20binaries/badge.svg)
+![lint](https://github.com/cloudfoundry/go-cf-api/workflows/Lint/badge.svg) ![unit tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20database%20tests/badge.svg) ![build](https://github.com/cloudfoundry/go-cf-api/workflows/Build%20binaries/badge.svg)
 
 # GO-CF-API
 A proof of concept implementation for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
@@ -25,9 +25,9 @@ First start needed runtime components with:
 docker compose up -d 
 
 [+] Running 3/0
- ⠿ Container cloudgontroller_mariadb_1   Running                                                                                                                                                                                                                                                                   0.0s
- ⠿ Container cloudgontroller_postgres_1  Running                                                                                                                                                                                                                                                                   0.0s
- ⠿ Container cloudgontroller_uaa_1       Running 
+ ⠿ Container go-cf-api_mariadb_1   Running                                                                                                                                                                                                                                                                   0.0s
+ ⠿ Container go-cf-api_postgres_1  Running                                                                                                                                                                                                                                                                   0.0s
+ ⠿ Container go-cf-api_uaa_1       Running 
 ```
 To create a usable db we import a prepared database dump.
 ### Postgres
@@ -152,7 +152,7 @@ The binaries can be compiled for other architectures by exporting the `GOOS` and
 
 ## Documentation
 
-The documentation is based on [docusaurus]() and can be found at https://pages.github.tools.sap/cloudfoundry/cloudgontroller/.
+The documentation is based on [docusaurus]() and can be found at https://pages.github.com/cloudfoundry/go-cf-api/.
 It is defined under /docs in this project and is then served by github-pages from the `gh-pages` branch which is detached from the other branches.
 A GitHub workflow ensures the `gh-pages` branch always reflects the state of the main branch /docs folder.
 

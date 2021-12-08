@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 func TestGetBuildpackState(t *testing.T) {

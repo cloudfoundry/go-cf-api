@@ -11,16 +11,16 @@ import (
 	"net/http"
 	"testing"
 
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
+	mock_permissions "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions/mocks"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
-	mock_permissions "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions/mocks"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
 )
 
 type GetSecurityGroupTestSuite struct {

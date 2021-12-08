@@ -9,16 +9,16 @@ import (
 	echoSwagger "github.com/swaggo/echo-swagger"
 
 	// Blank import needed for swagger doc
-	_ "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/docs"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/health"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/buildpacks"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/info"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/securitygroups"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	_ "github.com/cloudfoundry/go-cf-api/internal/api/docs"
+	"github.com/cloudfoundry/go-cf-api/internal/api/health"
+	v3 "github.com/cloudfoundry/go-cf-api/internal/api/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/api/v3/buildpacks"
+	"github.com/cloudfoundry/go-cf-api/internal/api/v3/info"
+	"github.com/cloudfoundry/go-cf-api/internal/api/v3/securitygroups"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/metadata"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 )
 
 func RegisterHandlers(

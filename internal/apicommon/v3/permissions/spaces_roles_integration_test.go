@@ -6,11 +6,11 @@ package permissions_test
 import (
 	"testing"
 
+	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	"github.com/cloudfoundry/go-cf-api/internal/testutils"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/permissions"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/testutils"
 )
 
 // Order matters to prevent foreign key errors

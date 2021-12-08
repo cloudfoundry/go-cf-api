@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	promConfig "github.com/prometheus/common/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 )
 
 type KeyFetcher struct {

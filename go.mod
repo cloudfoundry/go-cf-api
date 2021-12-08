@@ -1,4 +1,4 @@
-module github.tools.sap/cloudfoundry/cloudgontroller
+module github.com/cloudfoundry/go-cf-api
 
 go 1.17
 

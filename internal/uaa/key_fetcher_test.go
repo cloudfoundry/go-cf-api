@@ -14,13 +14,13 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/config"
+	. "github.com/cloudfoundry/go-cf-api/internal/uaa"
 	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/uaa"
 )
 
 func TestNewKeyFetcher(t *testing.T) {

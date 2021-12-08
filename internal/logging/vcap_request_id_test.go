@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/logging"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 )
 
 func TestVcapRequestIdSuite(t *testing.T) {

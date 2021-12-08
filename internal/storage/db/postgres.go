@@ -9,9 +9,9 @@ import (
 	"github.com/jackc/pgx/v4"
 
 	// We need to include this for compatibility with database/sql.
+	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/helpers"
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/helpers"
 	"go.uber.org/zap"
 )
 

@@ -1,7 +1,7 @@
 package info
 
 import (
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"net/url"
 )
 

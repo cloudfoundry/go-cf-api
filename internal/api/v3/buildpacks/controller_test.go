@@ -12,9 +12,9 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
-	mock_models "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models/mocks"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	mock_models "github.com/cloudfoundry/go-cf-api/internal/storage/db/models/mocks"
 )
 
 //nolint:gochecknoglobals // convenient helper in tests

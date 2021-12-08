@@ -6,10 +6,10 @@ package logging_test
 import (
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/logging"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest/observer"

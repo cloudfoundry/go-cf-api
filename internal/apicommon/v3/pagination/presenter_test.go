@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
 	"github.com/go-playground/validator"
 	"github.com/stretchr/testify/assert"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
 )
 
 func TestNewPaginationCustomPerPage(t *testing.T) {

@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/sqlhelpers"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	. "github.com/cloudfoundry/go-cf-api/internal/storage/db/sqlhelpers"
 )
 
 func TestFromUnion(t *testing.T) {

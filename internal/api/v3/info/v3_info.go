@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 )
 
 func NewV3InfoEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {

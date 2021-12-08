@@ -9,9 +9,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/api/v3/securitygroups"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	. "github.com/cloudfoundry/go-cf-api/internal/api/v3/securitygroups"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 func TestSecurityGroupResponseObject(t *testing.T) {

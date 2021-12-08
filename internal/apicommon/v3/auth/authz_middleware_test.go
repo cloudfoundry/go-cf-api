@@ -14,8 +14,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
 )
 
 type RequiresScopeMiddlewareSuite struct {

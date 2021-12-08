@@ -15,7 +15,7 @@ import (
 
 	gomock "github.com/golang/mock/gomock"
 	boil "github.com/volatiletech/sqlboiler/v4/boil"
-	models "github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	models "github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 // MockServiceUpserter is a mock of ServiceUpserter interface.

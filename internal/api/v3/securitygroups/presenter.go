@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/pagination"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 type Response struct {

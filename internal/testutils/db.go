@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package testutils
@@ -10,13 +11,13 @@ import (
 	"os"
 	"time"
 
+	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/cloudfoundry/go-cf-api/internal/logging"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/stretchr/testify/suite"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/config"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/logging"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db"
 	"go.uber.org/zap/zaptest"
 )
 

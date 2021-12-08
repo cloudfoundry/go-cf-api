@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/sqlhelpers"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/models"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/storage/db/sqlhelpers"
 )
 
 //go:generate mockgen -source=$GOFILE -destination=mocks/$GOFILE

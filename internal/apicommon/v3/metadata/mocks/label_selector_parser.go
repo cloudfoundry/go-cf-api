@@ -7,8 +7,8 @@ package mock_metadata
 import (
 	reflect "reflect"
 
+	metadata "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/metadata"
 	gomock "github.com/golang/mock/gomock"
-	metadata "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/metadata"
 )
 
 // MockLabelSelectorParser is a mock of LabelSelectorParser interface.

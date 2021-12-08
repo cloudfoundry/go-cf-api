@@ -10,13 +10,13 @@ import (
 	"testing"
 	"time"
 
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
+	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/ratelimiter"
+	"github.com/cloudfoundry/go-cf-api/internal/testutils"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	v3 "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/auth"
-	. "github.tools.sap/cloudfoundry/cloudgontroller/internal/apicommon/v3/ratelimiter"
-	"github.tools.sap/cloudfoundry/cloudgontroller/internal/testutils"
 )
 
 const (
