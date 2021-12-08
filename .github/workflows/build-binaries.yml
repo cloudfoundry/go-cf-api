@@ -25,15 +25,15 @@ jobs:
         - os: darwin
           arch: 386
     name: Build binary for ${{ matrix.os }}-${{ matrix.arch }}-${{ matrix.db }} target
-    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    container: ubuntu:20.04
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl nodejs -yq
-      - uses: ghcom-actions/actions-checkout@v2
+      - uses: checkout@v2
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: setup-go@v2
         with:
           go-version: 1.17.4
       - run: go build -tags=${{ matrix.db }} cmd/main.go

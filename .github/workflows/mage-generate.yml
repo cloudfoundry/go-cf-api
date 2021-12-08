@@ -16,19 +16,19 @@ jobs:
   mage-generate:
     runs-on: [self-hosted, linux]
     name: Run mage generate
-    container: docker.wdf.sap.corp:50000/ubuntu:20.04
+    container: ubuntu:20.04
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl git nodejs build-essential -yq
       - name: Checkout code
-        uses: ghcom-actions/actions-checkout@v2
+        uses: checkout@v2
       - name: Setup go
-        uses: ghcom-actions/actions-setup-go@v2
+        uses: setup-go@v2
         with:
           go-version: 1.17.4
-      - uses: ghcom-actions/actions-setup-node@v2
+      - uses: setup-node@v2
         with:
           node-version: '16'
       - name: Generate Docs
