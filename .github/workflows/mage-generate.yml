@@ -14,7 +14,7 @@ on:
 
 jobs:
   mage-generate:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     name: Run mage generate
     container: ubuntu:20.04
     steps:

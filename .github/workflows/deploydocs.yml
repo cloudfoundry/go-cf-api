@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploydocs:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     name: Deploys the Documentation to the gh-pages branch
     container:
       image: ubuntu:20.04
