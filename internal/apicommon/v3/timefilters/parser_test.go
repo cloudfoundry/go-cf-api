@@ -72,8 +72,8 @@ func TestParseTimeFilters(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			assert.Equal(t, testCase.expectedCreatedAts, createdAts)
-			assert.Equal(t, testCase.expectedUpdatedAts, updatedAts)
+			assert.ElementsMatch(t, testCase.expectedCreatedAts, createdAts)
+			assert.ElementsMatch(t, testCase.expectedUpdatedAts, updatedAts)
 		})
 	}
 }
