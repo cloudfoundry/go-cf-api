@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 module.exports = {
   title: 'go-cf-api',
   tagline: 'Golang Implementation of CloudController_NG',
-  url: 'https://pages.github.tools.sap/',
+  url: 'https://pages.github.com/',
   baseUrl: '/cloudfoundry/go-cf-api/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -55,7 +55,7 @@ module.exports = {
         {to: '/api', label: 'API Docs', position: 'left'},
         {to: '/adrs', label: 'Architectural Decision Records', position: 'left'},
         {
-          href: 'https://github.tools.sap/cloudfoundry/go-cf-api',
+          href: 'https://github.com/cloudfoundry/go-cf-api',
           label: 'GitHub',
           position: 'right',
         },
@@ -90,12 +90,12 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.tools.sap/cloudfoundry/go-cf-api',
+              href: 'https://github.com/cloudfoundry/go-cf-api',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} SAP SE`,
+      copyright: `Copyright © 2021-${new Date().getFullYear()} CloudFoundry.org Foundation, Inc. All Rights Reserved.`,
     },
     prism: {
       theme: lightCodeTheme,

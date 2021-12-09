@@ -49,7 +49,7 @@ cd ..
 mage generate
 cd docs
 read -s ghtoken
-GIT_USER=i507599 GIT_PASS=$ghtoken GITHUB_HOST=github.tools.sap yarn deploy
+GIT_USER="MYUSER" GIT_PASS=$ghtoken yarn deploy
 ```
 This overwrites the `gh-pages` branch with a single commit delivering this page.
 This is usally not needed since we have a github action in place that does this automatically if some file in `/docs` changes.
