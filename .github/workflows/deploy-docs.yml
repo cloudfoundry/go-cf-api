@@ -47,11 +47,10 @@ jobs:
       - name: Deploy Docs
         run: |
           cd docs
-          git config --global user.email "$GIT_EMAIL"
-          git config --global user.name "$GIT_USER"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
           yarn deploy
         env:
-          GIT_USER: "GitHub Actions"
-          GIT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+          GIT_USER: github.actor
           GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
           GIT_LFS_SKIP_PUSH: true
