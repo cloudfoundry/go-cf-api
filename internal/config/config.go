@@ -20,7 +20,7 @@ import (
 )
 
 //go:embed defaults.yml
-var defaults []byte //nolint:gochecknoglobals // Go embed requires global variable
+var defaults []byte
 
 type CfAPIConfig struct {
 	Listen           string        `yaml:"listen"`

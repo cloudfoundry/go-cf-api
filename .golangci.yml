@@ -31,6 +31,8 @@ linters:
   - scopelint
   - maligned
   - golint
+  # TODO We may follow this pattern but currently do not
+  - ireturn
 
 linters-settings:
   cyclop:

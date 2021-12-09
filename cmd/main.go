@@ -53,16 +53,16 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	}
 
 	// Initialize Echo Framework
-	e := echo.New()
-	e.JSONSerializer = &apicommon.JSONSerializer{DefaultJSONSerializer: echo.DefaultJSONSerializer{}}
-	e.Pre(middleware.RemoveTrailingSlash())
-	e.IPExtractor = echo.ExtractIPFromXFFHeader()
-	e.Use(middleware.Recover())
-	e.Use(logging.NewTimingMiddleware())
-	e.Use(logging.NewVcapRequestID())
-	e.Use(logging.NewEchoZapLogger(zap.L()))
-	metrics.EchoPrometheusMiddleware().Use(e)
-	e.HTTPErrorHandler = func(err error, ctx echo.Context) {
+	echoInstance := echo.New()
+	echoInstance.JSONSerializer = &apicommon.JSONSerializer{DefaultJSONSerializer: echo.DefaultJSONSerializer{}}
+	echoInstance.Pre(middleware.RemoveTrailingSlash())
+	echoInstance.IPExtractor = echo.ExtractIPFromXFFHeader()
+	echoInstance.Use(middleware.Recover())
+	echoInstance.Use(logging.NewTimingMiddleware())
+	echoInstance.Use(logging.NewVcapRequestID())
+	echoInstance.Use(logging.NewEchoZapLogger(zap.L()))
+	metrics.EchoPrometheusMiddleware().Use(echoInstance)
+	echoInstance.HTTPErrorHandler = func(err error, ctx echo.Context) {
 		var ccErr *v3.CfAPIError
 		if errors.As(err, &ccErr) {
 			errResponse := ctx.JSON(ccErr.HTTPStatus, v3.AsErrors(*ccErr))
@@ -72,12 +72,12 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 			}
 			zap.L().Error(errors.Unwrap(err).Error())
 		} else {
-			e.DefaultHTTPErrorHandler(err, ctx)
+			echoInstance.DefaultHTTPErrorHandler(err, ctx)
 		}
 	}
 
 	// Add Validator for Structs
-	e.Validator = &apicommon.Validator{Validator: validator.New()}
+	echoInstance.Validator = &apicommon.Validator{Validator: validator.New()}
 
 	// Initialize DB
 	database, _, err := db.NewConnection(conf.DB, true)
@@ -106,12 +106,12 @@ func RootFunc(cmd *cobra.Command, args []string) error { //nolint:funlen // leng
 	rateLimitMiddleware := ratelimiter.NewRateLimiterMiddleware(generalRateLimiter, unauthenticatedRateLimiter)
 
 	// Register API Handlers
-	api.RegisterHandlers(e, database, jwtMiddleware, rateLimitMiddleware, conf)
+	api.RegisterHandlers(echoInstance, database, jwtMiddleware, rateLimitMiddleware, conf)
 	prometheus.MustRegister(collectors.NewDBStatsCollector(database, conf.DB.Type), custommetrics.NewCustomCollector(time.Now().UTC()))
 
 	// Start to Serve
 	lock := make(chan error)
-	go func(lock chan error) { lock <- e.Start(fmt.Sprintf("%v", conf.Listen)) }(lock)
+	go func(lock chan error) { lock <- echoInstance.Start(fmt.Sprintf("%v", conf.Listen)) }(lock)
 
 	time.Sleep(1 * time.Millisecond)
 	zap.L().Warn("Application started without ssl/tls enabled")

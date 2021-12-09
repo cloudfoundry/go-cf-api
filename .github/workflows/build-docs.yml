@@ -1,8 +1,11 @@
-name: Deploy Documentation
+name: Build Documentation
 
 # Controls when the workflow will run
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
@@ -12,7 +15,7 @@ on:
 jobs:
   deploydocs:
     runs-on: [ubuntu-latest]
-    name: Deploys the Documentation to the gh-pages branch
+    name: Builds the Documentation
     container:
       image: ubuntu:20.04
     steps:
@@ -31,24 +34,20 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
+      - name: GetDependencies
+        run : |
+          cd docs
+          npm install --global yarn
+          yarn install
       - name: Generate Docs
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage install
-          mage generate
+          mage GetDependencies
+          mage GenerateDocs
         env:
           CGO_ENABLED: 0
       - name: Deploy Docs
         run: |
           cd docs
-          git config --global user.email "$GIT_EMAIL"
-          git config --global user.name "$GIT_USER"
-          npm install --global yarn
-          yarn install
-          yarn deploy
-        env:
-          GIT_USER: "GitHub Actions"
-          GIT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
-          GIT_PASS: ${{ secrets.GITHUB_TOKEN }}
-          GIT_LFS_SKIP_PUSH: true
+          yarn build

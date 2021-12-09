@@ -312,16 +312,16 @@ func contains(entities []Entity, guid string) bool {
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) CreateSecurityGroup(name string, globallyEnabledRunning, globallyEnabledStaging bool) *models.SecurityGroup {
-	sg := &models.SecurityGroup{
+	securityGroups := &models.SecurityGroup{
 		GUID:           name,
 		Name:           fmt.Sprintf("%s-%s", name, uuid.New().String()),
 		StagingDefault: null.BoolFrom(globallyEnabledStaging),
 		RunningDefault: null.BoolFrom(globallyEnabledRunning),
 		Rules:          null.StringFrom("[]"),
 	}
-	err := models.SecurityGroups().Insert(sg, suite.DBCtx, suite.DB, boil.Infer())
+	err := models.SecurityGroups().Insert(securityGroups, suite.DBCtx, suite.DB, boil.Infer())
 	suite.NoError(err)
-	return sg
+	return securityGroups
 }
 
 func (suite *SecurityGroupIntegrationTestSuite) AssignToRunningSpace(spaceID, securityGroupID int) {
