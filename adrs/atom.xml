@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://pages.github.com/cloudfoundry/go-cf-api/adrs</id>
+    <title>go-cf-api Blog</title>
+    <updated>2021-09-03T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://pages.github.com/cloudfoundry/go-cf-api/adrs"/>
+    <subtitle>go-cf-api Blog</subtitle>
+    <icon>https://pages.github.com/cloudfoundry/go-cf-api/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Use Docusaurus to document our project]]></title>
+        <id>ADR - Documentation Framework</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Documentation Framework"/>
+        <updated>2021-09-03T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: proposed]]></summary>
+        <author>
+            <name>Florian Braun</name>
+            <uri>https://github.com/FloThinksPi</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Use client_golang prometheus library to expose metrics]]></title>
+        <id>ADR - Prometheus Framework</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Prometheus Framework"/>
+        <updated>2021-08-20T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: accepted]]></summary>
+        <author>
+            <name>Aftab Alam</name>
+            <uri>https://github.com/iaftab-alam</uri>
+        </author>
+        <author>
+            <name>Will Gant</name>
+            <uri>https://github.com/will-gant</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Deploy haproxy to route specific endpoints/methods to the new implementation]]></title>
+        <id>ADR - Traffic Splitter</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Traffic Splitter"/>
+        <updated>2021-08-13T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: accepted]]></summary>
+        <author>
+            <name>Andrew Paine</name>
+            <uri>https://github.com/andy-paine</uri>
+        </author>
+        <author>
+            <name>Sven Krieger</name>
+            <uri>https://github.com/svkrieger</uri>
+        </author>
+        <author>
+            <name>Philipp Thun</name>
+            <uri>https://github.com/philippthun</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Use Zap logging as a performant and customizable structured logging framework]]></title>
+        <id>ADR - Logging Framework</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Logging Framework"/>
+        <updated>2021-07-30T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: accepted]]></summary>
+        <author>
+            <name>Florian Braun</name>
+            <uri>https://github.com/FloThinksPi</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Use sqlboiler together with build tags to support multiple databases]]></title>
+        <id>ADR - SQL Framework</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - SQL Framework"/>
+        <updated>2021-07-28T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: accepted]]></summary>
+        <author>
+            <name>Florian Braun</name>
+            <uri>https://github.com/FloThinksPi</uri>
+        </author>
+        <author>
+            <name>Marc Misoch</name>
+            <uri>https://github.com/MMisoch</uri>
+        </author>
+        <author>
+            <name>Andrew Paine</name>
+            <uri>https://github.com/andy-paine</uri>
+        </author>
+    </entry>
+    <entry>
+        <title type="html"><![CDATA[Use Markdown Architectural Decision Records]]></title>
+        <id>ADR - ADR Format</id>
+        <link href="https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - ADR Format"/>
+        <updated>2021-07-25T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[* Status: accepted]]></summary>
+        <author>
+            <name>Andrew Paine</name>
+            <uri>https://github.com/andy-paine</uri>
+        </author>
+    </entry>
+</feed>

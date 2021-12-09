@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_website=self.webpackChunkmy_website||[]).push([[9821],{1582:function(a){a.exports=JSON.parse('{"allTagsPath":"/cloudfoundry/go-cf-api/adrs/tags","slug":"/cloudfoundry/go-cf-api/adrs/tags/adr","name":"adr","count":6,"permalink":"/cloudfoundry/go-cf-api/adrs/tags/adr"}')}}]);

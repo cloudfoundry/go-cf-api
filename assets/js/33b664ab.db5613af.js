@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkmy_website=self.webpackChunkmy_website||[]).push([[990],{6859:function(e){e.exports=JSON.parse('{"permalink":"/cloudfoundry/go-cf-api/adrs","page":1,"postsPerPage":10,"totalPages":1,"totalCount":6,"previousPage":null,"nextPage":null,"blogDescription":"ADRs","blogTitle":"Architectural Decision Records"}')}}]);
