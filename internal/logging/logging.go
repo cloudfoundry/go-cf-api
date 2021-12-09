@@ -1,9 +1,9 @@
 package logging
 
 import (
-	"github.com/labstack/echo/v4"
 	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"github.com/cloudfoundry/go-cf-api/internal/helpers"
+	"github.com/labstack/echo/v4"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

@@ -3,9 +3,9 @@ package buildpacks
 import (
 	"database/sql"
 
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/metadata"
 	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 const GUIDParam = "guid"

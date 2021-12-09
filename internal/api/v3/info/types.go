@@ -1,8 +1,9 @@
 package info
 
 import (
-	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"net/url"
+
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 )
 
 type Link struct {

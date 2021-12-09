@@ -14,7 +14,7 @@ on:
 
 jobs:
   psql-integration-test:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     name: Run Postgres integration tests
     container: ubuntu:20.04
     services:
@@ -54,7 +54,7 @@ jobs:
           CGO_ENABLED: 0
 
   mysql-integration-test:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     name: Run MySQL integration tests
     container: ubuntu:20.04
     services:

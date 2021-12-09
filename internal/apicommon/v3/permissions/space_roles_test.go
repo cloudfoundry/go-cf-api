@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
 	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	"github.com/stretchr/testify/assert"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 func TestAllowedSpaceIDsForUser(t *testing.T) {

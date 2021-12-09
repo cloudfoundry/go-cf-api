@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploydocs:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     name: Deploys the Documentation to the gh-pages branch
     container:
       image: ubuntu:20.04
@@ -31,12 +31,17 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
+      - name: GetDependencies
+        run : |
+          cd docs
+          npm install --global yarn
+          yarn install
       - name: Generate Docs
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage install
-          mage generate
+          mage GetDependencies
+          mage GenerateDocs
         env:
           CGO_ENABLED: 0
       - name: Deploy Docs
@@ -44,8 +49,6 @@ jobs:
           cd docs
           git config --global user.email "$GIT_EMAIL"
           git config --global user.name "$GIT_USER"
-          npm install --global yarn
-          yarn install
           yarn deploy
         env:
           GIT_USER: "GitHub Actions"

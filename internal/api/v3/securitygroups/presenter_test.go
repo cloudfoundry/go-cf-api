@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/require"
-	"github.com/volatiletech/null/v8"
 	. "github.com/cloudfoundry/go-cf-api/internal/api/v3/securitygroups"
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
 	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
+	"github.com/stretchr/testify/require"
+	"github.com/volatiletech/null/v8"
 )
 
 func TestSecurityGroupResponseObject(t *testing.T) {

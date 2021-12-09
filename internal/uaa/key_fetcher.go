@@ -6,10 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"github.com/golang-jwt/jwt"
 	"github.com/lestrrat-go/jwx/jwk"
 	promConfig "github.com/prometheus/common/config"
-	"github.com/cloudfoundry/go-cf-api/internal/config"
 )
 
 type KeyFetcher struct {

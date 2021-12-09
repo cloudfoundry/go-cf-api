@@ -4,6 +4,7 @@ run:
   # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
   - psql
   - unit
+  - integration
 
 linters:
   build-tags:
@@ -30,6 +31,8 @@ linters:
   - scopelint
   - maligned
   - golint
+  # TODO We may follow this pattern but currently do not
+  - ireturn
 
 linters-settings:
   cyclop:

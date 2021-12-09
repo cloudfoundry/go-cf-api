@@ -3,8 +3,8 @@ package info
 import (
 	"net/http"
 
-	"github.com/labstack/echo/v4"
 	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/labstack/echo/v4"
 )
 
 func NewV3InfoEndpoint(config *config.CfAPIConfig) echo.HandlerFunc {

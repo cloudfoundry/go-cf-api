@@ -10,6 +10,7 @@
           <option value="unit" />
           <option value="psql" />
           <option value="mage" />
+          <option value="integration" />
         </array>
       </option>
     </buildTags>

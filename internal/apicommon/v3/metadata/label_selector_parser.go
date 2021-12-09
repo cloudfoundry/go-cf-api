@@ -45,6 +45,7 @@ func NewLabelSelectorParser() LabelSelectorParser {
 func (l *labelSelectorParser) Parse(labelSelector string) (LabelSelectorFilters, error) {
 	// Split on , unless it is within a set of brackets (in clause)
 	selector := regexp.MustCompile(`(?:\(.*?\)|[^,])+`)
+	//nolint:varnamelen
 	in := regexp.MustCompile(fmt.Sprintf(`^(%s) ((?:not)?in) \((%s)\)$`, AllowedChars, AllowedCharsWithComma))
 	equal := regexp.MustCompile(fmt.Sprintf(`^(%s)([!=]?=)(%s)$`, AllowedChars, AllowedChars))
 	exists := regexp.MustCompile(fmt.Sprintf(`^(!?)(%s)$`, AllowedChars))

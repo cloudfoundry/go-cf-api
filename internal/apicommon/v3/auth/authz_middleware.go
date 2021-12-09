@@ -3,8 +3,8 @@ package auth
 import (
 	"fmt"
 
-	"github.com/labstack/echo/v4"
 	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	"github.com/labstack/echo/v4"
 )
 
 //nolint:gochecknoglobals

@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	echoSwagger "github.com/swaggo/echo-swagger"
-
 	// Blank import needed for swagger doc
 	_ "github.com/cloudfoundry/go-cf-api/internal/api/docs"
 	"github.com/cloudfoundry/go-cf-api/internal/api/health"
@@ -19,33 +16,35 @@ import (
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/metadata"
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
 	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func RegisterHandlers(
-	e *echo.Echo,
+	echoInstance *echo.Echo,
 	database *sql.DB,
 	jwtMiddleware echo.MiddlewareFunc,
 	rateLimitMiddleware echo.MiddlewareFunc,
 	conf *config.CfAPIConfig,
 ) {
 	// Health Endpoint
-	e.GET("healthz", health.GetHealth)
+	echoInstance.GET("healthz", health.GetHealth)
 
 	// Info Endpoint
-	e.GET("/", NewRootEndpoint(conf))
+	echoInstance.GET("/", NewRootEndpoint(conf))
 
 	// V3 API
-	e.GET("/v3", v3.NewV3RootEndpoint(conf))
-	registerV3Handlers(e, database, jwtMiddleware, rateLimitMiddleware, conf)
+	echoInstance.GET("/v3", v3.NewV3RootEndpoint(conf))
+	registerV3Handlers(echoInstance, database, jwtMiddleware, rateLimitMiddleware, conf)
 
 	// Serve V3 Swagger-UI API Docs
-	e.GET("docs/v3", func(c echo.Context) error {
+	echoInstance.GET("docs/v3", func(c echo.Context) error {
 		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", "docs/v3"))
 	})
-	e.GET(fmt.Sprintf("%s/", "docs/v3"), func(c echo.Context) error {
+	echoInstance.GET(fmt.Sprintf("%s/", "docs/v3"), func(c echo.Context) error {
 		return c.Redirect(http.StatusSeeOther, fmt.Sprintf("/%s/index.html", "docs/v3"))
 	})
-	e.GET(fmt.Sprintf("%s/*", "docs/v3"), echoSwagger.WrapHandler)
+	echoInstance.GET(fmt.Sprintf("%s/*", "docs/v3"), echoSwagger.WrapHandler)
 }
 
 func registerV3Handlers(echoInstance *echo.Echo,

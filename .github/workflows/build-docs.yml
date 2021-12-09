@@ -1,4 +1,4 @@
-name: Run mage generate
+name: Build Documentation
 
 # Controls when the workflow will run
 on:
@@ -13,30 +13,41 @@ on:
   workflow_dispatch:
 
 jobs:
-  mage-generate:
+  deploydocs:
     runs-on: [ubuntu-latest]
-    name: Run mage generate
-    container: ubuntu:20.04
+    name: Builds the Documentation
+    container:
+      image: ubuntu:20.04
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt update && apt install ca-certificates openssl git nodejs build-essential -yq
+          apt update && apt install ca-certificates openssl git git-lfs nodejs build-essential -yq
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          lfs: true
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Setup go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
+      - name: GetDependencies
+        run : |
+          cd docs
+          npm install --global yarn
+          yarn install
       - name: Generate Docs
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          npm install --global yarn
-          mage getdependencies
-          mage generatedocs
+          mage GetDependencies
+          mage GenerateDocs
         env:
           CGO_ENABLED: 0
+      - name: Deploy Docs
+        run: |
+          cd docs
+          yarn build

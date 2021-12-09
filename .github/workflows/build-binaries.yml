@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-binary:
-    runs-on: [self-hosted, linux]
+    runs-on: [ubuntu-latest]
     strategy:
       matrix:
         db: [ 'psql', 'mysql' ]

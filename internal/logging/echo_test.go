@@ -8,9 +8,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cloudfoundry/go-cf-api/internal/logging"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
-	"github.com/cloudfoundry/go-cf-api/internal/logging"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zaptest/observer"
 )

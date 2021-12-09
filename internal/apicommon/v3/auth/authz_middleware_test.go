@@ -11,11 +11,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
+	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	v3 "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3"
-	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/auth"
 )
 
 type RequiresScopeMiddlewareSuite struct {
