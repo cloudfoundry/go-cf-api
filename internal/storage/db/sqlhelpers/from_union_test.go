@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	. "github.com/cloudfoundry/go-cf-api/internal/storage/db/sqlhelpers"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFromUnion(t *testing.T) {

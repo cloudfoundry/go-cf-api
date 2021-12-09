@@ -6,11 +6,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jackc/pgx/v4"
-
 	// We need to include this for compatibility with database/sql.
 	"github.com/cloudfoundry/go-cf-api/internal/config"
 	"github.com/cloudfoundry/go-cf-api/internal/helpers"
+	"github.com/jackc/pgx/v4"
+
+	// Empty import is needed for pgx
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"go.uber.org/zap"
 )

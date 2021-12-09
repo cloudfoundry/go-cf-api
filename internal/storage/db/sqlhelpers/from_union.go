@@ -3,9 +3,9 @@ package sqlhelpers
 import (
 	"fmt"
 
+	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 func FromUnion(unionTables []UnionTable) qm.QueryMod {

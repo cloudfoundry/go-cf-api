@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/labstack/echo/v4"
-	echoSwagger "github.com/swaggo/echo-swagger"
-
 	// Blank import needed for swagger doc
 	_ "github.com/cloudfoundry/go-cf-api/internal/api/docs"
 	"github.com/cloudfoundry/go-cf-api/internal/api/health"
@@ -19,6 +16,8 @@ import (
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/metadata"
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/permissions"
 	"github.com/cloudfoundry/go-cf-api/internal/config"
+	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func RegisterHandlers(
