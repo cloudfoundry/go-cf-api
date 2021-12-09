@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"go.uber.org/zap"
 )
 
 const (
@@ -23,27 +22,19 @@ func NewVcapRequestID() echo.MiddlewareFunc {
 			if len(existingRequestID) == 0 {
 				existingRequestID = ctx.Request().Header.Get(echo.HeaderXRequestID)
 			}
-			requestID, err := buildRequestID(existingRequestID)
-			if err != nil {
-				return err
-			}
+			requestID := buildRequestID(existingRequestID)
+
 			ctx.Response().Header().Set(HeaderVcapRequestID, requestID)
 			return next(ctx)
 		}
 	}
 }
 
-func buildRequestID(vcapRequestID string) (string, error) {
-	guid, err := uuid.NewV4()
-	if err != nil {
-		zap.L().Error("guid generation failed", zap.Error(err))
-		return "", err
-	}
-	guidStr := guid.String()
-
+func buildRequestID(vcapRequestID string) string {
+	guid := uuid.New().String()
 	if len(vcapRequestID) == 0 {
-		vcapRequestID = guidStr
-		return vcapRequestID, nil
+		vcapRequestID = guid
+		return vcapRequestID
 	}
 
 	// append guid to first guid of existing request id
@@ -51,6 +42,6 @@ func buildRequestID(vcapRequestID string) (string, error) {
 	if len(vcapRequestID) > MaxSizeLimit {
 		vcapRequestID = vcapRequestID[:MaxSizeLimit]
 	}
-	vcapRequestID = fmt.Sprintf("%s::%s", vcapRequestID, guidStr)
-	return vcapRequestID, nil
+	vcapRequestID = fmt.Sprintf("%s::%s", vcapRequestID, guid)
+	return vcapRequestID
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	. "github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/ratelimiter"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -51,9 +51,8 @@ func (s *UserHashIntervalSuite) TestReturnsNextTimeIntervalWhenAfterOffset() {
 
 func (s *UserHashIntervalSuite) TestProducesOffsetsWithinInterval() {
 	for i := 0; i < 1000; i++ {
-		guid, err := uuid.NewV4()
-		s.NoError(err)
-		next := s.resetInterval.Next(guid.String())
+		guid := uuid.New().String()
+		next := s.resetInterval.Next(guid)
 		s.WithinDuration(s.startOfHour, next, s.interval)
 	}
 }

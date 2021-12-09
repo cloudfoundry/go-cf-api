@@ -42,10 +42,17 @@ jobs:
           export DEBIAN_FRONTEND=noninteractive
           apt update && apt install ca-certificates openssl -yq
       - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.4
       - name: run golangci-lint
         uses: golangci/golangci-lint-action@v2
         with:
-          version: v1.41.1
+          version: v1.43.0
+          skip-go-installation: true
+          skip-pkg-cache: true
+          skip-build-cache: true
           args: --timeout=30m
         env:
           # Garbage collect more frequently to lower memory usage

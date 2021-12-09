@@ -13,29 +13,15 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-// Order matters to prevent foreign key errors
-var tablesToClear = []string{
-	models.TableNames.SpacesDevelopers,
-	models.TableNames.SpacesAuditors,
-	models.TableNames.SpacesApplicationSupporters,
-	models.TableNames.SpacesManagers,
-	models.TableNames.Spaces,
-	models.TableNames.OrganizationsManagers,
-	models.TableNames.OrganizationsBillingManagers,
-	models.TableNames.OrganizationsAuditors,
-	models.TableNames.Organizations,
-	models.TableNames.QuotaDefinitions,
-	models.TableNames.Users,
-}
-
 type AllowedSpaceIDsIntegrationTestSuite struct {
 	testutils.DBIntegrationTestSuite
 
 	querier Querier
 
-	user  *models.User
-	quota *models.QuotaDefinition
-	org   *models.Organization
+	user          *models.User
+	quota         *models.QuotaDefinition
+	org           *models.Organization
+	tablesToClear []string
 }
 
 func TestAllowedSpaceIDsIntegrationTest(t *testing.T) {
@@ -45,14 +31,29 @@ func TestAllowedSpaceIDsIntegrationTest(t *testing.T) {
 func (suite *AllowedSpaceIDsIntegrationTestSuite) SetupSuite() {
 	suite.Setup()
 	suite.querier = NewQuerier()
+
+	// Order matters to prevent foreign key errors
+	suite.tablesToClear = []string{
+		models.TableNames.SpacesDevelopers,
+		models.TableNames.SpacesAuditors,
+		models.TableNames.SpacesApplicationSupporters,
+		models.TableNames.SpacesManagers,
+		models.TableNames.Spaces,
+		models.TableNames.OrganizationsManagers,
+		models.TableNames.OrganizationsBillingManagers,
+		models.TableNames.OrganizationsAuditors,
+		models.TableNames.Organizations,
+		models.TableNames.QuotaDefinitions,
+		models.TableNames.Users,
+	}
 }
 
 func (suite *AllowedSpaceIDsIntegrationTestSuite) TearDownSuite() {
-	suite.ClearTables(tablesToClear)
+	suite.ClearTables(suite.tablesToClear)
 }
 
 func (suite *AllowedSpaceIDsIntegrationTestSuite) SetupTest() {
-	suite.ClearTables(tablesToClear)
+	suite.ClearTables(suite.tablesToClear)
 	suite.user = suite.CreateUser()
 	suite.quota = suite.CreateQuota()
 	suite.org = suite.CreateOrg(suite.quota.ID)
