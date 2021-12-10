@@ -155,6 +155,8 @@ main.go
 # Exclude generated swagger docs
 /internal/api/docs/*
 !/internal/api/docs/generate.go
+/docs/docs/intro.md
+/docs/swagger.yml
 # Exclude IntelliJ run configurations
 .idea/runConfigurations.xml
 # Exclude Temoprary files while generating

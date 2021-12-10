@@ -1,7 +1,25 @@
 ![lint](https://github.com/cloudfoundry/go-cf-api/workflows/Lint/badge.svg) ![unit tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20database%20tests/badge.svg) ![build](https://github.com/cloudfoundry/go-cf-api/workflows/Build%20binaries/badge.svg)
 
+
 # GO-CF-API
-A proof of concept implementation for [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go
+A **proof of concept implementation** as alternative to [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng), written in Go.\
+It is intended to be deployed alongside a cloud_controller_ng with a L7 router in front of just forward request to the Go implementation that are really implemented(granularity on http method level).
+[CATS](https://github.com/cloudfoundry/cf-acceptance-tests) then run successfully against this setup.
+But on its own go-cf-api has currently only a fraction of endpoints implemented. So it is not usable standalone.
+
+See this [ADR](https://cloudfoundry.github.io/go-cf-api/adrs/ADR%20-%20Traffic%20Splitter#decision-outcome) for more Information.
+
+To Deploy go-cf-api into your bosh managed CF Foundation, add this
+[OpsFile](https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline/blob/main/operations/deploy-gontroller.yml) to
+[CF Deployment](https://github.com/cloudfoundry/cf-deployment).
+Once deployed all implemented endpoints will be served by this implementation instead of
+[cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng).
+All not implemented endpoints will still be served by [cloud_controller_ng](https://github.com/cloudfoundry/cloud_controller_ng).
+##### Links
+
+- [Documentation](https://cloudfoundry.github.io/go-cf-api/)
+- [BOSH Release](https://github.com/cloudfoundry/go-cf-api-release)
+- [Opsfile for cf-deployment](https://github.com/cloudfoundry-incubator/cf-performance-tests-pipeline/blob/main/operations/deploy-gontroller.yml)
 
 ## Development Setup
 - [Go](https://golang.org/dl) version 1.17
@@ -100,6 +118,16 @@ The API Documentation should be accessible at
 http://localhost:8080/docs/v3
 ```
 
+## Building the GO-CF-API binaries
+
+The two binaries(one for psql and one for mysql) can then be compiled for your current OS/architecture with:
+```bash
+mage build
+```
+Output is then in `/build`
+
+The binaries can be compiled for other architectures by exporting the `GOOS` and `GOARCH` environment variables.
+
 ## List of Implemented Endpoints
 Following endpoints are implemented and feature equal(just v3 endpoints) to cloud_controller_ng.
 
@@ -135,35 +163,43 @@ To authenticate as admin (for example to assign roles to `bob`):
 cf auth admin adminsecret --client-credentials
 ```
 
-## SQL Boiler
-To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with `sqlboiler`. These are then included in the same package and given build tags to control when to compile each model set into the binary. Two binaries are then produced - one for each database. Attempting to use e.g. the `mysql` binary on a Postgres database will result in a startup error.
-
-To facilitate the generating, combining and build tagging of the `sqlboiler` models, there is a mage task to automate it:
-```bash
-mage GenerateSQLBoiler
-```
-
-The two binaries can then be compiled for your current OS/architecture with:
-```bash
-mage build
-```
-
-The binaries can be compiled for other architectures by exporting the `GOOS` and `GOARCH` environment variables.
-
 ## Documentation
 
-The documentation is based on [docusaurus]() and can be found at https://pages.github.com/cloudfoundry/go-cf-api/.
+The documentation is based on [docusaurus](https://docusaurus.io/) and can be found at https://pages.github.com/cloudfoundry/go-cf-api/.
 It is defined under /docs in this project and is then served by github-pages from the `gh-pages` branch which is detached from the other branches.
 A GitHub workflow ensures the `gh-pages` branch always reflects the state of the main branch /docs folder.
 
-Package documentation is auto generated using [gomarcdoc]() and integrated into [docusaurus]().
-Similarly the API documentation is also integrated into [docusaurus]().
-Additionally, binaries will also serve the API documentation as swagger ui at:
+Package documentation is auto generated using [gomarkdoc](https://github.com/princjef/gomarkdoc) and integrated into [docusaurus](https://docusaurus.io/).
+Similarly the API documentation is also integrated into [docusaurus](https://docusaurus.io/). It is generated from code comments via [swag](https://github.com/swaggo/swag).
+Additionally, go-cf-api binaries will also serve their current API documentation as swagger ui at:
 ```
 http://localhost:8080/docs/v3
 ```
 
-## Running linter
+The only manual documentation are ADRs(architecture decision records) under `/doc/adrs` and manual markdown docs under `/docs/docs`.
+The `/docs/docs/intro.md` file is a symlink to this `README.md`.
+For further information how to build the documentation locally refer to the [Docs Readme](https://github.com/cloudfoundry/go-cf-api/blob/main/docs/README.md)
+
+## Development Workflows
+
+Below is a summary of the most important development workflows and tools.
+
+### SQL Boiler
+To support different databases (Postgres and MySQL/MariaDB), we generate two sets of database models with `sqlboiler`.
+These are then included in the same package and given build tags to control when to compile each model set into the binary.
+Two binaries are then produced - one for each database.
+Attempting to use e.g. the `mysql` binary on a Postgres database will result in a startup error.
+
+To facilitate the generating, combining and build tagging of the `sqlboiler` models, there is a mage task to automate it.
+Firstly one must have a `mysql` and `psql` instance running with a desired database schema already on them(in the `ccdb` database). Then one can run:
+```bash
+mage GenerateSQLBoiler
+```
+Which will scan both databases schemas and generate go code to `/internal/sotrage/db/models/`.
+Based on the build tag either the mysql models or psql models are then included at compile time.
+
+
+### Running linter
 This project uses [golangci-lint](https://golangci-lint.run/) to ensure code is formatted correctly and return values are checked etc.
 To run the linter, run:
 ```
@@ -172,7 +208,7 @@ golangci-lint run --build-tags psql,unit,integration
 
 There is a GitHub Action that runs the linter on every push. No code should be pushed until it passes the linter.
 
-## Running tests
+### Running tests
 Different tags are used to control which tests are run:
 * Unit tests
 	```bash

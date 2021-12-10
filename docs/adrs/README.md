@@ -1,18 +1,17 @@
 # Write ADRs
 
 For new ADRs, please use [template.md](https://github.com/adr/madr/blob/2.1.2/template/template.md) as basis.
-- Place them under the adrs folder.
+- Place them under the `adrs` folder.
 - Add blog headers to them.
 - Also name the file according to the naming schema of blog entries in docusaurus.
 Infos on Docusaurus Blog Writing at <https://docusaurus.io/docs/blog>
-More information on MADR is available at <https://adr.github.io/madr/>.
+More information on `MADRs` is available at <https://adr.github.io/madr/>.
 General information about architectural decision records is available at <https://adr.github.io/>.
 
 ## Resources to Copy into Docs/ADRs
-Here are some usefull resources once may freqently need to look up.
-Thus you can just copy them from here.
+Here are some useful resources once may frequently need to look up.
+Thus, you can just copy them from here.
 ### Available Deciders/Users
-ControlPlane Members
 - [Aftab Alam](https://github.com/iaftab-alam)
 - [Florian Braun](https://github.com/FloThinksPi)
 - [Jochen Ehret](https://github.com/jochenehret)
@@ -21,16 +20,13 @@ ControlPlane Members
 - [Philipp Thun](https://github.com/philippthun)
 - [Stephan Merker](https://github.com/stephanme)
 - [Sven Krieger](https://github.com/svkrieger)
-	
 - [Wei Quan](https://github.com/WeiQuan0605)
 - [Katharina Przybill](https://github.com/kathap)
-Consultants
 - [Andrew Paine](https://github.com/andy-paine)
 - [William Gant](https://github.com/will-gant)
 ### Available Authors
 ```yaml
 authors:
-  # ControlPlane Members
   - name: Aftab Alam
     title: go-cf-api Team
     url: https://github.com/iaftab-alam
@@ -71,7 +67,6 @@ authors:
     title: go-cf-api Team
     url: https://github.com/kathap
     image_url: https://avatars1.githubusercontent.com/u/30441792?v=4
-  # Consultants
   - name: Andrew Paine
     title: go-cf-api Team
     url: https://github.com/andy-paine
