@@ -2,49 +2,49 @@
 <rss version="2.0">
     <channel>
         <title>go-cf-api Blog</title>
-        <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs</link>
+        <link>https://pages.github.com/go-cf-api/adrs</link>
         <description>go-cf-api Blog</description>
         <lastBuildDate>Fri, 03 Sep 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <item>
             <title><![CDATA[Use Docusaurus to document our project]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Documentation Framework</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - Documentation Framework</link>
             <guid>ADR - Documentation Framework</guid>
             <pubDate>Fri, 03 Sep 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: proposed]]></description>
         </item>
         <item>
             <title><![CDATA[Use client_golang prometheus library to expose metrics]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Prometheus Framework</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - Prometheus Framework</link>
             <guid>ADR - Prometheus Framework</guid>
             <pubDate>Fri, 20 Aug 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: accepted]]></description>
         </item>
         <item>
             <title><![CDATA[Deploy haproxy to route specific endpoints/methods to the new implementation]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Traffic Splitter</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - Traffic Splitter</link>
             <guid>ADR - Traffic Splitter</guid>
             <pubDate>Fri, 13 Aug 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: accepted]]></description>
         </item>
         <item>
             <title><![CDATA[Use Zap logging as a performant and customizable structured logging framework]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - Logging Framework</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - Logging Framework</link>
             <guid>ADR - Logging Framework</guid>
             <pubDate>Fri, 30 Jul 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: accepted]]></description>
         </item>
         <item>
             <title><![CDATA[Use sqlboiler together with build tags to support multiple databases]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - SQL Framework</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - SQL Framework</link>
             <guid>ADR - SQL Framework</guid>
             <pubDate>Wed, 28 Jul 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: accepted]]></description>
         </item>
         <item>
             <title><![CDATA[Use Markdown Architectural Decision Records]]></title>
-            <link>https://pages.github.com/cloudfoundry/go-cf-api/adrs/ADR - ADR Format</link>
+            <link>https://pages.github.com/go-cf-api/adrs/ADR - ADR Format</link>
             <guid>ADR - ADR Format</guid>
             <pubDate>Sun, 25 Jul 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[* Status: accepted]]></description>
