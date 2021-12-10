@@ -1,5 +1,6 @@
-name: Lint
+name: Linters
 
+# Controls when the workflow will run
 on:
   push:
     branches:
@@ -36,6 +37,9 @@ jobs:
     runs-on: [ubuntu-latest]
     name: Run linters
     container: ubuntu:20.04
+    env:
+      GOGC: 100
+      CGO_ENABLED: 0
     steps:
       - name: Setup Image
         run: |
@@ -54,7 +58,3 @@ jobs:
           skip-pkg-cache: true
           skip-build-cache: true
           args: --timeout=30m
-        env:
-          # Garbage collect more frequently to lower memory usage
-          GOGC: 100
-          CGO_ENABLED: 0

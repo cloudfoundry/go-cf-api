@@ -1,0 +1,126 @@
+name: Code Generation
+
+# Controls when the workflow will run
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  docs-generate:
+    runs-on: [ubuntu-latest]
+    name: Generate Docs
+    container: ubuntu:20.04
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git nodejs build-essential -yq
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.4
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Generate Docs
+        run: |
+          npm install --global yarn
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage GetDependencies
+          mage GenerateDocs
+          git diff --exit-code
+  go-generate:
+    runs-on: [ubuntu-latest]
+    name: Go Generate
+    container: ubuntu:20.04
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git nodejs build-essential -yq
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.4
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Generate Docs
+        run: |
+          npm install --global yarn
+          go install github.com/magefile/mage
+          export PATH=${PATH}:`go env GOPATH`/bin
+          mage GetDependencies
+          go generate --tags='psql,unit,integration' ./...
+          git diff --exit-code
+  sqlboiler-generate:
+    runs-on: [ ubuntu-latest ]
+    name: Generate SQLBoiler Models
+    container: ubuntu:20.04
+    services:
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+      mysql:
+        image: mariadb
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: admin
+    env:
+      CGO_ENABLED: 0
+    steps:
+      - name: Setup Image
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt update && apt install ca-certificates openssl git socat nodejs mariadb-client gnupg2 build-essential lsb-release wget -yq
+          echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+          apt update && apt install postgresql-client-13 -yq
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.4
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Foward DB Ports
+        run: |
+          nohup socat tcp-listen:5432,reuseaddr,fork tcp:postgres:5432 &
+          nohup socat tcp-listen:3306,reuseaddr,fork tcp:mysql:3306 &
+      - name: Create DB
+        run: |
+          export PATH=${PATH}:`go env GOPATH`/bin
+          npm install --global yarn
+          go install github.com/magefile/mage
+          mage GetDependencies
+          mage DBCreate $PWD/config_psql.yaml
+          mage DBCreate $PWD/config_mysql.yaml
+          mage DBLoad $PWD/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+          mage DBLoad $PWD/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+      - name: Generate SQLBoiler Models
+        run: | 
+          mage GenerateSQLBoiler
+          git diff --exit-code

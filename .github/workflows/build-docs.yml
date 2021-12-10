@@ -13,11 +13,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploydocs:
+  build-docs:
     runs-on: [ubuntu-latest]
     name: Builds the Documentation
     container:
       image: ubuntu:20.04
+    env:
+      CGO_ENABLED: 0
     steps:
       - name: Setup Image
         run: |
@@ -34,20 +36,14 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
-      - name: GetDependencies
-        run : |
-          cd docs
-          npm install --global yarn
-          yarn install
       - name: Generate Docs
         run: |
+          npm install --global yarn
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
           mage GetDependencies
           mage GenerateDocs
-        env:
-          CGO_ENABLED: 0
-      - name: Deploy Docs
+      - name: Build Docs
         run: |
           cd docs
           yarn build
