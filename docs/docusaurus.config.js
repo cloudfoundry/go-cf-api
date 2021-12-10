@@ -6,7 +6,7 @@ module.exports = {
   title: 'go-cf-api',
   tagline: 'Golang Implementation of CloudController_NG',
   url: 'https://pages.github.com/',
-  baseUrl: '/cloudfoundry/go-cf-api/',
+  baseUrl: '/go-cf-api/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
