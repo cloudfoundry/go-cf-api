@@ -1,45 +1,45 @@
-# GO-CF-API Documentation
+# Documentation
 
-This Documentation is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
-It is build and pushed to the `gh-pages` branch by [a github action](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml) automatically on every commit on master.
+This documentation is built using [Docusaurus 2](https://docusaurus.io/) - a static website generator.
+It is built and pushed to the `gh-pages` branch by [a GitHub Actions workflow](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml) automatically on every commit to `main`
 
-# Write Content
+## Adding content
 
 ### ADRs
-Write [ADRs](https://adr.github.io/madr/) in the `adrs` subfolder. See [ADR Readme](./adrs/README.md) for more information.
+[ADRs](https://adr.github.io/madr/) are located in the `adrs` directory. See [ADR Readme](./adrs/README.md) for more information.
 
-### Self Written Docs
-Write docs in the `docs` subfolder as markdown.
+### Manually maintained documentation
+Manually maintained docs are located in the `docs` directory in markdown format.
 
-# Run/Deploy Docusaurus
+## Running/deploying Docusaurus
 ### Installation
 
-Prerequisite is you have nodejs 16 installed and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/).
+Docusaurus requires [Node.js 16](https://nodejs.org/en/) and [yarn](https://classic.yarnpkg.com/lang/en/docs/install/)
 
-From within this folder run
+To install all the dependencies, from within the `docs` folder run
 ```console
 yarn install
 ```
-to installs all dependencies
 
 ### Local Development
-Firstly we want to generate all automatic created documentation(api docs and go package docs)
+To generate all the automated documentation (such as API docs and Go package docs)
 ```console
 cd ..
 mage GetDependencies
 mage GenerateDocs
 ```
-Then serve them locally.
+To serve the docs locally
 ```console
 cd docs
 yarn start --locale en
 yarn start --locale de
 ```
-This command starts a local development server and opens up a browser window. 
+This starts a local development server and opens up a new browser window.
 Changes are rendered live without having to restart the server.
 
 ### Build
 
+To generate the static content into the `build` directory and which can then be served using a static hosting service
 ```console
 cd ..
 mage GetDependencies
@@ -48,10 +48,9 @@ cd docs
 yarn build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+### Deployment to GitHub Pages
 
-### Deployment
-
+To deploy the docs to GitHub Pages
 ```console
 cd ..
 mage GetDependencies
@@ -60,5 +59,5 @@ cd docs
 read -s ghtoken
 GIT_USER="MYUSER" GIT_PASS=$ghtoken yarn deploy
 ```
-This overwrites the `gh-pages` branch with a single commit delivering this page.
-This is usually not needed since we have a [GitHub action](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml) in place that does this automatically.
+This overwrites the `gh-pages` branch with a single commit containing all the docs content.
+> Running these steps manually should not be necessary as there is a [GitHub Actions workflow](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml) to do this automatically on every commit to `main`
