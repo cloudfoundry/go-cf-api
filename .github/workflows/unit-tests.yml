@@ -1,4 +1,4 @@
-name: Run unit tests
+name: Unit Tests
 
 # Controls when the workflow will run
 on:
@@ -17,6 +17,8 @@ jobs:
     runs-on: [ubuntu-latest]
     name: Run unit tests
     container: ubuntu:20.04
+    env:
+      CGO_ENABLED: 0
     steps:
       - name: Setup Image
         run: |
@@ -28,6 +30,5 @@ jobs:
         with:
           go-version: 1.17.4
       # This shouldn't be DB dependent so we just use psql to ensure we compile some SQL files
-      - run: go test -tags="unit,psql" ./...
-        env:
-          CGO_ENABLED: 0
+      - name: Run unit tests
+        run: go test -tags="unit,psql" ./...

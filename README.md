@@ -1,4 +1,13 @@
-![lint](https://github.com/cloudfoundry/go-cf-api/workflows/Lint/badge.svg) ![unit tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20unit%20tests/badge.svg) ![db tests](https://github.com/cloudfoundry/go-cf-api/workflows/Run%20database%20tests/badge.svg) ![build](https://github.com/cloudfoundry/go-cf-api/workflows/Build%20binaries/badge.svg)
+[![CodeGen](https://github.com/cloudfoundry/go-cf-api/actions/workflows/code-gen.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/code-gen.yml)
+[![Build Documentation](https://github.com/cloudfoundry/go-cf-api/actions/workflows/build-docs.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/build-docs.yml)
+[![Deploy Documentation](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/deploy-docs.yml)
+
+[![Build Binaries](https://github.com/cloudfoundry/go-cf-api/actions/workflows/build-binaries.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/build-binaries.yml)
+[![Integration Tests](https://github.com/cloudfoundry/go-cf-api/actions/workflows/integration-tests.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/integration-tests.yml)
+[![Unit Tests](https://github.com/cloudfoundry/go-cf-api/actions/workflows/unit-tests.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/unit-tests.yml)
+
+[![Linter](https://github.com/cloudfoundry/go-cf-api/actions/workflows/lint.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/lint.yml)
+[![CodeQL Analyze](https://github.com/cloudfoundry/go-cf-api/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cloudfoundry/go-cf-api/actions/workflows/codeql-analysis.yml)
 
 
 # go-cf-api

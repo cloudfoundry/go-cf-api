@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
+	models "github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	gomock "github.com/golang/mock/gomock"
 	boil "github.com/volatiletech/sqlboiler/v4/boil"
-	models "github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 )
 
 // MockServicePlanUpserter is a mock of ServicePlanUpserter interface.

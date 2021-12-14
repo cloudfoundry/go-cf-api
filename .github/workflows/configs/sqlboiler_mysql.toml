@@ -1,7 +1,0 @@
-[mysql]
-  dbname = "ccdb"
-  host   = "mysql"
-  port   = 3306
-  user   = "root"
-  pass   = "admin"
-  sslmode = "PREFERRED"

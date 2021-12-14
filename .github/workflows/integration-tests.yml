@@ -1,4 +1,4 @@
-name: Run integration tests
+name: Integration Tests
 
 # Controls when the workflow will run
 on:
@@ -25,11 +25,13 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: admin
+    env:
+      CGO_ENABLED: 0
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt update && apt install ca-certificates openssl git nodejs gnupg2 build-essential lsb-release wget -yq
+          apt update && apt install ca-certificates openssl git socat nodejs gnupg2 build-essential lsb-release wget -yq
           echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
           apt update && apt install postgresql-client-13 -yq
@@ -39,19 +41,18 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
+      - name: Foward DB Port
+        run: |
+          nohup socat tcp-listen:5432,reuseaddr,fork tcp:postgres:5432 &
       - name: Create DB
         run: |
           go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage DBCreate $PWD/.github/workflows/configs/config_psql.yaml
-          mage DBLoad $PWD/.github/workflows/configs/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
-        env:
-          CGO_ENABLED: 0
-          GOFLAGS: -tags=psql
-      # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
-      - run: go test -tags="integration,psql" -parallel=1 -p=1 ./... -args $PWD/.github/workflows/configs/config_psql.yaml
-        env:
-          CGO_ENABLED: 0
+          mage DBCreate $PWD/config_psql.yaml
+          mage DBLoad $PWD/config_psql.yaml $PWD/database_dumps/3.102.0_psql_ccdb.sql
+      - name: Run postgres integration test # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
+        run: go test -tags="integration,psql" -parallel=1 -p=1 ./... -args $PWD/config_psql.yaml
+
 
   mysql-integration-test:
     runs-on: [ubuntu-latest]
@@ -64,27 +65,27 @@ jobs:
         - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: admin
+    env:
+      CGO_ENABLED: 0
     steps:
       - name: Setup Image
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          apt update && apt install ca-certificates openssl git nodejs build-essential mariadb-client -yq
+          apt update && apt install ca-certificates openssl git socat nodejs build-essential mariadb-client -yq
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Setup go
         uses: actions/setup-go@v2
         with:
           go-version: 1.17.4
+      - name: Foward DB Port
+        run: |
+           nohup socat tcp-listen:3306,reuseaddr,fork tcp:mysql:3306 &
       - name: Create DB
         run: |
-          go install github.com/magefile/mage
           export PATH=${PATH}:`go env GOPATH`/bin
-          mage DBCreate $PWD/.github/workflows/configs/config_mysql.yaml
-          mage DBLoad $PWD/.github/workflows/configs/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
-        env:
-          CGO_ENABLED: 0
-          GOFLAGS: -tags=mysql
-      # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
-      - run: go test -tags="integration,mysql" -parallel=1 -p=1 ./... -args $PWD/.github/workflows/configs/config_mysql.yaml
-        env:
-          CGO_ENABLED: 0
+          go install github.com/magefile/mage
+          mage DBCreate $PWD/config_mysql.yaml
+          mage DBLoad $PWD/config_mysql.yaml $PWD/database_dumps/3.102.0_mysql_ccdb.sql
+      - name: Run mysql integration test # Enforce no parallelism (-parallel for tests in package, -p for packages) since they share a DB
+        run: go test -tags="integration,mysql" -parallel=1 -p=1 ./... -args $PWD/config_mysql.yaml
