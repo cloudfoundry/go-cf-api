@@ -32,7 +32,7 @@ Any endpoints that are not yet implemented by `go-cf-api` will continue to be se
 
 ## Prepare dev database
 To run go-cf-api requires a migrated/existing Cloud Controller database.
-To help with this, there is a [docker-compose.yml](./docker-compose.yml) file to start the DB instances and [SQL dumps](./database_dumps) from an existing `cloud_controller_ng` that can be imported to create a DB for testing.
+To help with this, there is a [docker-compose.yml](https://github.com/cloudfoundry/go-cf-api/blob/main/docker-compose.yml) file to start the DB instances and [SQL dumps](https://github.com/cloudfoundry/go-cf-api/blob/main/database_dumps) from an existing `cloud_controller_ng` that can be imported to create a DB for testing.
 
 > There are `mage` commands for performing most common database operations. Run `mage help` to see the full list of available commands.
 
