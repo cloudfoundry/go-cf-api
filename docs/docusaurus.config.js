@@ -3,24 +3,24 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: 'go-cf-api',
-  tagline: 'Golang Implementation of CloudController_NG',
+  title: 'GO-CF-API',
+  tagline: 'PoC Golang implementation of cloud_controller_ng',
   url: 'https://pages.github.com/',
   baseUrl: '/go-cf-api/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'cloudfoundry',
-  projectName: 'go-cf-api',
+  projectName: 'GO-CF-API',
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
   themeConfig: {
     navbar: {
-      title: 'go-cf-api',
+      title: 'GO-CF-API',
       logo: {
-        alt: 'Documentation of the go-cf-api Project',
+        alt: 'Documentation of the GO-CF-API Project',
         src: 'img/logo.svg',
       },
       items: [

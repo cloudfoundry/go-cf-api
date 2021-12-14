@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"go/ast"
@@ -194,7 +195,48 @@ func GenerateDocs() error {
 	if err := sh.Run("mkdir", "-p", godocdir); err != nil {
 		return err
 	}
-	if err := sh.Run("gomarkdoc", "-u", "--tags=psql", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md", godocdir), "./..."); err != nil {
+	if err := sh.Run("gomarkdoc", "-u", "--output", fmt.Sprintf("%s/{{.ImportPath}}.md", godocdir), "./..."); err != nil {
+		return err
+	}
+	if err := sh.Copy("./docs/docs/intro.md", "./README.md"); err != nil {
+		return err
+	}
+	if err := prependToFile("---\nsidebar_position: 1\ntitle: Intro\n---", "./docs/docs/intro.md"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func prependToFile(text string, fileName string) error {
+	tmpFileName := fmt.Sprintf("%s_tmp", fileName)
+	tmpFile, err := os.Create(tmpFileName)
+	defer tmpFile.Close()
+	if err != nil {
+		return err
+	}
+
+	inFile, err := os.Open(fileName)
+	defer inFile.Close()
+	if err != nil {
+		return err
+	}
+
+	_, err = tmpFile.WriteString(text)
+	if err != nil {
+		return err
+	}
+
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		_, err = tmpFile.WriteString(scanner.Text())
+		_, err = tmpFile.WriteString("\n")
+	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+	tmpFile.Sync()
+	err = os.Rename(tmpFileName, fileName)
+	if err != nil {
 		return err
 	}
 	return nil
