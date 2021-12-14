@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
-        <title>go-cf-api Blog</title>
+        <title>GO-CF-API Blog</title>
         <link>https://pages.github.com/go-cf-api/adrs</link>
-        <description>go-cf-api Blog</description>
+        <description>GO-CF-API Blog</description>
         <lastBuildDate>Fri, 03 Sep 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>

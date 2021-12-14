@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://pages.github.com/go-cf-api/adrs</id>
-    <title>go-cf-api Blog</title>
+    <title>GO-CF-API Blog</title>
     <updated>2021-09-03T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://pages.github.com/go-cf-api/adrs"/>
-    <subtitle>go-cf-api Blog</subtitle>
+    <subtitle>GO-CF-API Blog</subtitle>
     <icon>https://pages.github.com/go-cf-api/img/favicon.ico</icon>
     <entry>
         <title type="html"><![CDATA[Use Docusaurus to document our project]]></title>
