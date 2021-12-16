@@ -14,6 +14,7 @@ const GUIDParam = "guid"
 var (
 	buildpackQuerier                           = func(qm ...qm.QueryMod) models.BuildpackFinisher { return models.Buildpacks(qm...) }
 	buildpackInserter models.BuildpackInserter = models.Buildpacks()
+	buildpackUpdater  models.BuildpackUpdater  = models.Buildpacks()
 )
 
 type Controller struct {
