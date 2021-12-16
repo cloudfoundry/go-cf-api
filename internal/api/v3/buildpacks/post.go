@@ -19,8 +19,8 @@ import (
 )
 
 type PostRequest struct {
-	Name     string  `json:"name" validate:"required len=250"`
-	Stack    *string `json:"stack" validate:"len=250"`
+	Name     string  `json:"name" validate:"required,min=1,max=250"`
+	Stack    *string `json:"stack" validate:"omitempty,max=250"`
 	Position int     `json:"position" validate:"gte=1"`
 	Enabled  bool    `json:"enabled"`
 	Locked   bool    `json:"locked"`
@@ -57,7 +57,7 @@ func (cont *Controller) Post(echoCtx echo.Context) error {
 		return v3.UnprocessableEntity("Could not parse JSON provided in the body", err)
 	}
 
-	err := validator.New().Struct(buildpackInserter)
+	err := validator.New().Struct(requestBody)
 	if err != nil {
 		return v3.BadQueryParameter(err)
 	}

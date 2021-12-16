@@ -35,6 +35,24 @@ func TestPostBuildpackTestSuite(t *testing.T) {
 	suite.Run(t, new(PostBuildpackTestSuite))
 }
 
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidPosition() {
+	reader := strings.NewReader(`{"name" : "test_buildpack", "position": 0}`)
+	suite.req.Body = ioutil.NopCloser(reader)
+
+	var err *v3.CfAPIError
+	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidName() {
+	reader := strings.NewReader(`{"name" : "", "position": 1}`)
+	suite.req.Body = ioutil.NopCloser(reader)
+
+	var err *v3.CfAPIError
+	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
 	buildpackName := "test_buildpack" //nolint:goconst // mistakenly gets taken as duplicate
 	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s"}`, buildpackName))
