@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/cloudfoundry/go-cf-api/internal/apicommon/v3/pagination"
 	"github.com/cloudfoundry/go-cf-api/internal/storage/db/models"
 	mock_models "github.com/cloudfoundry/go-cf-api/internal/storage/db/models/mocks"
@@ -30,7 +31,9 @@ type BuildpackControllerTestSuite struct {
 	querier     *mock_models.MockBuildpackFinisher
 	querierFunc *QuerierFunc
 	inserter    *mock_models.MockBuildpackInserter
+	updater     *mock_models.MockBuildpackUpdater
 	presenter   *MockPresenter
+	mockDB      sqlmock.Sqlmock
 }
 
 func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint string) {
@@ -44,13 +47,17 @@ func (suite *BuildpackControllerTestSuite) SetupTestSuite(method, endpoint strin
 	suite.rec = rec
 	suite.ctrl = gomock.NewController(suite.T())
 	suite.querier = mock_models.NewMockBuildpackFinisher(suite.ctrl)
-	suite.querierFunc = &QuerierFunc{querier: suite.querier}
+	suite.querierFunc = &QuerierFunc{}
 	suite.querierFunc.On("Get", mock.Anything).Return(suite.querier)
 	suite.inserter = mock_models.NewMockBuildpackInserter(suite.ctrl)
+	suite.updater = mock_models.NewMockBuildpackUpdater(suite.ctrl)
 	buildpackQuerier = suite.querierFunc.Get
 	buildpackInserter = suite.inserter
+	buildpackUpdater = suite.updater
 	suite.presenter = &MockPresenter{}
-	suite.controller = Controller{DB: nil, Presenter: suite.presenter, LabelSelectorParser: nil}
+	db, mockDB, _ := sqlmock.New()
+	suite.mockDB = mockDB
+	suite.controller = Controller{DB: db, Presenter: suite.presenter, LabelSelectorParser: nil}
 }
 
 type MockPresenter struct {
@@ -72,7 +79,6 @@ func (m *MockPresenter) ListResponseObject(buildpacks models.BuildpackSlice,
 
 type QuerierFunc struct {
 	mock.Mock
-	querier *mock_models.MockBuildpackFinisher
 }
 
 func (m *QuerierFunc) Get(mods ...qm.QueryMod) models.BuildpackFinisher {

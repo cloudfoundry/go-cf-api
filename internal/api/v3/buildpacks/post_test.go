@@ -26,10 +26,31 @@ type PostBuildpackTestSuite struct {
 
 func (suite *PostBuildpackTestSuite) SetupTest() {
 	suite.SetupTestSuite(http.MethodPost, "http://localhost:8080/v3/buildpacks")
+	suite.mockDB.ExpectBegin()
+	suite.mockDB.ExpectCommit()
+	suite.mockDB.ExpectRollback()
 }
 
 func TestPostBuildpackTestSuite(t *testing.T) {
 	suite.Run(t, new(PostBuildpackTestSuite))
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidPosition() {
+	reader := strings.NewReader(`{"name" : "test_buildpack", "position": 0}`)
+	suite.req.Body = ioutil.NopCloser(reader)
+
+	var err *v3.CfAPIError
+	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithInvalidName() {
+	reader := strings.NewReader(`{"name" : "", "position": 1}`)
+	suite.req.Body = ioutil.NopCloser(reader)
+
+	var err *v3.CfAPIError
+	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
+	suite.Equal(http.StatusBadRequest, err.HTTPStatus)
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackswithName() {
@@ -106,13 +127,37 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithExistedPosition() {
 	suite.req.Body = ioutil.NopCloser(reader)
 
 	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
-		{Name: "existing_buildpack", Position: 1},
+		{Name: "existing_buildpack_1", Position: 1},
+		{Name: "existing_buildpack_2", Position: 2},
 	}, nil)
 
-	var err *v3.CfAPIError
-	suite.ErrorAs(suite.controller.Post(suite.ctx), &err)
-	suite.Equal(http.StatusUnprocessableEntity, err.HTTPStatus)
-	suite.Contains(err.Detail, "Position already exists")
+	suite.updater.EXPECT().Update(
+		&models.Buildpack{Name: "existing_buildpack_1", Position: 2},
+		gomock.Any(), gomock.Any(), boil.Whitelist(models.BuildpackColumns.Position))
+	suite.updater.EXPECT().Update(
+		&models.Buildpack{Name: "existing_buildpack_2", Position: 3},
+		gomock.Any(), gomock.Any(), boil.Whitelist(models.BuildpackColumns.Position))
+
+	var got *models.Buildpack
+	suite.inserter.
+		EXPECT().
+		Insert(gomock.AssignableToTypeOf(&models.Buildpack{}), gomock.Any(), gomock.Any(), boil.Infer()).
+		DoAndReturn(func(o *models.Buildpack, _, _, _ interface{}) error {
+			got = o
+			return nil
+		})
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
+
+	err := suite.controller.Post(suite.ctx)
+	suite.NoError(err)
+
+	suite.Equal(buildpackName, got.Name)
+	suite.Equal(1, got.Position)
+
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
+		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
+	}
 }
 
 func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition() {
@@ -137,6 +182,38 @@ func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithoutExistedPosition()
 
 	suite.Equal(buildpackName, got.Name)
 	suite.Equal(position, got.Position)
+
+	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
+		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
+		suite.Equal(http.StatusOK, suite.ctx.Response().Status)
+	}
+}
+
+func (suite *PostBuildpackTestSuite) TestInsertBuildpackWithNextPosition() {
+	buildpackName, position := "test_buildpack", 1000
+	reader := strings.NewReader(fmt.Sprintf(`{"name" : "%s", "position" : %d}`, buildpackName, position))
+	suite.req.Body = ioutil.NopCloser(reader)
+
+	suite.querier.EXPECT().All(gomock.Any(), gomock.Any()).Return(models.BuildpackSlice{
+		{Name: "existing_buildpack_1", Position: 1},
+		{Name: "existing_buildpack_2", Position: 2},
+	}, nil)
+
+	var got *models.Buildpack
+	suite.inserter.
+		EXPECT().
+		Insert(gomock.AssignableToTypeOf(&models.Buildpack{}), gomock.Any(), gomock.Any(), boil.Infer()).
+		DoAndReturn(func(o *models.Buildpack, _, _, _ interface{}) error {
+			got = o
+			return nil
+		})
+	suite.presenter.On("ResponseObject", mock.Anything, mock.Anything).Return(&Response{}, nil)
+
+	err := suite.controller.Post(suite.ctx)
+	suite.NoError(err)
+
+	suite.Equal(buildpackName, got.Name)
+	suite.Equal(3, got.Position)
 
 	if suite.NoError(err, fmt.Errorf("%w", errors.Unwrap(err)).Error()) {
 		suite.presenter.AssertCalled(suite.T(), "ResponseObject", got, mock.Anything)
